@@ -2,6 +2,12 @@
 
 Objetivo: mostrar criterio arquitectónico sin depender de una demo frágil.
 
+## 0. Posicionamiento
+
+Antes de correr comandos, abrir con la frase de [`docs/36-technical-interview-positioning.md`](docs/36-technical-interview-positioning.md):
+
+> Armé una plataforma de práctica para explorar decisiones de riesgo en tiempo real. No intenta ser producción cerrada, sino una demo técnica para discutir arquitectura: camino crítico sincrónico, eventos asíncronos, trazabilidad, separación por bounded contexts, permisos entre componentes, benchmarking y trade-offs de operación.
+
 ## 1. Verificación previa
 
 ```bash

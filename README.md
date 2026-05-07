@@ -80,5 +80,6 @@ El baseline ejecutable actual usa **Java 21 LTS** por compatibilidad de Gradle/J
 - [`STATUS.md`](STATUS.md) — matriz empírica actual.
 - [`docs/00-START-HERE.md`](docs/00-START-HERE.md) — onboarding extendido.
 - [`docs/09-architecture-question-bank.md`](docs/09-architecture-question-bank.md) — banco de preguntas/respuestas de arquitectura.
+- [`docs/36-technical-interview-positioning.md`](docs/36-technical-interview-positioning.md) — frase de posicionamiento para discusión técnica.
 - [`docs/12-rendimiento-y-separacion.md`](docs/12-rendimiento-y-separacion.md) — performance y trade-offs.
 - [`vault/02-Decisions/`](vault/02-Decisions/) — ADRs.
