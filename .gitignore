@@ -1,53 +1,184 @@
-# Build outputs
+###############################################################################
+# Risk Decision Platform — strong .gitignore
+# Keep source, docs, Gradle wrapper and reproducible config in Git.
+# Keep local/generated state, build products, caches and secrets out.
+###############################################################################
+
+# -----------------------------------------------------------------------------
+# OS / editor noise
+# -----------------------------------------------------------------------------
+.DS_Store
+.AppleDouble
+.LSOverride
+Thumbs.db
+Desktop.ini
+*~
+*.swp
+*.swo
+*.tmp
+*.temp
+*.bak
+*.orig
+
+# -----------------------------------------------------------------------------
+# IDE local state (keep repo-level instruction files, ignore machine state)
+# -----------------------------------------------------------------------------
+.idea/
+.vscode/
+*.iml
+*.ipr
+*.iws
+.project
+.classpath
+.settings/
+.factorypath
+
+# -----------------------------------------------------------------------------
+# Secrets / local configuration
+# -----------------------------------------------------------------------------
+.env
+.env.*
+!.env.example
+*.local
+*.secret
+*.secrets
+*.credentials
+*.pem
+*.key
+*.p8
+*.p12
+*.jks
+*.keystore
+*.crt
+*.csr
+*.kubeconfig
+kubeconfig*
+*-kubeconfig
+.aws/
+.gcp/
+.azure/
+
+# -----------------------------------------------------------------------------
+# Java / Kotlin / Gradle / Maven
+# -----------------------------------------------------------------------------
 .gradle/
 build/
 **/build/
 target/
 **/target/
 out/
-bench/build/
-
-# Runtime / generated artifacts
+**/out/
+.gradle-cache/
+.mvn/timing.properties
+.mvn/wrapper/maven-wrapper.jar
 *.class
 *.jar
+*.war
+*.ear
+*.nar
 *.log
-*.tmp
-.DS_Store
-.pytest_cache/
-__pycache__/
-*.py[cod]
-node_modules/
-coverage/
-.nyc_output/
-
-# Local env / secrets
-.env
-.env.*
-!.env.example
-*.local
-*.pem
-*.key
-*.crt
-
-# IDE local state
-.idea/
-.vscode/
-*.iml
-
-# OS/editor
-*~
-.swp
-.swo
+hs_err_pid*
+replay_pid*
 
 # Keep Gradle wrapper reproducible
 !gradle/wrapper/gradle-wrapper.jar
 
-# Agent runtime logs (keep placeholders only)
-.ai/logs/*.jsonl
-!.ai/logs/.gitkeep
+# -----------------------------------------------------------------------------
+# Test / coverage / benchmark outputs
+# -----------------------------------------------------------------------------
+coverage/
+.nyc_output/
+.jacoco/
+jacoco.exec
+*.exec
+surefire-reports/
+failsafe-reports/
+allure-results/
+allure-report/
+reports/
+bench/build/
+bench/**/target/
+bench/**/results.json
+*.jfr
+*.hprof
+*.flamegraph
+*.svg.html
 
-# Generated local state/caches
-.ai/scripts/.cache/
-.ai/state/anchor-*.md
+# -----------------------------------------------------------------------------
+# Python
+# -----------------------------------------------------------------------------
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+.coverage.*
+htmlcov/
+.venv/
+venv/
+env/
+
+# -----------------------------------------------------------------------------
+# Node / TypeScript SDK
+# -----------------------------------------------------------------------------
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.turbo/
+.next/
+dist/
+**/dist/
+lib/
+**/lib/
+*.tsbuildinfo
+
+# -----------------------------------------------------------------------------
+# Go smoke runner
+# -----------------------------------------------------------------------------
 cli/risk-smoke/bin/
+*.test
+*.prof
+coverage.out
+
+# -----------------------------------------------------------------------------
+# Docker / compose / local runtime artifacts
+# -----------------------------------------------------------------------------
+.docker/
+*.pid
+*.sock
+*.seed
+*.sqlite
+*.sqlite3
+*.db
+
+# -----------------------------------------------------------------------------
+# Project generated outputs
+# -----------------------------------------------------------------------------
+out/
+.ai/scripts/.cache/
+.ai/logs/*.jsonl
+.ai/state/anchor-*.md
+.ai/state/session-*.md
+.ai/state/*.local.*
+!.ai/logs/.gitkeep
 !.ai/state/anchor-template.md
+
+# Obsidian local workspace state (keep notes/config that are source-like)
+vault/.obsidian/workspace*.json
+vault/.obsidian/cache/
+.trash/
+
+# -----------------------------------------------------------------------------
+# Optional local archives / exports
+# -----------------------------------------------------------------------------
+*.zip
+*.tar
+*.tar.gz
+*.tgz
+*.rar
+*.7z
+*.dmg
