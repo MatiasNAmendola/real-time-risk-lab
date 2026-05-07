@@ -1,0 +1,38 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AnalysisTemplate
+metadata:
+  name: success-rate
+  namespace: risk
+  labels:
+    app.kubernetes.io/part-of: naranja-poc
+spec:
+  args:
+    - name: namespace
+      value: risk
+    - name: threshold
+      value: "0.99"
+    - name: service-name
+      value: risk-engine
+  metrics:
+    - name: success-rate
+      # Run every 30s, require 3 consecutive passes before promoting
+      interval: 30s
+      count: 3
+      successCondition: "result >= float(args.threshold)"
+      failureLimit: 1
+      provider:
+        web:
+          # OpenObserve SQL search API (HTTP GET, Basic auth).
+          # TODO: verify exact SQL dialect against your OpenObserve version.
+          # OpenObserve docs: https://openobserve.ai/docs/api/search/
+          # The query returns a single row with a float column named "result".
+          url: >-
+            http://openobserve.openobserve.svc.cluster.local:5080/api/default/_search?type=logs&sql=SELECT+CAST(count_if(response_code+<+500)+AS+DOUBLE)+/+CAST(count(*)+AS+DOUBLE)+AS+result+FROM+"default"+WHERE+service%3D'{{args.service-name}}'+AND+_timestamp+>%3D+now()+-+INTERVAL+'1+minute'
+          # jsonPath extracts the float from the first hit's "result" field.
+          # Adjust the path if the OpenObserve response envelope differs.
+          jsonPath: "{$.hits[0].result}"
+          headers:
+            - key: Authorization
+              # base64("root@example.com:Complexpass#123") — default OpenObserve creds.
+              # Override via ExternalSecret or Rollout arg in production.
+              value: "Basic cm9vdEBleGFtcGxlLmNvbTpDb21wbGV4cGFzcyMxMjM="

@@ -1,0 +1,263 @@
+# test-groups.yaml — Test group definitions for scripts/test-runner.py
+#
+# Each atomic group maps to a single command with resource hints.
+# Composites are ordered lists of group names.
+#
+# Fields:
+#   cmd              shell command to execute (run from REPO_ROOT)
+#   needs_infra      false | compose | docker | k8s
+#   cost_cpu         low | medium | high  (default: medium)
+#   cost_ram_mb      estimated RAM consumption in MB  (default: 500)
+#   duration_estimate_sec   rough expected wall-clock seconds  (default: 60)
+#   exclusive        true = must run alone, no concurrent jobs  (default: false)
+#   requires         flow-list of external CLI tools that MUST be in PATH for
+#                    the group to run. Example: requires: [npm, node]. If any
+#                    listed tool is missing, the runner SKIPs the group with a
+#                    clear verdict instead of failing with exit 127.
+
+groups:
+  unit:
+    cmd: "./gradlew test --parallel"
+    needs_infra: false
+    cost_cpu: medium
+    cost_ram_mb: 800
+    duration_estimate_sec: 60
+    exclusive: false
+
+  arch:
+    cmd: "./gradlew :tests:architecture:test"
+    needs_infra: false
+    cost_cpu: low
+    cost_ram_mb: 400
+    duration_estimate_sec: 15
+    # Must not run concurrently with `unit`, because `./gradlew test --parallel`
+    # already executes :tests:architecture:test and both jobs would write the
+    # same Surefire XML output. Keep quick composite deterministic.
+    exclusive: true
+
+  atdd-cucumber:
+    cmd: "./gradlew :tests:risk-engine-atdd:test"
+    needs_infra: false
+    cost_cpu: medium
+    cost_ram_mb: 600
+    duration_estimate_sec: 30
+    exclusive: false
+
+  atdd-karate:
+    cmd: "./gradlew :poc:java-vertx-distributed:atdd-tests:test"
+    needs_infra: compose
+    cost_cpu: medium
+    cost_ram_mb: 800
+    duration_estimate_sec: 60
+    exclusive: false
+    requires: [docker]
+
+  smoke:
+    cmd: "cli/risk-smoke/bin/risk-smoke --headless"
+    needs_infra: compose
+    cost_cpu: low
+    cost_ram_mb: 200
+    duration_estimate_sec: 15
+    exclusive: false
+    requires: [docker]
+
+  integration:
+    cmd: "./gradlew :tests:integration:test"
+    needs_infra: docker
+    cost_cpu: medium
+    cost_ram_mb: 2000
+    duration_estimate_sec: 90
+    exclusive: false
+    requires: [docker]
+
+  sdk-java:
+    cmd: "./gradlew :sdks:risk-client-java:test"
+    needs_infra: false
+    cost_cpu: low
+    cost_ram_mb: 600
+    duration_estimate_sec: 30
+    exclusive: false
+
+  sdk-typescript:
+    # Wrapped via scripts/lib/with-fnm.sh so `node`/`npm` resolve when the user
+    # manages Node.js via fnm (the helper falls back to system node/npm if fnm
+    # isn't installed but node+npm are already on PATH).
+    cmd: "scripts/lib/with-fnm.sh sh -c 'cd sdks/risk-client-typescript && npm install --silent && npm test'"
+    needs_infra: false
+    cost_cpu: low
+    cost_ram_mb: 400
+    duration_estimate_sec: 20
+    exclusive: false
+    # `fnm|npm` = either fnm (preferred, lazy-activates node/npm) OR a system
+    # npm already on PATH satisfies the requirement. The with-fnm.sh wrapper
+    # handles activation in both cases.
+    requires: ["fnm|npm"]
+
+  sdk-go:
+    cmd: "cd sdks/risk-client-go && go test ./..."
+    needs_infra: false
+    cost_cpu: low
+    cost_ram_mb: 200
+    duration_estimate_sec: 10
+    exclusive: false
+    requires: [go]
+
+  sdk-java-integration:
+    cmd: "./gradlew :sdks:risk-client-java:integrationTest"
+    needs_infra: compose
+    cost_cpu: medium
+    cost_ram_mb: 1500
+    duration_estimate_sec: 120
+    exclusive: false
+    requires: [docker]
+
+  sdk-typescript-integration:
+    cmd: "scripts/lib/with-fnm.sh sh -c 'cd sdks/risk-client-typescript && npm run test:integration'"
+    needs_infra: compose
+    cost_cpu: low
+    cost_ram_mb: 400
+    duration_estimate_sec: 90
+    exclusive: false
+    requires: ["fnm|npm", docker]
+
+  sdk-go-integration:
+    cmd: "cd sdks/risk-client-go && go test -tags=integration ./..."
+    needs_infra: compose
+    cost_cpu: low
+    cost_ram_mb: 300
+    duration_estimate_sec: 90
+    exclusive: false
+    requires: [go, docker]
+
+  sdk-contract:
+    cmd: "./gradlew :sdks:contract-test:test -Pcontract"
+    needs_infra: compose
+    cost_cpu: medium
+    cost_ram_mb: 1200
+    duration_estimate_sec: 120
+    exclusive: false
+    requires: [docker]
+
+  monolith:
+    cmd: "./gradlew :poc:java-monolith:test"
+    needs_infra: docker
+    cost_cpu: medium
+    cost_ram_mb: 1200
+    duration_estimate_sec: 90
+    exclusive: false
+    requires: [docker]
+
+  atdd-monolith:
+    cmd: "./gradlew :poc:java-monolith:atdd-tests:test -Patdd"
+    needs_infra: compose
+    cost_cpu: medium
+    cost_ram_mb: 800
+    duration_estimate_sec: 60
+    exclusive: false
+    requires: [docker]
+
+  vertx-platform:
+    cmd: "./gradlew :poc:vertx-risk-platform:test"
+    needs_infra: false
+    cost_cpu: medium
+    cost_ram_mb: 800
+    duration_estimate_sec: 60
+    exclusive: false
+
+  atdd-vertx-platform:
+    cmd: "./gradlew :poc:vertx-risk-platform:atdd-tests:test -Patdd"
+    needs_infra: compose
+    cost_cpu: medium
+    cost_ram_mb: 800
+    duration_estimate_sec: 60
+    exclusive: false
+    requires: [docker]
+
+  bench-inproc:
+    cmd: "./gradlew :bench:inprocess-bench:run"
+    needs_infra: false
+    cost_cpu: high
+    cost_ram_mb: 1200
+    duration_estimate_sec: 120
+    exclusive: true
+
+  bench-distributed:
+    cmd: "./gradlew :bench:distributed-bench:run"
+    needs_infra: compose
+    cost_cpu: high
+    cost_ram_mb: 1500
+    duration_estimate_sec: 180
+    exclusive: true
+    requires: [docker]
+
+  coverage-audit:
+    cmd: "python3 .ai/scripts/coverage-audit.py all"
+    needs_infra: false
+    cost_cpu: low
+    cost_ram_mb: 150
+    duration_estimate_sec: 10
+    exclusive: false
+
+composites:
+  quick:
+    - unit
+    - arch
+
+  service-bare:
+    - unit
+    - atdd-cucumber
+    - smoke
+
+  service-vertx:
+    - atdd-karate
+    - smoke
+
+  sdk:
+    - sdk-java
+    - sdk-typescript
+    - sdk-go
+
+  sdk-integration:
+    - sdk-java-integration
+    - sdk-typescript-integration
+    - sdk-go-integration
+    - sdk-contract
+
+  service-monolith:
+    - monolith
+    - atdd-monolith
+
+  ci-fast:
+    - unit
+    - arch
+    - sdk-java
+    - sdk-typescript
+    - sdk-go
+
+  ci-full:
+    - unit
+    - arch
+    - atdd-cucumber
+    - atdd-karate
+    - monolith
+    - smoke
+    - integration
+    - sdk-java
+    - sdk-typescript
+    - sdk-go
+    - bench-inproc
+
+  all:
+    - unit
+    - arch
+    - atdd-cucumber
+    - atdd-karate
+    - monolith
+    - smoke
+    - integration
+    - sdk-java
+    - sdk-typescript
+    - sdk-go
+    - bench-inproc
+    - bench-distributed
+    - coverage-audit

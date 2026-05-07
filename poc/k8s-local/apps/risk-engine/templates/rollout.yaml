@@ -1,0 +1,101 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
+metadata:
+  name: {{ include "risk-engine.fullname" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "risk-engine.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "risk-engine.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "risk-engine.selectorLabels" . | nindent 8 }}
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "{{ .Values.service.targetPort }}"
+        prometheus.io/path: "{{ .Values.serviceMonitor.path }}"
+    spec:
+      securityContext:
+        runAsNonRoot: {{ .Values.securityContext.runAsNonRoot }}
+        runAsUser: {{ .Values.securityContext.runAsUser }}
+      volumes:
+        - name: tmp
+          emptyDir: {}
+      containers:
+        - name: risk-engine
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.service.targetPort }}
+              protocol: TCP
+          env:
+            - name: SERVICE_NAME
+              value: {{ .Values.otel.serviceName | quote }}
+            - name: OTLP_ENDPOINT
+              value: {{ .Values.otel.endpoint | quote }}
+            - name: AWS_REGION
+              value: {{ .Values.aws.region | quote }}
+            - name: AWS_ACCESS_KEY_ID
+              value: {{ .Values.aws.accessKeyId | quote }}
+            - name: AWS_SECRET_ACCESS_KEY
+              value: {{ .Values.aws.secretAccessKey | quote }}
+            - name: AWS_ENDPOINT_URL_S3
+              value: {{ .Values.aws.endpoints.s3 | quote }}
+            - name: AWS_ENDPOINT_URL_SQS
+              value: {{ .Values.aws.endpoints.sqs | quote }}
+            - name: AWS_ENDPOINT_URL_SNS
+              value: {{ .Values.aws.endpoints.sns | quote }}
+            - name: AWS_ENDPOINT_URL_SECRETSMANAGER
+              value: {{ .Values.aws.endpoints.secretsmanager | quote }}
+            - name: AWS_ENDPOINT_URL_KMS
+              value: {{ .Values.aws.endpoints.kms | quote }}
+          envFrom:
+            - secretRef:
+                name: {{ .Values.externalSecret.targetSecretName }}
+          livenessProbe:
+            {{- toYaml .Values.livenessProbe | nindent 12 }}
+          readinessProbe:
+            {{- toYaml .Values.readinessProbe | nindent 12 }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          securityContext:
+            allowPrivilegeEscalation: {{ .Values.securityContext.allowPrivilegeEscalation }}
+            readOnlyRootFilesystem: {{ .Values.securityContext.readOnlyRootFilesystem }}
+            capabilities:
+              drop:
+                {{- toYaml .Values.securityContext.capabilities.drop | nindent 16 }}
+          volumeMounts:
+            - name: tmp
+              mountPath: /tmp
+  strategy:
+    canary:
+      # Canary Service (Argo Rollouts manages traffic split via Service labels)
+      canaryService: {{ include "risk-engine.fullname" . }}-canary
+      stableService: {{ include "risk-engine.fullname" . }}
+      steps:
+        - setWeight: 20
+        - pause: {duration: 30s}
+        - analysis:
+            templates:
+              - templateName: success-rate
+              - templateName: latency-p99
+            args:
+              - name: namespace
+                value: {{ .Release.Namespace }}
+        - setWeight: 50
+        - pause: {duration: 30s}
+        - setWeight: 100
+      analysis:
+        # Background analysis runs during entire canary rollout
+        templates:
+          - templateName: success-rate
+          - templateName: latency-p99
+        startingStep: 2
+        args:
+          - name: namespace
+            value: {{ .Release.Namespace }}

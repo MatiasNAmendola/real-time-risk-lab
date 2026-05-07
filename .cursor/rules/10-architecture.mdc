@@ -1,0 +1,33 @@
+---
+description: Clean Architecture and Java conventions for NaranjaX risk engine
+globs: ["**/*.java", "**/pom.xml"]
+alwaysApply: false
+---
+
+# Architecture rules for Java code
+
+See full rules: @.ai/primitives/rules/architecture-clean.md
+
+## Quick reference
+
+- Domain layer: domain/{entity,repository,usecase,service,rule}
+  - NO imports from application/ or infrastructure/
+- Application layer: application/{usecase/<aggregate>,mapper,dto}
+  - NO imports from infrastructure/
+- Infrastructure layer: infrastructure/{controller,consumer,repository,resilience,time}
+- Config + cmd: wiring only
+
+## Java 25
+
+- --release 25 in all pom.xml
+- Use records for Value Objects
+- Use virtual threads for blocking I/O
+
+## Naming
+
+- Classes: PascalCase
+- Methods/fields: camelCase
+- SQL: snake_case
+- Files: PascalCase.java
+
+See: @.ai/primitives/rules/naming-conventions.md

@@ -1,0 +1,12 @@
+name: atdd-feature
+description: Generate a Karate/Cucumber .feature file following ATDD conventions
+---
+Generate a .feature file for the following scenario.
+
+Follow .ai/primitives/rules/testing-atdd.md:
+- Scenario title in plain English
+- Given/When/Then format
+- Include tags: @smoke for happy path, @regression for edge cases
+- Use Background for shared setup
+
+Feature: {{{ input }}}

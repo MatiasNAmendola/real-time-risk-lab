@@ -1,0 +1,12 @@
+apiVersion: v2
+name: risk-engine
+description: Risk Engine service — Vert.x distributed PoC for NaranjaX interview
+type: application
+version: 0.1.0
+appVersion: "dev"
+keywords:
+  - risk
+  - vertx
+  - naranjax
+maintainers:
+  - name: platform-team

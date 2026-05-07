@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE report PUBLIC "-//JACOCO//DTD Report 1.1//EN" "report.dtd">
+<report name="aggregate">
+  <package name="com/naranjax/poc/pkg/risk/rule">
+    <counter type="INSTRUCTION" missed="0" covered="200"/>
+    <counter type="BRANCH" missed="0" covered="40"/>
+    <counter type="LINE" missed="0" covered="50"/>
+    <counter type="METHOD" missed="0" covered="20"/>
+    <counter type="CLASS" missed="0" covered="5"/>
+  </package>
+  <package name="com/naranjax/interview/risk/application/usecase/risk">
+    <counter type="INSTRUCTION" missed="10" covered="130"/>
+    <counter type="BRANCH" missed="8" covered="12"/>
+    <counter type="LINE" missed="3" covered="40"/>
+    <counter type="METHOD" missed="0" covered="10"/>
+    <counter type="CLASS" missed="0" covered="3"/>
+  </package>
+  <package name="com/naranjax/interview/risk/domain/service">
+    <counter type="INSTRUCTION" missed="12" covered="88"/>
+    <counter type="BRANCH" missed="4" covered="10"/>
+    <counter type="LINE" missed="5" covered="35"/>
+    <counter type="METHOD" missed="0" covered="8"/>
+    <counter type="CLASS" missed="0" covered="2"/>
+  </package>
+  <package name="com/naranjax/interview/risk/infrastructure/resilience">
+    <counter type="INSTRUCTION" missed="18" covered="77"/>
+    <counter type="BRANCH" missed="4" covered="4"/>
+    <counter type="LINE" missed="5" covered="21"/>
+    <counter type="METHOD" missed="0" covered="6"/>
+    <counter type="CLASS" missed="0" covered="2"/>
+  </package>
+  <package name="com/naranjax/interview/risk/domain/entity">
+    <counter type="INSTRUCTION" missed="20" covered="85"/>
+    <counter type="BRANCH" missed="9" covered="11"/>
+    <counter type="LINE" missed="8" covered="35"/>
+    <counter type="METHOD" missed="2" covered="14"/>
+    <counter type="CLASS" missed="1" covered="4"/>
+  </package>
+  <package name="com/naranjax/interview/risk/infrastructure/repository">
+    <counter type="INSTRUCTION" missed="21" covered="79"/>
+    <counter type="BRANCH" missed="2" covered="8"/>
+    <counter type="LINE" missed="6" covered="23"/>
+    <counter type="METHOD" missed="4" covered="9"/>
+    <counter type="CLASS" missed="1" covered="2"/>
+  </package>
+  <package name="com/naranjax/interview/risk/infrastructure/controller">
+    <counter type="INSTRUCTION" missed="100" covered="0"/>
+    <counter type="BRANCH" missed="20" covered="0"/>
+    <counter type="LINE" missed="30" covered="0"/>
+    <counter type="METHOD" missed="10" covered="0"/>
+    <counter type="CLASS" missed="3" covered="0"/>
+  </package>
+  <package name="com/naranjax/interview/risk/config">
+    <counter type="INSTRUCTION" missed="40" covered="0"/>
+    <counter type="LINE" missed="12" covered="0"/>
+    <counter type="METHOD" missed="5" covered="0"/>
+    <counter type="CLASS" missed="2" covered="0"/>
+  </package>
+  <package name="com/naranjax/interview/risk/cmd">
+    <counter type="INSTRUCTION" missed="30" covered="0"/>
+    <counter type="LINE" missed="8" covered="0"/>
+    <counter type="METHOD" missed="3" covered="0"/>
+    <counter type="CLASS" missed="1" covered="0"/>
+  </package>
+  <counter type="INSTRUCTION" missed="251" covered="659"/>
+  <counter type="BRANCH" missed="47" covered="85"/>
+  <counter type="LINE" missed="75" covered="204"/>
+  <counter type="METHOD" missed="24" covered="70"/>
+  <counter type="CLASS" missed="8" covered="18"/>
+</report>

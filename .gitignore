@@ -1,0 +1,47 @@
+# Build outputs
+.gradle/
+build/
+**/build/
+target/
+**/target/
+out/
+bench/build/
+
+# Runtime / generated artifacts
+*.class
+*.jar
+*.log
+*.tmp
+.DS_Store
+.pytest_cache/
+__pycache__/
+*.py[cod]
+node_modules/
+coverage/
+.nyc_output/
+
+# Local env / secrets
+.env
+.env.*
+!.env.example
+*.local
+*.pem
+*.key
+*.crt
+
+# IDE local state
+.idea/
+.vscode/
+*.iml
+
+# OS/editor
+*~
+.swp
+.swo
+
+# Keep Gradle wrapper reproducible
+!gradle/wrapper/gradle-wrapper.jar
+
+# Agent runtime logs (keep placeholders only)
+.ai/logs/*.jsonl
+!.ai/logs/.gitkeep

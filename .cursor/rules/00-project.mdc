@@ -1,0 +1,32 @@
+---
+description: NaranjaX practica-entrevista project context and non-negotiable rules
+globs: []
+alwaysApply: true
+---
+
+# Proyecto: NaranjaX Transactional Risk — Interview Prep
+
+Este repo es preparacion para entrevista tecnica de Naranja X (Staff/Architect, Transactional Risk).
+
+## Contexto clave
+
+- Sistema de fraude tiempo real: 150 TPS, p99 < 300ms
+- Stack: Java 25 LTS, Vert.x 5.0.12, Maven, Postgres 16, Valkey 8, Redpanda, k3d/OrbStack
+- 4 PoCs en poc/: java-risk-engine, java-vertx-distributed, vertx-risk-platform, k8s-local
+- Full context: @.ai/context/architecture.md
+
+## Reglas non-negotiable
+
+1. Java 25 LTS. NO bajar a 21. NO subir a 26. Ver @.ai/primitives/rules/java-version.md
+2. Layout canonico enterprise Go. Ver @.ai/primitives/rules/architecture-clean.md
+3. ATDD primero. Ver @.ai/primitives/rules/testing-atdd.md
+4. OTEL en todo request. Ver @.ai/primitives/rules/observability-otel.md
+5. Clean boundaries: domain no importa infrastructure. Ver @.ai/primitives/rules/clean-arch-boundaries.md
+
+## Skills disponibles
+
+Antes de implementar cualquier cosa, buscar el skill correspondiente en @.ai/primitives/skills/
+
+## NO tocar
+
+poc/, tests/, cli/, docs/, vault/ — estos directorios son ownership del usuario.

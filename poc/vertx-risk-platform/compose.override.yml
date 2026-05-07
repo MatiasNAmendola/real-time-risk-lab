@@ -1,0 +1,140 @@
+##############################################################################
+# vertx-risk-platform — app-layer override for the shared infra stack.
+#
+# 3 HTTP pods. Inter-pod calls go over plain HTTP with x-pod-token headers.
+# No Hazelcast, no event bus. This is the HTTP+tokens PoC.
+#
+# Bring up:
+#   REPO_ROOT="$(pwd)" docker compose \
+#     -f compose/docker-compose.yml \
+#     -f poc/vertx-risk-platform/compose.override.yml \
+#     up -d
+#
+# Or via nx:
+#   ./nx up vertx-platform
+#
+# Host ports: 8180/8181/8182 (avoids clash with java-vertx-distributed on 8080-8082).
+# UIDs: controller-pod=1101, usecase-pod=1102, repository-pod=1103
+#       (1001-1004 reserved for java-vertx-distributed)
+#
+# Networks: app-net + telemetry-net only.
+#           NO data-net — this PoC is fully in-memory (no Postgres/Kafka/etc).
+##############################################################################
+
+services:
+
+  # ============================================================================
+  # repository-pod — in-memory decisions/idempotency/outbox store
+  # Deployed first; usecase depends on it.
+  # ============================================================================
+  vrp-repository-pod:
+    build:
+      context: ${REPO_ROOT:-.}/poc/vertx-risk-platform
+      dockerfile: Dockerfile
+    image: naranjax/vrp-repository-pod:latest
+    user: "1103:1100"
+    command: ["repository"]
+    environment:
+      OTEL_SERVICE_NAME:           vrp-repository-pod
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4318
+      OTEL_EXPORTER_OTLP_PROTOCOL: http/protobuf
+      OTEL_TRACES_EXPORTER:        otlp
+      OTEL_METRICS_EXPORTER:       otlp
+      OTEL_LOGS_EXPORTER:          otlp
+      JAVA_TOOL_OPTIONS:           "-Xms64m -Xmx256m"
+    ports:
+      - "8182:8082"
+    networks:
+      - app-net
+      - telemetry-net
+    depends_on:
+      otel-collector:
+        condition: service_started
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:8082/health 2>/dev/null || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+    mem_limit: 384m
+    mem_reservation: 128m
+
+  # ============================================================================
+  # usecase-pod — risk evaluation engine + circuit breaker + ML score simulation
+  # ============================================================================
+  vrp-usecase-pod:
+    build:
+      context: ${REPO_ROOT:-.}/poc/vertx-risk-platform
+      dockerfile: Dockerfile
+    image: naranjax/vrp-usecase-pod:latest
+    user: "1102:1100"
+    command: ["usecase"]
+    environment:
+      OTEL_SERVICE_NAME:           vrp-usecase-pod
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4318
+      OTEL_EXPORTER_OTLP_PROTOCOL: http/protobuf
+      OTEL_TRACES_EXPORTER:        otlp
+      OTEL_METRICS_EXPORTER:       otlp
+      OTEL_LOGS_EXPORTER:          otlp
+      JAVA_TOOL_OPTIONS:           "-Xms64m -Xmx256m"
+    ports:
+      - "8181:8081"
+    networks:
+      - app-net
+      - telemetry-net
+    depends_on:
+      vrp-repository-pod:
+        condition: service_healthy
+      otel-collector:
+        condition: service_started
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:8081/health 2>/dev/null || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 40s
+    mem_limit: 384m
+    mem_reservation: 128m
+
+  # ============================================================================
+  # controller-pod — HTTP ingress; forwards to usecase via HTTP + token
+  # ============================================================================
+  vrp-controller-pod:
+    build:
+      context: ${REPO_ROOT:-.}/poc/vertx-risk-platform
+      dockerfile: Dockerfile
+    image: naranjax/vrp-controller-pod:latest
+    user: "1101:1100"
+    command: ["controller"]
+    environment:
+      OTEL_SERVICE_NAME:           vrp-controller-pod
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://otel-collector:4318
+      OTEL_EXPORTER_OTLP_PROTOCOL: http/protobuf
+      OTEL_TRACES_EXPORTER:        otlp
+      OTEL_METRICS_EXPORTER:       otlp
+      OTEL_LOGS_EXPORTER:          otlp
+      JAVA_TOOL_OPTIONS:           "-Xms64m -Xmx256m"
+    ports:
+      - "8180:8080"
+    networks:
+      - app-net
+      - telemetry-net
+    depends_on:
+      vrp-usecase-pod:
+        condition: service_healthy
+      otel-collector:
+        condition: service_started
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:8080/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 15
+      start_period: 60s
+    mem_limit: 384m
+    mem_reservation: 128m
+
+networks:
+  app-net:
+    external: true
+  telemetry-net:
+    external: true

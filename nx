@@ -1,0 +1,1037 @@
+#!/usr/bin/env bash
+# nx — master CLI for the Risk Decision Platform project
+#
+# Compatible with bash 3.2 (macOS default). Auto-reexecs under brew bash when available.
+# Usage: ./nx <command> [subcommand] [args...]
+
+set -euo pipefail
+
+NX_VERSION="0.1.0"
+REPO_ROOT="$(cd "$(dirname "$0")" && pwd)"
+
+# ---------------------------------------------------------------------------
+# Bash version guard — reexec under brew bash 4+ if available
+# ---------------------------------------------------------------------------
+if [ "${BASH_VERSINFO[0]}" -lt 4 ]; then
+  BREW_BASH=""
+  if command -v brew >/dev/null 2>&1; then
+    BREW_BASH="$(brew --prefix 2>/dev/null)/bin/bash"
+  fi
+  if [ -n "$BREW_BASH" ] && [ -x "$BREW_BASH" ]; then
+    exec "$BREW_BASH" "$0" "$@"
+  fi
+fi
+
+# ---------------------------------------------------------------------------
+# Output helpers
+# ---------------------------------------------------------------------------
+_info()    { printf '[nx] %s\n' "$*"; }
+_ok()      { printf '[nx] OK: %s\n' "$*"; }
+_warn()    { printf '[nx] WARN: %s\n' "$*" >&2; }
+_err()     { printf '[nx] ERROR: %s\n' "$*" >&2; }
+_die()     { _err "$*"; exit 1; }
+
+# ---------------------------------------------------------------------------
+# Help text
+# ---------------------------------------------------------------------------
+usage() {
+  cat <<'EOF'
+nx -- orchestrator for the Risk Decision Platform project
+
+USAGE:
+  ./nx <command> [subcommand] [args...]
+
+COMMANDS:
+  setup [--verify|--upgrade|--only X|--skip Y|--dry-run]
+      Install or verify the full toolchain (Java, Go, k3d, helm, kubectl, etc.)
+
+  up [infra|vertx|monolith|all|k8s] [--orbstack|--k3d]
+      Bring up infrastructure (docker compose or k8s cluster + services)
+      infra    : shared infra only (no app services)
+      vertx    : infra + java-vertx-distributed (default)
+      monolith : infra + java-monolith
+      all      : infra + vertx + monolith side-by-side
+      k8s      : k3d cluster + helm install
+
+  down [infra|vertx|monolith|all|k8s] [--cleanup-k8s]
+      Tear down infrastructure (same targets as up)
+
+  status
+      Show currently running services (docker ps + k8s pods if available)
+
+  logs <service>
+      Tail logs for a named service
+
+  build
+      Run ./gradlew clean build
+
+  run risk-engine [--port N]
+      Start the bare-javac HTTP risk engine
+
+  run vertx
+      Start the Vert.x distributed stack via docker compose
+
+  run k8s
+      Bring up k8s cluster and deploy via helm
+
+  test all [--with-infra-compose|--with-infra-k8s|--headless|--only X]
+      Run the full test suite (smoke + ATDD + integration + bench)
+
+  test --coverage [gradle-args...]
+      Run jacocoAggregateReport; copy HTML to out/coverage/aggregate/
+
+  test smoke
+      Run the Go TUI smoke test
+
+  test atdd-karate
+      Run Karate ATDD tests against the Vert.x stack
+
+  test atdd-cucumber
+      Run Cucumber ATDD tests (bare-javac HTTP server)
+
+  test integration
+      Run Testcontainers integration tests via Gradle
+
+  test architecture
+      Run ArchUnit architecture tests via Gradle
+
+  test unit
+      Run Gradle unit tests only
+
+  bench inproc
+      JMH in-process benchmark
+
+  bench distributed
+      HTTP load generation benchmark
+
+  bench competition
+      Run both benchmarks side-by-side
+
+  demo rest [--amount N] [--customer X]
+      Send a POST /risk transaction via curl
+
+  demo websocket
+      Connect via wscat (requires wscat in PATH)
+
+  demo sse
+      Consume the SSE endpoint via curl
+
+  demo webhook
+      Register a webhook and trigger it
+
+  demo kafka
+      Produce and consume a Kafka message
+
+  dashboard [up|down]
+      Start or stop the Homer dashboard (localhost:8888)
+
+  admin rules list|reload|test [--config path]
+      Backoffice operations for the rules engine
+
+  audit [docs|cli|primitives|all]
+      Run coverage audit for the specified axis
+
+  audit coverage
+      Generate jacocoAggregateReport and open HTML in browser
+
+  audit --report-md
+      Print audit results as a Markdown report
+
+  scrub
+      Run the secrets/PII scrub check
+
+  failures [--suite NAME] [--json] [--since DURATION]
+      Aggregate test failures from all suite formats (Surefire, Cucumber, Karate, smoke)
+
+  logs [--service NAME] [--since DURATION] [--grep PATTERN] [--errors] [--correlation-id ID]
+      Tail and filter service logs via debug-runner
+
+  debug {diagnose|snapshot|trace|probe} [args...]
+      Debug sub-commands:
+        diagnose   heuristic root cause analysis
+        snapshot   forensic bundle to out/debug/<ts>/
+        trace ID   OpenObserve trace lookup
+        probe      DNS connectivity probe between services
+
+  help [<command>]
+      Show help for a specific command
+
+  version
+      Print nx version ($NX_VERSION)
+
+EXAMPLES:
+  ./nx setup
+  ./nx setup --verify
+  ./nx up vertx
+  ./nx up infra
+  ./nx test all --with-infra-compose
+  ./nx test --diagnose-on-fail
+  ./nx test --auto-fix --dry-run
+  ./nx test --auto-fix --apply
+  ./nx demo rest --amount 200000
+  ./nx audit all
+  ./nx audit failures
+  ./nx audit --report-md
+  ./nx dashboard up
+  ./nx failures
+  ./nx failures --suite atdd-karate
+  ./nx failures --json
+  ./nx logs --service controller-app --errors
+  ./nx debug diagnose
+  ./nx debug snapshot
+  ./nx debug trace abc-123
+  ./nx debug probe
+
+EOF
+}
+
+usage_test() {
+  cat <<'EOF'
+nx test -- intelligent parallel test runner with resource throttling
+
+Delegates to scripts/test-runner.py. Groups defined in .ai/test-groups.yaml.
+
+SUBCOMMANDS / FLAGS:
+  (none)                      List all groups and composites
+  --list                      List all groups and composites
+  --coverage [gradle-args]    Run jacocoAggregateReport (all modules); copy HTML to out/coverage/
+  <group>                     Run a single group (e.g. unit, arch, smoke)
+  --group <name>              Run a single group
+  --groups <a,b,c>            Run comma-separated groups
+  --composite <name>          Run a named composite (e.g. ci-fast, quick, all)
+  --parallel N                Max concurrent jobs (default: auto)
+  --auto-parallel             Auto-detect from CPU count
+  --max-cpu PCT               CPU reservation ceiling % (default: 80)
+  --max-ram MB                RAM reservation ceiling (default: 80% of total)
+  --auto-infra                Auto docker-compose up if any job needs it
+  --dry-run                   Print execution plan without running
+  --json                      JSON output for CI
+  --out-dir PATH              Custom output directory
+
+BACKWARD-COMPATIBLE SUBCOMMANDS (proxied to --group):
+  all                         composite 'all'
+  smoke, atdd-karate, atdd-cucumber, integration, architecture, unit
+
+EXAMPLES:
+  ./nx test
+  ./nx test --list
+  ./nx test --coverage
+  ./nx test --coverage --info
+  ./nx test unit
+  ./nx test --composite ci-fast --auto-parallel
+  ./nx test --composite ci-fast --dry-run
+  ./nx test --group integration --auto-infra
+  ./nx test --groups unit,arch --parallel 2
+EOF
+}
+
+usage_bench() {
+  cat <<'EOF'
+nx bench -- run performance benchmarks
+
+SUBCOMMANDS:
+  inproc        JMH in-process benchmark (no network overhead)
+  distributed   HTTP load generation against live server
+  competition   Both benchmarks side-by-side for comparison
+
+EXAMPLES:
+  ./nx bench inproc
+  ./nx bench competition
+EOF
+}
+
+usage_demo() {
+  cat <<'EOF'
+nx demo -- send live demo traffic
+
+SUBCOMMANDS:
+  rest          POST /risk via curl (--amount N, --customer X)
+  websocket     Connect to WS endpoint via wscat
+  sse           Consume SSE stream via curl
+  webhook       Register webhook endpoint and trigger it
+  kafka         Produce a message to Kafka and consume it
+
+EXAMPLES:
+  ./nx demo rest --amount 150000
+  ./nx demo rest --amount 200000 --customer cust-001
+EOF
+}
+
+# ---------------------------------------------------------------------------
+# Require a script to exist before delegating
+# ---------------------------------------------------------------------------
+_require_script() {
+  local path="$1"
+  if [ ! -f "$path" ]; then
+    _die "Script not found: $path"
+  fi
+  if [ ! -x "$path" ]; then
+    chmod +x "$path"
+  fi
+}
+
+# ---------------------------------------------------------------------------
+# Subcommand implementations
+# ---------------------------------------------------------------------------
+
+nx_setup() {
+  local script="$REPO_ROOT/setup.sh"
+  _require_script "$script"
+  _info "Delegating to setup.sh $*"
+  exec "$script" "$@"
+}
+
+nx_up() {
+  local mode="${1:-vertx}"
+  shift || true
+  case "$mode" in
+    infra)
+      _info "Bringing up shared infra (no apps)..."
+      exec docker compose -f "$REPO_ROOT/compose/docker-compose.yml" up -d "$@"
+      ;;
+    vertx)
+      local script="$REPO_ROOT/poc/java-vertx-distributed/scripts/up.sh"
+      if [ -f "$script" ]; then
+        _require_script "$script"
+        _info "Bringing up infra + java-vertx-distributed..."
+        exec "$script" "$@"
+      else
+        _info "Running docker compose up (fallback)..."
+        REPO_ROOT="$REPO_ROOT" exec docker compose \
+          -f "$REPO_ROOT/compose/docker-compose.yml" \
+          -f "$REPO_ROOT/poc/java-vertx-distributed/compose.override.yml" \
+          up -d "$@"
+      fi
+      ;;
+    monolith)
+      _info "Bringing up infra + java-monolith..."
+      REPO_ROOT="$REPO_ROOT" exec docker compose \
+        -f "$REPO_ROOT/compose/docker-compose.yml" \
+        -f "$REPO_ROOT/poc/java-monolith/compose.override.yml" \
+        up -d "$@"
+      ;;
+    vertx-platform)
+      # vertx-risk-platform: 3-pod HTTP+tokens PoC (ports 8180/8181/8182, no data-net)
+      _info "Bringing up infra + vertx-risk-platform..."
+      REPO_ROOT="$REPO_ROOT" exec docker compose \
+        -f "$REPO_ROOT/compose/docker-compose.yml" \
+        -f "$REPO_ROOT/poc/vertx-risk-platform/compose.override.yml" \
+        up -d "$@"
+      ;;
+    all)
+      _info "Bringing up infra + vertx + monolith + vertx-platform..."
+      REPO_ROOT="$REPO_ROOT" exec docker compose \
+        -f "$REPO_ROOT/compose/docker-compose.yml" \
+        -f "$REPO_ROOT/poc/java-vertx-distributed/compose.override.yml" \
+        -f "$REPO_ROOT/poc/java-monolith/compose.override.yml" \
+        -f "$REPO_ROOT/poc/vertx-risk-platform/compose.override.yml" \
+        up -d "$@"
+      ;;
+    compose)
+      # backward compat alias
+      _info "Redirecting 'compose' -> 'vertx' (see: ./nx help)"
+      nx_up vertx "$@"
+      ;;
+    k8s)
+      local script="$REPO_ROOT/poc/k8s-local/scripts/up.sh"
+      _require_script "$script"
+      _info "Bringing up k8s cluster..."
+      exec "$script" "$@"
+      ;;
+    --help|-h)
+      printf 'Usage: ./nx up [infra|vertx|vertx-platform|monolith|all|k8s] [--orbstack|--k3d]\n'
+      exit 0
+      ;;
+    *)
+      _die "Unknown target: $mode. Use: infra, vertx, vertx-platform, monolith, all, k8s"
+      ;;
+  esac
+}
+
+nx_down() {
+  local mode="${1:-vertx}"
+  shift || true
+  case "$mode" in
+    infra)
+      _info "Tearing down shared infra..."
+      exec docker compose -f "$REPO_ROOT/compose/docker-compose.yml" down "$@"
+      ;;
+    vertx)
+      local script="$REPO_ROOT/poc/java-vertx-distributed/scripts/down.sh"
+      if [ -f "$script" ]; then
+        _require_script "$script"
+        exec "$script" "$@"
+      else
+        REPO_ROOT="$REPO_ROOT" exec docker compose \
+          -f "$REPO_ROOT/compose/docker-compose.yml" \
+          -f "$REPO_ROOT/poc/java-vertx-distributed/compose.override.yml" \
+          down "$@"
+      fi
+      ;;
+    monolith)
+      REPO_ROOT="$REPO_ROOT" exec docker compose \
+        -f "$REPO_ROOT/compose/docker-compose.yml" \
+        -f "$REPO_ROOT/poc/java-monolith/compose.override.yml" \
+        down "$@"
+      ;;
+    all)
+      REPO_ROOT="$REPO_ROOT" exec docker compose \
+        -f "$REPO_ROOT/compose/docker-compose.yml" \
+        -f "$REPO_ROOT/poc/java-vertx-distributed/compose.override.yml" \
+        -f "$REPO_ROOT/poc/java-monolith/compose.override.yml" \
+        down "$@"
+      ;;
+    compose)
+      # backward compat alias
+      nx_down vertx "$@"
+      ;;
+    k8s)
+      local script="$REPO_ROOT/poc/k8s-local/scripts/down.sh"
+      _require_script "$script"
+      exec "$script" "$@"
+      ;;
+    --help|-h)
+      printf 'Usage: ./nx down [infra|vertx|monolith|all|k8s] [--cleanup-k8s]\n'
+      exit 0
+      ;;
+    *)
+      _die "Unknown target: $mode. Use: infra, vertx, monolith, all, k8s"
+      ;;
+  esac
+}
+
+nx_status() {
+  _info "Docker containers:"
+  docker ps --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}" 2>/dev/null || _warn "docker not available"
+  local k8s_script="$REPO_ROOT/poc/k8s-local/scripts/status.sh"
+  if [ -f "$k8s_script" ]; then
+    _info "K8s pods:"
+    bash "$k8s_script" 2>/dev/null || true
+  fi
+}
+
+nx_logs() {
+  local service="${1:-}"
+  if [ -z "$service" ]; then
+    _die "Usage: ./nx logs <service>"
+  fi
+  _info "Tailing logs for: $service"
+  docker logs -f "$service" 2>/dev/null || _die "Service not found or docker unavailable: $service"
+}
+
+nx_build() {
+  _info "Running ./gradlew clean build..."
+  exec "$REPO_ROOT/gradlew" -p "$REPO_ROOT" clean build "$@"
+}
+
+nx_run() {
+  local target="${1:-}"
+  shift || true
+  case "$target" in
+    risk-engine)
+      local script="$REPO_ROOT/poc/java-risk-engine/scripts/run-http.sh"
+      _require_script "$script"
+      _info "Starting risk-engine HTTP server..."
+      exec "$script" "$@"
+      ;;
+    java-monolith)
+      local script="$REPO_ROOT/poc/java-monolith/scripts/run.sh"
+      _require_script "$script"
+      _info "Starting java-monolith on port 8090..."
+      exec "$script" "$@"
+      ;;
+    vertx)
+      local script="$REPO_ROOT/poc/java-vertx-distributed/scripts/up.sh"
+      if [ -f "$script" ]; then
+        _require_script "$script"
+        _info "Starting Vert.x distributed stack..."
+        exec "$script" "$@"
+      else
+        REPO_ROOT="$REPO_ROOT" exec docker compose \
+          -f "$REPO_ROOT/compose/docker-compose.yml" \
+          -f "$REPO_ROOT/poc/java-vertx-distributed/compose.override.yml" \
+          up "$@"
+      fi
+      ;;
+    vertx-platform)
+      # vertx-risk-platform: 3-pod HTTP + token-based permissions PoC
+      local vrp_jar="$REPO_ROOT/poc/vertx-risk-platform/build/libs/vertx-risk-platform.jar"
+      if [ ! -f "$vrp_jar" ]; then
+        _info "Building vertx-risk-platform fat-jar..."
+        "$REPO_ROOT/gradlew" -p "$REPO_ROOT" :poc:vertx-risk-platform:shadowJar \
+          || _die "Build failed. Run: ./gradlew :poc:vertx-risk-platform:shadowJar"
+      fi
+      _info "Starting vertx-risk-platform pods (controller=8080, usecase=8081, repository=8082)..."
+      "$REPO_ROOT/poc/vertx-risk-platform/scripts/run-local-pods.sh" "$@"
+      ;;
+    k8s)
+      local up_script="$REPO_ROOT/poc/k8s-local/scripts/up.sh"
+      _require_script "$up_script"
+      _info "Bringing up k8s + helm install..."
+      exec "$up_script" "$@"
+      ;;
+    --help|-h)
+      printf 'Usage: ./nx run <risk-engine|vertx|vertx-platform|java-monolith|k8s> [args...]\n'
+      exit 0
+      ;;
+    "")
+      _die "Usage: ./nx run <risk-engine|vertx|vertx-platform|java-monolith|k8s>"
+      ;;
+    *)
+      _die "Unknown run target: $target. Use: risk-engine, vertx, vertx-platform, java-monolith, k8s"
+      ;;
+  esac
+}
+
+nx_test() {
+  local with_coverage=0
+  local diagnose_on_fail=0
+  local auto_fix=0
+  local auto_fix_mode="--dry-run"
+  local args=()
+  for arg in "$@"; do
+    case "$arg" in
+      --coverage)        with_coverage=1 ;;
+      --diagnose-on-fail) diagnose_on_fail=1 ;;
+      --auto-fix)        auto_fix=1 ;;
+      --apply)           auto_fix_mode="--apply" ;;
+      --dry-run)         auto_fix_mode="--dry-run"; args+=("$arg") ;;
+      --apply-only)      :  ;;
+      # Convenience aliases that map to test-runner.py flags
+      --with-infra-compose|--with-testcontainers|--with-infra)
+        # Both flags translate to --auto-infra: the runner already knows
+        # which groups need compose vs docker (testcontainers) from
+        # test-groups.yaml `needs_infra: compose|docker`.
+        args+=(--auto-infra) ;;
+      *)                 args+=("$arg") ;;
+    esac
+  done
+
+  if [[ $with_coverage -eq 1 ]]; then
+    _info "[test] Running tests with coverage (jacocoAggregateReport)"
+    "$REPO_ROOT/gradlew" -p "$REPO_ROOT" jacocoAggregateReport ${args[@]:+"${args[@]}"} || true
+
+    local report_dir="$REPO_ROOT/build/reports/jacoco/aggregate"
+    local report_xml="$report_dir/jacoco.xml"
+    local report_html="$report_dir/index.html"
+
+    if [[ -f "$report_xml" ]]; then
+      local ts; ts="$(date -u +%Y-%m-%dT%H-%M-%SZ)"
+      mkdir -p "$REPO_ROOT/out/coverage/$ts"
+
+      # Print table to terminal
+      python3 "$REPO_ROOT/.ai/scripts/coverage-summary.py" "$report_xml" \
+        --html-path "out/coverage/$ts/html/index.html" \
+        --md-path "out/coverage/$ts/summary.md"
+
+      # Write Markdown summary
+      python3 "$REPO_ROOT/.ai/scripts/coverage-summary.py" "$report_xml" \
+        --markdown \
+        --html-path "out/coverage/$ts/html/index.html" \
+        > "$REPO_ROOT/out/coverage/$ts/summary.md"
+
+      # Copy HTML report
+      cp -r "$report_dir" "$REPO_ROOT/out/coverage/$ts/html"
+
+      # Update latest symlink
+      ln -sfn "$ts" "$REPO_ROOT/out/coverage/latest"
+
+      echo ""
+      echo "Coverage outputs:"
+      echo "  HTML:     out/coverage/$ts/html/index.html"
+      echo "  Markdown: out/coverage/$ts/summary.md"
+    else
+      _err "[test] jacoco.xml not generated. Aggregate report failed?"
+      exit 1
+    fi
+    return
+  fi
+
+  local sub="${args[0]:-}"
+  local rest=("${args[@]:1}")
+  case "$sub" in
+    "")
+      # No subcommand: delegate to runner --list
+      exec python3 "$REPO_ROOT/scripts/test-runner.py" --list
+      ;;
+    --list)
+      exec python3 "$REPO_ROOT/scripts/test-runner.py" --list
+      ;;
+    --help|-h)
+      usage_test
+      exit 0
+      ;;
+    -*)
+      # Pass through flags directly to runner (e.g. --composite, --dry-run, --auto-parallel)
+      python3 "$REPO_ROOT/scripts/test-runner.py" "$sub" ${rest[@]:+"${rest[@]}"} || _test_post_hooks $?
+      return
+      ;;
+    all|smoke|atdd-karate|atdd-cucumber|integration|architecture|unit)
+      # Backward compatibility: map legacy subcommand names to runner --group
+      local group_name="$sub"
+      # Remap 'architecture' to 'arch' (runner canonical name)
+      [ "$sub" = "architecture" ] && group_name="arch"
+      python3 "$REPO_ROOT/scripts/test-runner.py" --group "$group_name" ${rest[@]:+"${rest[@]}"} \
+        || _test_post_hooks $?
+      return
+      ;;
+    *)
+      # Treat as group or composite name
+      python3 "$REPO_ROOT/scripts/test-runner.py" --group "$sub" ${rest[@]:+"${rest[@]}"} \
+        || _test_post_hooks $?
+      return
+      ;;
+  esac
+}
+
+# Post-test hooks: --diagnose-on-fail and --auto-fix
+_test_post_hooks() {
+  local exit_code="${1:-1}"
+  if [[ $diagnose_on_fail -eq 1 && $exit_code -ne 0 ]]; then
+    _warn "[test] Tests failed. Running diagnose..."
+    python3 "$REPO_ROOT/.ai/scripts/debug-runner.py" diagnose || true
+  fi
+  if [[ $auto_fix -eq 1 ]]; then
+    _info "[test] Running auto-fix dispatcher ($auto_fix_mode)..."
+    python3 "$REPO_ROOT/.ai/scripts/auto-fix-dispatcher.py" $auto_fix_mode || true
+  fi
+  return $exit_code
+}
+
+nx_bench() {
+  local sub="${1:-}"
+  shift || true
+  case "$sub" in
+    inproc)
+      local script="$REPO_ROOT/bench/scripts/run-inprocess.sh"
+      _require_script "$script"
+      _info "Running JMH in-process benchmark..."
+      exec "$script" "$@"
+      ;;
+    distributed)
+      local script="$REPO_ROOT/bench/scripts/run-distributed.sh"
+      if [ ! -f "$script" ]; then
+        _die "Distributed bench script not found: $script"
+      fi
+      _require_script "$script"
+      _info "Running distributed HTTP benchmark..."
+      exec "$script" "$@"
+      ;;
+    competition)
+      _info "Running competition benchmark (inproc + distributed)..."
+      local inproc="$REPO_ROOT/bench/scripts/run-inprocess.sh"
+      _require_script "$inproc"
+      bash "$inproc" "$@"
+      local dist="$REPO_ROOT/bench/scripts/run-distributed.sh"
+      if [ -f "$dist" ]; then
+        bash "$dist" "$@"
+      else
+        _warn "Distributed bench script not found, skipping: $dist"
+      fi
+      ;;
+    --help|-h|"")
+      usage_bench
+      exit 0
+      ;;
+    *)
+      _die "Unknown bench target: $sub. Use: inproc, distributed, competition"
+      ;;
+  esac
+}
+
+nx_demo() {
+  local sub="${1:-}"
+  shift || true
+  case "$sub" in
+    rest)
+      # Parse demo-rest specific flags BEFORE forwarding to demo.sh.
+      # demo.sh accepts only an optional positional BASE_URL, so any
+      # --amount / --customer flags would otherwise leak into BASE_URL or
+      # later get passed to curl as bogus options.
+      local base_url=""
+      local amount=""
+      local customer=""
+      local passthrough=()
+      while [ $# -gt 0 ]; do
+        case "$1" in
+          --amount)    amount="${2:-}";  shift 2 ;;
+          --amount=*)  amount="${1#*=}"; shift ;;
+          --customer)  customer="${2:-}"; shift 2 ;;
+          --customer=*) customer="${1#*=}"; shift ;;
+          --base-url)  base_url="${2:-}"; shift 2 ;;
+          --base-url=*) base_url="${1#*=}"; shift ;;
+          --) shift; passthrough+=("$@"); break ;;
+          -*) passthrough+=("$1"); shift ;;
+          *)
+            # First positional = BASE_URL (matches demo.sh contract)
+            if [ -z "$base_url" ]; then base_url="$1"; else passthrough+=("$1"); fi
+            shift
+            ;;
+        esac
+      done
+      base_url="${base_url:-http://localhost:8080}"
+
+      # If the user asked for a custom amount/customer, do a single targeted
+      # POST instead of running the full 6-flow scripted demo (which uses
+      # hardcoded payloads). Otherwise fall back to the canonical demo.sh.
+      if [ -n "$amount" ] || [ -n "$customer" ]; then
+        local cust="${customer:-cust-demo}"
+        local amt="${amount:-150000}"
+        local tx_id="tx-$(date +%s)-$$"
+        local idem_key="idem-${tx_id}"
+        local corr_id="corr-${tx_id}"
+        local payload
+        payload=$(printf '{"transactionId":"%s","customerId":"%s","amountCents":%s,"correlationId":"%s","idempotencyKey":"%s"}' \
+          "$tx_id" "$cust" "$amt" "$corr_id" "$idem_key")
+        _info "POST $base_url/risk  payload=$payload"
+        exec curl -sS -w "\nHTTP %{http_code}\n" \
+          -X POST "$base_url/risk" \
+          -H "Content-Type: application/json" \
+          -d "$payload" \
+          ${passthrough[@]:+"${passthrough[@]}"}
+      fi
+
+      local script="$REPO_ROOT/poc/java-vertx-distributed/scripts/demo.sh"
+      if [ ! -f "$script" ]; then
+        script="$REPO_ROOT/poc/java-risk-engine/scripts/test.sh"
+      fi
+      _require_script "$script"
+      _info "Running REST demo (BASE_URL=$base_url)..."
+      exec "$script" "$base_url" ${passthrough[@]:+"${passthrough[@]}"}
+      ;;
+    websocket)
+      _info "Connecting to WebSocket endpoint..."
+      command -v wscat >/dev/null 2>&1 || _die "wscat not found. Install: npm install -g wscat"
+      exec wscat -c "ws://localhost:8080/risk/ws" "$@"
+      ;;
+    sse)
+      _info "Consuming SSE stream..."
+      exec curl -N -H "Accept: text/event-stream" "http://localhost:8080/risk/events" "$@"
+      ;;
+    webhook)
+      local script="$REPO_ROOT/poc/java-vertx-distributed/scripts/demo.sh"
+      if [ -f "$script" ]; then
+        _require_script "$script"
+        exec "$script" webhook "$@"
+      else
+        _info "Registering webhook and triggering..."
+        curl -s -X POST http://localhost:8080/webhooks \
+          -H 'Content-Type: application/json' \
+          -d '{"url":"http://host.docker.internal:9999/hook","events":["risk.decision"]}' \
+          | cat
+      fi
+      ;;
+    kafka)
+      _info "Producing Kafka message..."
+      docker exec -it redpanda rpk topic produce risk-transactions --brokers localhost:9092 <<'EOF'
+{"transactionId":"demo-001","customerId":"cust-demo","amountCents":150000,"correlationId":"corr-demo-001","idempotencyKey":"idem-demo-001"}
+EOF
+      _info "Consuming Kafka message..."
+      docker exec -it redpanda rpk topic consume risk-transactions --brokers localhost:9092 -n 1
+      ;;
+    --help|-h|"")
+      usage_demo
+      exit 0
+      ;;
+    *)
+      _die "Unknown demo target: $sub. Use: rest, websocket, sse, webhook, kafka"
+      ;;
+  esac
+}
+
+nx_dashboard() {
+  local action="${1:-up}"
+  shift || true
+  local compose_file="$REPO_ROOT/dashboard/docker-compose.yml"
+  local start_script="$REPO_ROOT/dashboard/scripts/start.sh"
+  case "$action" in
+    up)
+      if [ -f "$start_script" ]; then
+        _require_script "$start_script"
+        _info "Starting dashboard..."
+        exec "$start_script" "$@"
+      elif [ -f "$compose_file" ]; then
+        _info "Starting Homer dashboard..."
+        exec docker compose -f "$compose_file" up -d "$@"
+      else
+        _die "Dashboard compose file not found: $compose_file"
+      fi
+      ;;
+    down)
+      if [ -f "$compose_file" ]; then
+        _info "Stopping dashboard..."
+        exec docker compose -f "$compose_file" down "$@"
+      else
+        _die "Dashboard compose file not found: $compose_file"
+      fi
+      ;;
+    --help|-h)
+      printf 'Usage: ./nx dashboard [up|down]\n'
+      printf '  up    Start Homer dashboard (localhost:8888)\n'
+      printf '  down  Stop Homer dashboard\n'
+      exit 0
+      ;;
+    *)
+      _die "Unknown dashboard action: $action. Use: up, down"
+      ;;
+  esac
+}
+
+nx_admin() {
+  local sub="${1:-}"
+  shift || true
+  case "$sub" in
+    rules)
+      local action="${1:-list}"
+      shift || true
+      _info "Admin rules $action..."
+      case "$action" in
+        list)
+          curl -s "http://localhost:8080/admin/rules" | cat
+          ;;
+        reload)
+          curl -s -X POST "http://localhost:8080/admin/rules/reload" | cat
+          ;;
+        test)
+          curl -s -X POST "http://localhost:8080/admin/rules/test" \
+            -H "Content-Type: application/json" \
+            -d '{"transactionId":"test-001","customerId":"cust-test","amountCents":100000}' | cat
+          ;;
+        *)
+          _die "Unknown rules action: $action. Use: list, reload, test"
+          ;;
+      esac
+      ;;
+    --help|-h|"")
+      printf 'Usage: ./nx admin rules [list|reload|test] [--config path]\n'
+      exit 0
+      ;;
+    *)
+      _die "Unknown admin subcommand: $sub. Use: rules"
+      ;;
+  esac
+}
+
+nx_failures() {
+  local script="$REPO_ROOT/.ai/scripts/failures-aggregator.py"
+  _require_script "$script"
+  _info "Aggregating test failures..."
+  exec python3 "$script" "$@"
+}
+
+nx_logs() {
+  # If first arg looks like a service name (no --), forward to docker logs (legacy)
+  # If first arg is a flag, use debug-runner
+  local first="${1:-}"
+  if [[ -z "$first" || "$first" == --* ]]; then
+    local script="$REPO_ROOT/.ai/scripts/debug-runner.py"
+    _require_script "$script"
+    exec python3 "$script" logs "$@"
+  else
+    # Legacy behavior: ./nx logs <service>
+    _info "Tailing logs for: $first"
+    docker logs -f "$first" 2>/dev/null || _die "Service not found or docker unavailable: $first"
+  fi
+}
+
+nx_debug() {
+  local sub="${1:-}"
+  shift || true
+  case "$sub" in
+    diagnose|snapshot|trace|probe)
+      local script="$REPO_ROOT/.ai/scripts/debug-runner.py"
+      _require_script "$script"
+      exec python3 "$script" "$sub" "$@"
+      ;;
+    --help|-h|"")
+      printf 'Usage: ./nx debug {diagnose|snapshot|trace|probe} [args...]\n'
+      printf '  diagnose   heuristic root cause analysis\n'
+      printf '  snapshot   forensic bundle to out/debug/<ts>/\n'
+      printf '  trace ID   OpenObserve trace lookup by trace ID\n'
+      printf '  probe      DNS connectivity probe between services\n'
+      exit 0
+      ;;
+    *)
+      _die "Unknown debug sub-command: $sub. Use: diagnose, snapshot, trace, probe"
+      ;;
+  esac
+}
+
+nx_audit() {
+  case "${1:-}" in
+    failures)
+      shift
+      _info "[audit] Running failures aggregator + diagnose..."
+      python3 "$REPO_ROOT/.ai/scripts/failures-aggregator.py" "$@" || true
+      _info "[audit] Running diagnose..."
+      python3 "$REPO_ROOT/.ai/scripts/debug-runner.py" diagnose || true
+      ;;
+    coverage)
+      _info "[audit] Generating jacocoAggregateReport..."
+      "$REPO_ROOT/gradlew" -p "$REPO_ROOT" jacocoAggregateReport
+      local report="$REPO_ROOT/build/reports/jacoco/aggregate/index.html"
+      if [[ -f "$report" ]]; then
+        open "$report" 2>/dev/null || \
+          xdg-open "$report" 2>/dev/null || \
+          _ok "Open: $report"
+      else
+        _warn "Report not found: $report"
+      fi
+      ;;
+    consistency)
+      shift
+      local con_script="$REPO_ROOT/.ai/scripts/consistency-auditor.py"
+      if [ ! -f "$con_script" ]; then
+        _die "Consistency auditor not found: $con_script"
+      fi
+      local ts
+      ts="$(date '+%Y%m%dT%H%M%S')"
+      local out_dir="$REPO_ROOT/out/audit-consistency/$ts"
+      mkdir -p "$out_dir"
+      _info "Running consistency audit -> $out_dir"
+      python3 "$con_script" all --strict --out-dir "$out_dir" "$@"
+      _ok "Report: $out_dir/summary.md"
+      ;;
+    confidentiality)
+      shift
+      local conf_script="$REPO_ROOT/.ai/scripts/confidentiality-scanner.py"
+      if [ ! -f "$conf_script" ]; then
+        _die "Confidentiality scanner not found: $conf_script"
+      fi
+      _info "Running confidentiality scan..."
+      python3 "$conf_script" "$@"
+      local rc=$?
+      if [ $rc -eq 0 ]; then
+        _ok "Confidentiality scan passed."
+      else
+        _warn "Confidentiality scan found prohibited term(s). Review output above."
+      fi
+      exit $rc
+      ;;
+    codebase-access)
+      shift
+      local ts
+      ts="$(date -u +%Y-%m-%dT%H-%M-%SZ)"
+      local out_dir="$REPO_ROOT/out/codebase-access-audit/$ts"
+      _info "Running codebase access audit -> $out_dir"
+      python3 "$REPO_ROOT/.ai/scripts/codebase-access-auditor.py" \
+        --out-dir "$out_dir" \
+        "$@"
+      _ok "Report: $out_dir/summary.md"
+      ;;
+    *)
+      local script="$REPO_ROOT/.ai/scripts/coverage-audit.py"
+      if [ ! -f "$script" ]; then
+        _die "Audit script not found: $script"
+      fi
+      _info "Running coverage audit: $*"
+      exec python3 "$script" "$@"
+      ;;
+  esac
+}
+
+nx_completion() {
+  local shell="${1:-bash}"
+  case "$shell" in
+    bash)
+      cat "$REPO_ROOT/scripts/nx-completion.bash"
+      ;;
+    *)
+      _die "Only bash completion is supported. Usage: ./nx completion bash > ~/.bash_completion.d/nx"
+      ;;
+  esac
+}
+
+nx_scrub() {
+  _info "Running secrets/PII scrub..."
+  local scrub_script="$REPO_ROOT/.ai/scripts/scrub.sh"
+  if [ -f "$scrub_script" ]; then
+    _require_script "$scrub_script"
+    exec "$scrub_script" "$@"
+  fi
+  # Fallback: grep for common patterns
+  local found=0
+  _info "Scanning for potential secrets/PII patterns..."
+  if grep -rn \
+    -e 'password\s*=\s*[^$]' \
+    -e 'secret\s*=\s*[^$]' \
+    -e 'api_key\s*=\s*[^$]' \
+    --include="*.properties" \
+    --include="*.env" \
+    --include="*.yaml" \
+    --include="*.yml" \
+    --exclude-dir=".git" \
+    --exclude-dir="build" \
+    --exclude-dir="node_modules" \
+    "$REPO_ROOT" 2>/dev/null; then
+    found=1
+  fi
+  if [ "$found" -eq 0 ]; then
+    _ok "No obvious secrets/PII patterns found."
+  else
+    _warn "Review the above matches."
+  fi
+}
+
+nx_version() {
+  printf 'nx version %s\n' "$NX_VERSION"
+}
+
+# ---------------------------------------------------------------------------
+# Help dispatcher
+# ---------------------------------------------------------------------------
+nx_help() {
+  local topic="${1:-}"
+  case "$topic" in
+    test)     usage_test ;;
+    bench)    usage_bench ;;
+    demo)     usage_demo ;;
+    "")       usage ;;
+    *)        usage ;;
+  esac
+  exit 0
+}
+
+# ---------------------------------------------------------------------------
+# Main dispatcher
+# ---------------------------------------------------------------------------
+main() {
+  if [ $# -eq 0 ]; then
+    usage
+    exit 0
+  fi
+
+  local cmd="$1"
+  shift
+
+  case "$cmd" in
+    setup)         nx_setup "$@" ;;
+    up)            nx_up "$@" ;;
+    down)          nx_down "$@" ;;
+    status)        nx_status "$@" ;;
+    logs)          nx_logs "$@" ;;
+    build)         nx_build "$@" ;;
+    run)           nx_run "$@" ;;
+    test)          nx_test "$@" ;;
+    bench)         nx_bench "$@" ;;
+    demo)          nx_demo "$@" ;;
+    dashboard)     nx_dashboard "$@" ;;
+    admin)         nx_admin "$@" ;;
+    audit)         nx_audit "$@" ;;
+    scrub)         nx_scrub "$@" ;;
+    failures)      nx_failures "$@" ;;
+    debug)         nx_debug "$@" ;;
+    completion)    nx_completion "$@" ;;
+    help)          nx_help "$@" ;;
+    version)       nx_version ;;
+    --help|-h)     usage; exit 0 ;;
+    --version|-v)  nx_version ;;
+    *)
+      _err "Unknown command: $cmd"
+      printf '\nRun ./nx help for available commands.\n' >&2
+      exit 1
+      ;;
+  esac
+}
+
+main "$@"

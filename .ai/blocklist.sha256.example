@@ -1,0 +1,18 @@
+# Format: one SHA-256 hash per line. Comments with # are allowed.
+#
+# Add a term:   python3 .ai/scripts/confidentiality-scanner.py --add "<term-to-block>"
+# Remove term:  python3 .ai/scripts/confidentiality-scanner.py --remove "<term>"
+# Check term:   python3 .ai/scripts/confidentiality-scanner.py --check-word "<term>"
+#
+# This .example file is committed to version control.
+# The real blocklist (.ai/blocklist.sha256) is gitignored — it never leaves your machine.
+#
+# Bootstrap on a fresh checkout:
+#   cp .ai/blocklist.sha256.example .ai/blocklist.sha256
+#   python3 .ai/scripts/confidentiality-scanner.py --add "<term-from-secrets-manager-or-env>"
+#
+# Each hash below was generated with:
+#   hashlib.sha256(term.lower().strip().replace("-","").replace("_","").encode()).hexdigest()
+#
+# No hashes are pre-populated in this example file.
+# Add your organisation's prohibited terms once, then discard the plaintext.

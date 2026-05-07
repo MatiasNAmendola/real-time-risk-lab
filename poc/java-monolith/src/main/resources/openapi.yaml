@@ -1,0 +1,204 @@
+openapi: "3.1.0"
+info:
+  title: Risk Evaluation API
+  description: |
+    Distributed risk evaluation system built with Vert.x 5, Hazelcast cluster, Kafka (Redpanda),
+    and full OpenTelemetry observability.
+  version: "1.0.0"
+  contact:
+    name: NaranjaX
+servers:
+  - url: http://localhost:8080
+    description: Local development
+
+paths:
+  /risk:
+    post:
+      operationId: evaluateRisk
+      summary: Evaluate transaction risk synchronously
+      description: |
+        Sends a risk evaluation request through the Vert.x event bus to the usecase-app,
+        which queries the repository-app for customer features, applies the risk policy,
+        publishes the decision to Kafka (risk-decisions topic), and broadcasts it via
+        the event bus for SSE/WebSocket subscribers.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RiskRequest"
+            example:
+              transactionId: "tx-1"
+              customerId: "c-1"
+              amountCents: 150000
+      responses:
+        "200":
+          description: Risk decision
+          headers:
+            X-Correlation-Id:
+              schema:
+                type: string
+              description: Correlation ID for distributed tracing
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/RiskDecision"
+        "400":
+          description: Invalid request body
+        "502":
+          description: Upstream service unavailable
+
+  /risk/stream:
+    get:
+      operationId: streamRiskDecisions
+      summary: Subscribe to real-time risk decisions via Server-Sent Events
+      description: |
+        Opens an SSE stream. Every time a risk decision is made on ANY instance of
+        controller-app, the decision is broadcast via Vert.x event bus publish/subscribe
+        on address `risk.decision.broadcast` and pushed to all SSE subscribers.
+        Keep-alive comments are sent every 15 seconds.
+      responses:
+        "200":
+          description: SSE event stream
+          content:
+            text/event-stream:
+              schema:
+                type: string
+                description: |
+                  Each event is a JSON-encoded RiskDecision prefixed with `data: ` per SSE spec.
+                  Example: `data: {"decision":"APPROVE","reason":"...","correlationId":"..."}\n\n`
+
+  /webhooks:
+    post:
+      operationId: registerWebhook
+      summary: Register a webhook subscription
+      description: |
+        Registers a URL to receive HTTP POST callbacks when a risk decision matches the filter.
+        Decisions are delivered with header `X-Webhook-Event: risk.decision`.
+        One retry with 200ms backoff. 2s timeout per attempt.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/WebhookRegistration"
+            example:
+              url: "https://webhook.site/your-id"
+              filter: "DECLINE,REVIEW"
+      responses:
+        "201":
+          description: Webhook registered
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/WebhookSubscription"
+        "400":
+          description: Missing or invalid url
+    get:
+      operationId: listWebhooks
+      summary: List active webhook subscriptions
+      description: Returns registered subscriptions (id + filter only, URL omitted for privacy).
+      responses:
+        "200":
+          description: List of subscriptions
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/WebhookSubscription"
+
+  /webhooks/{id}:
+    delete:
+      operationId: deleteWebhook
+      summary: Delete a webhook subscription
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: Deleted
+        "404":
+          description: Not found
+
+webhooks:
+  risk.decision:
+    post:
+      summary: Risk decision callback
+      description: |
+        Sent to registered webhook URLs when a risk decision matches the subscriber filter.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RiskDecisionEvent"
+      responses:
+        "200":
+          description: Callback acknowledged
+
+components:
+  schemas:
+    RiskRequest:
+      type: object
+      required:
+        - transactionId
+        - customerId
+        - amountCents
+      properties:
+        transactionId:
+          type: string
+          example: "tx-abc123"
+        customerId:
+          type: string
+          example: "c-007"
+        amountCents:
+          type: integer
+          format: int64
+          description: Transaction amount in cents
+          example: 150000
+
+    RiskDecision:
+      type: object
+      properties:
+        decision:
+          type: string
+          enum: [APPROVE, REVIEW, DECLINE]
+        reason:
+          type: string
+          example: "high amount + high score"
+        correlationId:
+          type: string
+          description: Propagated correlation ID for distributed tracing
+
+    RiskDecisionEvent:
+      allOf:
+        - $ref: "#/components/schemas/RiskDecision"
+      properties:
+        transactionId:
+          type: string
+
+    WebhookRegistration:
+      type: object
+      required:
+        - url
+      properties:
+        url:
+          type: string
+          format: uri
+          example: "https://webhook.site/abc"
+        filter:
+          type: string
+          description: Comma-separated decision values to match
+          example: "DECLINE,REVIEW"
+
+    WebhookSubscription:
+      type: object
+      properties:
+        id:
+          type: string
+        filter:
+          type: string

@@ -1,0 +1,71 @@
+{{/*
+  NOTE: This Deployment is a STUB kept for helm lint compatibility and non-rollout environments.
+  In normal operation, the Argo Rollout (rollout.yaml) manages the pods.
+  Set replicas: 0 here so the Rollout owns the ReplicaSets.
+*/}}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "risk-engine.fullname" . }}-stub
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "risk-engine.labels" . | nindent 4 }}
+  annotations:
+    helm.sh/note: "Stub only — Argo Rollout manages actual pods"
+spec:
+  # Zero replicas — Rollout takes over
+  replicas: 0
+  selector:
+    matchLabels:
+      {{- include "risk-engine.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        {{- include "risk-engine.selectorLabels" . | nindent 8 }}
+    spec:
+      securityContext:
+        {{- toYaml .Values.securityContext | nindent 8 }}
+      volumes:
+        - name: tmp
+          emptyDir: {}
+      containers:
+        - name: risk-engine
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.service.targetPort }}
+              protocol: TCP
+          env:
+            - name: SERVICE_NAME
+              value: {{ .Values.otel.serviceName | quote }}
+            - name: OTLP_ENDPOINT
+              value: {{ .Values.otel.endpoint | quote }}
+            - name: AWS_REGION
+              value: {{ .Values.aws.region | quote }}
+            - name: AWS_ACCESS_KEY_ID
+              value: {{ .Values.aws.accessKeyId | quote }}
+            - name: AWS_SECRET_ACCESS_KEY
+              value: {{ .Values.aws.secretAccessKey | quote }}
+            - name: AWS_ENDPOINT_URL_S3
+              value: {{ .Values.aws.endpoints.s3 | quote }}
+            - name: AWS_ENDPOINT_URL_SQS
+              value: {{ .Values.aws.endpoints.sqs | quote }}
+            - name: AWS_ENDPOINT_URL_SNS
+              value: {{ .Values.aws.endpoints.sns | quote }}
+            - name: AWS_ENDPOINT_URL_SECRETSMANAGER
+              value: {{ .Values.aws.endpoints.secretsmanager | quote }}
+            - name: AWS_ENDPOINT_URL_KMS
+              value: {{ .Values.aws.endpoints.kms | quote }}
+          envFrom:
+            - secretRef:
+                name: {{ .Values.externalSecret.targetSecretName }}
+          livenessProbe:
+            {{- toYaml .Values.livenessProbe | nindent 12 }}
+          readinessProbe:
+            {{- toYaml .Values.readinessProbe | nindent 12 }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          volumeMounts:
+            - name: tmp
+              mountPath: /tmp

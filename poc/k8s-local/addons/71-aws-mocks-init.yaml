@@ -1,0 +1,123 @@
+---
+# aws-mocks-init — creates baseline resources in MinIO, ElasticMQ, Moto, OpenBao
+# Re-runnable: up.sh deletes and re-creates this Job on each run.
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: aws-mocks-init
+  namespace: aws-mocks
+  labels:
+    app.kubernetes.io/name: aws-mocks-init
+    app.kubernetes.io/part-of: aws-mocks
+spec:
+  ttlSecondsAfterFinished: 600
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: aws-mocks-init
+        app.kubernetes.io/part-of: aws-mocks
+    spec:
+      restartPolicy: OnFailure
+      containers:
+        - name: init
+          # amazon/aws-cli includes aws CLI; add mc (MinIO client) via curl
+          image: amazon/aws-cli:latest
+          command: ["/bin/bash", "-c"]
+          args:
+            - |
+              set -euo pipefail
+
+              echo "=== Installing MinIO client (mc) ==="
+              curl -sSL https://dl.min.io/client/mc/release/linux-amd64/mc \
+                -o /usr/local/bin/mc && chmod +x /usr/local/bin/mc
+
+              # ─── MinIO (S3) ──────────────────────────────────────────────────
+              echo "=== Configuring MinIO ==="
+              mc alias set local http://minio.aws-mocks.svc:9000 minioadmin minioadmin
+              mc mb local/risk-events --ignore-existing
+              mc mb local/risk-models --ignore-existing
+              echo "MinIO buckets: risk-events, risk-models"
+
+              # ─── ElasticMQ (SQS) ─────────────────────────────────────────────
+              echo "=== Creating SQS queues in ElasticMQ ==="
+              export AWS_DEFAULT_REGION=us-east-1
+              export AWS_ACCESS_KEY_ID=test
+              export AWS_SECRET_ACCESS_KEY=test
+
+              # DLQ first (referenced by main queue)
+              aws --endpoint-url http://elasticmq.aws-mocks.svc:9324 sqs create-queue \
+                --queue-name risk-decisions-dlq \
+                --attributes VisibilityTimeout=30 \
+                2>/dev/null || true
+
+              DLQ_ARN=$(aws --endpoint-url http://elasticmq.aws-mocks.svc:9324 sqs get-queue-attributes \
+                --queue-url http://elasticmq.aws-mocks.svc:9324/queue/risk-decisions-dlq \
+                --attribute-names QueueArn \
+                --query 'Attributes.QueueArn' --output text)
+
+              aws --endpoint-url http://elasticmq.aws-mocks.svc:9324 sqs create-queue \
+                --queue-name risk-decisions \
+                --attributes "{\"VisibilityTimeout\":\"30\",\"RedrivePolicy\":\"{\\\"deadLetterTargetArn\\\":\\\"${DLQ_ARN}\\\",\\\"maxReceiveCount\\\":\\\"3\\\"}\"}" \
+                2>/dev/null || true
+
+              echo "SQS queues: risk-decisions, risk-decisions-dlq"
+
+              # ─── Moto (SNS + Secrets Manager) ────────────────────────────────
+              echo "=== Creating SNS topic + Secrets Manager secret in Moto ==="
+
+              aws --endpoint-url http://moto.aws-mocks.svc:5000 sns create-topic \
+                --name risk-events \
+                --region us-east-1 \
+                2>/dev/null || true
+
+              aws --endpoint-url http://moto.aws-mocks.svc:5000 secretsmanager create-secret \
+                --name risk-engine/db-password \
+                --secret-string '{"password":"poc-db-pass-123"}' \
+                --region us-east-1 \
+                2>/dev/null || true
+
+              aws --endpoint-url http://moto.aws-mocks.svc:5000 secretsmanager create-secret \
+                --name risk-engine/api-key \
+                --secret-string "test-api-key-poc" \
+                --region us-east-1 \
+                2>/dev/null || true
+
+              echo "Moto: SNS topic risk-events, secrets risk-engine/db-password + risk-engine/api-key"
+
+              # ─── OpenBao (Vault-compatible KV) ───────────────────────────────
+              echo "=== Writing secrets to OpenBao ==="
+              export VAULT_ADDR=http://openbao.aws-mocks.svc:8200
+              export VAULT_TOKEN=root
+
+              # Install vault CLI (OpenBao is API-compatible)
+              curl -sSL https://releases.hashicorp.com/vault/1.15.6/vault_1.15.6_linux_amd64.zip \
+                -o /tmp/vault.zip
+              unzip -q /tmp/vault.zip -d /usr/local/bin/
+
+              POC_DB_PASSWORD="${POC_DB_PASSWORD:-local-dev-password}"
+              vault kv put secret/risk-engine/db \
+                password=${POC_DB_PASSWORD} \
+                username=risk_user \
+                host=postgres.risk.svc
+
+              vault kv put secret/risk-engine/keys \
+                signing_key=poc-signing-key-dev
+
+              echo "OpenBao: secrets written at secret/risk-engine/db and secret/risk-engine/keys"
+
+              echo ""
+              echo "=== AWS mocks init complete ==="
+          env:
+            - name: AWS_DEFAULT_REGION
+              value: us-east-1
+            - name: AWS_ACCESS_KEY_ID
+              value: test
+            - name: AWS_SECRET_ACCESS_KEY
+              value: test
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+            limits:
+              cpu: 200m
+              memory: 256Mi

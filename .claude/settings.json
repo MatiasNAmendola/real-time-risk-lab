@@ -1,0 +1,81 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Edit|Write|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash -c 'REPO_ROOT=\"$(git rev-parse --show-toplevel 2>/dev/null || pwd)\"; LOG_FILE=\"$REPO_ROOT/.ai/logs/skill-routing-$(date -u +%Y-%m-%d).jsonl\"; mkdir -p \"$(dirname \"$LOG_FILE\")\"; TOOL_NAME=\"${CLAUDE_TOOL_NAME:-Edit}\"; TOOL_INPUT=\"${CLAUDE_TOOL_INPUT:-{}}\"; RESULT=$(printf \"%s\" \"$TOOL_INPUT\" | bash \"$REPO_ROOT/.ai/scripts/skill-route-from-tool.sh\" 2>/dev/null || echo \"{\\\"query\\\":\\\"\\\",\\\"results\\\":[]}\"); TOP_SKILL=$(printf \"%s\" \"$RESULT\" | python3 -c \"import json,sys; d=json.load(sys.stdin); r=d.get(\\\"results\\\",[]); print(r[0].get(\\\"name\\\",\\\"\\\") if r else \\\"\\\")\" 2>/dev/null || echo \"\"); TOP_SCORE=$(printf \"%s\" \"$RESULT\" | python3 -c \"import json,sys; d=json.load(sys.stdin); r=d.get(\\\"results\\\",[]); print(r[0].get(\\\"score\\\",0) if r else 0)\" 2>/dev/null || echo \"0\"); TARGET=$(printf \"%s\" \"$TOOL_INPUT\" | python3 -c \"import json,sys; d=json.loads(sys.stdin.read()); print(d.get(\\\"file_path\\\",d.get(\\\"path\\\",\\\"unknown\\\")))\" 2>/dev/null || echo \"unknown\"); QUERY=$(printf \"%s\" \"$RESULT\" | python3 -c \"import json,sys; print(json.load(sys.stdin).get(\\\"query\\\",\\\"\\\"))\" 2>/dev/null || echo \"\"); printf \"{\\\"ts\\\":\\\"%s\\\",\\\"tool\\\":\\\"%s\\\",\\\"target\\\":\\\"%s\\\",\\\"query_inferred\\\":\\\"%s\\\",\\\"top_skill\\\":\\\"%s\\\",\\\"score\\\":%s,\\\"blocked\\\":false}\\n\" \"$(date -u +%Y-%m-%dT%H:%M:%SZ)\" \"$TOOL_NAME\" \"$TARGET\" \"$QUERY\" \"$TOP_SKILL\" \"$TOP_SCORE\" >> \"$LOG_FILE\"; exit 0'"
+          }
+        ]
+      },
+      {
+        "matcher": "Bash|Edit|Write|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${CLAUDE_PROJECT_DIR}/.ai/hooks/secret-detector.sh"
+          }
+        ]
+      },
+      {
+        "matcher": "Read|Glob|Grep",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${CLAUDE_PROJECT_DIR}/.ai/hooks/read-tracker.sh"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash -c 'REPO_ROOT=\"$(git rev-parse --show-toplevel 2>/dev/null || pwd)\"; OUTPUT=\"${CLAUDE_TOOL_OUTPUT:-}\"; if [ ${#OUTPUT} -gt 4000 ]; then printf \"%s\" \"$OUTPUT\" | python3 -c \"import sys; sys.path.insert(0, \\\"$REPO_ROOT/.ai/lib\\\"); from smart_truncator import SmartTruncator; import os; t=SmartTruncator(); print(t.truncate(sys.stdin.read(), os.environ.get(\\\"CLAUDE_TOOL_INPUT\\\",\\\"\\\"), 4000))\" 2>/dev/null || true; fi; exit 0'"
+          }
+        ]
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "matcher": ".*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash -c 'REPO_ROOT=\"$(git rev-parse --show-toplevel 2>/dev/null || pwd)\"; bash \"$REPO_ROOT/.ai/scripts/session-bootstrap.sh\" 2>/dev/null | head -20 || true; exit 0'"
+          },
+          {
+            "type": "command",
+            "command": "bash -c 'REPO_ROOT=\"$(git rev-parse --show-toplevel 2>/dev/null || pwd)\"; bash \"$REPO_ROOT/.ai/scripts/context-budget-meter.sh\" 2>/dev/null || true; exit 0'"
+          }
+        ]
+      }
+    ],
+    "PreCompact": [
+      {
+        "matcher": ".*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash -c 'REPO_ROOT=\"$(git rev-parse --show-toplevel 2>/dev/null || pwd)\"; bash \"$REPO_ROOT/.ai/scripts/pre-compact-anchor.sh\" 2>/dev/null || true; exit 0'"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "matcher": ".*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash -c 'REPO_ROOT=\"$(git rev-parse --show-toplevel 2>/dev/null || pwd)\"; bash \"$REPO_ROOT/.ai/scripts/session-handoff.sh\" 2>/dev/null || true; exit 0'"
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,31 @@
+##############################################################################
+# Dev tools override — optional UI tooling for local development.
+#
+# Usage:
+#   docker compose -f compose/docker-compose.yml \
+#                  -f compose/docker-compose.dev-tools.yml up -d
+##############################################################################
+
+services:
+
+  # ============================================================================
+  # Dev tool — Redpanda Console (Kafka UI on host port 9001)
+  # ============================================================================
+  redpanda-console:
+    image: redpandadata/console:v2.7.2
+    environment:
+      CONFIG_FILEPATH: /etc/redpanda/redpanda-console-config.yaml
+    volumes:
+      - ./redpanda-console-config.yaml:/etc/redpanda/redpanda-console-config.yaml:ro
+    ports:
+      - "9001:8080"
+    networks:
+      - data-net
+    depends_on:
+      redpanda:
+        condition: service_healthy
+    mem_limit: 192m
+
+networks:
+  data-net:
+    external: true

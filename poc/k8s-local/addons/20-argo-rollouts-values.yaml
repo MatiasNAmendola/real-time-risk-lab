@@ -1,0 +1,30 @@
+# Argo Rollouts values for local k3d PoC
+# Ref: https://github.com/argoproj/argo-helm/tree/main/charts/argo-rollouts
+
+controller:
+  replicas: 1
+  resources:
+    requests:
+      cpu: 50m
+      memory: 128Mi
+    limits:
+      cpu: 300m
+      memory: 256Mi
+
+dashboard:
+  enabled: true
+  replicas: 1
+  resources:
+    requests:
+      cpu: 20m
+      memory: 64Mi
+  ingress:
+    enabled: true
+    ingressClassName: traefik
+    hosts:
+      - rollouts.localhost
+    annotations:
+      traefik.ingress.kubernetes.io/router.entrypoints: web
+
+# Install CRDs (Rollout, AnalysisTemplate, etc.)
+installCRDs: true

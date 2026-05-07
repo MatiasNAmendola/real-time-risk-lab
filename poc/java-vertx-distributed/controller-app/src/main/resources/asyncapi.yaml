@@ -1,0 +1,167 @@
+asyncapi: "3.0.0"
+info:
+  title: Risk Evaluation Async API
+  version: "1.0.0"
+  description: |
+    Async messaging contracts for the java-vertx-distributed PoC.
+    Covers Kafka topic `risk-decisions` (Redpanda) and WebSocket channel `/ws/risk`.
+
+servers:
+  redpanda:
+    host: "redpanda:9092"
+    protocol: "kafka"
+    description: Redpanda broker (Kafka-compatible)
+  websocket:
+    host: "localhost:8080"
+    protocol: "ws"
+    description: WebSocket endpoint exposed by controller-app
+
+channels:
+  riskDecisions:
+    address: "risk-decisions"
+    description: |
+      Kafka topic where usecase-app publishes every risk evaluation decision.
+      Consumed by consumer-app for downstream processing.
+    bindings:
+      kafka:
+        topic: risk-decisions
+        partitions: 3
+        replicas: 1
+        bindingVersion: "0.4.0"
+    messages:
+      riskDecisionMessage:
+        $ref: "#/components/messages/RiskDecisionKafkaMessage"
+    servers:
+      - $ref: "#/servers/redpanda"
+
+  wsRisk:
+    address: "/ws/risk"
+    description: |
+      Bidirectional WebSocket channel. Client sends a risk request JSON and receives
+      the decision. Also receives broadcast events for decisions from all clients.
+    bindings:
+      ws:
+        method: GET
+        bindingVersion: "0.1.0"
+    messages:
+      wsRequest:
+        $ref: "#/components/messages/WsRiskRequest"
+      wsResponse:
+        $ref: "#/components/messages/WsRiskResponse"
+    servers:
+      - $ref: "#/servers/websocket"
+
+operations:
+  publishRiskDecision:
+    action: send
+    channel:
+      $ref: "#/channels/riskDecisions"
+    summary: usecase-app publishes risk decision to Kafka
+    description: |
+      Published by usecase-app after applying the risk policy. Includes OTel
+      traceparent header for distributed trace propagation.
+    messages:
+      - $ref: "#/channels/riskDecisions/messages/riskDecisionMessage"
+
+  consumeRiskDecision:
+    action: receive
+    channel:
+      $ref: "#/channels/riskDecisions"
+    summary: consumer-app consumes risk decisions from Kafka
+    messages:
+      - $ref: "#/channels/riskDecisions/messages/riskDecisionMessage"
+
+  sendWsRiskRequest:
+    action: send
+    channel:
+      $ref: "#/channels/wsRisk"
+    summary: Client sends risk evaluation request over WebSocket
+    messages:
+      - $ref: "#/channels/wsRisk/messages/wsRequest"
+
+  receiveWsRiskResponse:
+    action: receive
+    channel:
+      $ref: "#/channels/wsRisk"
+    summary: Client receives risk decision or broadcast event over WebSocket
+    messages:
+      - $ref: "#/channels/wsRisk/messages/wsResponse"
+
+components:
+  messages:
+    RiskDecisionKafkaMessage:
+      name: RiskDecisionEvent
+      title: Risk Decision Kafka Event
+      contentType: application/json
+      headers:
+        type: object
+        properties:
+          traceparent:
+            type: string
+            description: W3C TraceContext propagation header (00-traceId-spanId-flags)
+          correlationId:
+            type: string
+          idempotencyKey:
+            type: string
+            description: Unique event ID to detect duplicate processing
+      payload:
+        $ref: "#/components/schemas/RiskDecisionEvent"
+
+    WsRiskRequest:
+      name: WsRiskRequest
+      contentType: application/json
+      payload:
+        $ref: "#/components/schemas/RiskRequest"
+
+    WsRiskResponse:
+      name: WsRiskResponse
+      contentType: application/json
+      payload:
+        $ref: "#/components/schemas/RiskDecision"
+
+  schemas:
+    RiskRequest:
+      type: object
+      required: [transactionId, customerId, amountCents]
+      properties:
+        transactionId:
+          type: string
+        customerId:
+          type: string
+        amountCents:
+          type: integer
+          format: int64
+
+    RiskDecision:
+      type: object
+      properties:
+        decision:
+          type: string
+          enum: [APPROVE, REVIEW, DECLINE]
+        reason:
+          type: string
+        correlationId:
+          type: string
+
+    RiskDecisionEvent:
+      type: object
+      required: [eventId, correlationId, eventVersion, occurredAt, transactionId, decision, reason]
+      properties:
+        eventId:
+          type: string
+          format: uuid
+        correlationId:
+          type: string
+        eventVersion:
+          type: integer
+          example: 1
+        occurredAt:
+          type: string
+          format: date-time
+        transactionId:
+          type: string
+        decision:
+          type: string
+          enum: [APPROVE, REVIEW, DECLINE]
+        reason:
+          type: string

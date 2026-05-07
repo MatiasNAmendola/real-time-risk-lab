@@ -1,0 +1,154 @@
+title: "Naranja X — Practica Entrevista"
+subtitle: "Risk decision platform — local services dashboard"
+logo: "assets/logo.svg"
+header: true
+footer: '<p>Local dev dashboard. Updated 2026-05-07.</p>'
+
+defaults:
+  layout: columns
+  colorTheme: dark
+
+services:
+  - name: "Apps"
+    icon: "fas fa-rocket"
+    items:
+      - name: "Risk Engine — Vertx (k8s)"
+        subtitle: "Vertx layer-as-pod via Helm chart. NOT the bare-javac (which runs locally only)."
+        tag: "java"
+        url: "http://localhost:8090"
+        target: "_blank"
+
+      - name: "Risk Engine — Health (k8s)"
+        subtitle: "Liveness + readiness"
+        url: "http://localhost:8090/healthz"
+        target: "_blank"
+
+      - name: "Risk Engine — bare-javac (local only)"
+        subtitle: "Run with poc/java-risk-engine/scripts/run-http.sh. No k8s deployment."
+        tag: "local"
+        url: "http://localhost:8081"
+        target: "_blank"
+
+      - name: "Risk Engine bare-javac — Health"
+        url: "http://localhost:8081/healthz"
+        target: "_blank"
+
+  - name: "API Documentation"
+    icon: "fas fa-book"
+    items:
+      - name: "OpenAPI Spec (Vertx)"
+        subtitle: "REST contract"
+        url: "http://localhost:8080/openapi.json"
+        target: "_blank"
+
+      - name: "Swagger UI (Vertx)"
+        subtitle: "Interactive REST docs"
+        url: "http://localhost:8080/docs"
+        target: "_blank"
+
+      - name: "AsyncAPI Spec (Vertx)"
+        subtitle: "Kafka + WS contracts"
+        url: "http://localhost:8080/asyncapi.json"
+        target: "_blank"
+
+      - name: "AsyncAPI Studio (Vertx)"
+        subtitle: "Visualize AsyncAPI"
+        url: "https://studio.asyncapi.com/?url=http://localhost:8080/asyncapi.json"
+        target: "_blank"
+
+  - name: "Observability"
+    icon: "fas fa-chart-line"
+    items:
+      - name: "OpenObserve"
+        subtitle: "Single source of truth: logs + metrics + traces + alerting. root@example.com / Complexpass#123"
+        tag: "otel"
+        url: "http://localhost:5080"
+        target: "_blank"
+
+  - name: "Streaming"
+    icon: "fas fa-stream"
+    items:
+      - name: "Redpanda Console"
+        subtitle: "Kafka UI — topics, consumers, schema"
+        tag: "kafka"
+        url: "http://localhost:9000"
+        target: "_blank"
+
+      - name: "Redpanda Admin"
+        subtitle: "Cluster admin API"
+        url: "http://localhost:9644/v1"
+        target: "_blank"
+
+  - name: "AWS Mocks"
+    icon: "fab fa-aws"
+    items:
+      - name: "MinIO Console (S3)"
+        subtitle: "Object storage UI"
+        tag: "s3"
+        url: "http://localhost:9001"
+        target: "_blank"
+
+      - name: "ElasticMQ UI (SQS)"
+        subtitle: "Queue browser"
+        tag: "sqs"
+        url: "http://localhost:9325"
+        target: "_blank"
+
+      - name: "Moto API (multi-service)"
+        subtitle: "SNS + Secrets Manager + KMS + IAM"
+        url: "http://localhost:5000/moto-api"
+        target: "_blank"
+
+      - name: "OpenBao UI"
+        subtitle: "Secrets + KMS (Vault fork)"
+        tag: "secrets"
+        url: "http://localhost:8200/ui"
+        target: "_blank"
+
+  - name: "Data"
+    icon: "fas fa-database"
+    items:
+      - name: "Postgres"
+        subtitle: "localhost:5432 — poc/poc — risk_engine"
+        url: "postgres://localhost:5432/risk_engine"
+
+      - name: "Valkey"
+        subtitle: "localhost:6380 (no TLS)"
+        url: "redis://localhost:6380"
+
+  - name: "ArgoCD (k8s mode)"
+    icon: "fas fa-sync"
+    items:
+      - name: "ArgoCD"
+        subtitle: "GitOps deploys"
+        tag: "k8s"
+        url: "https://localhost:8081"
+        target: "_blank"
+
+      - name: "Argo Rollouts"
+        subtitle: "Canary + analysis"
+        url: "http://localhost:3100"
+        target: "_blank"
+
+  - name: "Tests & Reports"
+    icon: "fas fa-flask"
+    items:
+      - name: "Smoke test reports"
+        subtitle: "out/smoke/latest/summary.md"
+        url: "file://${REPO_ROOT}/out/smoke/latest/summary.md"
+
+      - name: "ATDD Karate reports"
+        subtitle: "out/atdd-karate/latest/summary.md"
+        url: "file://${REPO_ROOT}/out/atdd-karate/latest/summary.md"
+
+      - name: "ATDD Cucumber reports"
+        subtitle: "out/atdd-cucumber/latest/summary.md"
+        url: "file://${REPO_ROOT}/out/atdd-cucumber/latest/summary.md"
+
+      - name: "Test orchestrator (test-all)"
+        subtitle: "out/test-all/latest/summary.md"
+        url: "file://${REPO_ROOT}/out/test-all/latest/summary.md"
+
+      - name: "Performance comparison"
+        subtitle: "out/competition/latest/summary.md"
+        url: "file://${REPO_ROOT}/out/competition/latest/summary.md"

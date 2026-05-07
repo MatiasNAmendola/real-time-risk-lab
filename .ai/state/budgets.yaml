@@ -1,0 +1,7 @@
+budgets:
+  static: 4000        # CLAUDE.md + always-applied rules
+  turn:   8000        # additional context per turn
+  user:   12000       # user prompt
+  cache:  32000       # prompt cache
+warn_at_pct: 80
+block_at_pct: 95

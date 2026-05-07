@@ -1,0 +1,93 @@
+# Default values for risk-engine
+# Override per environment via ArgoCD Application / helm -f overrides
+
+replicaCount: 3
+
+image:
+  # Placeholder — import real image with: k3d image import risk-engine:dev -c naranja-poc
+  repository: localhost:5000/risk-engine
+  tag: dev
+  pullPolicy: IfNotPresent
+
+nameOverride: ""
+fullnameOverride: "risk-engine"
+
+service:
+  type: ClusterIP
+  port: 8080
+  targetPort: 8080
+
+ingress:
+  enabled: true
+  className: traefik
+  annotations:
+    traefik.ingress.kubernetes.io/router.entrypoints: web
+  hosts:
+    - host: risk.localhost
+      paths:
+        - path: /risk
+          pathType: Prefix
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 256Mi
+  limits:
+    cpu: 500m
+    memory: 512Mi
+
+livenessProbe:
+  httpGet:
+    path: /healthz
+    port: 8080
+  initialDelaySeconds: 15
+  periodSeconds: 5
+  failureThreshold: 3
+
+readinessProbe:
+  httpGet:
+    path: /readyz
+    port: 8080
+  initialDelaySeconds: 10
+  periodSeconds: 5
+  failureThreshold: 3
+
+securityContext:
+  runAsNonRoot: true
+  runAsUser: 1001
+  allowPrivilegeEscalation: false
+  readOnlyRootFilesystem: true
+  capabilities:
+    drop:
+      - ALL
+
+otel:
+  serviceName: risk-engine
+  # OTLP HTTP endpoint — openobserve collector receives on 5080/api/default/traces
+  # For a standalone otel-collector sidecar, point to: http://localhost:4318
+  endpoint: "http://openobserve.openobserve.svc.cluster.local:5080/api/default"
+
+# AWS SDK endpoint overrides — point to local mock services in aws-mocks namespace
+# In a real AWS environment, remove these to use real AWS endpoints.
+aws:
+  region: us-east-1
+  # Credentials for mock services (not real AWS creds)
+  accessKeyId: test
+  secretAccessKey: test
+  endpoints:
+    s3: "http://minio.aws-mocks.svc:9000"
+    sqs: "http://elasticmq.aws-mocks.svc:9324"
+    sns: "http://moto.aws-mocks.svc:5000"
+    secretsmanager: "http://moto.aws-mocks.svc:5000"
+    kms: "http://moto.aws-mocks.svc:5000"
+
+# ExternalSecret config — references ClusterSecretStore local-k8s-store
+externalSecret:
+  refreshInterval: 1h
+  secretKey: risk-engine-secrets    # key in secrets-source namespace
+  targetSecretName: risk-engine-app-secrets
+
+# Canary rollout thresholds
+canary:
+  successRateThreshold: "0.99"
+  latencyP99ThresholdMs: "300"

@@ -1,0 +1,5 @@
+target/
+*.class
+*.jar
+!otel/opentelemetry-javaagent.jar
+.mvn/

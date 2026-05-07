@@ -1,0 +1,231 @@
+# rules.yaml — v1.0.0
+# Config inicial del motor de reglas declarativo.
+# Propietario: Risk Team — NaranjaX
+# Este archivo es la fuente de verdad para el PoC.
+# En produccion se sincroniza via ArgoCD a un ConfigMap k8s.
+
+version: "1.0.0"
+hash: "sha256:placeholder_computed_at_load"  # reemplazado por el engine al cargar
+deployed_at: "2026-05-07T20:00:00Z"
+deployed_by: "risk.team@example.com"
+environment: "dev"
+
+# Politica de agregacion:
+# - Worst case: DECLINE > REVIEW > FLAG > ALLOW
+# - Reglas de tipo allowlist con override:true cortocircuitan todo
+# - Si evaluacion supera timeout_ms, se devuelve fallback_decision
+aggregation_policy: "worst_case_with_allowlist_override"
+timeout_ms: 50
+fallback_decision: "REVIEW"
+
+rules:
+
+  # ---------------------------------------------------------------------------
+  # THRESHOLD: transacciones de alto monto
+  # ---------------------------------------------------------------------------
+  - name: "HighAmountRule"
+    version: "v1"
+    type: "threshold"
+    enabled: true
+    weight: 1.0
+    action: "DECLINE"
+    parameters:
+      field: "amountCents"
+      operator: ">"
+      value: 10000000          # $100,000 ARS
+    metadata:
+      owner: "risk.team"
+      created_at: "2024-01-15T10:00:00Z"
+      last_modified_by: "ana.gomez@example.com"
+      last_modified_at: "2026-04-20T14:30:00Z"
+      deployment_env: ["dev", "staging", "prod"]
+
+  # ---------------------------------------------------------------------------
+  # COMBINATION: dispositivo nuevo + cliente joven (AND)
+  # ---------------------------------------------------------------------------
+  - name: "NewDeviceYoungCustomer"
+    version: "v1"
+    type: "combination"
+    enabled: true
+    weight: 0.7
+    action: "REVIEW"
+    parameters:
+      requireAll: true
+      subrules:
+        - type: "boolean"
+          field: "newDevice"
+          equals: true
+        - type: "threshold"
+          field: "customerAgeDays"
+          operator: "<"
+          value: 30
+    metadata:
+      owner: "risk.team"
+      created_at: "2024-03-01T09:00:00Z"
+      last_modified_by: "carlos.luna@example.com"
+      last_modified_at: "2026-01-10T11:00:00Z"
+      deployment_env: ["dev", "staging", "prod"]
+
+  # ---------------------------------------------------------------------------
+  # VELOCITY: N transacciones en ventana de tiempo
+  # ---------------------------------------------------------------------------
+  - name: "VelocityHigh"
+    version: "v1"
+    type: "velocity"
+    enabled: true
+    weight: 0.8
+    action: "REVIEW"
+    parameters:
+      count: 5
+      windowMinutes: 10
+      groupBy: "customerId"
+    metadata:
+      owner: "risk.team"
+      created_at: "2024-06-15T10:00:00Z"
+      last_modified_by: "ana.gomez@example.com"
+      last_modified_at: "2025-11-01T16:00:00Z"
+      deployment_env: ["dev", "staging", "prod"]
+
+  # ---------------------------------------------------------------------------
+  # THRESHOLD sobre historial: chargebacks en 90 dias
+  # ---------------------------------------------------------------------------
+  - name: "ChargebackHistory"
+    version: "v1"
+    type: "threshold"
+    enabled: true
+    weight: 0.9
+    action: "DECLINE"
+    parameters:
+      field: "chargebackCount90d"
+      operator: ">="
+      value: 1
+    metadata:
+      owner: "risk.team"
+      created_at: "2026-03-15T09:00:00Z"
+      last_modified_by: "carlos.luna@example.com"
+      last_modified_at: "2026-03-15T09:00:00Z"
+      deployment_env: ["dev", "staging", "prod"]
+
+  # ---------------------------------------------------------------------------
+  # INTERNATIONAL: paises restringidos
+  # Disabled por default — activar bajo orden de Compliance
+  # ---------------------------------------------------------------------------
+  - name: "InternationalRestricted"
+    version: "v1"
+    type: "international"
+    enabled: false
+    weight: 0.5
+    action: "REVIEW"
+    parameters:
+      restrictedCountries:
+        - "NK"   # North Korea
+        - "IR"   # Iran
+        - "SY"   # Syria
+    metadata:
+      owner: "compliance.team"
+      created_at: "2025-07-01T08:00:00Z"
+      last_modified_by: "laura.fernandez@example.com"
+      last_modified_at: "2025-07-01T08:00:00Z"
+      deployment_env: ["dev", "staging", "prod"]
+
+  # ---------------------------------------------------------------------------
+  # TIME_OF_DAY: fines de semana nocturnos
+  # Patron observado: fraude concentrado Sab/Dom 22:00-06:00
+  # ---------------------------------------------------------------------------
+  - name: "WeekendNight"
+    version: "v1"
+    type: "time_of_day"
+    enabled: true
+    weight: 0.3
+    action: "FLAG"
+    parameters:
+      hoursFrom: 22
+      hoursTo: 6       # cruza medianoche: >= 22:00 OR < 06:00
+      days:
+        - "SATURDAY"
+        - "SUNDAY"
+    metadata:
+      owner: "risk.team"
+      created_at: "2025-09-01T10:00:00Z"
+      last_modified_by: "ana.gomez@example.com"
+      last_modified_at: "2026-02-14T10:00:00Z"
+      deployment_env: ["dev", "staging"]  # no en prod hasta validacion A/B
+
+  # ---------------------------------------------------------------------------
+  # MERCHANT_CATEGORY: categorias MCC de alto riesgo
+  # 7995 = gambling, 5993 = tobacco, 5816 = digital gaming goods
+  # ---------------------------------------------------------------------------
+  - name: "HighRiskMerchant"
+    version: "v1"
+    type: "merchant_category"
+    enabled: true
+    weight: 0.6
+    action: "REVIEW"
+    parameters:
+      mccCodes:
+        - "7995"   # Betting/Casino/Lottery
+        - "5993"   # Cigar Stores and Stands
+        - "5816"   # Digital Goods — Games
+    metadata:
+      owner: "risk.team"
+      created_at: "2025-12-01T14:00:00Z"
+      last_modified_by: "carlos.luna@example.com"
+      last_modified_at: "2026-04-01T09:00:00Z"
+      deployment_env: ["dev", "staging", "prod"]
+
+  # ---------------------------------------------------------------------------
+  # ALLOWLIST: clientes de confianza — override de todas las reglas
+  # weight: 999 es convencional para indicar que esta regla tiene prioridad maxima
+  # ---------------------------------------------------------------------------
+  - name: "TrustedCustomerAllowlist"
+    version: "v1"
+    type: "allowlist"
+    enabled: true
+    weight: 999.0
+    action: "ALLOW"
+    parameters:
+      lookup: "trusted_customers_table"   # tabla externa; en PoC puede ser lista inline
+      override: true                       # cortocircuita worst_case aggregation
+    metadata:
+      owner: "crm.team"
+      created_at: "2024-02-01T12:00:00Z"
+      last_modified_by: "ana.gomez@example.com"
+      last_modified_at: "2026-05-01T10:00:00Z"
+      deployment_env: ["dev", "staging", "prod"]
+
+# ---------------------------------------------------------------------------
+# Audit trail del config global
+# Las entradas individuales de cada regla estan en Rule.metadata.audit_trail
+# Este bloque captura cambios que afectan el config como un todo
+# ---------------------------------------------------------------------------
+audit:
+  - timestamp: "2026-04-20T14:30:00Z"
+    actor: "ana.gomez@example.com"
+    action: "update"
+    rule: "HighAmountRule"
+    diff: "parameters.value: 5000000 -> 10000000"
+    reason: "Compliance update — nuevos productos de tarjeta permiten transacciones de mayor monto individual"
+    correlation_id: "a1b2c3d4-0001-0001-0001-000000000001"
+
+  - timestamp: "2026-03-15T09:00:00Z"
+    actor: "carlos.luna@example.com"
+    action: "create"
+    rule: "ChargebackHistory"
+    reason: "Analisis Q1 2026 — 30% de casos de fraude tuvieron chargeback previo en 90 dias"
+    correlation_id: "a1b2c3d4-0001-0001-0001-000000000002"
+
+  - timestamp: "2026-02-14T10:00:00Z"
+    actor: "ana.gomez@example.com"
+    action: "update"
+    rule: "WeekendNight"
+    diff: "action: DECLINE -> FLAG"
+    reason: "Reducir tasa de falsos positivos — el patron de fin de semana nocturno es indicador, no confirmacion"
+    correlation_id: "a1b2c3d4-0001-0001-0001-000000000003"
+
+  - timestamp: "2026-04-01T09:00:00Z"
+    actor: "carlos.luna@example.com"
+    action: "update"
+    rule: "HighRiskMerchant"
+    diff: "parameters.mccCodes: added '5816'"
+    reason: "Digital gaming goods mostraron incremento de 40% en chargebacks en Q1 2026"
+    correlation_id: "a1b2c3d4-0001-0001-0001-000000000004"

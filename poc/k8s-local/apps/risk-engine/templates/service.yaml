@@ -1,0 +1,37 @@
+---
+# Stable service — receives 100% traffic in normal state, decreases during canary
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "risk-engine.fullname" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "risk-engine.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - port: {{ .Values.service.port }}
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    {{- include "risk-engine.selectorLabels" . | nindent 4 }}
+---
+# Canary service — Argo Rollouts routes canary traffic here during rollout
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "risk-engine.fullname" . }}-canary
+  namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "risk-engine.labels" . | nindent 4 }}
+    rollout-type: canary
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - port: {{ .Values.service.port }}
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    {{- include "risk-engine.selectorLabels" . | nindent 4 }}

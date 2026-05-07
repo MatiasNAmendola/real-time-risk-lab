@@ -1,0 +1,107 @@
+# DISABLED — 2026-05-07
+# kube-prometheus-stack was removed from the local PoC. OpenObserve now covers
+# logs + metrics + traces + alerting in a single binary (~150 MB vs ~1.5 GB).
+#
+# To restore: rename this file back to 30-kube-prom-stack-values.yaml, re-add
+# the prometheus-community helm repo and the helm_install line in up.sh:
+#   helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+#   helm_install kube-prometheus-stack prometheus-community/kube-prometheus-stack monitoring \
+#     "${ROOT_DIR}/addons/30-kube-prom-stack-values.yaml"
+# Also re-enable servicemonitor.yaml and prometheusrule.yaml in apps/risk-engine/templates/
+# and revert the analysis-templates to the prometheus provider.
+#
+# See docs/17-decision-stack-observability-local.md for the full decision rationale.
+#
+# Original file: kube-prometheus-stack values for local k3d PoC
+# Ref: https://github.com/prometheus-community/helm-charts/tree/main/charts/kube-prometheus-stack
+
+# Slim down for local — single replicas, reduced retention
+prometheus:
+  prometheusSpec:
+    replicas: 1
+    retention: 6h
+    retentionSize: "2GB"
+    resources:
+      requests:
+        cpu: 100m
+        memory: 512Mi
+      limits:
+        cpu: 500m
+        memory: 1Gi
+    # Wide scrape: pick up ServiceMonitors in ALL namespaces
+    serviceMonitorNamespaceSelector: {}
+    serviceMonitorSelector: {}
+    podMonitorNamespaceSelector: {}
+    podMonitorSelector: {}
+    ruleNamespaceSelector: {}
+    ruleSelector: {}
+    storageSpec:
+      volumeClaimTemplate:
+        spec:
+          accessModes: ["ReadWriteOnce"]
+          resources:
+            requests:
+              storage: 5Gi
+
+grafana:
+  enabled: true
+  adminPassword: prom-operator
+  replicas: 1
+  resources:
+    requests:
+      cpu: 50m
+      memory: 128Mi
+    limits:
+      cpu: 200m
+      memory: 256Mi
+  ingress:
+    enabled: true
+    ingressClassName: traefik
+    hosts:
+      - grafana.localhost
+    annotations:
+      traefik.ingress.kubernetes.io/router.entrypoints: web
+  # Datasource auto-provisioned by the chart (Prometheus in-cluster)
+  sidecar:
+    datasources:
+      enabled: true
+    dashboards:
+      enabled: true
+
+alertmanager:
+  alertmanagerSpec:
+    replicas: 1
+    resources:
+      requests:
+        cpu: 20m
+        memory: 64Mi
+
+# Reduce node-exporter DaemonSet resource pressure on k3d
+prometheus-node-exporter:
+  resources:
+    requests:
+      cpu: 10m
+      memory: 32Mi
+    limits:
+      cpu: 100m
+      memory: 64Mi
+
+# kube-state-metrics
+kube-state-metrics:
+  resources:
+    requests:
+      cpu: 10m
+      memory: 32Mi
+    limits:
+      cpu: 100m
+      memory: 128Mi
+
+# Disable components that conflict with k3s internals
+kubeEtcd:
+  enabled: false
+kubeControllerManager:
+  enabled: false
+kubeScheduler:
+  enabled: false
+kubeProxy:
+  enabled: false

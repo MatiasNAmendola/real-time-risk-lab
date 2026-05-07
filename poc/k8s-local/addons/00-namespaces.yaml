@@ -1,0 +1,47 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: argocd
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: argo-rollouts
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: monitoring
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: external-secrets
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: redpanda
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: openobserve
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: risk
+---
+# Source namespace for simulated secrets (replaces AWS Secrets Manager)
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: secrets-source
+---
+# AWS mock services (MinIO, ElasticMQ, Moto, OpenBao)
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: aws-mocks

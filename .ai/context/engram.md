@@ -1,0 +1,98 @@
+# Engram — Memoria persistente del proyecto
+
+Engram MCP provee memoria persistente entre sesiones para todos los agentes que trabajen en este repo.
+
+## Identificadores del proyecto
+
+- **Project key**: `naranjax/practica-entrevista`
+- **Project name**: Risk Decision Platform — Three-Architecture Exploration
+
+## Topic keys establecidos
+
+| Topic key | Contenido |
+|---|---|
+| `risk-platform/exploration-state` | Estado general de preparacion: que esta listo, que falta, progreso diario |
+| `naranjax/poc/java-risk-engine` | Decisiones, bugs, descubrimientos del PoC bare-javac |
+| `naranjax/poc/java-vertx-distributed` | Decisiones del PoC Vert.x multi-modulo |
+| `naranjax/poc/vertx-risk-platform` | Decisiones de la plataforma Vert.x completa |
+| `naranjax/poc/k8s-local` | Configuracion y troubleshooting de k8s local |
+| `naranjax/primitives/system` | El sistema .ai/ de primitivas (este sistema) |
+| `naranjax/adr/<N>` | ADRs individuales (ej. `naranjax/adr/001`) |
+
+## Cuándo guardar (mem_save)
+
+Guardar INMEDIATAMENTE (sin esperar) despues de:
+
+- Tomar una decision de arquitectura o diseno.
+- Encontrar y resolver un bug (incluir causa raiz).
+- Establecer una convencion o patron.
+- Completar una feature o PoC.
+- Descubrir algo no obvio sobre el stack o la configuracion.
+- Cambiar la configuracion de un servicio.
+
+## Cuándo buscar (mem_search)
+
+Buscar proactivamente:
+
+- Al inicio de CADA sesion de trabajo.
+- Antes de comenzar una nueva feature (puede haber trabajo previo).
+- Cuando se hace referencia a algo ambiguo ("la regla de..." "el patron de...").
+- Cuando se recibe un error inesperado (puede haber sido resuelto antes).
+
+## Comandos clave
+
+```
+# Inicio de sesion:
+mem_current_project()
+mem_context(project: "naranjax/practica-entrevista")
+
+# Busqueda:
+mem_search(query: "risk-platform <topic>")
+mem_get_observation(id: "<id>")   # para contenido completo (search trunca)
+
+# Guardar decision:
+mem_save(
+  title: "Decision: <verbo + que>",
+  type: "decision",
+  scope: "project",
+  project: "naranjax/practica-entrevista",
+  topic_key: "naranjax/<subtema>/<clave>",
+  content: "What: ...\nWhy: ...\nWhere: ...\nLearned: ..."
+)
+
+# Guardar bug fix:
+mem_save(
+  title: "Fix: <descripcion>",
+  type: "bugfix",
+  topic_key: "naranjax/poc/<poc-name>",
+  project: "naranjax/practica-entrevista",
+  content: "Root cause: ...\nFix: ...\nFiles: ...\nLearned: ..."
+)
+
+# Fin de sesion (OBLIGATORIO):
+mem_session_summary(
+  project: "naranjax/practica-entrevista",
+  goal: "...",
+  instructions: "...",
+  discoveries: "...",
+  accomplished: "...",
+  next_steps: "...",
+  relevant_files: ["..."]
+)
+```
+
+## Formato de contenido recomendado
+
+```
+What: <que se hizo o descubrio>
+Why: <por que fue necesario>
+Where: <archivo(s) afectado(s)>
+Learned: <aprendizaje clave para el proximo agente>
+```
+
+## Notas importantes
+
+- `mem_search` devuelve resultados truncados. Siempre usar `mem_get_observation(id)` para el contenido completo cuando el truncado no es suficiente.
+- El `topic_key` es el mecanismo de "upsert": si ya existe una observacion con ese key, se actualiza en lugar de crear una nueva.
+- Usar `mem_suggest_topic_key` si no se sabe que key usar.
+- Engram persiste entre sesiones y entre diferentes agentes. Lo que un agente guarda, otro lo puede leer.

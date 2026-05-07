@@ -1,0 +1,40 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AnalysisTemplate
+metadata:
+  name: latency-p99
+  namespace: risk
+  labels:
+    app.kubernetes.io/part-of: naranja-poc
+spec:
+  args:
+    - name: namespace
+      value: risk
+    - name: threshold
+      value: "0.3"   # 300 ms expressed in seconds
+    - name: service-name
+      value: risk-engine
+  metrics:
+    - name: latency-p99
+      interval: 30s
+      count: 3
+      # Canary is healthy only if P99 is BELOW threshold
+      successCondition: "result < float(args.threshold)"
+      failureLimit: 1
+      provider:
+        web:
+          # OpenObserve SQL search API (HTTP GET, Basic auth).
+          # TODO: verify exact SQL dialect and the percentile function name
+          # against your OpenObserve version.
+          # OpenObserve docs: https://openobserve.ai/docs/api/search/
+          # The query returns a single row with a float column named "result"
+          # representing the p99 latency in seconds.
+          url: >-
+            http://openobserve.openobserve.svc.cluster.local:5080/api/default/_search?type=logs&sql=SELECT+approx_percentile_cont(0.99)+WITHIN+GROUP+(ORDER+BY+duration_seconds)+AS+result+FROM+"default"+WHERE+service%3D'{{args.service-name}}'+AND+_timestamp+>%3D+now()+-+INTERVAL+'1+minute'
+          # jsonPath extracts the float from the first hit's "result" field.
+          # Adjust the path if the OpenObserve response envelope differs.
+          jsonPath: "{$.hits[0].result}"
+          headers:
+            - key: Authorization
+              # base64("root@example.com:Complexpass#123") — default OpenObserve creds.
+              # Override via ExternalSecret or Rollout arg in production.
+              value: "Basic cm9vdEBleGFtcGxlLmNvbTpDb21wbGV4cGFzcyMxMjM="

@@ -1,0 +1,32 @@
+---
+description: ATDD-first testing strategy for NaranjaX risk engine
+globs: ["**/src/test/**/*.java", "**/*.feature"]
+alwaysApply: false
+---
+
+# Testing rules
+
+See full rule: @.ai/primitives/rules/testing-atdd.md
+
+## ATDD first
+
+1. Write the .feature file BEFORE any production code
+2. Run → must FAIL (RED confirmed)
+3. Implement minimum to pass
+4. Run → must PASS (GREEN)
+
+## Frameworks
+
+- Karate 1.5+: poc/java-vertx-distributed/atdd-tests/
+- Cucumber-JVM 7+: tests/risk-engine-atdd/
+- JUnit 5: unit tests in each module
+
+## Coverage targets
+
+- domain/ and application/: >= 80% line, >= 75% branch
+- Run: mvn verify -pl <module>
+
+## Never
+
+- Thread.sleep in async tests (use VertxTestContext or awaitility)
+- @Disabled without a comment and issue reference

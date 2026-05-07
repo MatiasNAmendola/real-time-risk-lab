@@ -1,0 +1,241 @@
+# rules.yaml — v2.0.0
+# Cambios respecto a v1:
+#   1. HighAmountRule: threshold bajado de $100k a $50k (mas restrictivo)
+#   2. WeekendNight: action escalada de FLAG a REVIEW
+#   3. KnownFraudDevice: regla nueva — device fingerprint denylist
+# Este archivo se usa en tests de rollback y hot reload.
+
+version: "2.0.0"
+hash: "sha256:placeholder_computed_at_load"
+deployed_at: "2026-05-07T21:00:00Z"
+deployed_by: "ana.gomez@example.com"
+environment: "dev"
+
+aggregation_policy: "worst_case_with_allowlist_override"
+timeout_ms: 50
+fallback_decision: "REVIEW"
+
+rules:
+
+  # ---------------------------------------------------------------------------
+  # CHANGE vs v1: value bajado de 10_000_000 a 5_000_000
+  # Motivo: incremento de fraude en rango $50k-$100k en Q2 2026
+  # ---------------------------------------------------------------------------
+  - name: "HighAmountRule"
+    version: "v2"
+    type: "threshold"
+    enabled: true
+    weight: 1.0
+    action: "DECLINE"
+    parameters:
+      field: "amountCents"
+      operator: ">"
+      value: 5000000           # $50,000 ARS — mas restrictivo que v1
+    metadata:
+      owner: "risk.team"
+      created_at: "2024-01-15T10:00:00Z"
+      last_modified_by: "ana.gomez@example.com"
+      last_modified_at: "2026-05-07T21:00:00Z"
+      deployment_env: ["dev", "staging", "prod"]
+
+  # ---------------------------------------------------------------------------
+  # Sin cambios vs v1
+  # ---------------------------------------------------------------------------
+  - name: "NewDeviceYoungCustomer"
+    version: "v1"
+    type: "combination"
+    enabled: true
+    weight: 0.7
+    action: "REVIEW"
+    parameters:
+      requireAll: true
+      subrules:
+        - type: "boolean"
+          field: "newDevice"
+          equals: true
+        - type: "threshold"
+          field: "customerAgeDays"
+          operator: "<"
+          value: 30
+    metadata:
+      owner: "risk.team"
+      created_at: "2024-03-01T09:00:00Z"
+      last_modified_by: "carlos.luna@example.com"
+      last_modified_at: "2026-01-10T11:00:00Z"
+      deployment_env: ["dev", "staging", "prod"]
+
+  # ---------------------------------------------------------------------------
+  # Sin cambios vs v1
+  # ---------------------------------------------------------------------------
+  - name: "VelocityHigh"
+    version: "v1"
+    type: "velocity"
+    enabled: true
+    weight: 0.8
+    action: "REVIEW"
+    parameters:
+      count: 5
+      windowMinutes: 10
+      groupBy: "customerId"
+    metadata:
+      owner: "risk.team"
+      created_at: "2024-06-15T10:00:00Z"
+      last_modified_by: "ana.gomez@example.com"
+      last_modified_at: "2025-11-01T16:00:00Z"
+      deployment_env: ["dev", "staging", "prod"]
+
+  # ---------------------------------------------------------------------------
+  # Sin cambios vs v1
+  # ---------------------------------------------------------------------------
+  - name: "ChargebackHistory"
+    version: "v1"
+    type: "threshold"
+    enabled: true
+    weight: 0.9
+    action: "DECLINE"
+    parameters:
+      field: "chargebackCount90d"
+      operator: ">="
+      value: 1
+    metadata:
+      owner: "risk.team"
+      created_at: "2026-03-15T09:00:00Z"
+      last_modified_by: "carlos.luna@example.com"
+      last_modified_at: "2026-03-15T09:00:00Z"
+      deployment_env: ["dev", "staging", "prod"]
+
+  # ---------------------------------------------------------------------------
+  # Sin cambios vs v1 (disabled)
+  # ---------------------------------------------------------------------------
+  - name: "InternationalRestricted"
+    version: "v1"
+    type: "international"
+    enabled: false
+    weight: 0.5
+    action: "REVIEW"
+    parameters:
+      restrictedCountries:
+        - "NK"
+        - "IR"
+        - "SY"
+    metadata:
+      owner: "compliance.team"
+      created_at: "2025-07-01T08:00:00Z"
+      last_modified_by: "laura.fernandez@example.com"
+      last_modified_at: "2025-07-01T08:00:00Z"
+      deployment_env: ["dev", "staging", "prod"]
+
+  # ---------------------------------------------------------------------------
+  # CHANGE vs v1: action escalada de FLAG a REVIEW
+  # Motivo: el equipo de Riesgo decide que FLAG no genera atencion suficiente
+  # en el dashboard de analistas; REVIEW fuerza revision manual
+  # ---------------------------------------------------------------------------
+  - name: "WeekendNight"
+    version: "v2"
+    type: "time_of_day"
+    enabled: true
+    weight: 0.3
+    action: "REVIEW"             # escalado desde FLAG en v1
+    parameters:
+      hoursFrom: 22
+      hoursTo: 6
+      days:
+        - "SATURDAY"
+        - "SUNDAY"
+    metadata:
+      owner: "risk.team"
+      created_at: "2025-09-01T10:00:00Z"
+      last_modified_by: "ana.gomez@example.com"
+      last_modified_at: "2026-05-07T21:00:00Z"
+      deployment_env: ["dev", "staging"]
+
+  # ---------------------------------------------------------------------------
+  # Sin cambios vs v1
+  # ---------------------------------------------------------------------------
+  - name: "HighRiskMerchant"
+    version: "v1"
+    type: "merchant_category"
+    enabled: true
+    weight: 0.6
+    action: "REVIEW"
+    parameters:
+      mccCodes:
+        - "7995"
+        - "5993"
+        - "5816"
+    metadata:
+      owner: "risk.team"
+      created_at: "2025-12-01T14:00:00Z"
+      last_modified_by: "carlos.luna@example.com"
+      last_modified_at: "2026-04-01T09:00:00Z"
+      deployment_env: ["dev", "staging", "prod"]
+
+  # ---------------------------------------------------------------------------
+  # Sin cambios vs v1
+  # ---------------------------------------------------------------------------
+  - name: "TrustedCustomerAllowlist"
+    version: "v1"
+    type: "allowlist"
+    enabled: true
+    weight: 999.0
+    action: "ALLOW"
+    parameters:
+      lookup: "trusted_customers_table"
+      override: true
+    metadata:
+      owner: "crm.team"
+      created_at: "2024-02-01T12:00:00Z"
+      last_modified_by: "ana.gomez@example.com"
+      last_modified_at: "2026-05-01T10:00:00Z"
+      deployment_env: ["dev", "staging", "prod"]
+
+  # ---------------------------------------------------------------------------
+  # NEW vs v1: device fingerprint contra denylist de dispositivos conocidos
+  # En PoC: lista inline. En produccion: lookup en tabla fraud_device_table
+  # ---------------------------------------------------------------------------
+  - name: "KnownFraudDevice"
+    version: "v1"
+    type: "device_fingerprint"
+    enabled: true
+    weight: 1.0
+    action: "DECLINE"
+    parameters:
+      denyList:
+        - "fp_abc123malicious"
+        - "fp_def456fraudster"
+        - "fp_ghi789blocked"
+      lookup: null               # usar denyList inline en PoC
+    metadata:
+      owner: "risk.team"
+      created_at: "2026-05-07T21:00:00Z"
+      last_modified_by: "ana.gomez@example.com"
+      last_modified_at: "2026-05-07T21:00:00Z"
+      deployment_env: ["dev", "staging", "prod"]
+
+# ---------------------------------------------------------------------------
+# Audit trail de v2
+# Incluye los cambios aplicados sobre v1
+# ---------------------------------------------------------------------------
+audit:
+  - timestamp: "2026-05-07T21:00:00Z"
+    actor: "ana.gomez@example.com"
+    action: "update"
+    rule: "HighAmountRule"
+    diff: "parameters.value: 10000000 -> 5000000"
+    reason: "Incremento de fraude 15% en rango $50k-$100k durante abril 2026 — analisis de Riesgo ref. RA-2026-042"
+    correlation_id: "b2c3d4e5-0002-0002-0002-000000000001"
+
+  - timestamp: "2026-05-07T21:00:00Z"
+    actor: "ana.gomez@example.com"
+    action: "update"
+    rule: "WeekendNight"
+    diff: "action: FLAG -> REVIEW"
+    reason: "FLAG no genera carga de trabajo en el dashboard de analistas; REVIEW fuerza atencion manual y reduce SLA de resolucion"
+    correlation_id: "b2c3d4e5-0002-0002-0002-000000000002"
+
+  - timestamp: "2026-05-07T21:00:00Z"
+    actor: "ana.gomez@example.com"
+    action: "create"
+    rule: "KnownFraudDevice"
+    reason: "Dispositivos identificados en investigacion forense de incidente FRD-2026-019; tres fingerprints confirmados como fraudulentos"
+    correlation_id: "b2c3d4e5-0002-0002-0002-000000000003"

@@ -1,0 +1,42 @@
+# OpenObserve standalone values for local k3d PoC
+# Repo: https://charts.openobserve.ai
+# Chart: openobserve/openobserve-standalone
+# Local-first OTEL backend; SaaS alternatives like Axiom are equivalent in production
+# OTEL collector can forward to OpenObserve via OTLP HTTP on port 5080
+
+auth:
+  ZO_ROOT_USER_EMAIL: "root@example.com"
+  ZO_ROOT_USER_PASSWORD: "Complexpass#123"
+
+config:
+  ZO_TELEMETRY: "false"
+  ZO_DATA_DIR: "/data"
+
+replicaCount: 1
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 256Mi
+  limits:
+    cpu: 500m
+    memory: 512Mi
+
+persistence:
+  enabled: true
+  size: 5Gi
+
+service:
+  type: ClusterIP
+  port: 5080
+
+ingress:
+  enabled: true
+  className: traefik
+  hosts:
+    - host: openobserve.localhost
+      paths:
+        - path: /
+          pathType: Prefix
+  annotations:
+    traefik.ingress.kubernetes.io/router.entrypoints: web

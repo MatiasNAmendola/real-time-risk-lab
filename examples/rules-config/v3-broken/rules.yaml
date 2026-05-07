@@ -1,0 +1,142 @@
+# rules.yaml — v3-broken
+# ARCHIVO INTENCIONALMENTE INVALIDO — para tests de validacion del engine
+#
+# Este config contiene errores deliberados que el engine DEBE rechazar
+# con mensajes especificos antes de cargar cualquier regla en memoria.
+#
+# Errores incluidos:
+#   ERROR-01: "UnknownFraudSignal" tiene type "magic_oracle" — tipo inexistente
+#   ERROR-02: "BrokenThreshold" tiene parameters vacio — faltan campos obligatorios
+#   ERROR-03: "InvalidVelocity" tiene windowMinutes: -5 — valor negativo invalido
+#
+# Comportamiento esperado del engine:
+#   - Rechazar el load completo (no carga reglas parcialmente)
+#   - Devolver lista de errores con: rule_name, field, message
+#   - Mantener la version anterior activa (no rollback a vacio)
+#   - Escribir en el audit log con action: "load_rejected", reason: <errores>
+
+version: "3.0.0-broken"
+hash: "sha256:placeholder_computed_at_load"
+deployed_at: "2026-05-07T22:00:00Z"
+deployed_by: "junior.dev@example.com"
+environment: "dev"
+
+aggregation_policy: "worst_case_with_allowlist_override"
+timeout_ms: 50
+fallback_decision: "REVIEW"
+
+rules:
+
+  # Esta regla es valida — el engine debe reportar errores de LAS OTRAS,
+  # no aceptar las validas y rechazar las invalidas parcialmente.
+  - name: "ValidRule"
+    version: "v1"
+    type: "threshold"
+    enabled: true
+    weight: 0.5
+    action: "FLAG"
+    parameters:
+      field: "amountCents"
+      operator: ">"
+      value: 100000
+    metadata:
+      owner: "risk.team"
+      created_at: "2026-05-07T22:00:00Z"
+      last_modified_by: "junior.dev@example.com"
+      last_modified_at: "2026-05-07T22:00:00Z"
+      deployment_env: ["dev"]
+
+  # ---------------------------------------------------------------------------
+  # ERROR-01: type "magic_oracle" no existe en el enum RuleType
+  # Mensaje esperado: "Unknown rule type 'magic_oracle' for rule 'UnknownFraudSignal'.
+  #                   Valid types: threshold, combination, velocity, chargeback_history,
+  #                   international, time_of_day, merchant_category, device_fingerprint, allowlist"
+  # ---------------------------------------------------------------------------
+  - name: "UnknownFraudSignal"
+    version: "v1"
+    type: "magic_oracle"         # ERROR-01: tipo inexistente
+    enabled: true
+    weight: 0.9
+    action: "DECLINE"
+    parameters:
+      someField: "someValue"
+    metadata:
+      owner: "risk.team"
+      created_at: "2026-05-07T22:00:00Z"
+      last_modified_by: "junior.dev@example.com"
+      last_modified_at: "2026-05-07T22:00:00Z"
+      deployment_env: ["dev"]
+
+  # ---------------------------------------------------------------------------
+  # ERROR-02: parameters vacio para tipo threshold
+  # Mensaje esperado: "Rule 'BrokenThreshold' of type 'threshold' is missing required
+  #                   parameters: [field, operator, value]"
+  # ---------------------------------------------------------------------------
+  - name: "BrokenThreshold"
+    version: "v1"
+    type: "threshold"
+    enabled: true
+    weight: 0.7
+    action: "REVIEW"
+    parameters: {}               # ERROR-02: parameters vacio — faltan field, operator, value
+    metadata:
+      owner: "risk.team"
+      created_at: "2026-05-07T22:00:00Z"
+      last_modified_by: "junior.dev@example.com"
+      last_modified_at: "2026-05-07T22:00:00Z"
+      deployment_env: ["dev"]
+
+  # ---------------------------------------------------------------------------
+  # ERROR-03: windowMinutes negativo — invalido semanticamente
+  # Mensaje esperado: "Rule 'InvalidVelocity': parameters.windowMinutes must be > 0,
+  #                   got -5"
+  # ---------------------------------------------------------------------------
+  - name: "InvalidVelocity"
+    version: "v1"
+    type: "velocity"
+    enabled: true
+    weight: 0.8
+    action: "REVIEW"
+    parameters:
+      count: 5
+      windowMinutes: -5          # ERROR-03: valor negativo invalido
+      groupBy: "customerId"
+    metadata:
+      owner: "risk.team"
+      created_at: "2026-05-07T22:00:00Z"
+      last_modified_by: "junior.dev@example.com"
+      last_modified_at: "2026-05-07T22:00:00Z"
+      deployment_env: ["dev"]
+
+# ---------------------------------------------------------------------------
+# Respuesta esperada del endpoint POST /admin/rules/reload con este archivo:
+#
+# HTTP 400 Bad Request
+# {
+#   "status": "REJECTED",
+#   "reason": "Schema validation failed — config not loaded",
+#   "errors": [
+#     {
+#       "rule": "UnknownFraudSignal",
+#       "field": "type",
+#       "code": "UNKNOWN_RULE_TYPE",
+#       "message": "Unknown rule type 'magic_oracle'. Valid types: threshold, combination, velocity, ..."
+#     },
+#     {
+#       "rule": "BrokenThreshold",
+#       "field": "parameters",
+#       "code": "MISSING_REQUIRED_PARAMETERS",
+#       "message": "Rule of type 'threshold' requires parameters: [field, operator, value]"
+#     },
+#     {
+#       "rule": "InvalidVelocity",
+#       "field": "parameters.windowMinutes",
+#       "code": "INVALID_PARAMETER_VALUE",
+#       "message": "windowMinutes must be > 0, got -5"
+#     }
+#   ],
+#   "active_config_unchanged": true,
+#   "active_config_hash": "sha256:def456...",
+#   "active_config_version": "2.0.0"
+# }
+# ---------------------------------------------------------------------------

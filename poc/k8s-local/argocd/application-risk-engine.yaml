@@ -1,0 +1,57 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: risk-engine
+  namespace: argocd
+  labels:
+    app.kubernetes.io/part-of: naranja-poc
+  annotations:
+    # ArgoCD notifications hook (optional — add notification controller for Slack)
+    notifications.argoproj.io/subscribe.on-deployed.slack: platform-alerts
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: naranja-poc
+
+  source:
+    # EDIT THIS: change to your Git remote URL when you push to a repo.
+    # For local-only testing with k3d, use the absolute filesystem path:
+    #   repoURL: ${REPO_ROOT}
+    # For GitOps (recommended), push and use:
+    #   repoURL: https://github.com/your-org/practica-entrevista.git
+    repoURL: ${REPO_ROOT}
+    targetRevision: HEAD
+    path: poc/k8s-local/apps/risk-engine
+    helm:
+      releaseName: risk-engine
+      # Override image tag per environment:
+      # valueFiles:
+      #   - values-prod.yaml
+      parameters: []
+
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: risk
+
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+      allowEmpty: false
+    syncOptions:
+      - CreateNamespace=true
+      - PrunePropagationPolicy=foreground
+      - ApplyOutOfSyncOnly=true
+    retry:
+      limit: 5
+      backoff:
+        duration: 5s
+        factor: 2
+        maxDuration: 3m
+
+  # Health check ignores Rollout status until argo-rollouts controller is running
+  ignoreDifferences:
+    - group: argoproj.io
+      kind: Rollout
+      jsonPointers:
+        - /spec/template/metadata/annotations

@@ -1,0 +1,111 @@
+# Canonical terminology for the practica-entrevista repo.
+# Format:
+#   canonical: the one true form to use in all docs
+#   aliases:   forms that should be replaced by canonical
+#   note:      (optional) clarification on intent
+#   scope:     (optional) which doc categories this applies to
+#
+# Auditor behaviour: scan all .md files, report every alias occurrence,
+# print "found '<alias>' at file:line — should be '<canonical>'".
+# The auditor NEVER auto-corrects; the list below is the authoritative reference.
+
+terms:
+  # NOTE: matcher is naive substring (case-sensitive). Aliases MUST be long
+  # enough to avoid (a) self-collision with the canonical form and
+  # (b) false positives inside Spanish prose. Single short words like
+  # "regla" or "outbox" are NOT valid aliases — they appear as substrings
+  # of the canonical form ("regla de fraude", "outbox pattern") and inside
+  # unrelated phrases ("regla de dependencias", "reglas de negocio").
+  #
+  # Bilingual policy:
+  #   - Universal technical terms (outbox pattern, circuit breaker,
+  #     idempotency, schema registry) keep English canonical.
+  #   - Domain terms ("fraud rule") allow Spanish narrative variants
+  #     ("regla de fraude") as aliases; "regla de negocio" is a different
+  #     concept (business rule, not necessarily fraud) and is NOT aliased.
+  - canonical: "fraud rule"
+    aliases:
+      - "fraud_rule"
+    scope: ["domain", "documentation"]
+    note: "Spanish narrative may use 'regla de fraude'/'regla de riesgo' freely; not aliased to avoid false positives across unrelated 'regla' usages."
+
+  - canonical: "outbox pattern"
+    aliases:
+      - "transactional outbox"
+    note: "Bare 'outbox' is acceptable shorthand once the full term is established in a doc; not aliased to avoid self-collision. 'Outbox pattern' (Title case) is acceptable in headings and section titles."
+
+  - canonical: "java-risk-engine"
+    note: "Path canonical. 'bare-javac', 'PoC bare', 'PoC bare-javac' are colloquial narrative shorthand acceptable in informal notes and decision narratives — they distinguish the bare-javac PoC from the Vert.x PoC at a glance and are NOT aliased to avoid flagging legitimate prose. Replace with 'java-risk-engine' only when referencing the artifact path."
+
+  - canonical: "java-vertx-distributed"
+    aliases:
+      - "Vertx PoC"
+    note: "'vertx-distributed' is NOT aliased: it self-collides with the canonical form 'java-vertx-distributed' under substring matching."
+
+  - canonical: "java-monolith"
+    aliases:
+      - "monolith PoC"
+      - "java monolítico"
+
+  - canonical: "Testcontainers"
+    aliases:
+      - "test-containers"
+    note: "Bare 'testcontainers' (lowercase) is dropped as alias: it appears legitimately in URLs (java.testcontainers.org), wikilinks ([[0021-testcontainers-integration]]), and Maven artifact IDs."
+
+  - canonical: "OpenObserve"
+    aliases:
+      - "Open Observe"
+    note: "Bare 'openobserve' (lowercase) is dropped as alias: it appears legitimately in URLs (openobserve.ai), Kubernetes service hostnames (http://openobserve:4317), env-var values, and wikilinks ([[0004-openobserve-otel]])."
+
+  - canonical: "risk-client-go"
+    aliases:
+      - "go-client"
+    note: "'Go SDK' / 'go sdk' are dropped: they appear as natural-language descriptions in code comments and decision narratives, not as canonical references to the artifact."
+
+  - canonical: "risk-client-java"
+    aliases:
+      - "java-client"
+    note: "'Java SDK' / 'java sdk' are dropped: they appear as natural-language descriptions in code comments and decision narratives, not as canonical references to the artifact."
+
+  - canonical: "pkg/risk-domain"
+    aliases:
+      - "risk domain module"
+      - "domain module"
+    scope: ["documentation"]
+
+# ---------------------------------------------------------------------------
+# Prohibited terms in public-facing docs
+# Enforced by audit_prohibited_terms() — separate from the alias-replacement
+# logic above.  These terms must not appear in any .md outside the excluded
+# paths listed below.
+# ---------------------------------------------------------------------------
+prohibited_in_public:
+  - terms: ["interview", "entrevista", "simulacro", "cheatsheet"]
+    rationale: "Repo positioned as technical exploration, not interview prep"
+    excluded_paths: ["vault/01-Build-Log/", ".ai/research/"]
+  - terms: ["Naranja X", "NaranjaX", "Naranja-X"]
+    rationale: "Avoid mentioning specific company; use 'production-grade fraud platform' generically"
+    excluded_paths: ["vault/01-Build-Log/", ".ai/research/"]
+
+# ---------------------------------------------------------------------------
+# Technical identifiers excluded from the prohibited-terms audit.
+#
+# These patterns identify code-level identifiers (Java package names, Maven
+# coordinates, schema URNs, Secrets Manager keys, filesystem paths) that
+# happen to contain "naranjax" but are NOT marketing copy. They are stable
+# legacy identifiers inherited from the project sponsor and renaming them
+# would require a massive refactor without technical benefit.
+#
+# See ADR-0038 (vault/02-Decisions/0038-naranjax-package-namespace.md) for
+# the full rationale.  Lines matching ANY of these patterns are skipped by
+# audit_prohibited_terms() in .ai/scripts/consistency-auditor.py.
+# ---------------------------------------------------------------------------
+technical_identifiers_excluded:
+  - pattern: "com\\.naranjax"
+    description: "Java package / Maven coordinate (com.naranjax.poc.*)"
+  - pattern: "urn:naranjax:"
+    description: "Schema URN (urn:naranjax:risk:event:v1, urn:naranjax:idempotency:v1)"
+  - pattern: "naranjax/[a-z0-9_-]+"
+    description: "Secrets Manager key or repo path (naranjax/db-password, naranjax/practica-entrevista)"
+  - pattern: "com/naranjax/"
+    description: "Filesystem path for Java sources (src/main/java/com/naranjax/...)"

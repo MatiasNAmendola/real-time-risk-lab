@@ -1,0 +1,30 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: naranja-poc
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  description: NaranjaX interview PoC — local k8s replica of mega-infra patterns
+
+  # Allow any local/git source
+  sourceRepos:
+    - "*"
+
+  # Allow deploying to any namespace in the local cluster
+  destinations:
+    - namespace: "*"
+      server: https://kubernetes.default.svc
+
+  clusterResourceWhitelist:
+    - group: "*"
+      kind: "*"
+
+  namespaceResourceWhitelist:
+    - group: "*"
+      kind: "*"
+
+  # Orphan resources policy: warn but don't delete automatically
+  orphanedResources:
+    warn: true

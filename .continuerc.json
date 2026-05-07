@@ -1,0 +1,17 @@
+{
+  "mergeBehavior": "merge",
+  "rules": [
+    "Java 25 LTS only. Do NOT downgrade to 21. Use --release 25 in pom.xml.",
+    "Clean Architecture: domain/ must NOT import from application/ or infrastructure/.",
+    "ATDD first: write .feature file before any production code.",
+    "Every request must produce trace + log + metric via OpenTelemetry. correlationId in MDC and header.",
+    "Check .ai/primitives/skills/ and .ai/primitives/rules/ before implementing.",
+    "Do not touch: poc/, tests/, cli/, docs/, vault/ — user ownership."
+  ],
+  "contextProviders": [
+    { "name": "code" },
+    { "name": "docs" },
+    { "name": "diff" },
+    { "name": "open" }
+  ]
+}

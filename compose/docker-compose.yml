@@ -1,0 +1,416 @@
+##############################################################################
+# Shared infrastructure stack
+#
+# Network topology — 3 networks (collapsed from 5 for Hazelcast cluster connectivity):
+#
+#   app-net       : the Java app pods + Hazelcast TCP cluster.
+#   data-net      : data services (Postgres, Valkey, Redpanda, MinIO, ElasticMQ, Moto, OpenBao)
+#                   + apps that consume them.
+#   telemetry-net : OTel collector + OpenObserve + all apps that emit telemetry.
+#
+# This file contains ONLY shared infrastructure — no application services.
+# Each PoC adds its apps via an override file:
+#
+#   docker compose -f compose/docker-compose.yml \
+#                  -f poc/java-vertx-distributed/compose.override.yml up -d
+#
+# See compose/README.md for full usage.
+##############################################################################
+
+services:
+
+  # ============================================================================
+  # Infrastructure — Postgres 16
+  # ============================================================================
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB:       naranjax
+      POSTGRES_USER:     naranjax
+      POSTGRES_PASSWORD: naranjax
+    networks:
+      - data-net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U naranjax -d naranjax"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    volumes:
+      - pg-data:/var/lib/postgresql/data
+    mem_limit: 256m
+    mem_reservation: 128m
+
+  # ============================================================================
+  # Infrastructure — Valkey 8 (Redis-compatible cache, idempotency store)
+  # ============================================================================
+  valkey:
+    image: valkey/valkey:8-alpine
+    networks:
+      - data-net
+    healthcheck:
+      test: ["CMD", "valkey-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    mem_limit: 96m
+    mem_reservation: 32m
+
+  # ============================================================================
+  # Infrastructure — Redpanda (Kafka-compatible broker)
+  # ============================================================================
+  redpanda:
+    image: redpandadata/redpanda:v24.2.4
+    command:
+      - redpanda
+      - start
+      - --mode
+      - dev-container
+      - --smp
+      - "1"
+      - --memory
+      - 512M
+      - --reserve-memory
+      - 0M
+      - --node-id
+      - "0"
+      - --kafka-addr
+      - PLAINTEXT://0.0.0.0:29092,OUTSIDE://0.0.0.0:9092
+      - --advertise-kafka-addr
+      - PLAINTEXT://redpanda:29092,OUTSIDE://redpanda:9092
+      - --pandaproxy-addr
+      - 0.0.0.0:8082
+      - --advertise-pandaproxy-addr
+      - redpanda:8082
+      - --schema-registry-addr
+      - 0.0.0.0:8081
+      - --overprovisioned
+      - --default-log-level
+      - warn
+    networks:
+      - data-net
+    healthcheck:
+      test: ["CMD-SHELL", "rpk cluster health 2>&1 | grep -E 'Healthy:.+true' || exit 1"]
+      interval: 15s
+      timeout: 10s
+      retries: 10
+      start_period: 30s
+    volumes:
+      - redpanda-data:/var/lib/redpanda/data
+    mem_limit: 768m
+    mem_reservation: 512m
+
+  # Topic creation (one-shot init container, exits cleanly when topic exists)
+  redpanda-init:
+    image: redpandadata/redpanda:v24.2.4
+    depends_on:
+      redpanda:
+        condition: service_healthy
+    networks:
+      - data-net
+    entrypoint: /bin/sh
+    command:
+      - -c
+      - "rpk topic create risk-decisions --brokers redpanda:9092 --partitions 3 --replicas 1 || true && rpk topic create risk-decisions-dlq --brokers redpanda:9092 --partitions 1 --replicas 1 || true && rpk topic create risk-audit --brokers redpanda:9092 --partitions 1 --replicas 1 || true && echo 'Topics ready.'"
+    restart: "no"
+
+  # ============================================================================
+  # Observability — OpenTelemetry Collector
+  # ============================================================================
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib:0.141.0
+    command: ["--config=/etc/otel-collector-config.yaml"]
+    volumes:
+      - ./otel-collector-config.yaml:/etc/otel-collector-config.yaml:ro
+    networks:
+      - telemetry-net
+    depends_on:
+      openobserve:
+        condition: service_started
+    mem_limit: 192m
+    mem_reservation: 96m
+
+  # ============================================================================
+  # Observability — OpenObserve (unified traces + logs + metrics)
+  # ============================================================================
+  openobserve:
+    image: public.ecr.aws/zinclabs/openobserve:latest
+    environment:
+      ZO_ROOT_USER_EMAIL:    admin@example.com
+      ZO_ROOT_USER_PASSWORD: Complexpass#
+      ZO_DATA_DIR:           /data
+    volumes:
+      - openobserve-data:/data
+    ports:
+      - "5080:5080"
+    networks:
+      - telemetry-net
+    # Distroless image: no shell, wget, curl, or nc available, so any CMD-based
+    # healthcheck fails with "executable file not found in $PATH". Disable the
+    # Docker healthcheck — readiness is implicit via successful HTTP boot
+    # (log line "Starting HTTP server at: 0.0.0.0:5080"). Dependents that need
+    # a real wait should probe http://openobserve:5080/healthz from their side
+    # (the endpoint itself works fine; only the in-container probe is broken).
+    healthcheck:
+      test: ["NONE"]
+    mem_limit: 384m
+    mem_reservation: 192m
+
+  # ============================================================================
+  # AWS Mocks — MinIO (S3), Moto (Secrets/SNS/IAM), ElasticMQ (SQS), OpenBao (Vault)
+  # ============================================================================
+
+  minio:
+    image: minio/minio:latest
+    networks:
+      - data-net
+    ports:
+      - "9000:9000"
+      - "9100:9001"   # Console on host 9100 to avoid conflict with redpanda-console (9001)
+    environment:
+      MINIO_ROOT_USER:     minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+    command: server /data --console-address ":9001"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    mem_limit: 256m
+
+  minio-init:
+    image: minio/mc:latest
+    networks:
+      - data-net
+    depends_on:
+      minio:
+        condition: service_healthy
+    entrypoint: /bin/sh
+    command:
+      - -c
+      - "mc alias set local http://minio:9000 minioadmin minioadmin && mc mb local/risk-audit --ignore-existing && echo 'MinIO bucket risk-audit created'"
+    restart: "no"
+
+  moto:
+    image: motoserver/moto:latest
+    networks:
+      - data-net
+    ports:
+      - "5000:5000"
+    healthcheck:
+      test: ["CMD-SHELL", "python3 -c 'import urllib.request; urllib.request.urlopen(\"http://localhost:5000/moto-api/\")' || exit 1"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 20s
+    mem_limit: 256m
+
+  # Moto secret seeding (idempotent, fails loudly on real errors).
+  # Wait-for: explicitly polls moto-api/ until 200 OK before creating secrets.
+  # Verify: describe-secret after create to confirm the resource is queryable.
+  moto-init:
+    image: python:3.12-slim
+    networks:
+      - data-net
+    depends_on:
+      moto:
+        condition: service_healthy
+    entrypoint: /bin/sh
+    command:
+      - -ec
+      - |
+        pip install --quiet boto3
+        python3 - <<'PY'
+        import sys, time, urllib.request, urllib.error
+        # 1) Wait-for: explicit 30s poll on moto-api/ until 200 OK.
+        deadline = time.time() + 30
+        last_err = None
+        while time.time() < deadline:
+            try:
+                with urllib.request.urlopen('http://moto:5000/moto-api/', timeout=2) as r:
+                    if r.status == 200:
+                        last_err = None
+                        break
+            except Exception as e:
+                last_err = e
+            time.sleep(1)
+        if last_err is not None:
+            print('FATAL: moto endpoint not reachable after 30s:', last_err, file=sys.stderr)
+            sys.exit(1)
+        print('Moto endpoint is up.')
+
+        import boto3
+        sm = boto3.client('secretsmanager',
+          endpoint_url='http://moto:5000',
+          region_name='us-east-1',
+          aws_access_key_id='test',
+          aws_secret_access_key='test')
+        secrets = [
+            ('naranjax/db-password',     'naranjax'),
+            ('risk-engine/db-password',  'naranjax'),
+            ('risk-engine/api-key',      'poc-api-key-local'),
+        ]
+        # 2) Create (idempotent on ResourceExistsException).
+        for name, val in secrets:
+            try:
+                sm.create_secret(Name=name, SecretString=val)
+                print('  created:', name)
+            except sm.exceptions.ResourceExistsException:
+                print('  exists: ', name)
+        # 3) Verify each secret is now describable. Hard fail if any missing.
+        missing = []
+        for name, _ in secrets:
+            try:
+                sm.describe_secret(SecretId=name)
+                print('  verified:', name)
+            except Exception as e:
+                print('  MISSING:', name, e, file=sys.stderr)
+                missing.append(name)
+        if missing:
+            print('FATAL: secrets missing post-create:', missing, file=sys.stderr)
+            sys.exit(2)
+        print('Moto secrets seeded and verified.')
+        PY
+    restart: "no"
+
+  elasticmq:
+    image: softwaremill/elasticmq-native:latest
+    networks:
+      - data-net
+    ports:
+      - "9324:9324"
+      - "9325:9325"
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:9324/?Action=ListQueues || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+    mem_limit: 256m
+
+  # ElasticMQ queue seeding (idempotent). Mirrors moto-init / minio-init pattern.
+  # Queues must match RISK_SQS_QUEUE env in poc/java-vertx-distributed/compose.override.yml
+  # and SqsDecisionPublisher#DEFAULT_QUEUE in usecase-app.
+  elasticmq-init:
+    image: amazon/aws-cli:latest
+    networks:
+      - data-net
+    depends_on:
+      elasticmq:
+        condition: service_healthy
+    environment:
+      AWS_ACCESS_KEY_ID:     test
+      AWS_SECRET_ACCESS_KEY: test
+      AWS_DEFAULT_REGION:    us-east-1
+    entrypoint: /bin/sh
+    command:
+      - -ec
+      - |
+        ENDPOINT=http://elasticmq:9324
+        QUEUES="risk-decisions-queue risk-decisions-dlq risk-audit-queue"
+        for q in $$QUEUES; do
+          if aws --endpoint-url=$$ENDPOINT sqs get-queue-url --queue-name "$$q" >/dev/null 2>&1; then
+            echo "  exists:  $$q"
+          else
+            aws --endpoint-url=$$ENDPOINT sqs create-queue --queue-name "$$q" >/dev/null
+            echo "  created: $$q"
+          fi
+        done
+        # Verify all queues now listable.
+        LISTED=$$(aws --endpoint-url=$$ENDPOINT sqs list-queues --output text || true)
+        for q in $$QUEUES; do
+          echo "$$LISTED" | grep -q "$$q" || { echo "FATAL: queue missing post-create: $$q" >&2; exit 2; }
+        done
+        echo "ElasticMQ queues seeded and verified."
+    restart: "no"
+
+  # Postgres schema seeding (idempotent). Creates customer_features pre-app-startup
+  # so any app reading from the DB before its own DbBootstrap completes does not
+  # fail. Uses CREATE TABLE IF NOT EXISTS — coexists with app-side migrations.
+  postgres-init:
+    image: postgres:16-alpine
+    networks:
+      - data-net
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      PGHOST:     postgres
+      PGPORT:     "5432"
+      PGUSER:     naranjax
+      PGPASSWORD: naranjax
+      PGDATABASE: naranjax
+    entrypoint: /bin/sh
+    command:
+      - -ec
+      - |
+        psql -v ON_ERROR_STOP=1 <<'SQL'
+        CREATE TABLE IF NOT EXISTS customer_features (
+            customer_id          VARCHAR(64)       PRIMARY KEY,
+            risk_score           DOUBLE PRECISION  NOT NULL,
+            country              VARCHAR(8)        NOT NULL,
+            customer_age_days    INTEGER           NOT NULL DEFAULT 365,
+            chargeback_count_90d INTEGER           NOT NULL DEFAULT 0,
+            known_device         BOOLEAN           NOT NULL DEFAULT TRUE
+        );
+        ALTER TABLE customer_features
+          ADD COLUMN IF NOT EXISTS customer_age_days    INTEGER NOT NULL DEFAULT 365,
+          ADD COLUMN IF NOT EXISTS chargeback_count_90d INTEGER NOT NULL DEFAULT 0,
+          ADD COLUMN IF NOT EXISTS known_device         BOOLEAN NOT NULL DEFAULT TRUE;
+        SQL
+        # Verify table exists.
+        psql -v ON_ERROR_STOP=1 -tAc "SELECT to_regclass('public.customer_features');" \
+          | grep -q customer_features \
+          || { echo "FATAL: customer_features missing post-create" >&2; exit 2; }
+        echo "Postgres schema seeded and verified."
+    restart: "no"
+
+  openbao:
+    image: openbao/openbao:latest
+    networks:
+      - data-net
+    cap_add:
+      - IPC_LOCK
+    environment:
+      BAO_DEV_ROOT_TOKEN_ID: root
+      BAO_DEV_LISTEN_ADDRESS: 0.0.0.0:8200
+      # Make `bao status` work without exporting BAO_ADDR every time.
+      BAO_ADDR: http://127.0.0.1:8200
+    ports:
+      - "8200:8200"
+    command: server -dev
+    # OpenBao dev-server binds to 0.0.0.0 only; localhost/127.0.0.1 work,
+    # but we use `bao status` because it follows BAO_ADDR and is the
+    # canonical readiness signal (initialized + unsealed).
+    healthcheck:
+      test: ["CMD-SHELL", "bao status > /dev/null 2>&1 || exit 1"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+      start_period: 15s
+    mem_limit: 256m
+
+  openbao-init:
+    image: openbao/openbao:latest
+    networks:
+      - data-net
+    depends_on:
+      openbao:
+        condition: service_healthy
+    entrypoint: /bin/sh
+    command:
+      - -c
+      - "export BAO_ADDR=http://openbao:8200 && export BAO_TOKEN=root && bao kv put secret/naranjax/db-password value=naranjax && bao kv put secret/risk-engine/db-password value=naranjax && bao kv put secret/risk-engine/api-key value=poc-api-key-local && echo 'OpenBao KV secrets seeded'"
+    restart: "no"
+
+networks:
+  app-net:
+    driver: bridge
+  data-net:
+    driver: bridge
+  telemetry-net:
+    driver: bridge
+
+volumes:
+  pg-data:
+  openobserve-data:
+  redpanda-data:

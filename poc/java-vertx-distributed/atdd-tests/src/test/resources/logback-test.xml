@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+  <!-- Console: only WARN and above (keep CI output clean) -->
+  <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+    <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+      <level>WARN</level>
+    </filter>
+    <encoder>
+      <pattern>%d{HH:mm:ss.SSS} [%-5level] [%logger{36}] %msg%n</pattern>
+    </encoder>
+  </appender>
+
+  <!-- File: DEBUG — full Karate + app logs for post-test report generation -->
+  <appender name="FILE" class="ch.qos.logback.core.FileAppender">
+    <file>target/karate-reports/karate.log</file>
+    <append>false</append>
+    <encoder>
+      <pattern>%d{HH:mm:ss.SSS} [%-5level] [%logger{36}] %msg%n</pattern>
+    </encoder>
+  </appender>
+
+  <!-- Quiet Kafka client internals — only WARN and above -->
+  <logger name="org.apache.kafka" level="WARN"/>
+
+  <!-- Karate framework logs at DEBUG in file, INFO to console handled by root -->
+  <logger name="com.intuit.karate" level="DEBUG">
+    <appender-ref ref="FILE"/>
+  </logger>
+
+  <!-- Our own support helpers at DEBUG -->
+  <logger name="com.naranjax.atdd" level="DEBUG">
+    <appender-ref ref="FILE"/>
+  </logger>
+
+  <root level="WARN">
+    <appender-ref ref="STDOUT"/>
+  </root>
+
+</configuration>

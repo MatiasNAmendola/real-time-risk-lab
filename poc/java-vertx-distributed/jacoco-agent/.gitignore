@@ -1,0 +1,3 @@
+# Keep this directory in git but ignore the binary jar.
+# Run ./scripts/fetch-jacoco-agent.sh to download jacocoagent.jar.
+jacocoagent.jar

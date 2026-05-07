@@ -1,0 +1,291 @@
+---
+# ─── MinIO — S3 mock ─────────────────────────────────────────────────────────
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: minio
+  namespace: aws-mocks
+  labels:
+    app.kubernetes.io/name: minio
+    app.kubernetes.io/part-of: aws-mocks
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: minio
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: minio
+        app.kubernetes.io/part-of: aws-mocks
+    spec:
+      containers:
+        - name: minio
+          image: minio/minio:latest
+          args:
+            - server
+            - /data
+            - --console-address
+            - ":9001"
+          env:
+            - name: MINIO_ROOT_USER
+              value: minioadmin
+            - name: MINIO_ROOT_PASSWORD
+              value: minioadmin
+          ports:
+            - name: api
+              containerPort: 9000
+            - name: console
+              containerPort: 9001
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+            limits:
+              cpu: 200m
+              memory: 256Mi
+          volumeMounts:
+            - name: data
+              mountPath: /data
+          readinessProbe:
+            httpGet:
+              path: /minio/health/ready
+              port: 9000
+            initialDelaySeconds: 5
+            periodSeconds: 5
+      volumes:
+        - name: data
+          emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: minio
+  namespace: aws-mocks
+  labels:
+    app.kubernetes.io/name: minio
+    app.kubernetes.io/part-of: aws-mocks
+spec:
+  selector:
+    app.kubernetes.io/name: minio
+  ports:
+    - name: api
+      port: 9000
+      targetPort: 9000
+    - name: console
+      port: 9001
+      targetPort: 9001
+---
+# ─── ElasticMQ — SQS mock ─────────────────────────────────────────────────────
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: elasticmq
+  namespace: aws-mocks
+  labels:
+    app.kubernetes.io/name: elasticmq
+    app.kubernetes.io/part-of: aws-mocks
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: elasticmq
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: elasticmq
+        app.kubernetes.io/part-of: aws-mocks
+    spec:
+      containers:
+        - name: elasticmq
+          image: softwaremill/elasticmq-native:latest
+          ports:
+            - name: sqs
+              containerPort: 9324
+            - name: ui
+              containerPort: 9325
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+            limits:
+              cpu: 200m
+              memory: 256Mi
+          volumeMounts:
+            - name: tmp
+              mountPath: /tmp
+          readinessProbe:
+            tcpSocket:
+              port: 9324
+            initialDelaySeconds: 5
+            periodSeconds: 5
+      volumes:
+        - name: tmp
+          emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: elasticmq
+  namespace: aws-mocks
+  labels:
+    app.kubernetes.io/name: elasticmq
+    app.kubernetes.io/part-of: aws-mocks
+spec:
+  selector:
+    app.kubernetes.io/name: elasticmq
+  ports:
+    - name: sqs
+      port: 9324
+      targetPort: 9324
+    - name: ui
+      port: 9325
+      targetPort: 9325
+---
+# ─── Moto — SNS / Secrets Manager / KMS / IAM-STS / DynamoDB mock ────────────
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: moto
+  namespace: aws-mocks
+  labels:
+    app.kubernetes.io/name: moto
+    app.kubernetes.io/part-of: aws-mocks
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: moto
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: moto
+        app.kubernetes.io/part-of: aws-mocks
+    spec:
+      containers:
+        - name: moto
+          image: motoserver/moto:latest
+          env:
+            - name: MOTO_PORT
+              value: "5000"
+            - name: AWS_DEFAULT_REGION
+              value: us-east-1
+            - name: AWS_ACCESS_KEY_ID
+              value: test
+            - name: AWS_SECRET_ACCESS_KEY
+              value: test
+          ports:
+            - name: api
+              containerPort: 5000
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+            limits:
+              cpu: 200m
+              memory: 256Mi
+          readinessProbe:
+            httpGet:
+              path: /moto-api/reset
+              port: 5000
+            # Moto /moto-api/reset returns 200 on GET when healthy
+            initialDelaySeconds: 8
+            periodSeconds: 5
+          volumeMounts:
+            - name: tmp
+              mountPath: /tmp
+      volumes:
+        - name: tmp
+          emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: moto
+  namespace: aws-mocks
+  labels:
+    app.kubernetes.io/name: moto
+    app.kubernetes.io/part-of: aws-mocks
+spec:
+  selector:
+    app.kubernetes.io/name: moto
+  ports:
+    - name: api
+      port: 5000
+      targetPort: 5000
+---
+# ─── OpenBao — Secrets Manager / KMS alternative (Vault-compatible) ──────────
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: openbao
+  namespace: aws-mocks
+  labels:
+    app.kubernetes.io/name: openbao
+    app.kubernetes.io/part-of: aws-mocks
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: openbao
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: openbao
+        app.kubernetes.io/part-of: aws-mocks
+    spec:
+      containers:
+        - name: openbao
+          image: openbao/openbao:latest
+          args:
+            - server
+            - -dev
+            - -dev-root-token-id=root
+            - -dev-listen-address=0.0.0.0:8200
+          env:
+            - name: BAO_DEV_ROOT_TOKEN_ID
+              value: root
+            - name: BAO_ADDR
+              value: http://0.0.0.0:8200
+          ports:
+            - name: api
+              containerPort: 8200
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+            limits:
+              cpu: 200m
+              memory: 256Mi
+          readinessProbe:
+            httpGet:
+              path: /v1/sys/health
+              port: 8200
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          securityContext:
+            capabilities:
+              add:
+                - IPC_LOCK
+          volumeMounts:
+            - name: tmp
+              mountPath: /tmp
+      volumes:
+        - name: tmp
+          emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: openbao
+  namespace: aws-mocks
+  labels:
+    app.kubernetes.io/name: openbao
+    app.kubernetes.io/part-of: aws-mocks
+spec:
+  selector:
+    app.kubernetes.io/name: openbao
+  ports:
+    - name: api
+      port: 8200
+      targetPort: 8200

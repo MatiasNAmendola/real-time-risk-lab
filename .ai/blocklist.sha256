@@ -1,0 +1,4 @@
+# SHA-256 hashes of local prohibited confidentiality terms.
+# Add real private terms with: python3 .ai/scripts/confidentiality-scanner.py --add "<term>"
+9b7dd0f56d5c5387d8eca1473bd4408cc090a600514b0bb940ae5131e3d3bad0
+b09ad0e694ed82d291d25d367622dd03e378bbe6d816ef6fecebc829fe8e4a1e

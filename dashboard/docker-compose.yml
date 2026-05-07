@@ -1,0 +1,16 @@
+services:
+  homer:
+    container_name: naranja_dashboard
+    image: b4bz/homer:latest
+    ports:
+      - "8888:8080"
+    volumes:
+      - ./assets:/www/assets:ro
+    environment:
+      - INIT_ASSETS=0
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://localhost:8080/"]
+      interval: 10s
+      timeout: 3s
+      retries: 5

@@ -1,0 +1,82 @@
+[versions]
+java = "21"
+vertx = "5.0.12"
+hazelcast = "5.5.0"
+jackson = "2.18.2"
+slf4j = "2.0.16"
+logback = "1.5.12"
+junit = "5.11.4"
+mockito = "5.14.2"
+assertj = "3.27.0"
+cucumber = "7.20.1"
+karate = "1.4.1"
+archunit = "1.4.0"
+jacoco = "0.8.12"
+opentelemetry = "1.46.0"
+otel-instrumentation = "2.11.0"
+micrometer = "1.14.2"
+kafka-clients = "3.9.0"
+caffeine = "3.1.8"
+shadow = "8.3.6"
+aws-sdk = "2.29.23"
+testcontainers = "1.20.4"
+postgresql-driver = "42.7.4"
+lettuce = "6.4.0.RELEASE"
+jmh = "1.37"
+cucumber-picocontainer = "7.20.1"
+junit-platform-suite = "1.11.4"
+
+[libraries]
+vertx-core = { module = "io.vertx:vertx-core", version.ref = "vertx" }
+vertx-web = { module = "io.vertx:vertx-web", version.ref = "vertx" }
+vertx-web-openapi-router = { module = "io.vertx:vertx-web-openapi-router", version.ref = "vertx" }
+vertx-hazelcast = { module = "io.vertx:vertx-hazelcast", version.ref = "vertx" }
+vertx-kafka-client = { module = "io.vertx:vertx-kafka-client", version.ref = "vertx" }
+vertx-micrometer-metrics = { module = "io.vertx:vertx-micrometer-metrics", version.ref = "vertx" }
+hazelcast = { module = "com.hazelcast:hazelcast", version.ref = "hazelcast" }
+jackson-databind = { module = "com.fasterxml.jackson.core:jackson-databind", version.ref = "jackson" }
+jackson-yaml = { module = "com.fasterxml.jackson.dataformat:jackson-dataformat-yaml", version.ref = "jackson" }
+slf4j-api = { module = "org.slf4j:slf4j-api", version.ref = "slf4j" }
+logback-classic = { module = "ch.qos.logback:logback-classic", version.ref = "logback" }
+junit-bom = { module = "org.junit:junit-bom", version.ref = "junit" }
+junit-jupiter = { module = "org.junit.jupiter:junit-jupiter" }
+mockito-core = { module = "org.mockito:mockito-core", version.ref = "mockito" }
+assertj-core = { module = "org.assertj:assertj-core", version.ref = "assertj" }
+cucumber-java = { module = "io.cucumber:cucumber-java", version.ref = "cucumber" }
+cucumber-junit-platform-engine = { module = "io.cucumber:cucumber-junit-platform-engine", version.ref = "cucumber" }
+karate-junit5 = { module = "com.intuit.karate:karate-junit5", version.ref = "karate" }
+archunit-junit5 = { module = "com.tngtech.archunit:archunit-junit5", version.ref = "archunit" }
+opentelemetry-api = { module = "io.opentelemetry:opentelemetry-api", version.ref = "opentelemetry" }
+otel-instrumentation-bom = { module = "io.opentelemetry.instrumentation:opentelemetry-instrumentation-bom", version.ref = "otel-instrumentation" }
+micrometer-registry-otlp = { module = "io.micrometer:micrometer-registry-otlp", version.ref = "micrometer" }
+kafka-clients = { module = "org.apache.kafka:kafka-clients", version.ref = "kafka-clients" }
+caffeine = { module = "com.github.ben-manes.caffeine:caffeine", version.ref = "caffeine" }
+vertx-pg-client = { module = "io.vertx:vertx-pg-client", version.ref = "vertx" }
+vertx-sql-client = { module = "io.vertx:vertx-sql-client", version.ref = "vertx" }
+aws-s3 = { module = "software.amazon.awssdk:s3", version.ref = "aws-sdk" }
+aws-sqs = { module = "software.amazon.awssdk:sqs", version.ref = "aws-sdk" }
+aws-secretsmanager = { module = "software.amazon.awssdk:secretsmanager", version.ref = "aws-sdk" }
+aws-url-connection-client = { module = "software.amazon.awssdk:url-connection-client", version.ref = "aws-sdk" }
+postgresql-driver = { module = "org.postgresql:postgresql", version.ref = "postgresql-driver" }
+testcontainers-bom = { module = "org.testcontainers:testcontainers-bom", version.ref = "testcontainers" }
+testcontainers-core = { module = "org.testcontainers:testcontainers", version.ref = "testcontainers" }
+testcontainers-junit5 = { module = "org.testcontainers:junit-jupiter", version.ref = "testcontainers" }
+testcontainers-postgresql = { module = "org.testcontainers:postgresql", version.ref = "testcontainers" }
+testcontainers-redpanda = { module = "org.testcontainers:redpanda", version.ref = "testcontainers" }
+lettuce-core = { module = "io.lettuce:lettuce-core", version.ref = "lettuce" }
+jmh-core = { module = "org.openjdk.jmh:jmh-core", version.ref = "jmh" }
+jmh-annprocess = { module = "org.openjdk.jmh:jmh-generator-annprocess", version.ref = "jmh" }
+cucumber-picocontainer = { module = "io.cucumber:cucumber-picocontainer", version.ref = "cucumber-picocontainer" }
+junit-platform-suite = { module = "org.junit.platform:junit-platform-suite", version.ref = "junit-platform-suite" }
+jacoco-core = { module = "org.jacoco:org.jacoco.core", version = "0.8.12" }
+
+[bundles]
+junit-testing = ["junit-jupiter", "assertj-core", "mockito-core"]
+logging = ["slf4j-api", "logback-classic"]
+jackson = ["jackson-databind", "jackson-yaml"]
+vertx-base = ["vertx-core", "vertx-web", "vertx-hazelcast", "hazelcast"]
+otel-runtime = ["opentelemetry-api", "micrometer-registry-otlp"]
+
+[plugins]
+versions = { id = "com.github.ben-manes.versions", version = "0.51.0" }
+shadow = { id = "com.gradleup.shadow", version.ref = "shadow" }

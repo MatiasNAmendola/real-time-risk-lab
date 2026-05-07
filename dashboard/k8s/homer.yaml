@@ -1,0 +1,204 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: homer
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: homer-config
+  namespace: homer
+data:
+  config.yml: |
+    title: "Naranja X — Practica Entrevista (k8s)"
+    subtitle: "Risk platform — cluster services"
+    logo: "assets/logo.svg"
+    header: true
+    footer: '<p>Cluster dashboard. Updated 2026-05-07.</p>'
+
+    defaults:
+      layout: columns
+      colorTheme: dark
+
+    services:
+      - name: "Apps"
+        icon: "fas fa-rocket"
+        items:
+          - name: "Risk Engine — Vertx (k8s)"
+            subtitle: "Vertx layer-as-pod via Helm chart. NOT the bare-javac (which runs locally only)."
+            tag: "java"
+            url: "http://risk-engine.risk-engine.svc.cluster.local:8080"
+            target: "_blank"
+
+          - name: "Risk Engine — Health (k8s)"
+            subtitle: "Liveness + readiness"
+            url: "http://risk-engine.risk-engine.svc.cluster.local:8080/healthz"
+            target: "_blank"
+
+      - name: "API Documentation"
+        icon: "fas fa-book"
+        items:
+          - name: "OpenAPI Spec (Vertx)"
+            subtitle: "REST contract"
+            url: "http://risk-engine.risk-engine.svc.cluster.local:8080/openapi.json"
+            target: "_blank"
+
+          - name: "Swagger UI (Vertx)"
+            subtitle: "Interactive REST docs"
+            url: "http://risk-engine.risk-engine.svc.cluster.local:8080/docs"
+            target: "_blank"
+
+          - name: "AsyncAPI Spec (Vertx)"
+            subtitle: "Kafka + WS contracts"
+            url: "http://risk-engine.risk-engine.svc.cluster.local:8080/asyncapi.json"
+            target: "_blank"
+
+      - name: "Observability"
+        icon: "fas fa-chart-line"
+        items:
+          - name: "OpenObserve"
+            subtitle: "Single source of truth: logs + metrics + traces + alerting. root@example.com / Complexpass#123"
+            tag: "otel"
+            url: "http://openobserve.openobserve.svc.cluster.local:5080"
+            target: "_blank"
+
+      - name: "Streaming"
+        icon: "fas fa-stream"
+        items:
+          - name: "Redpanda Console"
+            subtitle: "Kafka UI — topics, consumers, schema"
+            tag: "kafka"
+            url: "http://redpanda-console.redpanda.svc.cluster.local:9000"
+            target: "_blank"
+
+          - name: "Redpanda Admin"
+            subtitle: "Cluster admin API"
+            url: "http://redpanda.redpanda.svc.cluster.local:9644/v1"
+            target: "_blank"
+
+      - name: "AWS Mocks"
+        icon: "fab fa-aws"
+        items:
+          - name: "MinIO Console (S3)"
+            subtitle: "Object storage UI"
+            tag: "s3"
+            url: "http://minio.mocks.svc.cluster.local:9001"
+            target: "_blank"
+
+          - name: "ElasticMQ UI (SQS)"
+            subtitle: "Queue browser"
+            tag: "sqs"
+            url: "http://elasticmq.mocks.svc.cluster.local:9325"
+            target: "_blank"
+
+          - name: "Moto API (multi-service)"
+            subtitle: "SNS + Secrets Manager + KMS + IAM"
+            url: "http://moto.mocks.svc.cluster.local:5000/moto-api"
+            target: "_blank"
+
+          - name: "OpenBao UI"
+            subtitle: "Secrets + KMS (Vault fork)"
+            tag: "secrets"
+            url: "http://openbao.openbao.svc.cluster.local:8200/ui"
+            target: "_blank"
+
+      - name: "ArgoCD"
+        icon: "fas fa-sync"
+        items:
+          - name: "ArgoCD"
+            subtitle: "GitOps deploys"
+            tag: "k8s"
+            url: "https://argocd-server.argocd.svc.cluster.local"
+            target: "_blank"
+
+          - name: "Argo Rollouts"
+            subtitle: "Canary + analysis"
+            url: "http://argo-rollouts-dashboard.argo-rollouts.svc.cluster.local:3100"
+            target: "_blank"
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: homer
+  namespace: homer
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: homer
+  template:
+    metadata:
+      labels:
+        app: homer
+    spec:
+      containers:
+        - name: homer
+          image: b4bz/homer:latest
+          ports:
+            - containerPort: 8080
+          env:
+            - name: INIT_ASSETS
+              value: "0"
+          volumeMounts:
+            - name: config
+              mountPath: /www/assets/config.yml
+              subPath: config.yml
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+            limits:
+              cpu: 100m
+              memory: 128Mi
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 8080
+            initialDelaySeconds: 3
+            periodSeconds: 5
+      volumes:
+        - name: config
+          configMap:
+            name: homer-config
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: homer
+  namespace: homer
+spec:
+  selector:
+    app: homer
+  ports:
+    - port: 80
+      targetPort: 8080
+
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: homer
+  namespace: homer
+  annotations:
+    traefik.ingress.kubernetes.io/router.entrypoints: web
+spec:
+  rules:
+    - host: dashboard.local
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: homer
+                port:
+                  number: 80
