@@ -329,7 +329,7 @@ Si algun test falla, el mensaje incluye la clase ofensora, la linea de dependenc
 - `bench/scripts/competition.sh` — competition HTTP-vs-HTTP (ver seccion abajo)
 - `tests/architecture/` — 15 reglas ArchUnit con mensajes de error accionables
 - `poc/java-risk-engine/src/main/java/com/naranjax/interview/risk/infrastructure/controller/BenchmarkRunner.java` — benchmark original (virtual threads, sin JMH)
-- `poc/java-vertx-distributed/docker-compose.yml` — stack de 5 pods con redes separadas
+- `poc/java-vertx-distributed/compose.override.yml` — stack de 5 pods con redes separadas
 
 ---
 

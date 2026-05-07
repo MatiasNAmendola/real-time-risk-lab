@@ -23,7 +23,7 @@ The Kafka client en la Vert.x PoC uses standard Kafka protocol — it es unaware
 
 ## Decisión
 
-Use `redpandadata/redpanda:v24.2.4` para la local broker en `poc/java-vertx-distributed/docker-compose.yml`. La Kafka client configuration en `consumer-app` y `usecase-app` targets la Redpanda broker address (`redpanda:9092`) using standard Kafka producer/consumer API. Redpanda Console (`redpandadata/console:v2.7.2`) provides la topic browser UI.
+Use `redpandadata/redpanda:v24.2.4` para la local broker en `poc/java-vertx-distributed/compose.override.yml`. La Kafka client configuration en `consumer-app` y `usecase-app` targets la Redpanda broker address (`redpanda:9092`) using standard Kafka producer/consumer API. Redpanda Console (`redpandadata/console:v2.7.2`) provides la topic browser UI.
 
 The decision es explicitly scoped un desarrollo local. Production uses Kafka; este decision does no suggest replacing Kafka con Redpanda en production.
 

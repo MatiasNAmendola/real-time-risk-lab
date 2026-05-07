@@ -338,7 +338,7 @@ Cuando el implementer del SDK arranque (post Phase 2 + scrub), va a producir:
 ## Integration tests
 
 Integration tests exercise each SDK against a real server started via Docker Compose
-(`poc/java-vertx-distributed/docker-compose.yml`).  All HTTP, webhook, and admin surfaces
+(`poc/java-vertx-distributed/compose.override.yml`).  All HTTP, webhook, and admin surfaces
 are covered.  Unit tests (mocked) remain separate and run without infrastructure.
 
 ### Test counts
