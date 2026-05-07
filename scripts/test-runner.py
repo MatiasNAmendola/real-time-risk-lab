@@ -367,16 +367,24 @@ class JobResult:
 INFRA_COMPOSE_JOB = "_infra_compose_up"
 
 def _compose_up(dry_run: bool = False) -> bool:
-    """Bring up docker-compose stack. Returns True on success."""
-    compose_file = REPO_ROOT / "poc" / "java-vertx-distributed" / "docker-compose.yml"
-    if not compose_file.exists():
-        print(f"[runner] WARN: compose file not found: {compose_file}")
+    """Bring up docker-compose stack via the canonical up.sh (waits for
+    controller-app healthcheck). Returns True on success.
+
+    Uses scripts/up.sh which composes the shared infra
+    (compose/docker-compose.yml) plus the vertx app override
+    (poc/java-vertx-distributed/compose.override.yml) and blocks until the
+    stack is healthy. The stack is left UP for the duration of the test run
+    and is intentionally NOT torn down between jobs (compose-dependent jobs
+    must observe a stable, long-lived stack)."""
+    up_script = REPO_ROOT / "poc" / "java-vertx-distributed" / "scripts" / "up.sh"
+    if not up_script.exists():
+        print(f"[runner] WARN: up.sh not found: {up_script}")
         return False
-    cmd = ["docker", "compose", "-f", str(compose_file), "up", "-d"]
+    cmd = ["bash", str(up_script)]
     if dry_run:
         print(f"[runner] DRY: {' '.join(cmd)}")
         return True
-    result = subprocess.run(cmd, capture_output=True, text=True)
+    result = subprocess.run(cmd, capture_output=False, text=True)
     return result.returncode == 0
 
 
@@ -442,37 +450,47 @@ def _topological_levels(jobs: list[TestGroup]) -> list[list[TestGroup]]:
     """
     Split jobs into dependency levels.
     Level 0: jobs with no infra dependency.
-    Level 1: jobs requiring compose/docker (after _infra up).
+    Level 1: jobs requiring `compose` infra (run BEFORE docker/Testcontainers
+             jobs so Testcontainers' Ryuk reaper does not interfere with the
+             long-running shared compose stack).
+    Level 2: jobs requiring `docker` (Testcontainers) — they spin up/down
+             their own throwaway containers in isolation from compose.
     Exclusive jobs are placed in their own single-job levels.
     """
-    infra_names: set[str] = set()
     no_infra: list[TestGroup] = []
-    needs_infra: list[TestGroup] = []
+    needs_compose: list[TestGroup] = []
+    needs_docker: list[TestGroup] = []
+    needs_other: list[TestGroup] = []
 
     for j in jobs:
-        if j.needs_infra and j.needs_infra.lower() not in ("false", "no", "none", ""):
-            needs_infra.append(j)
-        else:
+        kind = (j.needs_infra or "false").lower()
+        if kind in ("false", "no", "none", ""):
             no_infra.append(j)
+        elif kind == "compose":
+            needs_compose.append(j)
+        elif kind == "docker":
+            needs_docker.append(j)
+        else:
+            needs_other.append(j)
 
     levels: list[list[TestGroup]] = []
 
-    # Split no_infra into non-exclusive and exclusive
-    non_excl = [j for j in no_infra if not j.exclusive]
-    excl = [j for j in no_infra if j.exclusive]
-
-    if non_excl:
-        levels.append(non_excl)
-    for j in excl:
-        levels.append([j])
-
-    if needs_infra:
-        non_excl_infra = [j for j in needs_infra if not j.exclusive]
-        excl_infra = [j for j in needs_infra if j.exclusive]
-        if non_excl_infra:
-            levels.append(non_excl_infra)
-        for j in excl_infra:
+    def _emit(bucket: list[TestGroup]) -> None:
+        if not bucket:
+            return
+        non_excl = [j for j in bucket if not j.exclusive]
+        excl = [j for j in bucket if j.exclusive]
+        if non_excl:
+            levels.append(non_excl)
+        for j in excl:
             levels.append([j])
+
+    _emit(no_infra)
+    # Run compose-needing jobs (smoke against the shared stack) BEFORE
+    # Testcontainers (`docker`) jobs to prevent Ryuk teardown races.
+    _emit(needs_compose)
+    _emit(needs_docker)
+    _emit(needs_other)
 
     return levels
 

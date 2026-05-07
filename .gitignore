@@ -50,3 +50,4 @@ coverage/
 .ai/scripts/.cache/
 .ai/state/anchor-*.md
 cli/risk-smoke/bin/
+!.ai/state/anchor-template.md
