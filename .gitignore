@@ -45,3 +45,8 @@ coverage/
 # Agent runtime logs (keep placeholders only)
 .ai/logs/*.jsonl
 !.ai/logs/.gitkeep
+
+# Generated local state/caches
+.ai/scripts/.cache/
+.ai/state/anchor-*.md
+cli/risk-smoke/bin/
