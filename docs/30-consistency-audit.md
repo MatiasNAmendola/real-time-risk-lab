@@ -33,7 +33,7 @@ Escanea el filesystem y produce un catálogo por categoría:
 | Scripts | `scripts/`, `.ai/scripts/*.py` |
 | SDKs | `sdks/*/` |
 | Conceptos | `vault/04-Concepts/*.md` |
-| Sessions | `vault/01-Sessions/*.md` |
+| Sessions | historial de sesiones exportado cuando exista |
 
 Solo informa; no produce score.  Útil como punto de partida antes de los otros sub-audits.
 
@@ -66,11 +66,11 @@ Para cada gap el auditor genera una pregunta-sugerida con el template por tipo:
 
 ### 4. `xrefs`
 
-Parsea wikilinks `[[...]]` y links Markdown `[texto](path)` en todos los `.md` bajo `vault/` y `docs/`.  Para cada destino verifica que el archivo exista en el vault index o en el filesystem.
+Parsea wikilinks Obsidian y links Markdown en todos los `.md` bajo `vault/` y `docs/`.  Para cada destino verifica que el archivo exista en el vault index o en el filesystem.
 
 Links externos (`https://`, `mailto:`) se ignoran.
 
-Reporta: `file:line  [[ref]]  [wikilink|mdlink]`
+Reporta: `file:line  <ref>  [wikilink|mdlink]`
 
 **Score:** `(refs_válidos / refs_totales) * 100`
 
@@ -92,18 +92,18 @@ No auto-corrige: imprime `found 'X' at file:line — should be 'Y'` y deja la de
 
 ### 7. `prohibited-terms`
 
-Detecta vocabulario relacionado con interview-prep o nombres de empresa específicos en docs públicos.
+Detecta vocabulario relacionado con technical-practice o nombres de empresa específicos en docs públicos.
 
 #### Qué considera prohibido
 
 | Categoría | Términos |
 |---|---|
-| `interview` | `interview`, `entrevista`, `simulacro`, `cheatsheet` |
-| `company_specific` | `Naranja X`, `NaranjaX`, `Naranja-X` |
+| `technical_practice_leak` | términos que hacen parecer al repo una preparación personal en vez de una exploración técnica |
+| `company_specific` | nombres de empresa específicos o variantes de marca que no aportan a la discusión técnica |
 
 #### Por qué
 
-El repo se posiciona como exploración técnica de una plataforma de fraude de nivel productivo.  Los términos de `interview` rompen ese posicionamiento y señalan que el contenido es material de preparación de entrevista, no ingeniería genuina.  Los nombres de empresa `Naranja X` / `NaranjaX` exponen al empleador en contextos públicos donde la intención es hablar de patrones y decisiones genéricos.
+El repo se posiciona como exploración técnica de una plataforma de fraude de nivel productivo. El vocabulario de preparación personal rompe ese posicionamiento y hace que el contenido parezca material privado, no una exploración de ingeniería. Los nombres de empresa específicos exponen contexto innecesario en documentos públicos donde la intención es hablar de patrones y decisiones genéricos.
 
 #### Excepciones permitidas
 
@@ -116,10 +116,10 @@ Los siguientes paths son excluidos del audit porque el contexto histórico los j
 | `out/` | Outputs de runs, no docs públicas |
 | `_personal/` | Carpeta privada (reservada para uso futuro) |
 | `docs/30-consistency-audit.md` | Self-reference: este documento *describe* las reglas, por lo que necesariamente cita los términos prohibidos como ejemplos |
-| `vault/02-Decisions/0038-naranjax-package-namespace.md` | ADR que justifica la decisión de mantener `naranjax` como namespace de packages — necesariamente menciona el nombre |
+| `vault/02-Decisions/0038-riskplatform-package-namespace.md` | ADR que justifica la decisión de mantener `riskplatform` como namespace de packages — necesariamente menciona el nombre |
 | `.kiro/`, `.windsurf/`, `.cursor/` | Steering files de IDE-agents (Kiro, Windsurf, Cursor): contexto privado para asistentes de código, no docs públicas |
 
-- Excludes technical identifiers (see ADR-0038): líneas que contienen `com.naranjax`, `urn:naranjax:`, `naranjax/<key>` o `com/naranjax/` no se marcan, porque son identifiers de código (Java packages, Maven coords, schema URNs, Secrets Manager keys, paths) y no copy de marketing. La whitelist está definida en `TECHNICAL_IDENTIFIER_PATTERNS` (`.ai/scripts/consistency-auditor.py`) y documentada en `.ai/audit-rules/terminology.yaml` sección `technical_identifiers_excluded`.
+- Excludes technical identifiers (see ADR-0038): líneas que contienen `io.riskplatform`, `urn:riskplatform:`, `riskplatform/<key>` o `com/riskplatform/` no se marcan, porque son identifiers de código (Java packages, JVM artifact coordinates, schema URNs, Secrets Manager keys, paths) y no copy de marketing. La whitelist está definida en `TECHNICAL_IDENTIFIER_PATTERNS` (`.ai/scripts/consistency-auditor.py`) y documentada en `.ai/audit-rules/terminology.yaml` sección `technical_identifiers_excluded`.
 
 #### Cómo agregar más términos prohibidos
 
@@ -134,7 +134,7 @@ Los siguientes paths son excluidos del audit porque el contexto histórico los j
 2. Editar `.ai/scripts/consistency-auditor.py`, dict `PROHIBITED_TERMS`:
    ```python
    PROHIBITED_TERMS: dict[str, list[str]] = {
-       "interview": [...],
+       "technical_practice_leak": [...],
        "company_specific": [...],
        "nueva_categoria": ["nuevo-termino", "variante"],
    }
@@ -204,7 +204,7 @@ Reglas de formato:
 
 1. En `.ai/scripts/consistency-auditor.py`, en la función `audit_inventory()`, agregar un nuevo bloque que scanee el directorio o pattern correspondiente y lo append a `artifacts['nueva_categoria']`.
 
-2. En el dict `ORPHAN_SUGGESTION` agregar: `'nueva_categoria': 'vault/00-MOCs/MiMOC.md'`.
+2. En el dict `ORPHAN_SUGGESTION` agregar: `'nueva_categoria': 'vault/00-MOCs/Architecture.md'`.
 
 3. Si la categoría tiene artifacts que deben aparecer en Q&A, agregar entradas en `ARTIFACT_CONCEPTS` con `artifact`, `type`, y `key_terms`.
 

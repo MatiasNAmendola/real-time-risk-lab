@@ -1,9 +1,20 @@
 plugins {
-    id("naranja.app-conventions")
+    id("riskplatform.app-conventions")
+    id("riskplatform.fatjar-conventions")
 }
 
 application {
-    mainClass.set("com.naranjax.interview.risk.cmd.RiskApplication")
+    mainClass.set("io.riskplatform.engine.cmd.RiskApplication")
+}
+
+tasks.named<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar>("shadowJar") {
+    archiveBaseName.set("java-risk-engine")
+    archiveClassifier.set("")
+    archiveVersion.set("")
+    manifest {
+        attributes("Main-Class" to "io.riskplatform.engine.cmd.HttpRunner")
+    }
+    mergeServiceFiles()
 }
 
 val libs = the<org.gradle.accessors.dm.LibrariesForLibs>()

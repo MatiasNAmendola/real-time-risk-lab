@@ -9,7 +9,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/naranjax/risk-smoke/internal/config"
+	"github.com/riskplatform/risk-smoke/internal/config"
 )
 
 // OTELCheck fires POST /risk, captures traceresponse header, then queries OpenObserve.

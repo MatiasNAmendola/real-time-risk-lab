@@ -5,7 +5,7 @@ import (
 	"os"
 	"time"
 
-	"github.com/naranjax/risk-smoke/internal/config"
+	"github.com/riskplatform/risk-smoke/internal/config"
 )
 
 // Check IDs — used as map keys and --only filter values.
@@ -58,8 +58,8 @@ type Check interface {
 // All returns the full ordered list of checks.
 // cucumber-bare is opt-in: it is included only when explicitly requested via
 // --only cucumber-bare (or any --only list that contains it) OR when the
-// environment variable RISK_SMOKE_INCLUDE_MAVEN=1 is set.
-// This avoids a 60-90 s Maven cold-start in the default smoke run.
+// environment variable RISK_SMOKE_INCLUDE_ATDD=1 is set.
+// This avoids a 60-90 s Gradle cold-start in the default smoke run.
 func All(cfg *config.Config) []Check {
 	base := []Check{
 		&HealthCheck{},
@@ -82,7 +82,7 @@ func All(cfg *config.Config) []Check {
 // cucumberEnabled returns true when the cucumber-bare check should be included
 // in the default All() list.
 func cucumberEnabled(cfg *config.Config) bool {
-	if os.Getenv("RISK_SMOKE_INCLUDE_MAVEN") == "1" {
+	if os.Getenv("RISK_SMOKE_INCLUDE_ATDD") == "1" {
 		return true
 	}
 	for _, id := range cfg.OnlyChecks {

@@ -23,7 +23,7 @@ La restricción de la PoC es local-first: el ambiente de desarrollo corre en una
 
 ## Decisión
 
-Se embebe `eventVersion` como string top-level en cada envelope. Los incrementos de versión son semánticos: v1 → v2 es backward-compatible (solo nuevos campos opcionales); un breaking change requiere un nuevo tipo de evento, no incrementar la versión de uno existente. El campo `schemaRef` (`urn:naranjax:risk:DecisionEvaluated:1`) provee un identificador estable y resoluble para una futura adopción de schema registry sin requerirlo ahora.
+Se embebe `eventVersion` como string top-level en cada envelope. Los incrementos de versión son semánticos: v1 → v2 es backward-compatible (solo nuevos campos opcionales); un breaking change requiere un nuevo tipo de evento, no incrementar la versión de uno existente. El campo `schemaRef` (`urn:riskplatform:risk:DecisionEvaluated:1`) provee un identificador estable y resoluble para una futura adopción de schema registry sin requerirlo ahora.
 
 Los consumers inspeccionan `eventVersion` para decidir si usan los campos extendidos o caen al procesamiento v1. El diseño del envelope (todos los campos nuevos opcionales, los campos v1 nunca se eliminan) garantiza que un consumer v1 ignore silenciosamente campos desconocidos al deserializar JSON.
 
@@ -54,7 +54,7 @@ Los consumers inspeccionan `eventVersion` para decidir si usan los campos extend
 ### Positivo
 - El envelope es self-describing: `eventType + eventVersion` alcanza para que un consumer elija el deserializador correcto.
 - Sin dependencia de infraestructura adicional.
-- El campo `schemaRef` (`urn:naranjax:risk:{eventType}:{version}`) provee un handle estable para integración futura con schema registry.
+- El campo `schemaRef` (`urn:riskplatform:risk:{eventType}:{version}`) provee un handle estable para integración futura con schema registry.
 - Los breaking changes requieren nuevo tipo de evento por convención, lo que naturalmente fuerza un plan de migración para los consumers.
 
 ### Negativo
@@ -65,7 +65,7 @@ Los consumers inspeccionan `eventVersion` para decidir si usan los campos extend
 ### Mitigaciones
 - El contrato de schema queda documentado en doc 06 con ejemplos v1 y v2 y reglas explícitas de compatibilidad.
 - Los contratos de consumer se testean en escenarios ATDD: `07_idempotency.feature` y los tests del consumer de Kafka verifican que los consumers v1 reciben correctamente los campos del envelope v1.
-- A escala productiva, la migración a Avro + Schema Registry sigue la URN de `schemaRef`: la URL del registry se vuelve resolver del namespace `urn:naranjax:risk:`.
+- A escala productiva, la migración a Avro + Schema Registry sigue la URN de `schemaRef`: la URL del registry se vuelve resolver del namespace `urn:riskplatform:risk:`.
 
 ## Validación
 

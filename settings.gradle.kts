@@ -1,4 +1,4 @@
-rootProject.name = "naranjax-practica-entrevista"
+rootProject.name = "risk-decision-platform"
 
 pluginManagement {
     includeBuild("build-logic")
@@ -9,7 +9,7 @@ pluginManagement {
 }
 
 plugins {
-    // Foojay toolchain resolver — auto-provisions JDK 25 if not locally installed.
+    // Foojay toolchain resolver — can provision JDKs if not locally installed; build target remains --release 21.
     // This is the canonical Gradle solution for "Java X not found" in CI/dev environments.
     id("org.gradle.toolchains.foojay-resolver-convention") version "0.9.0"
 }
@@ -17,7 +17,7 @@ plugins {
 dependencyResolutionManagement {
     repositories {
         mavenCentral()
-        // mavenLocal()  // uncomment to resolve locally published artifacts
+        // local artifact repository  // uncomment to resolve locally published artifacts
     }
 }
 
@@ -49,11 +49,17 @@ include(
     "poc:java-vertx-distributed:repository-app",
     "poc:java-vertx-distributed:consumer-app",
     "poc:java-vertx-distributed:atdd-tests",
+    "poc:service-mesh-demo:shared",
+    "poc:service-mesh-demo:risk-decision-service",
+    "poc:service-mesh-demo:fraud-rules-service",
+    "poc:service-mesh-demo:ml-scorer-service",
+    "poc:service-mesh-demo:audit-service",
     "poc:vertx-risk-platform",
     "poc:vertx-risk-platform:atdd-tests",
     "tests:risk-engine-atdd",
     "tests:architecture",
     "tests:integration",
+    "tests:k8s-deployment",
     "bench:inprocess-bench",
     "bench:distributed-bench",
     "bench:runner"

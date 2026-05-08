@@ -1,6 +1,6 @@
 ---
 name: architecture-clean
-applies_to: ["**/src/main/java/**/*.java", "**/pom.xml"]
+applies_to: ["**/src/main/java/**/*.java", "**/build.gradle.kts"]
 priority: high
 ---
 
@@ -11,7 +11,7 @@ priority: high
 Todo modulo Java del repo DEBE seguir este layout de paquetes:
 
 ```
-com.naranjax.<domain>/
+io.riskplatform.<domain>/
 ├── domain/
 │   ├── entity/          # Entidades con identidad
 │   ├── repository/      # Interfaces de puertos de salida (no implementaciones)

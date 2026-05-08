@@ -19,7 +19,7 @@ related_rules: [observability-otel, java-version]
 1. **Obtener Meter** (una vez por clase):
    ```java
    private static final Meter meter =
-       GlobalOpenTelemetry.getMeter("com.naranjax.risk");
+       GlobalOpenTelemetry.getMeter("io.riskplatform.risk");
    ```
 
 2. **Counter** (para eventos que se acumulan):

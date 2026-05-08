@@ -27,7 +27,7 @@ updated: 2026-05-07
 
 ## Decisiones — Plataforma Java
 
-- [[0001-java-25-lts]] — Java 25 LTS como baseline
+- [[0001-java-25-lts]] — Java 21 baseline operativo + Java 25 objetivo
 - [[0037-virtual-threads-http-server]] — virtual threads para concurrencia HTTP
 - [[0031-no-di-framework]] — wiring manual en el Composition Root
 
@@ -55,7 +55,7 @@ updated: 2026-05-07
 ## Decisiones — Build y tooling
 
 - [[0017-bare-javac-didactic-poc]] — bare-javac sin build tool al inicio
-- [[0018-maven-before-gradle]] — Maven para PoCs antes que Gradle
+- [[0018-maven-before-gradle]] — Gradle para PoCs antes que Gradle
 - [[0019-gradle-kotlin-dsl]] — Gradle 8 + Kotlin DSL para pkg/*
 - [[0026-convention-plugins]] — convention plugins en build-logic/
 
@@ -99,3 +99,9 @@ Ver [[_index]] para la tabla completa de ADRs ordenada por número.
 ## Backlinks
 
 [[Risk-Platform-Overview]] linkea acá como entry point de arquitectura.
+
+## ADRs operativos adicionales
+
+- [[0018-maven-before-gradle]] — histórico de migración desde Maven hacia Gradle.
+- [[0041-k8s-deployment-test-strategy]] — estrategia de verificación de despliegues K8s.
+- [[_template]] — plantilla interna para ADRs nuevos.

@@ -6,15 +6,15 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$SCRIPT_DIR/.."
 ATDD_DIR="$PROJECT_ROOT/tests/risk-engine-atdd"
-REPORT="$ATDD_DIR/target/site/jacoco/index.html"
+REPORT="$ATDD_DIR/build/reports/jacoco/test/html/index.html"
 
 echo "==> Running ATDD tests + JaCoCo report for risk-engine"
 echo ""
 
-cd "$ATDD_DIR"
+cd "$PROJECT_ROOT"
 
 set +e
-mvn verify
+./gradlew :tests:risk-engine-atdd:test :tests:risk-engine-atdd:jacocoTestReport
 MVN_EXIT=$?
 set -e
 

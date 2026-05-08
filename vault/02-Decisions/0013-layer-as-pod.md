@@ -15,7 +15,7 @@ Aceptado el 2026-05-07.
 
 ## Contexto
 
-La PoC distribuida (`poc/java-vertx-distributed/`) debe demostrar que un layering de clean architecture —controller, usecase, repository, consumer— puede materializarse como unidades desplegables físicamente separadas en lugar de paquetes dentro de un único binario. Este es el patrón "layer-as-pod": cada capa se corresponde con un módulo Maven, un contenedor Docker y un pod de Kubernetes, comunicándose exclusivamente a través del event bus clusterizado de Vert.x.
+La PoC distribuida (`poc/java-vertx-distributed/`) debe demostrar que un layering de clean architecture —controller, usecase, repository, consumer— puede materializarse como unidades desplegables físicamente separadas en lugar de paquetes dentro de un único binario. Este es el patrón "layer-as-pod": cada capa se corresponde con un módulo Gradle, un contenedor Docker y un pod de Kubernetes, comunicándose exclusivamente a través del event bus clusterizado de Vert.x.
 
 La motivación viene del target productivo: a esta escala (150 TPS de riesgo transaccional), los equipos pueden necesitar escalar capas de forma independiente. La capa controller recibe ráfagas HTTP; la capa repository queda limitada por las conexiones a Postgres; el scorer ML (capa usecase) es CPU-bound. Empaquetar todas las capas en un único binario fuerza el mismo replica count para todas las preocupaciones.
 
@@ -23,7 +23,7 @@ La restricción es la complejidad: un binario único con interfaces internas es 
 
 ## Decisión
 
-Se estructura `poc/java-vertx-distributed/` como un reactor Maven de cinco módulos donde cada módulo no compartido (`controller-app`, `usecase-app`, `repository-app`, `consumer-app`) compila a un fat JAR independiente y corre en un contenedor Docker separado. El módulo `shared` contiene value objects y contratos de eventos. La comunicación entre capas usa el event bus clusterizado de Vert.x con Hazelcast TCP cluster manager. Cada módulo tiene exactamente una clase `Main` que bootstrapea solo sus propios verticles.
+Se estructura `poc/java-vertx-distributed/` como un reactor Gradle de cinco módulos donde cada módulo no compartido (`controller-app`, `usecase-app`, `repository-app`, `consumer-app`) compila a un fat JAR independiente y corre en un contenedor Docker separado. El módulo `shared` contiene value objects y contratos de eventos. La comunicación entre capas usa el event bus clusterizado de Vert.x con Hazelcast TCP cluster manager. Cada módulo tiene exactamente una clase `Main` que bootstrapea solo sus propios verticles.
 
 ## Alternativas consideradas
 

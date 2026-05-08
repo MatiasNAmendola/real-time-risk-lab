@@ -16,7 +16,7 @@ fi
 echo "Running integration tests..." | tee "$OUT_DIR/stdout.log"
 
 set +e
-(cd "${REPO_ROOT}/tests/integration" && mvn -Pintegration verify) \
+(cd "${REPO_ROOT}" && ./gradlew :tests:integration:test) \
   >> "$OUT_DIR/stdout.log" 2> "$OUT_DIR/stderr.log"
 EXIT_CODE=$?
 set -e

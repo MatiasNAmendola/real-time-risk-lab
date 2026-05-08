@@ -13,7 +13,7 @@ The shared helper lives at `scripts/lib/output.sh` (`init_output <name>` + `fina
 
 | Script | Output dir | Timestamped | latest symlink | Failure log | Status |
 |---|---|---|---|---|---|
-| `cli/risk-smoke/bin/risk-smoke` | `out/smoke/<ts>/` | yes | yes | yes | OK (unchanged) |
+| `cd cli/risk-smoke && go run .` | `out/smoke/<ts>/` | yes | yes | yes | OK (unchanged) |
 | `cli/risk-smoke/scripts/demo.sh` | `out/risk-smoke-demo/<ts>/` | yes | yes | yes | FIXED |
 | `scripts/test-all.sh` | `out/test-all/<ts>/` | yes | yes | yes | OK (unchanged) |
 | `scripts/test-all-report.sh` | regenerates inside existing run dir | n/a | n/a | n/a | OK (no own output dir needed) |
@@ -36,8 +36,8 @@ The shared helper lives at `scripts/lib/output.sh` (`init_output <name>` + `fina
 | `poc/k8s-local/scripts/down.sh` | `out/k8s-down/<ts>/` | yes | yes | yes | FIXED |
 | `poc/k8s-local/scripts/status.sh` | `out/k8s-status/<ts>/` + `cluster-state.txt` | yes | yes | yes | FIXED |
 | `poc/k8s-local/scripts/demo.sh` | `out/k8s-demo/<ts>/` | yes | yes | yes | FIXED |
-| `poc/vertx-risk-platform/scripts/build.sh` | stdout only (mvnw wrapper call) | no | no | no | TODO: add output.sh if this PoC is used actively |
-| `poc/vertx-risk-platform/scripts/mvnw-local.sh` | passthrough to mvn — not a run script | n/a | n/a | n/a | OK (not a standalone run) |
+| `poc/vertx-risk-platform/scripts/run-local-pods.sh` | stdout only (./gradlew wrapper call) | no | no | no | TODO: add output.sh if this PoC is used actively |
+| `poc/vertx-risk-platform/scripts/run-local-pods.sh` | passthrough to ./gradlew — not a run script | n/a | n/a | n/a | OK (not a standalone run) |
 | `poc/vertx-risk-platform/scripts/run-local-pods.sh` | `out/vertx-platform-run/<ts>/` + per-pod `.log` | yes | yes | yes | FIXED |
 | `poc/vertx-risk-platform/scripts/smoke.sh` | `out/vertx-platform-smoke/<ts>/` | yes | yes | yes | FIXED |
 | `poc/vertx-risk-platform/scripts/stop-local-pods.sh` | `out/vertx-platform-stop/<ts>/` | yes | yes | yes | FIXED |
@@ -65,6 +65,6 @@ finalize_output "$exit_code"   # writes meta.json; prints "Output: ..." line
 
 ## TODOs left
 
-- `poc/vertx-risk-platform/scripts/build.sh` — passes through to `mvnw-local.sh`; if this PoC becomes active add `output.sh` integration.
+- `poc/vertx-risk-platform/scripts/run-local-pods.sh` — passes through to `gradle-local.sh`; if this PoC becomes active add `output.sh` integration.
 - `poc/java-vertx-distributed/scripts/fetch-jacoco-agent.sh` — single-purpose idempotent downloader; a run log would be noise. Add only if there's a CI need to audit agent downloads.
-- Existing scripts that already produced output (`cli/risk-smoke/bin/risk-smoke`, `scripts/test-all.sh`, `scripts/atdd-bare.sh`, `poc/java-vertx-distributed/scripts/atdd.sh`, `tests/risk-engine-atdd/scripts/report.sh`) were not refactored to use `output.sh` to avoid regressions — their existing logic is equivalent. Migrate opportunistically.
+- Existing scripts that already produced output (`cd cli/risk-smoke && go run .`, `scripts/test-all.sh`, `scripts/atdd-bare.sh`, `poc/java-vertx-distributed/scripts/atdd.sh`, `tests/risk-engine-atdd/scripts/report.sh`) were not refactored to use `output.sh` to avoid regressions — their existing logic is equivalent. Migrate opportunistically.

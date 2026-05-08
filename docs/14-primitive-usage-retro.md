@@ -20,7 +20,7 @@ scope: post-mortem
 | `add-fraud-rule` | Agregar regla deterministica al motor de decisiones |
 | `add-helm-template` | Agregar recurso Kubernetes como template Helm |
 | `add-idempotency-key` | Agregar soporte de idempotencia a use case o endpoint |
-| `add-jacoco-coverage-target` | Agregar/actualizar target JaCoCo en modulo Maven |
+| `add-jacoco-coverage-target` | Agregar/actualizar target JaCoCo en modulo Gradle |
 | `add-kafka-consumer` | Agregar consumidor Kafka/Redpanda para eventos de dominio |
 | `add-kafka-publisher` | Agregar publicacion de eventos de dominio a Redpanda/Kafka |
 | `add-mock-aws-service` | Agregar servicio AWS mockeado localmente |
@@ -60,7 +60,7 @@ scope: post-mortem
 
 ## 2. Acciones reales de la sesion (reconstruidas desde vault y artefactos)
 
-Fuente: `vault/01-Sessions/2026-05-07-prep-day.md` + artefactos en `poc/`, `tests/`, `docs/`, `cli/`, `bench/`, `.ai/`.
+Fuente: artefactos en `poc/`, `tests/`, `docs/`, `cli/`, `bench/`, `.ai/`.
 
 1. Analyze production-grade fraud detection use case requirements (Transactional Risk, 150 TPS, p99 < 300ms)
 2. Producir docs 00-04 (mapa tecnico, design framework, discovery questions, roadmap, clean arch)
@@ -72,7 +72,7 @@ Fuente: `vault/01-Sessions/2026-05-07-prep-day.md` + artefactos en `poc/`, `test
 8. Refactorizar `java-risk-engine` al layout enterprise Go
 9. Producir docs 05-09 (latency budget, eventos versionados, lambda vs EKS, ML online, architecture question bank)
 10. Investigacion profunda de patrones enterprise Go
-11. Construir PoC Vert.x distribuida `poc/java-vertx-distributed/` (4 modulos Maven, Hazelcast, 4 redes Docker)
+11. Construir PoC Vert.x distribuida `poc/java-vertx-distributed/` (4 modulos Gradle, Hazelcast, 4 redes Docker)
 12. Sumar todos los patrones de comunicacion a Vert.x: REST, SSE, WebSocket, Webhooks, Kafka publisher
 13. Sumar OTEL completo a Vert.x (MDC correlationId, custom spans, Micrometer metrics, OpenObserve)
 14. Construir `poc/k8s-local/` con k3d + ArgoCD + Argo Rollouts + kube-prom-stack + Redpanda + OpenObserve
@@ -151,7 +151,7 @@ La sesion siguio el orden cronologico documentado en el blow-by-blow: primero la
 
 ### b) Los agentes posteriores a la construccion del sistema .ai/ tampoco las invocaron
 
-Los pasos 18-32 (reporting, ArchUnit, testcontainers, benchmark) se ejecutaron mientras el sistema `.ai/` ya existia. Aun asi, ningun prompt de sub-agente cito `SKILL: Load .ai/primitives/skills/X.md`. El orquestador replic su patron previo de prompts auto-contenidos.
+Los pasos 18-32 (reporting, ArchUnit, testcontainers, benchmark) se ejecutaron mientras el sistema `.ai/` ya existia. Aun asi, ningun prompt de sub-agente cito `SKILL: Load .ai/primitives/skills/debug-failing-test.md`. El orquestador replic su patron previo de prompts auto-contenidos.
 
 ### c) El skill-router existe pero nunca se llamo como paso previo
 
@@ -179,13 +179,13 @@ Reemplazar el echo stub en `.claude/settings.json` por:
   "hooks": [
     {
       "type": "command",
-      "command": "python3 .ai/scripts/skill-router.py \"$CLAUDE_TOOL_INPUT_description\" 2>/dev/null >> .ai/logs/skill-routing-$(date +%Y%m%d).log || true"
+      "command": "python3 .ai/scripts/skill-router.py \"$CLAUDE_TOOL_INPUT_description\" 2>/dev/null >> out/agent-logs/skill-routing-$(date +%Y%m%d).log || true"
     }
   ]
 }
 ```
 
-Esto produce `.ai/logs/skill-routing-YYYYMMDD.log` con los top-3 skills relevantes para cada Edit/Write. Al final de la sesion, ese log es la evidencia auditeable de uso.
+Esto produce `out/agent-logs/skill-routing-YYYYMMDD.log` con los top-3 skills relevantes para cada Edit/Write. Al final de la sesion, ese log es la evidencia auditeable de uso.
 
 ### 2. Prompt prefix obligatorio en CLAUDE.md
 
@@ -214,7 +214,7 @@ Exponer `skill-router.py` como MCP tool server para que Claude Code pueda invoca
 
 | Metrica | Objetivo | Como medir |
 |---|---|---|
-| % de tasks que invocaron skill-router antes del dispatch | > 80% | Contar lineas en `.ai/logs/skill-routing-<sesion>.log` vs. total de sub-agentes lanzados |
+| % de tasks que invocaron skill-router antes del dispatch | > 80% | Contar lineas en `out/agent-logs/skill-routing-<sesion>.log` vs. total de sub-agentes lanzados |
 | % de prompts a sub-agentes que citan skill o workflow | > 70% | Grep `SKILL: Load` o `WORKFLOW: Load` en transcripcion de sesion |
 | Gaps de primitiva identificados | Tender a 0 (cubrir los 6 detectados hoy) | Contar filas "gap" en la tabla del retro siguiente |
 | Hooks activos (comandos reales, no echo) | 5/5 hooks wired | `cat .claude/settings.json | grep -c command` y verificar que ninguno es solo echo |

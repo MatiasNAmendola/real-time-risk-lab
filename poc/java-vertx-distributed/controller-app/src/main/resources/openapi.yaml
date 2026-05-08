@@ -6,7 +6,7 @@ info:
     and full OpenTelemetry observability.
   version: "1.0.0"
   contact:
-    name: NaranjaX
+    name: Risk Decision Platform
 servers:
   - url: http://localhost:8080
     description: Local development

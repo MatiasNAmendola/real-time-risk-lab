@@ -100,7 +100,7 @@ docker exec compose-openbao-1 sh -c 'BAO_ADDR=http://127.0.0.1:8200 BAO_TOKEN=ro
 
 ## 4. HTTP 4xx — payload validation
 
-DTO autoritativo: `poc/java-vertx-distributed/shared/.../RiskRequest.java` (ADR-… verás referencia en docs/34).
+DTO autoritativo: `poc/java-vertx-distributed/shared/src/main/java/io/riskplatform/distributed/shared/RiskRequest.java` (ADR-… verás referencia en docs/34-lessons-learned.md).
 
 Campos requeridos: `transactionId`, `customerId`, `amountCents`, `correlationId`, `idempotencyKey`. Cualquier extra es ignorado.
 

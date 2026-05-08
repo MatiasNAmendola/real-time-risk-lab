@@ -8,7 +8,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/naranjax/risk-smoke/internal/config"
+	"github.com/riskplatform/risk-smoke/internal/config"
 )
 
 // AsyncAPICheck fetches /asyncapi.json and validates asyncapi version 3.x.

@@ -9,7 +9,7 @@ import (
 
 	"github.com/coder/websocket"
 	"github.com/coder/websocket/wsjson"
-	"github.com/naranjax/risk-smoke/internal/config"
+	"github.com/riskplatform/risk-smoke/internal/config"
 )
 
 var wsPayloads = []map[string]interface{}{

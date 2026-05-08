@@ -2,7 +2,13 @@
 
 Plataforma de práctica para discutir decisiones de riesgo/fraude en tiempo real: 150 TPS sostenidos, presupuesto p99 < 300ms, camino crítico sincrónico para la decisión y flujo asíncrono para auditoría, eventos, ML/downstream y observabilidad.
 
-> No es un sistema productivo cerrado. Es una demo técnica curada para hablar de arquitectura, performance, trazabilidad, boundaries limpios, despliegue distribuido y trade-offs operativos.
+> Te comparto una exploración técnica curada para discutir arquitectura de decisiones de riesgo en tiempo real. No intenta ser producción cerrada, sino una demo conversacional para hablar de trade-offs: Clean Architecture, boundaries, performance, trazabilidad, evaluación sincrónica, eventos asíncronos, permisos entre componentes, benchmarks y simulación local de despliegue distribuido.
+
+## Alcance y licencia
+
+- **No es producción**: es una exploración técnica reproducible para discusiones técnicas y reviews de arquitectura. Los mocks locales, credenciales de demo y manifiestos k8s existen solo para discusión y laboratorio.
+- **No incluye licencia OSS**: salvo que se agregue un `LICENSE`, el código queda visible para lectura/review pero no concede permisos explícitos de copia, modificación o redistribución.
+- **Stack de terceros**: MinIO/OpenBao/Redpanda y el resto del tooling se usan como servicios/dev dependencies; ver reglas internas de licencia en [`.ai/primitives/rules/licensing.md`](.ai/primitives/rules/licensing.md).
 
 ## Estado verificado actual
 
@@ -12,12 +18,13 @@ Plataforma de práctica para discutir decisiones de riesgo/fraude en tiempo real
 |---|---|
 | Repo Git local | OK (`git init` aplicado) |
 | Tooling core `./nx setup --verify` | OK; k3d/kustomize/mc/otel-cli/websocat quedan como opcionales de deep dive |
-| Quick tests `./nx test --composite quick` | OK: unit + architecture en secuencia determinística |
+| Quick check `./nx test --composite quick` | OK: guardrail live sin Gradle/JUnit; source boundaries + aviso de artefactos |
 | Consistency audit `./nx audit consistency` | OK: 91.9% con `--strict`, threshold 80% |
 | Confidentiality `./nx audit confidentiality` | OK: blocklist no vacía, scan real |
 | Scrub `./nx scrub` | OK: sin patrones obvios de secretos/PII |
 | Vert.x local pods | OK vía `poc/vertx-risk-platform/scripts/run-local-pods.sh` + `smoke.sh` |
-| Compose distribuido Vert.x | Usable para demo avanzada; healthcheck alineado a `/health` y wait aumentado |
+| Benchmark in-process `./nx bench inproc` | OK; usar como evidencia de latencia base del core |
+| Compose distribuido Vert.x | Modo avanzado; no es el demo principal |
 
 ## Qué demuestra
 
@@ -34,6 +41,7 @@ Plataforma de práctica para discutir decisiones de riesgo/fraude en tiempo real
 
 ```bash
 ./nx setup --verify
+./nx build
 ./nx test --composite quick
 ./nx audit consistency
 ./nx audit confidentiality
@@ -49,6 +57,32 @@ curl -s -X POST http://localhost:8080/risk \
   -H 'content-type: application/json' \
   -d '{"transactionId":"tx-demo","customerId":"cust-1","amountCents":200000,"correlationId":"demo-1","idempotencyKey":"demo-1","newDevice":true}' | jq .
 ```
+
+Verificación full/CI opcional — no usar como comando principal live:
+
+```bash
+./nx build --legacy-clean -x test
+# equivalente directo: ./gradlew clean build -x test
+```
+
+Benchmark principal:
+
+```bash
+./nx bench inproc
+```
+
+Checklist pre-publicación:
+
+```bash
+git status --short
+cli/clean-ignored.sh
+cli/clean-ignored.sh --force
+./nx audit confidentiality
+./nx scrub
+rg -n -i "secret|token|password|api[_-]?key|private[_-]?key|aws|openai|slack|credential" .
+```
+
+Antes de publicar, revisar manualmente cualquier hit del último comando: muchas apariciones son documentación o mocks de desarrollo, pero no deben quedar tokens/credenciales reales ni artefactos internos de sesión.
 
 Demo local de separación por pods/permisos:
 
@@ -74,12 +108,24 @@ Ver guía paso a paso en [`DEMO_SCRIPT.md`](DEMO_SCRIPT.md).
 
 El baseline ejecutable actual usa **Java 21 LTS** por compatibilidad de Gradle/JMH/Karate y tooling local. El repo conserva ADRs/reglas que discuten **Java 25 LTS** como objetivo técnico cuando el ecosistema soporte classfile 25 sin fricción. Esa diferencia está documentada como trade-off operativo, no como contradicción oculta.
 
+## Utilidades CLI
+
+```bash
+# Ver qué archivos ignorados se eliminarían
+cli/clean-ignored.sh
+
+# Eliminar archivos/directorios ignorados no trackeados
+cli/clean-ignored.sh --force
+```
+
+Ver [`cli/README.md`](cli/README.md) para el modo seguro, `--include-tracked` y notas de pre-share cleanup.
+
 ## Documentación principal
 
 - [`DEMO_SCRIPT.md`](DEMO_SCRIPT.md) — recorrido seguro para mostrar el repo.
 - [`STATUS.md`](STATUS.md) — matriz empírica actual.
 - [`docs/00-START-HERE.md`](docs/00-START-HERE.md) — onboarding extendido.
 - [`docs/09-architecture-question-bank.md`](docs/09-architecture-question-bank.md) — banco de preguntas/respuestas de arquitectura.
-- [`docs/36-technical-interview-positioning.md`](docs/36-technical-interview-positioning.md) — frase de posicionamiento para discusión técnica.
+- [`docs/36-technical-positioning.md`](docs/36-technical-positioning.md) — frase de posicionamiento para discusión técnica.
 - [`docs/12-rendimiento-y-separacion.md`](docs/12-rendimiento-y-separacion.md) — performance y trade-offs.
 - [`vault/02-Decisions/`](vault/02-Decisions/) — ADRs.

@@ -1,5 +1,5 @@
 ---
-description: ATDD-first testing strategy for NaranjaX risk engine
+description: ATDD-first testing strategy for Risk Decision Platform risk engine
 globs: ["**/src/test/**/*.java", "**/*.feature"]
 alwaysApply: false
 ---
@@ -24,7 +24,7 @@ See full rule: @.ai/primitives/rules/testing-atdd.md
 ## Coverage targets
 
 - domain/ and application/: >= 80% line, >= 75% branch
-- Run: mvn verify -pl <module>
+- Run: ./gradlew :<module-path>:test :<module-path>:jacocoTestReport
 
 ## Never
 

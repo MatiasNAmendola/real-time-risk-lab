@@ -10,8 +10,8 @@
  * Shadow JAR:   one fat-jar; pod role selected via CLI arg (controller|usecase|repository).
  */
 plugins {
-    id("naranja.fatjar-conventions")
-    id("naranja.testing-conventions")
+    id("riskplatform.fatjar-conventions")
+    id("riskplatform.testing-conventions")
 }
 
 val libs = the<org.gradle.accessors.dm.LibrariesForLibs>()
@@ -33,18 +33,11 @@ dependencies {
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
-tasks.withType<Test>().configureEach {
-    // These tests bind fixed ports (8080/8081/8082). Running test classes concurrently causes
-    // "address already in use" failures. Force sequential execution within this module.
-    maxParallelForks = 1
-    // Fork a fresh JVM for each test class so port state is fully cleaned between classes.
-    forkEvery = 1
-}
-
 tasks.named<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar>("shadowJar") {
     archiveBaseName.set("vertx-risk-platform")
     archiveClassifier.set("")
+    archiveVersion.set("")
     manifest {
-        attributes("Main-Class" to "com.naranjax.interview.vertx.common.PodMain")
+        attributes("Main-Class" to "io.riskplatform.vertx.common.PodMain")
     }
 }

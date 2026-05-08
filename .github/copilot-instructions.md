@@ -4,7 +4,7 @@
 
 Risk Decision Platform — Three-Architecture Exploration.
 Technical exploration of a real-time fraud detection use case: 150 TPS, p99 < 300ms latency.
-Stack: Java 25 LTS, Vert.x 5.0.12, Maven 3.9, Postgres 16, Valkey 8, Redpanda, k3d/OrbStack.
+Stack: Java 21 LTS executable baseline, Gradle Kotlin DSL, Vert.x 5.0.12, Postgres 16, Valkey 8, Redpanda, k3d/OrbStack.
 
 Full context: .ai/context/architecture.md
 PoC inventory: .ai/context/poc-inventory.md
@@ -12,7 +12,7 @@ Stack versions: .ai/context/stack.md
 
 ## Non-negotiable rules
 
-1. Java 25 LTS only. Do not use Java 21 or 26. Use --release 25 and <maven.compiler.release>25</maven.compiler.release>.
+1. Java 21 LTS is the executable baseline via Gradle toolchains (`--release 21`). Java 25 LTS is a documented future target only.
 2. Clean Architecture layout: domain/{entity,repository,usecase,service,rule}, application/{usecase/<aggregate>,mapper,dto}, infrastructure/{controller,consumer,repository,resilience,time}, config/, cmd/.
 3. domain/ must NOT import from application/ or infrastructure/ — ever.
 4. ATDD first: write the .feature file before any production code.

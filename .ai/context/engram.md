@@ -4,7 +4,7 @@ Engram MCP provee memoria persistente entre sesiones para todos los agentes que 
 
 ## Identificadores del proyecto
 
-- **Project key**: `naranjax/practica-entrevista`
+- **Project key**: `riskplatform/risk-platform-practice`
 - **Project name**: Risk Decision Platform — Three-Architecture Exploration
 
 ## Topic keys establecidos
@@ -12,12 +12,12 @@ Engram MCP provee memoria persistente entre sesiones para todos los agentes que 
 | Topic key | Contenido |
 |---|---|
 | `risk-platform/exploration-state` | Estado general de preparacion: que esta listo, que falta, progreso diario |
-| `naranjax/poc/java-risk-engine` | Decisiones, bugs, descubrimientos del PoC bare-javac |
-| `naranjax/poc/java-vertx-distributed` | Decisiones del PoC Vert.x multi-modulo |
-| `naranjax/poc/vertx-risk-platform` | Decisiones de la plataforma Vert.x completa |
-| `naranjax/poc/k8s-local` | Configuracion y troubleshooting de k8s local |
-| `naranjax/primitives/system` | El sistema .ai/ de primitivas (este sistema) |
-| `naranjax/adr/<N>` | ADRs individuales (ej. `naranjax/adr/001`) |
+| `riskplatform/poc/java-risk-engine` | Decisiones, bugs, descubrimientos del PoC bare-javac |
+| `riskplatform/poc/java-vertx-distributed` | Decisiones del PoC Vert.x multi-modulo |
+| `riskplatform/poc/vertx-risk-platform` | Decisiones de la plataforma Vert.x completa |
+| `riskplatform/poc/k8s-local` | Configuracion y troubleshooting de k8s local |
+| `riskplatform/primitives/system` | El sistema .ai/ de primitivas (este sistema) |
+| `riskplatform/adr/<N>` | ADRs individuales (ej. `riskplatform/adr/001`) |
 
 ## Cuándo guardar (mem_save)
 
@@ -44,7 +44,7 @@ Buscar proactivamente:
 ```
 # Inicio de sesion:
 mem_current_project()
-mem_context(project: "naranjax/practica-entrevista")
+mem_context(project: "riskplatform/risk-platform-practice")
 
 # Busqueda:
 mem_search(query: "risk-platform <topic>")
@@ -55,8 +55,8 @@ mem_save(
   title: "Decision: <verbo + que>",
   type: "decision",
   scope: "project",
-  project: "naranjax/practica-entrevista",
-  topic_key: "naranjax/<subtema>/<clave>",
+  project: "riskplatform/risk-platform-practice",
+  topic_key: "riskplatform/<subtema>/<clave>",
   content: "What: ...\nWhy: ...\nWhere: ...\nLearned: ..."
 )
 
@@ -64,14 +64,14 @@ mem_save(
 mem_save(
   title: "Fix: <descripcion>",
   type: "bugfix",
-  topic_key: "naranjax/poc/<poc-name>",
-  project: "naranjax/practica-entrevista",
+  topic_key: "riskplatform/poc/<poc-name>",
+  project: "riskplatform/risk-platform-practice",
   content: "Root cause: ...\nFix: ...\nFiles: ...\nLearned: ..."
 )
 
 # Fin de sesion (OBLIGATORIO):
 mem_session_summary(
-  project: "naranjax/practica-entrevista",
+  project: "riskplatform/risk-platform-practice",
   goal: "...",
   instructions: "...",
   discoveries: "...",

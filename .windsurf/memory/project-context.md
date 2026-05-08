@@ -5,12 +5,12 @@ Date: 2026-05-08
 
 ## PoCs
 - poc/java-risk-engine: Clean Architecture bare-javac, no frameworks
-- poc/java-vertx-distributed: 4 Maven modules as separate pods
+- poc/java-vertx-distributed: 4 Gradle modules as separate pods
 - poc/vertx-risk-platform: Full Vert.x 5 with all comm patterns
 - poc/k8s-local: k3d/OrbStack + ArgoCD + Argo Rollouts + kube-prom + AWS mocks
 
 ## Key decisions
-- Java 25 LTS (ADR-001)
+- Java 21 LTS como baseline ejecutable; Java 25 LTS como objetivo documentado (ADR-001)
 - Enterprise Go layout in Java (ADR-002)
 - Vert.x 5 over Spring Boot (ADR-003)
 - OpenObserve for OTEL (ADR-004)

@@ -19,9 +19,9 @@ PoC sin dependencias externas para ejercitar los conceptos clave del dominio:
 
 ## Java
 
-El código compila con OpenJDK 25 (`--release 25`), la última LTS disponible localmente vía Homebrew.
+El código compila con baseline Java 21 LTS (`--release 21`) para mantener compatibilidad de tooling. Puede ejecutarse sobre JDK 21+; Java 25 LTS queda como objetivo documentado.
 
-Java 26 es la última feature release vigente al 2026-05-07, pero para una PoC operable y defendible en review usamos Java 25 LTS. En producción, esa diferencia es una decisión operativa explícita, no un detalle técnico menor.
+El baseline ejecutable de esta PoC es Java 21 LTS por compatibilidad del tooling. Java 25 LTS queda documentado como objetivo de runtime moderno cuando el ecosistema soporte el cambio sin fricción.
 
 ## Ejecutar
 
@@ -37,7 +37,7 @@ Java 26 es la última feature release vigente al 2026-05-07, pero para una PoC o
 
 ## Benchmark
 
-Ejecuta un microbenchmark de latencia usando virtual threads (Java 25).
+Ejecuta un microbenchmark de latencia usando virtual threads (disponibles desde Java 21).
 
 ```bash
 # Defaults: N=5000 requests, M=32 concurrency, warmup=500
@@ -84,7 +84,7 @@ Measuring...
 Layout alineado al layout canónico de servicios Go enterprise.
 
 ```text
-src/main/java/com/naranjax/interview/risk
+src/main/java/io/riskplatform/engine
 ├── cmd/                                   # cmd/main.go en mega — entry point
 │   └── RiskApplication.java               # delega a CliRunner
 ├── config/                                # wiring manual de dependencias
@@ -193,7 +193,7 @@ RISK_SMOKE_BASE_URL=http://localhost:8081 ./bin/risk-smoke --headless
 
 ## AWS integration
 
-### Ports creados (Phase 1 — bare-javac, sin Maven)
+### Ports creados (Phase 1 — bare-javac, sin Gradle)
 
 Se crearon los ports de salida y sus implementaciones de degradación:
 

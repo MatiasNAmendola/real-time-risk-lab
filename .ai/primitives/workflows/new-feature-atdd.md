@@ -34,7 +34,7 @@ Feature: <comportamiento>
 ### 2. Correr → debe fallar (RED confirmado)
 
 ```bash
-mvn test -pl atdd-tests -Dtest=KarateRunner
+./gradlew :poc:java-vertx-distributed:atdd-tests:test -Patdd -Dtest=KarateRunner
 # Expected: BUILD FAILURE con "scenario failed"
 ```
 
@@ -52,7 +52,7 @@ Seguir en orden:
 ### 4. Correr → debe pasar (GREEN)
 
 ```bash
-mvn test -pl atdd-tests
+./gradlew :poc:java-vertx-distributed:atdd-tests:test -Patdd
 # Expected: BUILD SUCCESS
 ```
 
@@ -66,7 +66,7 @@ mvn test -pl atdd-tests
 
 ```bash
 # Verificar coverage
-mvn verify -pl <module>
+./gradlew :<module-path>:test :<module-path>:jacocoTestReport
 
 # Commit
 git add poc/ tests/ .ai/context/

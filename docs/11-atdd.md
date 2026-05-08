@@ -60,7 +60,7 @@ Dos suites paralelas, una por PoC:
 
 ### `tests/risk-engine-atdd/` — Cucumber-JVM
 - Para la PoC bare-javac.
-- Módulo Maven independiente que NO contamina la build javac directa de la PoC.
+- Módulo Gradle independiente que NO contamina la build javac directa de la PoC.
 - Cucumber porque permite step definitions Java contra el use case directamente, sin necesidad de levantar HTTP.
 
 Ambos generan reports JaCoCo. La métrica que miramos:
@@ -97,7 +97,7 @@ Una matriz como esta this is the kind of evidence that communicates real coverag
 Para mostrar ATDD vivo, tres pasos:
 
 1. **Abrir un feature file** (`05_webhook_callback.feature`) y leer en voz alta el escenario. "Esto lo entiende Producto, no necesito traducirle."
-2. **Correr `mvn test`** y mostrar el feature pasando con `--reports`. Karate genera HTML con el flujo HTTP visible.
+2. **Correr `./gradlew test`** y mostrar el feature pasando con `--reports`. Karate genera HTML con el flujo HTTP visible.
 3. **Tocar la regla de negocio** en el código (cambiar el threshold de DECLINE de 200000 a 100000) y volver a correr — el feature `02_rest_decision.feature` que esperaba REVIEW para 150000 ahora falla. Mostrar el output con la línea exacta que rompió.
 
 > "El feature falla en el lenguaje de Producto, no en el lenguaje del compilador. Esa diferencia es ATDD."
@@ -117,7 +117,7 @@ ATDD agrega ceremonia. No conviene para:
 |---|---|---|
 | Vert.x distribuida | Karate | E2E HTTP/WS/Kafka, sintaxis terse, sin step definitions Java triviales |
 | risk-engine bare-javac | Cucumber-JVM 7 | Acceso programático directo al use case, sin servidor HTTP de por medio |
-| Coverage | JaCoCo 0.8 | Estándar JVM, integra con Maven y CI |
+| Coverage | JaCoCo 0.8 | Estándar JVM, integra con Gradle y CI |
 
 Para Go (el smoke runner), no agregamos ATDD propio — los smoke checks ya son acceptance tests implícitos. Si fuera necesario formalizarlo, `cucumber/godog` es la elección.
 

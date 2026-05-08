@@ -1,6 +1,6 @@
 ---
-description: Clean Architecture and Java conventions for NaranjaX risk engine
-globs: ["**/*.java", "**/pom.xml"]
+description: Clean Architecture and Java conventions for Risk Decision Platform risk engine
+globs: ["**/*.java", "**/*.gradle.kts"]
 alwaysApply: false
 ---
 
@@ -17,11 +17,11 @@ See full rules: @.ai/primitives/rules/architecture-clean.md
 - Infrastructure layer: infrastructure/{controller,consumer,repository,resilience,time}
 - Config + cmd: wiring only
 
-## Java 25
+## Java baseline
 
-- --release 25 in all pom.xml
-- Use records for Value Objects
-- Use virtual threads for blocking I/O
+- Executable baseline is Java 21 LTS via Gradle toolchains (`--release 21`).
+- Java 25 LTS is a documented future target only.
+- Use records for Value Objects where they fit.
 
 ## Naming
 

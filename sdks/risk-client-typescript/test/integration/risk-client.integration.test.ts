@@ -1,5 +1,5 @@
 /**
- * Integration tests for @naranjax/risk-client (TypeScript SDK).
+ * Integration tests for @riskplatform/risk-client (TypeScript SDK).
  *
  * Assumes the full Vertx distributed stack is already running on localhost:8080.
  * Start the stack before running these tests:

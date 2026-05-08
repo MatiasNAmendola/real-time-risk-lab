@@ -11,15 +11,15 @@
 ```kotlin
 // build.gradle.kts
 dependencies {
-    implementation("com.naranjax.poc:risk-client:1.0.0-SNAPSHOT")
+    implementation("io.riskplatform.poc:risk-client:1.0.0-SNAPSHOT")
 }
 ```
 
-### Maven
+### Gradle
 
 ```xml
 <dependency>
-    <groupId>com.naranjax.poc</groupId>
+    <groupId>io.riskplatform.poc</groupId>
     <artifactId>risk-client</artifactId>
     <version>1.0.0-SNAPSHOT</version>
 </dependency>
@@ -49,8 +49,8 @@ System.out.println(decision.outcome()); // APPROVE | DECLINE | REVIEW
 | Enum value | REST base URL | Use for |
 |---|---|---|
 | `Environment.PROD` | `https://risk.example.com` | Production traffic |
-| `Environment.STAGING` | `https://risk-staging.naranjax.com` | Pre-prod validation |
-| `Environment.DEV` | `https://risk-dev.naranjax.com` | Feature branches |
+| `Environment.STAGING` | `https://risk-staging.riskplatform.com` | Pre-prod validation |
+| `Environment.DEV` | `https://risk-dev.riskplatform.com` | Feature branches |
 | `Environment.LOCAL` | `http://localhost:8080` | Local development |
 
 The SDK resolves all downstream URLs (REST endpoints, Kafka brokers, SQS queue ARNs,
@@ -90,7 +90,7 @@ system properties.
 
 ```java
 .oauth2(OAuth2Config.builder()
-    .tokenEndpoint("https://auth.naranjax.com/token")
+    .tokenEndpoint("https://auth.riskplatform.com/token")
     .clientId(System.getenv("OAUTH_CLIENT_ID"))
     .clientSecret(System.getenv("OAUTH_CLIENT_SECRET"))
     .build())
@@ -466,7 +466,7 @@ void evaluate_low_amount_returns_approve() {
 |---|---|---|
 | `RiskTimeoutException` on first call | Server not reachable or wrong `Environment` | Run `client.sync().health()` to verify connectivity |
 | `RiskAuthException` (401) | API key expired or wrong env key | Rotate key in secrets manager; verify `RISK_API_KEY` env var |
-| `426 Upgrade Required` | Server version newer than SDK | Bump SDK to latest patch: `implementation("com.naranjax.poc:risk-client:1.x.y")` |
+| `426 Upgrade Required` | Server version newer than SDK | Bump SDK to latest patch: `implementation("io.riskplatform.poc:risk-client:1.x.y")` |
 | SSE stream disconnects immediately | Firewall/load balancer idle timeout | Set `timeout` >= LB idle timeout or configure SSE keep-alive on server |
 | WebSocket `ChannelClosedException` | Heartbeat timeout — 30 s default | Ensure no proxy strips `Upgrade: websocket`; check reverse proxy WS config |
 | `RiskSchemaException` (422) | Request field invalid or missing | Log `e.validationErrors()` and fix request shape |

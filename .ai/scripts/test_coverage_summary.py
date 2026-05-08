@@ -42,7 +42,7 @@ class TestParseJacocoXml(unittest.TestCase):
             self.assertNotIn("/", name, msg=f"Package name contains slash: {name}")
 
     def test_known_package_present(self):
-        self.assertIn("com.naranjax.poc.pkg.risk.rule", self.data["packages"])
+        self.assertIn("io.riskplatform.poc.pkg.risk.rule", self.data["packages"])
 
 
 class TestCounterParsing(unittest.TestCase):
@@ -52,31 +52,31 @@ class TestCounterParsing(unittest.TestCase):
         self.data = cs.parse_jacoco_xml(_FIXTURE)
 
     def test_instruction_counter(self):
-        pkg = self.data["packages"]["com.naranjax.poc.pkg.risk.rule"]
+        pkg = self.data["packages"]["io.riskplatform.poc.pkg.risk.rule"]
         c = pkg["INSTRUCTION"]
         self.assertEqual(c["missed"], 0)
         self.assertEqual(c["covered"], 200)
 
     def test_branch_counter(self):
-        pkg = self.data["packages"]["com.naranjax.poc.pkg.risk.rule"]
+        pkg = self.data["packages"]["io.riskplatform.poc.pkg.risk.rule"]
         c = pkg["BRANCH"]
         self.assertEqual(c["missed"], 0)
         self.assertEqual(c["covered"], 40)
 
     def test_line_counter(self):
-        pkg = self.data["packages"]["com.naranjax.poc.pkg.risk.rule"]
+        pkg = self.data["packages"]["io.riskplatform.poc.pkg.risk.rule"]
         c = pkg["LINE"]
         self.assertEqual(c["missed"], 0)
         self.assertEqual(c["covered"], 50)
 
     def test_method_counter(self):
-        pkg = self.data["packages"]["com.naranjax.poc.pkg.risk.rule"]
+        pkg = self.data["packages"]["io.riskplatform.poc.pkg.risk.rule"]
         c = pkg["METHOD"]
         self.assertEqual(c["missed"], 0)
         self.assertEqual(c["covered"], 20)
 
     def test_class_counter(self):
-        pkg = self.data["packages"]["com.naranjax.poc.pkg.risk.rule"]
+        pkg = self.data["packages"]["io.riskplatform.poc.pkg.risk.rule"]
         c = pkg["CLASS"]
         self.assertEqual(c["missed"], 0)
         self.assertEqual(c["covered"], 5)
@@ -111,7 +111,7 @@ class TestNABranches(unittest.TestCase):
 
     def test_config_package_has_no_branch(self):
         # config package in fixture has no BRANCH counter -> missed=0,covered=0
-        pkg = self.data["packages"]["com.naranjax.interview.risk.config"]
+        pkg = self.data["packages"]["io.riskplatform.engine.config"]
         branch_pct = cs._pct(pkg["BRANCH"]["missed"], pkg["BRANCH"]["covered"])
         self.assertIsNone(branch_pct)
 
@@ -151,7 +151,7 @@ class TestMarkdownOutput(unittest.TestCase):
         buf = io.StringIO()
         cs.print_markdown(self.data, out=buf)
         output = buf.getvalue()
-        self.assertIn("com.naranjax.poc.pkg.risk.rule", output)
+        self.assertIn("io.riskplatform.poc.pkg.risk.rule", output)
 
 
 class TestJsonOutput(unittest.TestCase):

@@ -1,4 +1,4 @@
-module github.com/naranjax/risk-client
+module github.com/riskplatform/risk-client
 
 go 1.26
 

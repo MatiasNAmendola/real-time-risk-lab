@@ -21,7 +21,7 @@ GitHub Copilot lee `.github/copilot-instructions.md` como archivo global de inst
 ---
 applyTo: "**/*.java"
 # Multiples patrones:
-# applyTo: "**/*.java,**/pom.xml"
+# applyTo: "**/*.java,**/build.gradle.kts"
 # Excluir agentes especificos (desde noviembre 2025):
 # excludeAgent: "code-review"
 # excludeAgent: "coding-agent"

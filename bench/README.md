@@ -14,7 +14,7 @@ Comparative performance testing for the four PoCs of this exploration.
 
 ```bash
 # Build everything
-cd bench && mvn package
+cd bench && ./gradlew shadowJar
 
 # Run in-process only (no Docker required)
 ./scripts/run-inprocess.sh
@@ -57,7 +57,7 @@ out/
 ```bash
 ./scripts/run-comparison.sh
 # or explicitly:
-java -jar runner/target/runner.jar \
+java -jar runner/build/libs/runner-0.1.0-SNAPSHOT.jar \
   --inprocess out/perf/inprocess-jmh-<ts>.json \
   --distributed out/distributed/<ts>.json \
   --output out/perf/<ts>/

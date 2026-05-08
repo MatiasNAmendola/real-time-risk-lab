@@ -2,7 +2,7 @@
 
 ## Versión de Java elegida
 
-Al 7 de mayo de 2026, la última release feature publicada es Java 26, y la última LTS es Java 25. En esta máquina está disponible OpenJDK 25 vía Homebrew (`/opt/homebrew/opt/openjdk`), así que la PoC compila con `--release 25`.
+El baseline ejecutable actual es Java 21 LTS (`--release 21`) por compatibilidad del tooling de build/test. Java 25 LTS queda documentado como objetivo arquitectónico cuando JMH/Shadow/Karate/ArchUnit soporten classfile 25 sin fricción.
 
 The clean way to articulate this:
 

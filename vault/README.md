@@ -10,7 +10,7 @@ This vault contains all material related to the risk decision platform explorati
 
 ## What is Obsidian
 
-Obsidian is a local-first Markdown knowledge base that renders bidirectional links between notes. Notes link to each other via `[[NoteName]]` wikilinks, and the graph view shows how concepts cluster.
+Obsidian is a local-first Markdown knowledge base that renders bidirectional links between notes. Notes link to each other via wikilinks de estilo Obsidian, and the graph view shows how concepts cluster.
 
 ## How to Open
 

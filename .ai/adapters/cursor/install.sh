@@ -27,13 +27,13 @@ Este repo es una exploración técnica de arquitectura de riesgo transaccional.
 ## Contexto clave
 
 - Sistema de fraude tiempo real: 150 TPS, p99 < 300ms
-- Stack: Java 25 LTS, Vert.x 5.0.12, Maven, Postgres 16, Valkey 8, Redpanda, k3d/OrbStack
+- Stack: Java 21 LTS baseline operativo (Java 25 LTS objetivo documentado), Gradle Kotlin DSL, Vert.x 5.0.12, Postgres 16, Valkey 8, Redpanda, k3d/OrbStack
 - 4 PoCs en poc/: java-risk-engine, java-vertx-distributed, vertx-risk-platform, k8s-local
 - Full context: @.ai/context/architecture.md
 
 ## Reglas non-negotiable
 
-1. Java 25 LTS. NO bajar a 21. NO subir a 26. Ver @.ai/primitives/rules/java-version.md
+1. Java 21 LTS baseline operativo. Ver @.ai/primitives/rules/java-version.md
 2. Layout canonico enterprise Go. Ver @.ai/primitives/rules/architecture-clean.md
 3. ATDD primero. Ver @.ai/primitives/rules/testing-atdd.md
 4. OTEL en todo request. Ver @.ai/primitives/rules/observability-otel.md
@@ -54,7 +54,7 @@ echo "  created: $RULES_DIR/00-project.mdc"
 cat > "$RULES_DIR/10-architecture.mdc" <<'EOF'
 ---
 description: Clean Architecture and Java conventions for Risk Decision Platform risk engine
-globs: ["**/*.java", "**/pom.xml"]
+globs: ["**/*.java", "**/*.gradle.kts"]
 alwaysApply: false
 ---
 
@@ -71,9 +71,9 @@ See full rules: @.ai/primitives/rules/architecture-clean.md
 - Infrastructure layer: infrastructure/{controller,consumer,repository,resilience,time}
 - Config + cmd: wiring only
 
-## Java 25
+## Java baseline
 
-- --release 25 in all pom.xml
+- Java 21 LTS (`--release 21`) en el build actual; Java 25 es objetivo documentado
 - Use records for Value Objects
 - Use virtual threads for blocking I/O
 
@@ -117,7 +117,7 @@ See full rule: @.ai/primitives/rules/testing-atdd.md
 ## Coverage targets
 
 - domain/ and application/: >= 80% line, >= 75% branch
-- Run: mvn verify -pl <module>
+- Run: ./gradlew :<module>:test :<module>:jacocoTestReport
 
 ## Never
 

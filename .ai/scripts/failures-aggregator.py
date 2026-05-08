@@ -248,9 +248,9 @@ def _parse_cucumber_json(path: str, suite_name: str) -> SuiteResult:
 def _aggregate_cucumber(suite_name: str = "atdd-cucumber") -> SuiteResult:
     """Find and parse Cucumber JSON reports."""
     patterns = [
-        os.path.join(REPO_ROOT, "tests/risk-engine-atdd/target/cucumber.json"),
-        os.path.join(REPO_ROOT, "tests/**/target/cucumber.json"),
-        os.path.join(REPO_ROOT, "**/target/cucumber.json"),
+        os.path.join(REPO_ROOT, "tests/risk-engine-atdd/build/cucumber-reports/report.json"),
+        os.path.join(REPO_ROOT, "tests/**/build/cucumber-reports/report.json"),
+        os.path.join(REPO_ROOT, "**/build/cucumber-reports/report.json"),
     ]
     files = set()
     for p in patterns:
@@ -305,7 +305,7 @@ def _parse_karate_summary(path: str, suite_name: str) -> SuiteResult:
 def _aggregate_karate(suite_name: str = "atdd-karate") -> SuiteResult:
     """Find and parse Karate summary JSON reports."""
     patterns = [
-        os.path.join(REPO_ROOT, "poc/*/atdd-tests/target/karate-reports/karate-summary.json"),
+        os.path.join(REPO_ROOT, "poc/*/atdd-tests/build/karate-reports/karate-summary.json"),
         os.path.join(REPO_ROOT, "**/karate-reports/karate-summary.json"),
     ]
     files = set()

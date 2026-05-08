@@ -3,8 +3,8 @@ package tui
 import (
 	"github.com/charmbracelet/bubbles/spinner"
 	"github.com/charmbracelet/bubbletea"
-	"github.com/naranjax/risk-smoke/internal/config"
-	"github.com/naranjax/risk-smoke/internal/flows"
+	"github.com/riskplatform/risk-smoke/internal/config"
+	"github.com/riskplatform/risk-smoke/internal/flows"
 )
 
 // CheckEntry holds the mutable state for a single check displayed in the TUI.

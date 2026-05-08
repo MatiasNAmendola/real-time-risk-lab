@@ -13,7 +13,7 @@ export { ClientOptions, Environment, RiskRequest, RiskDecision, DecisionEvent,
 export { RiskClientError } from './http';
 
 /**
- * Entry point for the NaranjaX Risk Client SDK (TypeScript).
+ * Entry point for the Risk Decision Platform Client SDK (TypeScript).
  *
  * ```typescript
  * const client = new RiskClient({

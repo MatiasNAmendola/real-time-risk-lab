@@ -25,14 +25,14 @@ description: Risk Decision Platform project context and non-negotiable rules
 
 Exploración técnica de arquitectura de riesgo transaccional.
 Sistema de fraude tiempo real: 150 TPS, p99 < 300ms.
-Stack: Java 25 LTS, Vert.x 5.0.12, Maven, Postgres 16, Valkey 8, Redpanda, k3d/OrbStack.
+Stack: Java 21 LTS baseline operativo (Java 25 LTS objetivo documentado), Gradle Kotlin DSL, Vert.x 5.0.12, Postgres 16, Valkey 8, Redpanda, k3d/OrbStack.
 
 Full context: .ai/context/architecture.md
 PoC inventory: .ai/context/poc-inventory.md
 
 ## Reglas non-negotiable
 
-1. Java 25 LTS canonico. NO downgrade a 21. NO upgrade a 26.
+1. Java 21 LTS baseline operativo; Java 25 LTS queda como objetivo documentado.
 2. Clean Architecture layout (enterprise Go pattern). Ver .ai/primitives/rules/architecture-clean.md
 3. ATDD primero. Escribir .feature ANTES del codigo de produccion.
 4. OTEL en todo request: trace + log + metric. correlationId en MDC y header.
@@ -56,7 +56,7 @@ cat > "$RULES_DIR/10-java-arch.md" <<'EOF'
 ---
 trigger: glob
 glob: "**/*.java"
-description: Clean Architecture and Java 25 conventions
+description: Clean Architecture and Java baseline conventions
 ---
 
 # Architecture rules for Java code
@@ -75,9 +75,9 @@ config/ cmd/
 domain/ <- application/ <- infrastructure/ <- config/cmd/
 domain/ must NOT import from application/ or infrastructure/.
 
-## Java 25
+## Java baseline
 
-- --release 25 en todo pom.xml
+- Java 21 LTS (`--release 21`) en el build actual; Java 25 es objetivo documentado
 - Virtual threads para I/O bloqueante
 - Records para Value Objects
 
@@ -122,14 +122,14 @@ cat > "$REPO_ROOT/.windsurfrules" <<'EOF'
 
 Exploración técnica de arquitectura de riesgo transaccional.
 Sistema de fraude tiempo real: 150 TPS, p99 < 300ms.
-Stack: Java 25 LTS, Vert.x 5.0.12, Maven, Postgres 16, Valkey 8, Redpanda, k3d/OrbStack.
+Stack: Java 21 LTS baseline operativo (Java 25 LTS objetivo documentado), Gradle Kotlin DSL, Vert.x 5.0.12, Postgres 16, Valkey 8, Redpanda, k3d/OrbStack.
 
 Full context: .ai/context/architecture.md
 
 ## Java version
 
-- Java 25 LTS canonico. NO downgrade a 21. NO upgrade a 26.
-- --release 25 en todo pom.xml.
+- Java 21 LTS baseline operativo; Java 25 LTS queda como objetivo documentado.
+- --release 21 en el build actual.
 - Virtual threads para I/O bloqueante.
 - Records para Value Objects.
 

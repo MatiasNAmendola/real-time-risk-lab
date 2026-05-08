@@ -17,7 +17,7 @@ Interpretacion:
 
 ## Como funciona
 
-1. **Hook `read-tracker.sh`** — se ejecuta en cada `PreToolUse` para `Read`, `Glob` y `Grep`. Extrae el path del JSON de entrada via `jq` y lo escribe a `.ai/logs/reads-YYYY-MM-DD.jsonl`. Es no-bloqueante: siempre sale con exit 0.
+1. **Hook `read-tracker.sh`** — se ejecuta en cada `PreToolUse` para `Read`, `Glob` y `Grep`. Extrae el path del JSON de entrada via `jq` y lo escribe a `out/audit/reads-YYYY-MM-DD.jsonl`. Es no-bloqueante: siempre sale con exit 0.
 
 2. **`codebase-access-auditor.py`** — lee los logs de los ultimos N dias, categoriza cada path segun las reglas en `CATEGORIES`, calcula el ratio y genera un informe. Stdlib Python puro.
 
@@ -28,7 +28,7 @@ Read/Glob/Grep tool call
        |
 read-tracker.sh (PreToolUse hook)
        |
-.ai/logs/reads-YYYY-MM-DD.jsonl
+out/audit/reads-YYYY-MM-DD.jsonl
        |
 codebase-access-auditor.py
        |

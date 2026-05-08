@@ -1,4 +1,4 @@
-# @naranjax/risk-client
+# @riskplatform/risk-client
 
 > Risk engine client SDK for the TypeScript/Node.js ecosystem. Encapsulates 7 communication
 > channels (REST sync, REST batch, SSE, WebSocket, Webhooks, Kafka, SQS, Admin).
@@ -7,7 +7,7 @@
 ## Install
 
 ```bash
-npm install @naranjax/risk-client
+npm install @riskplatform/risk-client
 ```
 
 Requires Node.js 18+ and TypeScript 5+.
@@ -15,7 +15,7 @@ Requires Node.js 18+ and TypeScript 5+.
 ## Quick start
 
 ```typescript
-import { RiskClient, Environment } from '@naranjax/risk-client';
+import { RiskClient, Environment } from '@riskplatform/risk-client';
 
 const client = new RiskClient({
   environment: Environment.LOCAL,
@@ -36,8 +36,8 @@ console.log(decision.outcome); // 'APPROVE' | 'DECLINE' | 'REVIEW'
 | Value | REST base URL | Use for |
 |---|---|---|
 | `Environment.PROD` | `https://risk.example.com` | Production traffic |
-| `Environment.STAGING` | `https://risk-staging.naranjax.com` | Pre-prod validation |
-| `Environment.DEV` | `https://risk-dev.naranjax.com` | Feature branches |
+| `Environment.STAGING` | `https://risk-staging.riskplatform.com` | Pre-prod validation |
+| `Environment.DEV` | `https://risk-dev.riskplatform.com` | Feature branches |
 | `Environment.LOCAL` | `http://localhost:8080` | Local development |
 
 The SDK resolves all downstream URLs (REST endpoints, Kafka brokers, SQS queue ARNs,
@@ -46,7 +46,7 @@ WebSocket paths) from the `environment` value. You never hard-code infrastructur
 ### Full config options
 
 ```typescript
-import { RiskClient, Environment, RetryStrategy } from '@naranjax/risk-client';
+import { RiskClient, Environment, RetryStrategy } from '@riskplatform/risk-client';
 
 const client = new RiskClient({
   environment: Environment.PROD,
@@ -84,7 +84,7 @@ never commit it to source code.
 
 ```typescript
 oauth2: {
-  tokenEndpoint: 'https://auth.naranjax.com/token',
+  tokenEndpoint: 'https://auth.riskplatform.com/token',
   clientId: process.env.OAUTH_CLIENT_ID!,
   clientSecret: process.env.OAUTH_CLIENT_SECRET!,
 }
@@ -100,7 +100,7 @@ Synchronous point evaluation. Returns a `Promise<RiskDecision>` that resolves wh
 the server responds or rejects on timeout/error. Use for transactional flows.
 
 ```typescript
-import { RiskRequest, RiskDecision, Outcome } from '@naranjax/risk-client';
+import { RiskRequest, RiskDecision, Outcome } from '@riskplatform/risk-client';
 
 const req: RiskRequest = {
   transactionId: 'txn-001',
@@ -172,7 +172,7 @@ Bidirectional channel. Send requests and receive responses asynchronously. Suita
 for interactive/low-latency flows. The SDK manages heartbeat/ping-pong automatically.
 
 ```typescript
-import { RiskChannel } from '@naranjax/risk-client';
+import { RiskChannel } from '@riskplatform/risk-client';
 
 const ch: RiskChannel = await client.channel.open();
 
@@ -200,7 +200,7 @@ Register a callback URL that the server calls when decisions match your filter.
 Useful for event-driven architectures where you do not want to poll.
 
 ```typescript
-import { Subscription } from '@naranjax/risk-client';
+import { Subscription } from '@riskplatform/risk-client';
 import { createHmac } from 'crypto';
 
 // Subscribe
@@ -238,7 +238,7 @@ Subscribe to the decision stream via Kafka. The SDK manages broker discovery,
 consumer group coordination, offset commits, and deserialization.
 
 ```typescript
-import { DecisionEvent, CancellationToken } from '@naranjax/risk-client';
+import { DecisionEvent, CancellationToken } from '@riskplatform/risk-client';
 
 // Consume decisions
 const token: CancellationToken = await client.events.consumeDecisions(
@@ -268,7 +268,7 @@ Post requests to an SQS queue for asynchronous processing, or pull decision resu
 from the response queue. The SDK manages visibility timeouts and deletion.
 
 ```typescript
-import { CancellationToken } from '@naranjax/risk-client';
+import { CancellationToken } from '@riskplatform/risk-client';
 
 // Send a request to the inbound queue
 await client.queue.sendDecisionRequest(req);
@@ -290,7 +290,7 @@ await token.cancel();
 Manage the rules engine at runtime. Requires an API key with `ADMIN` scope.
 
 ```typescript
-import { Rule, ReloadResult, DryRunResult, AuditEntry } from '@naranjax/risk-client';
+import { Rule, ReloadResult, DryRunResult, AuditEntry } from '@riskplatform/risk-client';
 
 // List all active rules
 const rules: Rule[] = await client.admin.listRules();
@@ -320,7 +320,7 @@ import {
   RiskServerError,
   RiskUpgradeRequiredError,
   RiskClientError,
-} from '@naranjax/risk-client';
+} from '@riskplatform/risk-client';
 
 try {
   const decision = await client.sync.evaluate(req);
@@ -471,7 +471,7 @@ process.on('SIGTERM', async () => {
 ### Full E2E: Jest integration test
 
 ```typescript
-import { RiskClient, Environment, Outcome } from '@naranjax/risk-client';
+import { RiskClient, Environment, Outcome } from '@riskplatform/risk-client';
 
 describe('RiskClient integration', () => {
   let client: RiskClient;
@@ -495,7 +495,7 @@ describe('RiskClient integration', () => {
 |---|---|---|
 | `RiskTimeoutError` on first call | Server not reachable or wrong `environment` | Run `await client.sync.health()` to verify connectivity |
 | `RiskAuthError` (401) | API key expired or wrong env key | Rotate key in secrets manager; check `RISK_API_KEY` env var |
-| `426 Upgrade Required` | Server version newer than SDK | Run `npm install @naranjax/risk-client@latest` |
+| `426 Upgrade Required` | Server version newer than SDK | Run `npm install @riskplatform/risk-client@latest` |
 | SSE stream never yields | Firewall/proxy strips `text/event-stream` | Ensure proxy passes `Accept: text/event-stream` and does not buffer |
 | `for await...of` exits immediately | `AbortController` already aborted | Check `signal.aborted` before starting the loop |
 | `RiskSchemaError` (422) | Request field invalid or missing | Log `err.validationErrors` and fix request shape against the type definition |

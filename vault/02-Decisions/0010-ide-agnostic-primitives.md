@@ -65,7 +65,7 @@ Create `.ai/primitives/` como la canonical source de project context (convention
 ## Validación
 
 - `.ai/primitives/` contains project context files.
-- `CLAUDE.md` o `.ai/adapters/claude.md` references primitives.
+- `CLAUDE.md` o `.ai/adapters/claude-code/` references primitives.
 - `.ai/scripts/skill-router.py` routes test prompts correctly.
 
 ## Relacionado

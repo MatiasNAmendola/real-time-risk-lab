@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# setup.sh — Main orchestrator for the practica-entrevista toolchain setup
+# setup.sh — Main orchestrator for the risk-platform-practice toolchain setup
 # Requires bash 4+
 set -uo pipefail
 
@@ -81,7 +81,7 @@ ${BOLD}EXAMPLES${RESET}
 
 ${BOLD}GROUPS AND TOOLS${RESET}
   core          bash 5+, curl, git, jq, yq, make              (6 tools)
-  languages     java 25, maven 3.9+, go 1.23+, python 3.11+   (4 tools)
+  languages     java 21+, go 1.23+, python 3.11+             (3 tools)
   containers    docker 24+, OrbStack/Desktop, compose v2       (3 tools)
   kubernetes    kubectl 1.28+, helm 3.13+, k3d 5.6+           (3 required + 2 optional)
   aws           aws CLI v2.15+, mc (MinIO client)             (2 tools)

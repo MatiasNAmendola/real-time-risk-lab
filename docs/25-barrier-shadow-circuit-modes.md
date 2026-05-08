@@ -185,8 +185,8 @@ BarrierMode barrierMode = switch (mode) {
 
 ## Archivos de implementacion
 
-- `pkg/risk-domain/src/main/java/com/naranjax/poc/risk/mode/BarrierMode.java` — interfaz comun
-- `pkg/risk-domain/src/main/java/com/naranjax/poc/risk/mode/BlockingBarrier.java`
-- `pkg/risk-domain/src/main/java/com/naranjax/poc/risk/mode/ShadowMode.java`
-- `pkg/risk-domain/src/main/java/com/naranjax/poc/risk/mode/CircuitMode.java`
-- `pkg/risk-domain/src/test/java/com/naranjax/poc/risk/mode/BarrierModeTest.java` — tests de los tres modos
+- `pkg/risk-domain/src/main/java/io/riskplatform/poc/risk/mode/BarrierMode.java` — interfaz comun
+- `pkg/risk-domain/src/main/java/io/riskplatform/poc/risk/mode/BlockingBarrier.java`
+- `pkg/risk-domain/src/main/java/io/riskplatform/poc/risk/mode/ShadowMode.java`
+- `pkg/risk-domain/src/main/java/io/riskplatform/poc/risk/mode/CircuitMode.java`
+- `pkg/risk-domain/src/main/java/io/riskplatform/poc/risk/mode/BarrierMode.java` — tests de los tres modos

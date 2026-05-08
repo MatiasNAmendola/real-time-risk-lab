@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# 10-languages.sh — Java 25, Maven 3.9+, Go 1.26+ (goenv preferred), Python 3.11+
-# Tools: 4
+# 10-languages.sh — Java 21+ runtime/toolchain, Go 1.26+ (goenv preferred), Python 3.11+
+# Tools: 3
 
 GROUP_NAME="languages"
 GROUP_DESCRIPTION="Programming language runtimes"
@@ -59,7 +59,7 @@ check_java() {
   elif [[ "$version" =~ version[[:space:]]+"([0-9]+)" ]]; then
     version="${BASH_REMATCH[1]}.0.0"
   fi
-  if version_at_least "$version" "25.0.0"; then
+  if version_at_least "$version" "21.0.0"; then
     # Detect distribution
     local dist=""
     "$java_bin" -version 2>&1 | grep -qi temurin && dist=" (Temurin)"
@@ -67,25 +67,8 @@ check_java() {
     "$java_bin" -version 2>&1 | grep -qi corretto && dist=" (Corretto)"
     log_tool_status "java" "${version}${dist}" "ok"
   else
-    log_tool_status "java" "$version (need >=25)" "outdated"
+    log_tool_status "java" "$version (need >=21)" "outdated"
     OUTDATED_TOOLS+=("java")
-  fi
-}
-
-check_maven() {
-  if ! has_command mvn; then
-    log_tool_status "maven" "" "missing"
-    MISSING_TOOLS+=("maven")
-    return
-  fi
-  local output version
-  output="$(mvn --version 2>&1 || true)"
-  version="$(extract_version "$output" 'Apache Maven ([0-9]+\.[0-9]+\.[0-9]+)')"
-  if version_at_least "$version" "3.9.0"; then
-    log_tool_status "maven" "$version" "ok"
-  else
-    log_tool_status "maven" "$version (need >=3.9)" "outdated"
-    OUTDATED_TOOLS+=("maven")
   fi
 }
 
@@ -204,12 +187,12 @@ install_java() {
   os="$(detect_os)"
   pkg_mgr="$(detect_package_manager)"
 
-  log_step "Installing Java 25 (Temurin)..."
+  log_step "Installing Java 21 (Temurin)..."
   case "$pkg_mgr" in
     brew)
-      # temurin@25 via Homebrew Cask (adoptium tap)
+      # temurin@21 via Homebrew Cask (adoptium tap)
       brew tap homebrew/cask-versions 2>/dev/null || true
-      install_with_brew "temurin@25" "cask" || install_with_brew "openjdk@25"
+      install_with_brew "temurin@21" "cask" || install_with_brew "openjdk@21"
       ;;
     apt)
       # Eclipse Temurin via Adoptium repo
@@ -221,10 +204,10 @@ install_java() {
           | sudo tee /etc/apt/sources.list.d/adoptium.list > /dev/null
         apt_update_done=0
       fi
-      install_with_apt "temurin-25-jdk"
+      install_with_apt "temurin-21-jdk"
       ;;
     dnf)
-      install_with_dnf "java-25-amazon-corretto-devel" || install_with_dnf "java-latest-openjdk-devel"
+      install_with_dnf "java-21-amazon-corretto-devel" || install_with_dnf "java-latest-openjdk-devel"
       ;;
     *)
       log_warn "Direct Java install not supported for this platform. Visit https://adoptium.net"
@@ -235,7 +218,7 @@ install_java() {
   # Offer to set JAVA_HOME
   local java_home=""
   if has_command java_home 2>/dev/null; then
-    java_home="$(/usr/libexec/java_home -v 25 2>/dev/null || true)"
+    java_home="$(/usr/libexec/java_home -v 21 2>/dev/null || true)"
   fi
   [[ -z "$java_home" ]] && java_home="$(dirname "$(dirname "$(readlink -f "$(which java)" 2>/dev/null || true)")" 2>/dev/null || true)"
 
@@ -245,18 +228,6 @@ install_java() {
         "export JAVA_HOME=\"${java_home}\"\nexport PATH=\"\$JAVA_HOME/bin:\$PATH\""
     fi
   fi
-}
-
-install_maven() {
-  local pkg_mgr
-  pkg_mgr="$(detect_package_manager)"
-  log_step "Installing Maven..."
-  case "$pkg_mgr" in
-    brew) install_with_brew "maven" ;;
-    apt)  install_with_apt "maven" ;;
-    dnf)  install_with_dnf "maven" ;;
-    *)    log_warn "Install Maven manually: https://maven.apache.org/download.cgi" ; return 1 ;;
-  esac
 }
 
 GO_TARGET_VERSION="1.26.2"
@@ -349,7 +320,6 @@ group_check() {
   OUTDATED_TOOLS=()
   printf '\n  %s[%s]%s %s\n' "${BOLD}" "$GROUP_NAME" "${RESET}" "$GROUP_DESCRIPTION"
   check_java
-  check_maven
   check_go
   check_python
   check_node
@@ -371,7 +341,6 @@ group_install() {
   for tool in "${to_install[@]}"; do
     case "$tool" in
       java)    install_java    && record_install "java"    || record_failure "java" "install failed" ;;
-      maven)   install_maven   && record_install "maven"   || record_failure "maven" "install failed" ;;
       go)      install_go      && record_install "go"      || record_failure "go" "install failed" ;;
       python3) install_python  && record_install "python3" || record_failure "python3" "install failed" ;;
       node)    install_node    && record_install "node"    || record_failure "node" "install failed" ;;

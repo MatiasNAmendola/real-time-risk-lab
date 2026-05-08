@@ -29,8 +29,8 @@ Suite de tests [[ATDD]] para la plataforma Vert.x distribuida usando Karate DSL.
 
 ```bash
 cd poc/java-vertx-distributed/atdd-tests
-mvn verify
-# reporte de cobertura: target/site/jacoco-aggregate/index.html
+./gradlew test jacocoTestReport
+# reporte de cobertura: build/reports/jacoco/test-aggregate/index.html
 ```
 
 ## Cobertura de features (10 features)

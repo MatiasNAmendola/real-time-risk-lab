@@ -21,7 +21,7 @@ Dos PoCs implementan la misma logica de riesgo (APPROVE / REVIEW / DECLINE) con 
 
 **Nota importante sobre los numeros JMH**: El JMH corre single-threaded por defecto (1 thread, Throughput+AverageTime+SampleTime). Los 25 ops/s reflejan ciclos de medicion JMH con overhead de instrumentacion y GC pauses. Las latencias microscopicas (p50=125ns, p99=459ns) miden el costo puro de `EvaluateRiskUseCase.evaluate()` sin scheduler ML activo en ese slot — el scorer ML duerme 0-150ms de manera aleatoria, lo que explica el p100=160ms. El benchmark con 32 virtual threads (BenchmarkRunner) muestra el throughput real bajo carga concurrente: ~1528 req/s.
 
-Nota: los valores del distributed estan pendientes hasta que `bench/scripts/run-distributed.sh` se ejecute con el docker compose levantado. Comando: `cd poc/java-vertx-distributed && docker compose up -d && cd ../../bench && ./scripts/run-distributed.sh`.
+Nota: los valores del distributed estan pendientes hasta que `bench/scripts/run-distributed.sh` se ejecute con el docker compose levantado. Comando: `./poc/java-vertx-distributed/scripts/up.sh && bench/scripts/run-distributed.sh`.
 
 ---
 
@@ -32,9 +32,9 @@ Nota: los valores del distributed estan pendientes hasta que `bench/scripts/run-
 **Comando ejecutado:**
 ```bash
 cd bench
-mvn -pl inprocess-bench -am clean package -q
+./gradlew -pl inprocess-bench -am clean package -q
 java --enable-preview \
-  -jar inprocess-bench/target/inprocess-bench.jar \
+  -jar inprocess-bench/build/libs/inprocess-bench-0.1.0-SNAPSHOT.jar \
   -wi 1 -i 3 -f 1 \
   -rf json -rff out/inprocess/1778177203.json
 ```
@@ -50,7 +50,7 @@ JDK 21.0.4, OpenJDK 64-Bit Server VM, 21.0.4+7-LTS (Temurin)
 JVM args: -Xms256m -Xmx512m --enable-preview
 ```
 
-(Maven compila con Java 25 local; JMH forkea con el `java` en PATH que resolvio a JDK 21 Temurin.)
+(Gradle compila con bytecode Java 21; JMH forkea con el `java` en PATH, que en esta medición resolvió a JDK 21 Temurin.)
 
 **Workload:**
 - Pool de 1024 requests pre-construidos (evita allocation overhead en el hot path)
@@ -99,26 +99,26 @@ Estos numeros incluyen el scheduler HTTP del BenchmarkRunner y la concurrencia r
 ### In-process JMH
 
 ```bash
-# Prerequisito: Java 21+ en PATH, Maven 3.9+
-cd /path/to/practica-entrevista/bench
+# Prerequisito: Java 21+ en PATH, Gradle 3.9+
+cd /path/to/risk-platform-practice/bench
 
 # Build (solo la primera vez o tras cambios)
-mvn -pl inprocess-bench -am clean package -q
+./gradlew -pl inprocess-bench -am clean package -q
 
 # Run rapido (1 warmup, 3 iteraciones — ~2min)
-./scripts/run-inprocess.sh -wi 1 -i 3
+bench/scripts/run-inprocess.sh -wi 1 -i 3
 
 # Run completo (configuracion del @Benchmark — ~10min)
-./scripts/run-inprocess.sh
+bench/scripts/run-inprocess.sh
 
-# Output en: bench/out/perf/inprocess-jmh-<timestamp>.json
+# Output en: out/bench/inprocess/latest.json
 ```
 
 ### In-process BenchmarkRunner (virtual threads)
 
 ```bash
-# Prerequisito: Java 25 en /opt/homebrew/opt/openjdk/bin/ (o JAVA=<path>)
-cd /path/to/practica-entrevista
+# Prerequisito: JDK 21+ en PATH (o JAVA=<path>); Java 25 es opcional
+cd /path/to/risk-platform-practice
 poc/java-risk-engine/scripts/benchmark.sh 5000 32 500
 # Argumentos: <N mediciones> <M concurrencia> <warmup>
 ```
@@ -127,17 +127,17 @@ poc/java-risk-engine/scripts/benchmark.sh 5000 32 500
 
 ```bash
 # Prerequisito: Docker Desktop corriendo
-cd /path/to/practica-entrevista/poc/java-vertx-distributed
+cd /path/to/risk-platform-practice/poc/java-vertx-distributed
 docker compose up -d
 
 # Verificar que todos los pods estan healthy
 docker compose ps
 
 # Correr benchmark
-cd ../../bench
-./scripts/run-distributed.sh
+cd bench
+bench/scripts/run-distributed.sh
 
-# Output en: bench/out/distributed/<timestamp>.json
+# Output en: out/bench/distributed/latest.json
 ```
 
 ---
@@ -240,7 +240,7 @@ En este PoC el inter-pod va por Vert.x event bus sobre Hazelcast TCP, no HTTP. V
 
 ## Como verificamos que la separacion es REAL (no decorativa)
 
-`tests/architecture/` contiene 15 reglas ArchUnit que se ejecutan con `mvn test`.
+`tests/architecture/` contiene 15 reglas ArchUnit que se ejecutan con `./gradlew test`.
 
 ### Architecture verification — hallazgos reales
 
@@ -292,7 +292,7 @@ Si algun test falla, el mensaje incluye la clase ofensora, la linea de dependenc
 ## Limitaciones de la medicion
 
 - **JMH corre single-threaded.** Los 25 ops/s y las latencias nanosegundo son con 1 thread. Bajo carga concurrente (32 vthreads) el throughput sube a ~1528 req/s (medido con BenchmarkRunner).
-- **JMH 1.37 + Java 21 Temurin en macOS M1.** El JMH forkea un proceso hijo; el proceso padre (Maven) compila con Java 25 pero el fork resuelve el `java` binario de Temurin-21 que esta primero en PATH. Los numeros son validos para JDK 21 con virtual threads disponibles (JEP 444).
+- **JMH 1.37 + Java 21 Temurin en macOS M1.** El JMH forkea un proceso hijo; el proceso padre (Gradle) compila bytecode `--release 21` y el fork resuelve el `java` binario de Temurin-21 que esta primero en PATH. Los numeros son validos para JDK 21 con virtual threads disponibles (JEP 444).
 - **Scorer ML domina el worst case.** El p100 de 160ms es el scorer ML durmiendo su maximo. Sin el scorer (o con ML real async) el p99 cae a ~459ns.
 - **Distributed: sin medir.** Los numeros de Vert.x son proyecciones basadas en la arquitectura de hops. Para numeros reales: `docker compose up && bench/scripts/run-distributed.sh`.
 - **GC pauses no tuneadas.** G1GC con -Xms256m -Xmx512m. Los spikes en p99.99 (386µs) y p99.999 (160ms) son GC pauses + scorer ML respectivamente.
@@ -323,12 +323,12 @@ Si algun test falla, el mensaje incluye la clase ofensora, la linea de dependenc
 ## Referencias internas
 
 - `bench/` — harness JMH + HTTP load generator + comparison runner
-- `bench/out/inprocess/1778177203.txt` — output completo del run JMH (2026-05-07)
-- `bench/out/inprocess/1778177203.json` — datos JSON del run JMH (2026-05-07)
+- `out/bench/inprocess/latest.txt` — output completo del run JMH (2026-05-07)
+- `out/bench/inprocess/latest.json` — datos JSON del run JMH (2026-05-07)
 - `bench/scripts/run-comparison.sh` — ejecutar ambos benchmarks y generar reporte
 - `bench/scripts/competition.sh` — competition HTTP-vs-HTTP (ver seccion abajo)
 - `tests/architecture/` — 15 reglas ArchUnit con mensajes de error accionables
-- `poc/java-risk-engine/src/main/java/com/naranjax/interview/risk/infrastructure/controller/BenchmarkRunner.java` — benchmark original (virtual threads, sin JMH)
+- `poc/java-risk-engine/src/main/java/io/riskplatform/engine/cmd/BenchmarkRunner.java` — benchmark original (virtual threads, sin JMH)
 - `poc/java-vertx-distributed/compose.override.yml` — stack de 5 pods con redes separadas
 
 ---
@@ -339,22 +339,22 @@ Para una comparacion HONESTA, ambos PoCs exponen `POST /risk` por HTTP. El scrip
 
 ```bash
 # Prerrequisito: Vert.x stack levantado
-cd poc/java-vertx-distributed && ./scripts/up.sh
+./poc/java-vertx-distributed/scripts/up.sh
 
 # Competencia con defaults (5000 req, 32 concurrency)
-cd ../../bench && ./scripts/competition.sh
+bench/scripts/competition.sh
 
 # Workload personalizado
-./scripts/competition.sh --requests 10000 --concurrency 64
+bench/scripts/competition.sh --requests 10000 --concurrency 64
 
 # Smoke run rapido
-./scripts/competition.sh --quick
+bench/scripts/competition.sh --quick
 ```
 
-Output en `bench/out/competition/<ts>/`:
+Output en `out/bench/competition/<ts>/`:
 - `summary.md` — tabla Markdown con p50/p95/p99/p999/max/throughput y analisis.
 - `comparison.csv` — metricas tabuladas para importar en hojas de calculo.
 - `comparison.json` — metricas unificadas legibles por maquina.
 - `latency-comparison.png` — grafico de barras (si matplotlib esta disponible).
 
-[Resultados pendientes — capturar con `./scripts/up.sh` + `competition.sh`]
+[Resultados pendientes — capturar con `poc/java-vertx-distributed/scripts/up.sh` + `bench/scripts/competition.sh`]

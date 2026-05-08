@@ -1,4 +1,4 @@
-// Package riskclient provides the NaranjaX Risk Engine client SDK for Go.
+// Package riskclient provides the Risk Decision Platform client SDK for Go.
 package riskclient
 
 import (
@@ -24,18 +24,18 @@ type envCoords struct {
 
 var envMap = map[Environment]envCoords{
 	Prod: {
-		restBaseURL: "https://risk.naranjax.com",
-		kafkaBroker: "kafka.naranjax.com:9092",
+		restBaseURL: "https://risk.riskplatform.com",
+		kafkaBroker: "kafka.riskplatform.com:9092",
 		sqsQueueURL: "https://sqs.us-east-1.amazonaws.com/123456789/risk-decisions-prod",
 	},
 	Staging: {
-		restBaseURL: "https://risk-staging.naranjax.com",
-		kafkaBroker: "kafka-staging.naranjax.com:9092",
+		restBaseURL: "https://risk-staging.riskplatform.com",
+		kafkaBroker: "kafka-staging.riskplatform.com:9092",
 		sqsQueueURL: "https://sqs.us-east-1.amazonaws.com/123456789/risk-decisions-staging",
 	},
 	Dev: {
-		restBaseURL: "https://risk-dev.naranjax.com",
-		kafkaBroker: "kafka-dev.naranjax.com:9092",
+		restBaseURL: "https://risk-dev.riskplatform.com",
+		kafkaBroker: "kafka-dev.riskplatform.com:9092",
 		sqsQueueURL: "https://sqs.us-east-1.amazonaws.com/123456789/risk-decisions-dev",
 	},
 	Local: {

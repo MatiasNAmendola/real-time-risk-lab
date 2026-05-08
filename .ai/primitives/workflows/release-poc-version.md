@@ -16,10 +16,10 @@ Cuando una PoC alcanza un hito demostrable (ej. "todos los patrones de comunicac
 
 ```bash
 git status  # debe estar limpio
-mvn test -pl poc/<poc-name>/  # tests verdes
+./gradlew test -pl poc/<poc-name>/  # tests verdes
 ```
 
-### 2. Actualizar version en pom.xml
+### 2. Actualizar version en build.gradle.kts
 
 ```xml
 <!-- De: -->
@@ -29,7 +29,7 @@ mvn test -pl poc/<poc-name>/  # tests verdes
 ```
 
 ```bash
-mvn versions:set -DnewVersion=1.0.0 -pl poc/<poc-name>/ -DgenerateBackupPoms=false
+./gradlew versions:set -DnewVersion=1.0.0 -pl poc/<poc-name>/ -DgenerateBackupPoms=false
 ```
 
 ### 3. Actualizar README con estado final
@@ -52,8 +52,8 @@ git tag poc/<poc-name>/v1.0.0
 ### 6. Volver a SNAPSHOT para desarrollo
 
 ```bash
-mvn versions:set -DnewVersion=1.1.0-SNAPSHOT -pl poc/<poc-name>/ -DgenerateBackupPoms=false
-git add poc/<poc-name>/pom.xml
+./gradlew versions:set -DnewVersion=1.1.0-SNAPSHOT -pl poc/<poc-name>/ -DgenerateBackupPoms=false
+git add poc/<poc-name>/build.gradle.kts
 git commit -m "chore(poc/<poc-name>): bump to 1.1.0-SNAPSHOT"
 ```
 

@@ -29,8 +29,8 @@ Smoke runner CLI en Go usando una TUI de Bubble Tea. Verifica los 9 canales de c
 ```bash
 cd cli/risk-smoke
 go build -o risk-smoke .
-./risk-smoke --target http://localhost:8080
-./risk-smoke --target http://localhost:8080 --headless  # modo CI
+cd cli/risk-smoke && go run . --target http://localhost:8080
+cd cli/risk-smoke && go run . --target http://localhost:8080 --headless  # modo CI
 ```
 
 ## Checks (9 en total)

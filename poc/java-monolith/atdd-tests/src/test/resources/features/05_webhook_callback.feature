@@ -10,7 +10,7 @@ Feature: Webhook callback on DECLINE decisions
 
   Scenario: Register a DECLINE webhook and receive a callback for a high-amount transaction
     # 1. Start the local listener on a random port
-    * def WebhookListener = Java.type('com.naranjax.atdd.support.WebhookListener')
+    * def WebhookListener = Java.type('io.riskplatform.atdd.support.WebhookListener')
     * def listener = new WebhookListener()
     * def listenerPort = listener.start()
     * def callbackUrl = 'http://' + webhookListenerHost + ':' + listenerPort + '/callback'
@@ -40,7 +40,7 @@ Feature: Webhook callback on DECLINE decisions
     * listener.stop()
 
   Scenario: An APPROVE decision does NOT trigger a DECLINE-filtered webhook
-    * def WebhookListener = Java.type('com.naranjax.atdd.support.WebhookListener')
+    * def WebhookListener = Java.type('io.riskplatform.atdd.support.WebhookListener')
     * def listener = new WebhookListener()
     * def listenerPort = listener.start()
     * def callbackUrl = 'http://' + webhookListenerHost + ':' + listenerPort + '/callback'

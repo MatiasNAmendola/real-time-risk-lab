@@ -56,5 +56,5 @@ related_rules: [architecture-clean, clean-arch-boundaries, java-version, naming-
 
 ## Notas
 - Entidades tienen identidad (comparadas por ID, no por valor).
-- No usar Lombok en PoCs bare-javac (no esta en classpath). En Maven Vert.x, evaluar.
+- No usar Lombok en PoCs bare-javac (no esta en classpath). En Gradle Vert.x, evaluar.
 - Nunca importar nada de `infrastructure/` o `application/` desde `domain/`.

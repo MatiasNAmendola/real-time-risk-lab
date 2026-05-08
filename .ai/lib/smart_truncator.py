@@ -35,9 +35,9 @@ class SmartTruncator:
 
     def detect_command_type(self, hint: str, output: str) -> str:
         combined = (hint + " " + output[:200]).lower()
-        if re.search(r"pytest|jest|junit|mvn test|go test|npm test|cargo test", combined):
+        if re.search(r"pytest|jest|junit|./gradlew test|go test|npm test|cargo test", combined):
             return "test"
-        if re.search(r"\bmvn\b.*build|gradle|npm run build|cargo build|go build|make\b", combined):
+        if re.search(r"\b./gradlew\b.*build|gradle|npm run build|cargo build|go build|make\b", combined):
             return "build"
         if re.search(r"eslint|ruff|shellcheck|pylint|flake8|golangci", combined):
             return "lint"

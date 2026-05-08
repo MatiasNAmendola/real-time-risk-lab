@@ -4,14 +4,15 @@ Objetivo: mostrar criterio arquitectónico sin depender de una demo frágil.
 
 ## 0. Posicionamiento
 
-Antes de correr comandos, abrir con la frase de [`docs/36-technical-interview-positioning.md`](docs/36-technical-interview-positioning.md):
+Antes de correr comandos, abrir con la frase de [`docs/36-technical-positioning.md`](docs/36-technical-positioning.md):
 
-> Armé una plataforma de práctica para explorar decisiones de riesgo en tiempo real. No intenta ser producción cerrada, sino una demo técnica para discutir arquitectura: camino crítico sincrónico, eventos asíncronos, trazabilidad, separación por bounded contexts, permisos entre componentes, benchmarking y trade-offs de operación.
+> Te comparto una exploración técnica curada para discutir arquitectura de decisiones de riesgo en tiempo real. No intenta ser producción cerrada, sino una demo conversacional para hablar de trade-offs: Clean Architecture, boundaries, performance, trazabilidad, evaluación sincrónica, eventos asíncronos, permisos entre componentes, benchmarks y simulación local de despliegue distribuido.
 
 ## 1. Verificación previa
 
 ```bash
 ./nx setup --verify
+./nx build
 ./nx test --composite quick
 ./nx audit consistency
 ./nx audit confidentiality
@@ -20,7 +21,9 @@ Antes de correr comandos, abrir con la frase de [`docs/36-technical-interview-po
 
 Qué decir:
 
-> “Antes de hablar de arquitectura, dejo visible el estado empírico: toolchain, tests rápidos, boundaries, consistencia documental y scrub.”
+> “Antes de hablar de arquitectura, dejo visible el estado empírico: toolchain, build incremental, tests rápidos, boundaries, consistencia documental y scrub.”
+
+Nota: `./gradlew clean build -x test` queda como verificación full/CI opcional. Para una demo live prefiero `./nx build` porque usa el orquestador del repo y evita reconstruir todo si los artefactos están frescos.
 
 ## 2. Explicar el caso
 
@@ -75,7 +78,19 @@ Cierre:
 poc/vertx-risk-platform/scripts/stop-local-pods.sh
 ```
 
-## 5. Deep dive opcional
+## 5. Benchmark principal
+
+```bash
+./nx bench inproc
+```
+
+Qué mostrar:
+
+- JMH como medición reproducible.
+- Diferencia entre latencia base del core y overhead distribuido.
+- Que los números de performance se discuten con evidencia, no con intuición.
+
+## 6. Deep dive opcional — compose distribuido
 
 ```bash
 ./nx up vertx
@@ -83,4 +98,4 @@ poc/vertx-risk-platform/scripts/stop-local-pods.sh
 ./nx down vertx
 ```
 
-Usarlo solo si hay tiempo o si se quiere discutir migración runtime, healthchecks, EventBus/Hazelcast, OTEL e infra local.
+Usarlo solo si hay tiempo o si se quiere discutir migración runtime, healthchecks, EventBus/Hazelcast, OTEL e infra local. No es el demo principal: el demo principal es `risk-engine` + `vertx-risk-platform` local pods + smoke + benchmark.

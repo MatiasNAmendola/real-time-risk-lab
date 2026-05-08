@@ -1,4 +1,4 @@
-# Canonical terminology for the practica-entrevista repo.
+# Canonical terminology for the risk-platform-practice repo.
 # Format:
 #   canonical: the one true form to use in all docs
 #   aliases:   forms that should be replaced by canonical
@@ -50,7 +50,7 @@ terms:
   - canonical: "Testcontainers"
     aliases:
       - "test-containers"
-    note: "Bare 'testcontainers' (lowercase) is dropped as alias: it appears legitimately in URLs (java.testcontainers.org), wikilinks ([[0021-testcontainers-integration]]), and Maven artifact IDs."
+    note: "Bare 'testcontainers' (lowercase) is dropped as alias: it appears legitimately in URLs (java.testcontainers.org), wikilinks ([[0021-testcontainers-integration]]), and Gradle artifact IDs."
 
   - canonical: "OpenObserve"
     aliases:
@@ -81,31 +81,31 @@ terms:
 # ---------------------------------------------------------------------------
 prohibited_in_public:
   - terms: ["interview", "entrevista", "simulacro", "cheatsheet"]
-    rationale: "Repo positioned as technical exploration, not interview prep"
-    excluded_paths: ["vault/01-Build-Log/", ".ai/research/"]
+    rationale: "Repo positioned as technical exploration, not personal prep material"
+    excluded_paths: ["vault/01-Build-Log/", "vault/01-Sessions/handoffs/", ".ai/research/"]
   - terms: ["Naranja X", "NaranjaX", "Naranja-X"]
     rationale: "Avoid mentioning specific company; use 'production-grade fraud platform' generically"
-    excluded_paths: ["vault/01-Build-Log/", ".ai/research/"]
+    excluded_paths: ["vault/01-Build-Log/", "vault/01-Sessions/handoffs/", ".ai/research/"]
 
 # ---------------------------------------------------------------------------
 # Technical identifiers excluded from the prohibited-terms audit.
 #
-# These patterns identify code-level identifiers (Java package names, Maven
+# These patterns identify code-level identifiers (Java package names, Gradle
 # coordinates, schema URNs, Secrets Manager keys, filesystem paths) that
-# happen to contain "naranjax" but are NOT marketing copy. They are stable
+# happen to contain "riskplatform" but are NOT marketing copy. They are stable
 # legacy identifiers inherited from the project sponsor and renaming them
 # would require a massive refactor without technical benefit.
 #
-# See ADR-0038 (vault/02-Decisions/0038-naranjax-package-namespace.md) for
+# See ADR-0038 (vault/02-Decisions/0038-riskplatform-package-namespace.md) for
 # the full rationale.  Lines matching ANY of these patterns are skipped by
 # audit_prohibited_terms() in .ai/scripts/consistency-auditor.py.
 # ---------------------------------------------------------------------------
 technical_identifiers_excluded:
-  - pattern: "com\\.naranjax"
-    description: "Java package / Maven coordinate (com.naranjax.poc.*)"
-  - pattern: "urn:naranjax:"
-    description: "Schema URN (urn:naranjax:risk:event:v1, urn:naranjax:idempotency:v1)"
-  - pattern: "naranjax/[a-z0-9_-]+"
-    description: "Secrets Manager key or repo path (naranjax/db-password, naranjax/practica-entrevista)"
-  - pattern: "com/naranjax/"
-    description: "Filesystem path for Java sources (src/main/java/com/naranjax/...)"
+  - pattern: "com\\.riskplatform"
+    description: "Java package / Gradle coordinate (io.riskplatform.poc.*)"
+  - pattern: "urn:riskplatform:"
+    description: "Schema URN (urn:riskplatform:risk:event:v1, urn:riskplatform:idempotency:v1)"
+  - pattern: "riskplatform/[a-z0-9_-]+"
+    description: "Secrets Manager key or repo path (riskplatform/db-password, riskplatform/risk-platform-practice)"
+  - pattern: "com/riskplatform/"
+    description: "Filesystem path for Java sources (src/main/java/io/riskplatform/...)"

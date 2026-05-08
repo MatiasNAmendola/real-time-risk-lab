@@ -24,10 +24,10 @@ tags: [decision/proposed]
 
 ## Alternativas consideradas
 
-- [[Alternative-X]]
-- [[Alternative-Y]]
+- Alternative X
+- Alternative Y
 
 ## Relacionado
 
-- [[ConceptoLink1]]
-- [[OtraDecision]]
+- ConceptoLink1
+- OtraDecision

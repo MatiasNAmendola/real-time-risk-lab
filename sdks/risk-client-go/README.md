@@ -7,7 +7,7 @@
 ## Install
 
 ```bash
-go get github.com/naranjax/risk-client@v1.0.0
+go get github.com/riskplatform/risk-client@v1.0.0
 ```
 
 Requires Go 1.21+.
@@ -23,7 +23,7 @@ import (
     "os"
     "time"
 
-    riskclient "github.com/naranjax/risk-client"
+    riskclient "github.com/riskplatform/risk-client"
 )
 
 func main() {
@@ -54,8 +54,8 @@ func main() {
 | Constant | REST base URL | Use for |
 |---|---|---|
 | `riskclient.Prod` | `https://risk.example.com` | Production traffic |
-| `riskclient.Staging` | `https://risk-staging.naranjax.com` | Pre-prod validation |
-| `riskclient.Dev` | `https://risk-dev.naranjax.com` | Feature branches |
+| `riskclient.Staging` | `https://risk-staging.riskplatform.com` | Pre-prod validation |
+| `riskclient.Dev` | `https://risk-dev.riskplatform.com` | Feature branches |
 | `riskclient.Local` | `http://localhost:8080` | Local development |
 
 The SDK resolves all downstream URLs (REST endpoints, Kafka brokers, SQS queue ARNs,
@@ -97,7 +97,7 @@ committed config files.
 
 ```go
 OAuth2: &riskclient.OAuth2Config{
-    TokenEndpoint: "https://auth.naranjax.com/token",
+    TokenEndpoint: "https://auth.riskplatform.com/token",
     ClientID:      os.Getenv("OAUTH_CLIENT_ID"),
     ClientSecret:  os.Getenv("OAUTH_CLIENT_SECRET"),
 },
@@ -557,7 +557,7 @@ func TestEvaluateLowAmountReturnsApprove(t *testing.T) {
 |---|---|---|
 | `*TimeoutError` on first call | Server not reachable or wrong `Environment` | Call `client.Sync.Health(ctx)` to verify connectivity |
 | `*AuthError` (401) | API key expired or wrong env key | Rotate key in secrets manager; check `RISK_API_KEY` env var |
-| `*UpgradeRequiredError` (426) | Server version newer than SDK | Run `go get github.com/naranjax/risk-client@latest` |
+| `*UpgradeRequiredError` (426) | Server version newer than SDK | Run `go get github.com/riskplatform/risk-client@latest` |
 | `riskclient.New` returns error | Config validation failed | Check that `APIKey` is non-empty and `Environment` is a valid constant |
 | SSE `ConsumeDecisions` handler never fires | Proxy buffers SSE response | Set `X-Accel-Buffering: no` header on proxy; check firewall allows keep-alive |
 | `*ChannelClosedError` on WebSocket receive | Proxy strips `Upgrade: websocket` | Configure reverse proxy for WebSocket passthrough |

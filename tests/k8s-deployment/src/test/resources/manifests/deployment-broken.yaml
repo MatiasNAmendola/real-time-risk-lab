@@ -1,0 +1,22 @@
+# Triggers a known-bad rollout: the pod template points at a path that the
+# real risk-engine never serves, so readiness will never succeed and the
+# AnalysisTemplate `success-rate` will fall below 0.99.
+#
+# Apply this AFTER the chart is installed; it patches the existing Rollout.
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
+metadata:
+  name: risk-engine
+spec:
+  template:
+    spec:
+      containers:
+        - name: risk-engine
+          image: ghcr.io/riskplatform/risk-engine:v2-broken
+          readinessProbe:
+            httpGet:
+              path: /never-ready
+              port: 8080
+            initialDelaySeconds: 1
+            periodSeconds: 2
+            failureThreshold: 3

@@ -428,6 +428,44 @@ Cada entrada tiene:
 
 ---
 
+### H8. "¿Por qué Java para performance si Go suele ser más liviano?"
+
+**Qué mide:** capacidad de comparar runtimes sin dogma, distinguir startup/footprint de throughput caliente y respaldar decisiones con evidencia.
+
+**Análisis modelo:**
+> Go habría sido una opción excelente si el objetivo principal fuera binario único, startup rápido, bajo footprint base y simplicidad operacional. Para este caso elegí Java porque el servicio de riesgo es long-running, recibe tráfico sostenido y necesita observabilidad, contratos enterprise y performance caliente. Java 21 trae JIT/adaptive optimization, GCs modernos como G1/ZGC, virtual threads para modelos blocking-style y ecosistema maduro de profiling. Eso no significa que Java sea universalmente más rápido que Go: significa que en un servicio caliente la JVM puede amortizar warm-up y competir muy bien en throughput y tail latency si se mide y se tunea. El trade-off honesto queda documentado en `docs/37-java-go-performance-positioning.md`.
+
+**Modo de falla común:** responder "Java es más rápido" o "Go no sirve para enterprise". La respuesta fuerte reconoce que Go gana en startup/footprint/simplicidad, y que Java es defendible acá por workload caliente, tooling y ecosistema.
+
+---
+
+---
+
+### H9. "¿Cómo versionás eventos sin romper consumidores?"
+
+**Qué mide:** event versioning, schema evolution y compatibilidad entre producer/consumer.
+
+**Análisis modelo:**
+> El versionado de eventos está explicitado en ADR-0015: el evento lleva un campo de versión/discriminator y los cambios se clasifican por compatibilidad. Los consumers no infieren schema por posición ni por naming accidental; validan contra el contrato y CI cubre la compatibilidad esperada.
+
+---
+
+### H10. "¿Por qué existe `pkg/` si ya tenés PoCs separadas?"
+
+**Qué mide:** shared modules, `pkg:risk-domain` y reutilización sin acoplar topologías.
+
+**Análisis modelo:**
+> `pkg/` evita duplicar lógica de dominio entre PoCs. La regla es que los módulos compartidos (`pkg:risk-domain`, resiliencia, eventos, observabilidad) contienen contratos y lógica reusable, mientras que cada PoC conserva sus adapters y composición. Compartir dominio no significa compartir infraestructura.
+
+---
+
+### H11. "¿Por qué mezclar Java y Go en el mismo repo?"
+
+**Qué mide:** decisión polyglot, Java and Go, límites entre runtime productivo y tooling.
+
+**Análisis modelo:**
+> Java 21 LTS es el baseline ejecutable de los servicios por ecosystem, JIT, observabilidad y contratos. Go se usa para tooling CLI/smoke porque entrega binario simple, startup rápido y distribución liviana. La frontera está clara: `cli/` opera la plataforma, no implementa el dominio de riesgo.
+
 ## Preguntas de discovery al cierre de una discusión de diseño
 
 Cuando la discusión llega al "qué nos querés preguntar", estas preguntas demuestran profundidad y entendimiento genuino del sistema. Elegir 2-3 según el contexto de la conversación:

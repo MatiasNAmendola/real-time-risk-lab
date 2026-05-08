@@ -14,7 +14,7 @@ import (
 	"github.com/aws/aws-sdk-go-v2/aws"
 	"github.com/aws/aws-sdk-go-v2/service/sqs"
 	"github.com/aws/aws-sdk-go-v2/service/sqs/types"
-	riskclient "github.com/naranjax/risk-client"
+	riskclient "github.com/riskplatform/risk-client"
 )
 
 // ---------------------------------------------------------------------------

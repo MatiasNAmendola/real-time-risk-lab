@@ -1,0 +1,30 @@
+<hazelcast xmlns="http://www.hazelcast.com/schema/config"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="http://www.hazelcast.com/schema/config https://hazelcast.com/schema/config/hazelcast-config-5.3.xsd">
+  <cluster-name>vertx-distributed-cluster</cluster-name>
+
+  <!-- Keep Hazelcast small and predictable inside docker-compose limits. -->
+  <properties>
+    <property name="hazelcast.diagnostics.enabled">false</property>
+    <property name="hazelcast.metrics.enabled">false</property>
+    <property name="hazelcast.operation.thread.count">2</property>
+    <property name="hazelcast.io.thread.count">2</property>
+    <property name="hazelcast.event.thread.count">2</property>
+    <property name="hazelcast.operation.call.timeout.millis">30000</property>
+    <property name="hazelcast.heartbeat.interval.seconds">10</property>
+    <property name="hazelcast.max.no.heartbeat.seconds">60</property>
+  </properties>
+
+  <network>
+    <port auto-increment="false">5701</port>
+    <join>
+      <!-- Docker bridge networks do not forward multicast reliably. -->
+      <multicast enabled="false"/>
+      <tcp-ip enabled="true">
+        <member>controller-app:5701</member>
+        <member>usecase-app:5701</member>
+        <member>repository-app:5701</member>
+      </tcp-ip>
+    </join>
+  </network>
+</hazelcast>

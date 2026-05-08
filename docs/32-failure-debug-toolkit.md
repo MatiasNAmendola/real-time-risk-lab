@@ -28,8 +28,8 @@ Las tres están cableadas en `./nx` para un único entry point.
 | Formato | Patrón de ubicación |
 |---|---|
 | Surefire XML de Gradle | `**/build/test-results/test/*.xml` |
-| Cucumber JSON | `tests/**/target/cucumber.json` |
-| JSON de summary de Karate | `poc/*/atdd-tests/target/karate-reports/karate-summary.json` |
+| Cucumber JSON | `tests/**/build/cucumber-reports/report.json` |
+| JSON de summary de Karate | `poc/*/atdd-tests/build/karate-reports/karate-summary.json` |
 | Smoke runner | `out/smoke/latest/meta.json` o `checks/*.md` |
 | Summary del test runner | `out/test-runner/latest/summary.md` |
 

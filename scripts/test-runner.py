@@ -307,7 +307,7 @@ class TestGroup:
     cost_ram_mb: int = 500
     duration_estimate_sec: int = 60
     exclusive: bool = False
-    requires: list[str] = field(default_factory=list)  # external tools (npm, go, mvn...)
+    requires: list[str] = field(default_factory=list)  # external tools (npm, go, ./gradlew...)
 
     @property
     def cost_cpu_pct(self) -> int:

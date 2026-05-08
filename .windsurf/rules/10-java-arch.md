@@ -1,7 +1,7 @@
 ---
 trigger: glob
 glob: "**/*.java"
-description: Clean Architecture and Java 25 conventions
+description: Clean Architecture and Java baseline conventions
 ---
 
 # Architecture rules for Java code
@@ -22,7 +22,7 @@ domain/ must NOT import from application/ or infrastructure/.
 
 ## Java 25
 
-- --release 25 en todo pom.xml
+- --release 21 en todo build.gradle.kts
 - Virtual threads para I/O bloqueante
 - Records para Value Objects
 

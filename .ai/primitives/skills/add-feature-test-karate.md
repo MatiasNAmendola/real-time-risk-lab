@@ -4,11 +4,11 @@ intent: Agregar un feature test con Karate para ATDD sobre un endpoint Vert.x
 inputs: [feature_name, endpoint, scenarios]
 preconditions:
   - poc/java-vertx-distributed/atdd-tests/ o poc/vertx-risk-platform existe
-  - Servidor Vert.x arrancable via mvn exec:java o main class
+  - Servidor Vert.x arrancable via ./gradlew exec:java o main class
 postconditions:
   - Archivo .feature en src/test/resources/features/
   - Step definitions si se usan pasos custom
-  - mvn test -pl atdd-tests pasa en verde
+  - ./gradlew :poc:java-vertx-distributed:atdd-tests:test -Patdd pasa en verde
 related_rules: [testing-atdd, java-version, communication-patterns]
 ---
 
@@ -59,7 +59,7 @@ related_rules: [testing-atdd, java-version, communication-patterns]
    }
    ```
 
-4. **Ejecutar**: `mvn test -pl atdd-tests -Dtest=KarateRunner`.
+4. **Ejecutar**: `./gradlew :poc:java-vertx-distributed:atdd-tests:test -Patdd -Dtest=KarateRunner`.
 
 ## Notas
 - Karate no requiere step definitions para HTTP basico. Solo el `.feature`.

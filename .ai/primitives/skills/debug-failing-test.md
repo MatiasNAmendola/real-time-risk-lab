@@ -3,7 +3,7 @@ name: debug-failing-test
 intent: Diagnosticar y resolver un test ATDD o unitario que falla en el CI o localmente
 inputs: [test_name, error_message, module_path]
 preconditions:
-  - mvn test falla con mensaje de error identificable
+  - ./gradlew test falla con mensaje de error identificable
 postconditions:
   - Causa raiz identificada
   - Test verde
@@ -16,8 +16,8 @@ related_rules: [testing-atdd, java-version, error-handling, observability-otel]
 ## Pasos por tipo de error
 
 ### ClassNotFoundException / NoClassDefFoundError
-- Verificar dependencias en pom.xml del modulo.
-- `mvn dependency:tree -pl <module>` para ver el classpath.
+- Verificar dependencias en build.gradle.kts del modulo.
+- `./gradlew dependency:tree -pl <module>` para ver el classpath.
 - Verificar que la clase no fue movida de paquete (refactor sin actualizar imports).
 
 ### Test de integracion falla con "Connection refused"
@@ -47,11 +47,11 @@ related_rules: [testing-atdd, java-version, error-handling, observability-otel]
 ## Herramientas de diagnostico
 
 ```bash
-# Logs detallados de Maven Surefire
-mvn test -pl <module> -Dsurefire.useFile=false -Dtest=<TestClass>#<method>
+# Logs detallados de JUnit/Gradle test
+./gradlew test -pl <module> -Dsurefire.useFile=false -Dtest=<TestClass>#<method>
 
 # Ver stacktrace completo
-mvn test -pl <module> -e -X 2>&1 | grep -A 20 "FAILED"
+./gradlew test -pl <module> -e -X 2>&1 | grep -A 20 "FAILED"
 ```
 
 ## Notas

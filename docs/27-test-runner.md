@@ -54,7 +54,7 @@ usando `os.getloadavg()` (Mac/Linux) y `/proc/meminfo` (Linux) / `sysctl hw.mems
 (Mac). Estas lecturas son informativas; el gate primario del scheduler es la contabilidad
 de reservas.
 
-Los jobs exclusivos (benchmarks) usan un flag `_exclusive_running`: cuando uno está
+Los jobs exclusivos (benchmarks, compose, contract, k6 y k8s) usan un flag `_exclusive_running`: cuando uno está
 corriendo, ningún otro job puede despacharse, y un job exclusivo no arranca hasta que
 no haya otros jobs corriendo.
 
@@ -69,7 +69,7 @@ Esto cubre configuraciones donde el costo de un único job excede el techo confi
 Cada grupo en `.ai/test-groups.yaml` declara:
 
 ```yaml
-unit:
+unit-java-fast:
   cost_cpu: medium     # low=15%, medium=35%, high=70% de reserva de CPU
   cost_ram_mb: 800     # consumo pico estimado de RAM
   exclusive: false     # cuando es true, corre solo (sin jobs concurrentes)
@@ -110,9 +110,9 @@ Grupos que actualmente declaran `requires`:
 
 | Grupo | requires |
 |---|---|
-| `sdk-typescript`, `sdk-typescript-integration` | `["fnm\|npm"]` (+ `docker` para integration). El comando se envuelve en `scripts/lib/with-fnm.sh` para activar el entorno fnm si está presente. |
-| `sdk-go`, `sdk-go-integration` | `[go]` (+ `docker` para integration) |
-| `smoke`, `integration`, `monolith`, `atdd-karate`, `atdd-monolith`, `atdd-vertx-platform`, `sdk-java-integration`, `sdk-contract`, `bench-distributed` | `[docker]` |
+| `unit-sdk-typescript`, `sdk-typescript`, `sdk-typescript-integration` | `["fnm\|npm"]` (+ `docker` para integration). El comando se envuelve en `scripts/lib/with-fnm.sh` para activar el entorno fnm si está presente. |
+| `unit-sdk-go`, `sdk-go`, `sdk-go-integration` | `[go]` (+ `docker` para integration) |
+| `integration-*`, `sdk-*-integration`, `contract`, `k6`, `bench-distributed`, aliases legacy compose/docker | `[docker]` (+ `k6` para `k6`) |
 
 ### Node.js via fnm
 
@@ -155,17 +155,46 @@ versión usada (actualmente `22.14.0`). fnm la respeta automáticamente.
 los techos. Con 4 SDKs costando cada uno 15% de CPU y 400MB de RAM en una máquina de 16GB:
 los 4 corren concurrentemente sin tocar ningún techo.
 
+
+## Taxonomía actual de suites
+
+`quick` no significa “todo lo que Gradle llama test”: significa feedback mínimo confiable para demo live. No invoca Gradle/JUnit. Si querés unit + ArchUnit reales, usá `ci-fast`.
+
+| Slice | Nombre | Infra | Nota |
+|------|--------|-------|------|
+| Guardrail live | `quick-check` | No | Python stdlib; source boundaries + aviso de artefactos, sin Gradle. |
+| Unit Java rápido | `unit-java-fast` | No | Lista explícita de tareas Gradle; nunca `./gradlew test`. |
+| Unit SDK | `unit-sdk` | No | Composite de Java/TypeScript/Go SDK unit. |
+| Arquitectura | `arch` | No | ArchUnit; exclusivo para evitar carrera de reportes XML con otra invocación Gradle. |
+| Component Vert.x | `component-vertx` | No | Tests in-process con puertos dinámicos. |
+| Integration Testcontainers | `integration-testcontainers` | Docker | Corre solo por consumo de Docker/Ryuk. |
+| Integration compose | `integration-compose` | Compose | Suites compose marcadas `exclusive: true`. |
+| SDK integration | `sdk-integration` | Compose | SDKs contra stack local, uno por vez. |
+| Contract | `contract` | Compose | Separado de SDK integration para poder gatearlo explícitamente. |
+| Load smoke | `k6` | Compose + k6 | Smoke de k6, exclusivo. |
+| Kubernetes | `k8s` / `ci-k8s` | k8s | Nightly/infra, exclusivo por suite. |
+
+Matriz recomendada:
+
+| Contexto | Comando |
+|----------|---------|
+| Demo live | `./nx test --composite quick` |
+| Pre-push | `./nx test --composite ci-fast` |
+| CI fast | `./nx test --composite ci-fast --json` |
+| CI full | `./nx test --composite ci-full --with-infra-compose --json` |
+| Infra/k8s/nightly | `./nx test --composite k8s --with-infra-k8s --json` |
+
 ## Referencia de CLI
 
 ```
 ./nx test                                   Lista grupos y composites
 ./nx test --list                            Igual que arriba
-./nx test --group unit                      Corre un solo grupo
-./nx test --groups unit,arch               Corre dos grupos
+./nx test --group unit-java-fast            Corre un solo grupo
+./nx test --groups unit-java-fast,arch     Corre dos grupos
 ./nx test --composite ci-fast              Corre un composite
 ./nx test --composite ci-fast --auto-parallel
 ./nx test --composite ci-fast --dry-run    Imprime solo el plan
-./nx test --group integration --auto-infra  compose-up automático
+./nx test --composite integration-compose --auto-infra  compose-up automático
 ./nx test --composite all --max-cpu 70 --max-ram 6000
 ./nx test --json                            Output JSON para CI
 ./nx test --parallel N                      Forzar N jobs concurrentes

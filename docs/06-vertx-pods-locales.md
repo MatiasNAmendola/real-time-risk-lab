@@ -42,9 +42,9 @@ Frase útil:
 
 ```bash
 cd ${REPO_ROOT}/poc/vertx-risk-platform
-./scripts/run-local-pods.sh
-./scripts/smoke.sh
-./scripts/stop-local-pods.sh
+poc/vertx-risk-platform/scripts/run-local-pods.sh
+poc/vertx-risk-platform/scripts/smoke.sh
+poc/vertx-risk-platform/scripts/stop-local-pods.sh
 ```
 
 ## Manifiestos EKS locales

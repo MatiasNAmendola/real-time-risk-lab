@@ -7,8 +7,8 @@ import (
 	"strings"
 	"time"
 
-	riskclient "github.com/naranjax/risk-client"
-	"github.com/naranjax/risk-smoke/internal/config"
+	riskclient "github.com/riskplatform/risk-client"
+	"github.com/riskplatform/risk-smoke/internal/config"
 )
 
 var restAmounts = []int64{1000, 50000, 150000, 200000, 500000}

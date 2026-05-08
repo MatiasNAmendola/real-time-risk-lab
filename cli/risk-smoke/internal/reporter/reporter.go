@@ -1,7 +1,7 @@
 // Package reporter provides structured reporting for smoke-check runs.
 package reporter
 
-import "github.com/naranjax/risk-smoke/internal/flows"
+import "github.com/riskplatform/risk-smoke/internal/flows"
 
 // Reporter is the interface for observing a smoke run and producing output.
 type Reporter interface {

@@ -55,7 +55,7 @@ and never makes changes without asking.
 | core          | yq              | 4.40.0            | mikefarah's yq                     |
 | core          | make            | 3.80              |                                    |
 | languages     | java            | 25.0.0            | Temurin LTS preferred              |
-| languages     | maven           | 3.9.0             |                                    |
+| languages     | gradle           | 3.9.0             |                                    |
 | languages     | go              | 1.26.0            | For Bubble Tea TUI; goenv preferred |
 | languages     | python3         | 3.11.0            | For auxiliary scripts              |
 | containers    | docker          | 24.0.0            | OrbStack or Docker Desktop         |

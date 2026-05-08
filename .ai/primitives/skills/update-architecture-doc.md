@@ -8,7 +8,7 @@ preconditions:
 postconditions:
   - Document updated with accurate information
   - exploration-state.md reflects current progress
-  - Engram updated with naranjax/risk-platform/state
+  - Engram updated with riskplatform/risk-platform/state
 related_rules: [naming-conventions]
 ---
 
@@ -39,8 +39,8 @@ related_rules: [naming-conventions]
    mem_save(
      title: "Risk platform state update: <date>",
      type: "discovery",
-     topic_key: "naranjax/risk-platform/state",
-     project: "naranjax/practica-entrevista",
+     topic_key: "riskplatform/risk-platform/state",
+     project: "riskplatform/risk-platform-practice",
      content: <summary of changes and current state>
    )
    ```

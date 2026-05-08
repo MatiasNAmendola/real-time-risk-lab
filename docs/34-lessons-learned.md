@@ -15,7 +15,7 @@
 | 7 | Audit canonical terms con substring matching | 489 falsos positivos | — |
 | 8 | Hazelcast flapping bajo memoria justa | Cluster forma 3 members → reparticiones | — |
 | 9 | Cucumber ATDD con escenarios Karate | UndefinedStepException | — |
-| 10 | Java 21 vs 25 — frameworks rezagados | JMH/Shadow/Karate no soportan classfile 25 | docs/26 |
+| 10 | Java 21 vs 25 — frameworks rezagados | JMH/Shadow/Karate no soportan classfile 25 | docs/26-java-version-compat-2026.md |
 
 ---
 
@@ -120,7 +120,7 @@ healthcheck:
 - `describe_secret` post-create de cada secret; FATAL exit 2 si alguno falta.
 - Healthcheck de moto bumpeado: `interval: 5s, retries: 20, start_period: 20s`.
 
-**Verificación**: `aws --endpoint http://localhost:4566 secretsmanager list-secrets | jq '.SecretList | length'` → `3` (`naranjax/db-password`, `risk-engine/db-password`, `risk-engine/api-key`).
+**Verificación**: `aws --endpoint http://localhost:4566 secretsmanager list-secrets | jq '.SecretList | length'` → `3` (`riskplatform/db-password`, `risk-engine/db-password`, `risk-engine/api-key`).
 
 **Por qué es interesante**: `except Exception` en scripts de init es un anti-patrón clásico que oculta exactamente los errores que importan (connectividad de infra). El healthcheck de un mock no garantiza que cada subservicio esté listo — moto en particular boota la API HTTP antes que sus backends estén respondiendo. Wait-for por endpoint específico es la fix correcta.
 
@@ -182,18 +182,18 @@ healthcheck:
 
 ## 9. Cucumber-JVM no entiende escenarios escritos en sintaxis Karate
 
-**Síntoma**: `mvn test -pl atdd-tests` falla con `UndefinedStepException` en 10 escenarios. Los step definitions parecen estar registrados correctamente.
+**Síntoma**: `./gradlew :poc:java-vertx-distributed:atdd-tests:test -Patdd` falla con `UndefinedStepException` en 10 escenarios. Los step definitions parecen estar registrados correctamente.
 
-**Cómo se detectó**: `mvn test` log muestra steps undefined con cuerpos como `* url 'http://localhost:8080'`, `* path '/risk'`, `And match response.decision == 'REVIEW'`.
+**Cómo se detectó**: `./gradlew test` log muestra steps undefined con cuerpos como `* url 'http://localhost:8080'`, `* path '/risk'`, `And match response.decision == 'REVIEW'`.
 
 **Root cause**: los `.feature` afectados estaban escritos en sintaxis **Karate** (DSL declarativo: `* url`, `* path`, `match response`), no en Gherkin estándar. Cucumber-JVM 7 sólo entiende Gherkin (`Given`, `When`, `Then`, `And`). El `*` de Karate es legal en Gherkin como sinónimo de step bullet, pero el cuerpo (`url '...'`, `match ... == ...`) no tiene step definition en Cucumber porque eso es vocabulario de Karate.
 
 **Fix aplicado**: separación clara por suite.
 - `tests/risk-engine-atdd/` (Cucumber-JVM 7): `.feature` reescritos a Gherkin idiomático con steps custom (`Given un cliente con score X`, `When envío POST a /risk`, `Then la decisión es REVIEW`). Step defs en `RiskSteps.java`.
-- `poc/vertx-risk-platform/karate-tests/`: `.feature` Karate-native, corren con runner de Karate.
+- `poc/vertx-risk-platform/atdd-tests/`: `.feature` Karate-native, corren con runner de Karate.
 - README de cada suite explica qué dialecto usar y por qué.
 
-**Verificación**: `mvn test -pl atdd-tests` → 0 undefined, todos los escenarios pasan o fallan con asserts reales.
+**Verificación**: `./gradlew :poc:java-vertx-distributed:atdd-tests:test -Patdd` → 0 undefined, todos los escenarios pasan o fallan con asserts reales.
 
 **Por qué es interesante**: Karate y Cucumber comparten extensión `.feature` y ambos parsean Gherkin de boca, pero el espacio de steps es disjunto. Mezclar dialectos en el mismo runner es el error. La regla R3 del repo (ATDD primero) elige una herramienta por contexto: Karate cuando hay HTTP / GraphQL externo, Cucumber cuando los step definitions encapsulan lógica de dominio. La separación por carpeta + dialecto es la fix estructural.
 
@@ -201,7 +201,7 @@ healthcheck:
 
 ## 10. Java 21 vs 25: frameworks de build no soportan classfile 25
 
-**Síntoma**: `gradle build` con `--release 25` produce errores en cuatro lugares distintos: JMH benchmarks corren pero `java -jar benchmarks.jar` dice "No matching benchmarks"; Shadow plugin tira `Class major version 69 not supported`; Karate 1.4 tira `IllegalAccessException` sobre `permits`.
+**Síntoma**: `gradle build` con `--release 21` produce errores en cuatro lugares distintos: JMH benchmarks corren pero `java -jar benchmarks.jar` dice "No matching benchmarks"; Shadow plugin tira `Class major version 69 not supported`; Karate 1.4 tira `IllegalAccessException` sobre `permits`.
 
 **Cómo se detectó**: probar cada herramienta del build pipeline contra `release 25` y enumerar fallas. Documentado in extenso en `docs/26-java-version-compat-2026.md`.
 
@@ -209,19 +209,74 @@ healthcheck:
 1. JMH 1.37 annotation processor lee class files internamente; no entiende attributes nuevos (sealed types, value types preview en classfile 25 / major 69). Genera classes pero no escribe `META-INF/BenchmarkList`.
 2. `com.gradleup.shadow:8.x` parser de constant pool falla con tags desconocidos.
 3. Karate 1.4.x usa reflection sobre `permits` y tira `IllegalAccessException` con bytecode 25.
-4. Plugins legacy de Maven asumen `<= 21`.
+4. Plugins legacy de Gradle asumen `<= 21`.
 
-**Fix aplicado**: `naranja.java-conventions.gradle.kts`:
+**Fix aplicado**: `riskplatform.java-conventions.gradle.kts`:
 ```kotlin
 java { toolchain { languageVersion.set(JavaLanguageVersion.of(21)) } }
 tasks.withType<JavaCompile>().configureEach { options.release.set(21) }
 ```
-Compilamos con `--release 21`, ejecutamos en cualquier JDK 21+ (incluyendo 25). ADR-0001 se mantiene; este es un workaround temporal documentado en `docs/26`.
+Compilamos con `--release 21`, ejecutamos en cualquier JDK 21+ (incluyendo 25). ADR-0001 se mantiene; este es un workaround temporal documentado en `docs/26-java-version-compat-2026.md`.
 
-**Verificación**: `gradle build` clean en los cuatro módulos; `java -jar benchmarks.jar` lista benchmarks; `mvn test -pl karate-tests` pasa.
+**Verificación**: `gradle build` clean en los cuatro módulos; `java -jar benchmarks.jar` lista benchmarks; `./gradlew test -pl karate-tests` pasa.
 
 **Por qué es interesante**: ADRs aspiracionales chocan con realidad de ecosistema. La decisión arquitectónica correcta (Java 25 LTS) no es la decisión operativa correcta cuando 4 de 4 herramientas del build pipeline no soportan classfile 25. La fix honesta es documentar el delta, no torcer la realidad. El compromiso `--release 21` aprovecha lo bueno (sealed interfaces, records, pattern matching switch) sin entrar en territorio que rompe tooling. Cuando JMH/Shadow/Karate alcancen, se levanta el cap. El doc `26` sirve para que el reviewer técnico vea que la decisión está medida, no improvisada.
 
 ---
 
-> Cada gotcha de este doc tiene su evidencia en `out/e2e-verification/` y su trazabilidad en Engram (topic keys: `hazelcast-eventbus-fix`, `infra-init-fixes`, `fixes-openobserve-audit-orphans`, `canonical-terms-bilingual`). Para reproducir cada fix: `git log --grep "<topic-key>"`.
+## 11. Custom Java load bench mentía en el p99 — k6 (Grafana) lo destapó
+
+**Síntoma**: `bench/distributed-bench` reportaba consistentemente p99 ~ 180ms para `java-vertx-distributed` bajo 32 concurrency. Las gráficas de OpenObserve sobre tracing OTEL del mismo período mostraban p99 ~ 290ms. Diferencia de 110ms entre dos mediciones del mismo intervalo, mismo workload.
+
+**Cómo se detectó**: corrida de comparación `./nx bench k6 load --target distributed --duration 2m` con `K6_PROMETHEUS_RW_SERVER_URL` apuntando a OpenObserve. El p99 que reportó k6 (286ms) era casi idéntico al p99 que ya mostraba OpenObserve sobre los spans del controller. El custom bench reportaba ~180ms para la misma corrida.
+
+**Root cause**: el percentile calculator del custom bench mantenía un array bounded de las últimas N samples (N=1000) y computaba percentiles sobre eso. Bajo carga sostenida con cola de respuestas en el servidor, las muestras de long-tail (las pocas requests que pegaban con un GC pause o un partition rebalancing de Hazelcast) se evictaban del array antes del cálculo final. Resultado: p99 sub-reportado por ~ 40%. Adicionalmente, el bench usaba `System.nanoTime()` antes de `socket.connect()` y después de `read()`, pero no separaba TLS handshake, lo que ya de por sí inflaba la varianza.
+
+**Fix aplicado**: adoptar k6 como tool oficial de load HTTP. Razones técnicas, no de moda:
+1. k6 usa HDR-style histograms internamente (`metrics.Trend`) → percentiles correctos sobre todo el dataset, no sobre una ventana.
+2. Output múltiple en una corrida (stdout summary + JSON + Prometheus RW) → mismo dato consultable desde tres ángulos.
+3. Threshold gating en JS (`http_req_duration: ['p(99)<300']`) → exit code 99 si falla, CI puede fallar el build.
+4. Stages nativos para ramps (smoke/load/stress/spike/soak son archetypal) → no se reinventan timers.
+5. Single binary Go, sin JVM warmup → el bench arranca en < 100ms, lo que importa cuando lo corrés como pre-deploy gate.
+
+JMH (`bench/inprocess-bench`) se mantiene para microbench in-process (sin red, sin serialización), que es exactamente donde JMH es state-of-the-art.
+
+**Verificación**: `./nx bench k6 competition load` corre el mismo scenario contra los 4 servicios y emite `out/k6-competition/<ts>/comparison.md` con p95/p99/error_rate/reqs por target. Los números cuadran con OpenObserve dentro de ±5ms.
+
+**Por qué es interesante**: este es el clásico caso de "tool homegrown que pasaba el smoke pero no era trustworthy en producción". El bench custom no estaba mal escrito — estaba mal especificado. El requirement era "p99 sostenido" y la implementación entregaba "p99 de la última ventana". Industry-standard tools (k6, wrk2, vegeta) ya resolvieron este problema con histogramas correctos. Reinventar load testing con un thread pool es un anti-pattern en 2026. Documentado en [ADR-0040](../vault/02-Decisions/0040-k6-for-load-testing.md).
+
+---
+
+## 12. `./gradlew clean build` por default infló duración de runs y causó contention multi-agente
+
+**Síntoma**: tres builds simultáneos en una sesión multi-agente. `gradlew clean build -x test` corriendo 5:49 min, `shadowJar` con `--no-build-cache --no-configuration-cache` corriendo 1:14 min, daemon en idle. CPU al 100% sostenido, IDE laggy, otros agentes en cola.
+
+**Cómo se detectó**: `ps -ef | grep gradle` mostró tres procesos compitiendo por el mismo daemon. Cada `clean` invalidaba el build cache antes de empezar, así que los 200+ tasks se rebuildeaban from scratch aunque la mayoría de las invocaciones solo necesitaban el shadowJar de un módulo puntual (ej: `bench-distributed`).
+
+**Root cause**: tres errores acumulados:
+1. `nx build` exec-eaba `./gradlew clean build` sin condición. Default lento, sin escape hatch para "solo si cambió".
+2. Algunos scripts forzaban `--no-build-cache --no-configuration-cache` "por seguridad", anulando los caches que Gradle ya hace bien.
+3. Cero coordinación entre agentes: dos invocaciones simultáneas del mismo target compiten por el daemon, doblando wall-clock.
+
+**Fix aplicado**:
+- `nx_build_target` en `nx`: build incremental con jar-freshness check (mtime jar vs newest source). Skip si los jars son newer que el último source. `--rebuild` o `NX_REBUILD=1` para forzar.
+- Lock por target (`.gradle/.nx-build-locks/<target>.lock` con PID-liveness check) para coordinar agentes paralelos.
+- `bench/scripts/run-comparison.sh` skipea Gradle si los jars existen.
+- Backward-compat: `./nx build --legacy-clean` mantiene el comportamiento original para CI/debugging.
+- Default flags en builds: `--build-cache --configuration-cache --parallel`. Removidos los `--no-*` flags salvo en debugging explícito.
+
+**Verificación**:
+```bash
+./gradlew :poc:java-monolith:clean :poc:java-monolith:shadowJar
+time ./nx build monolith               # primer build, ~3-5 min
+time ./nx build monolith               # warm, < 2s (skip)
+touch poc/java-monolith/src/main/java/io/riskplatform/monolith/Application.java
+time ./nx build monolith               # incremental, ~15-30s
+time NX_REBUILD=1 ./nx build monolith  # forced, ~3-5 min
+```
+
+**Por qué es interesante**: anti-pattern común en monorepos: scripts heredan un default conservador (`clean build`) "para evitar problemas de cache" que dobla cada feedback loop. El cache de Gradle es robusto — su breakage es la excepción, no la regla. Cuando el cache se rompe (rarísimo), `--rebuild` lo arregla en 30s. Cuando se rompe `clean build` por default, lo pagás en cada iteración. Topic engram: `build-perf-smart-cli`.
+
+---
+
+> Cada gotcha de este doc tiene su evidencia en `out/e2e-verification/` y su trazabilidad en Engram (topic keys: `hazelcast-eventbus-fix`, `infra-init-fixes`, `fixes-openobserve-audit-orphans`, `canonical-terms-bilingual`, `k6-load-testing-integration`, `build-perf-smart-cli`). Para reproducir cada fix: `git log --grep "<topic-key>"`.

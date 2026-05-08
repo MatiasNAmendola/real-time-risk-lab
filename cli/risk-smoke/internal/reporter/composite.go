@@ -1,6 +1,6 @@
 package reporter
 
-import "github.com/naranjax/risk-smoke/internal/flows"
+import "github.com/riskplatform/risk-smoke/internal/flows"
 
 // CompositeReporter fans out calls to multiple Reporters.
 type CompositeReporter struct {

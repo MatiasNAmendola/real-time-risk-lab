@@ -32,10 +32,10 @@ Implementación bare-javac de [[Clean-Architecture]] para un motor de riesgo tra
 
 ```bash
 cd poc/java-risk-engine
-./scripts/build.sh
-./scripts/run.sh
-# o con Maven si está presente:
-mvn clean verify
+poc/java-risk-engine/scripts/build.sh
+poc/java-risk-engine/scripts/run.sh
+# o con Gradle si está presente:
+./gradlew clean verify
 ```
 
 ## Estructura de directorios

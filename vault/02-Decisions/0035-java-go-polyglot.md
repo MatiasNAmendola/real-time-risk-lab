@@ -17,13 +17,13 @@ Aceptado el 2026-05-07.
 
 The repository has two distinct implementation domains: (1) la risk engine y distributed platform — business logic, event-driven architecture, ATDD test suites, performance benchmarks; y (2) development tooling — un TUI smoke runner que verifies la live system a través de 9 communication channels. These domains have different optimization targets.
 
-For la risk engine, Java 25 es la correct choice (the target productivo stack, virtual threads, strong typing, JVM performance, rich ecosystem). For la smoke runner, la requirements are: fast binary startup, built-in concurrency para parallel channel checks, un mature TUI library, y un self-contained binary distribution.
+For la risk engine, Java 21 LTS es el baseline ejecutable actual (the target productivo stack, virtual threads, strong typing, JVM performance, rich ecosystem). For la smoke runner, la requirements are: fast binary startup, built-in concurrency para parallel channel checks, un mature TUI library, y un self-contained binary distribution.
 
 Go y Java optimize para different things. Go produces small, statically linked binaries con fast startup y excellent standard library support para HTTP, WebSocket, y SSE. Java produces JVM-hosted applications con excellent library support pero 200-400ms JVM startup overhead.
 
 ## Decisión
 
-Use Java 25 para todos application code en `poc/` y `pkg/`. Use Go 1.22+ para todos CLI tooling en `cli/`. La boundary es explicit: `cli/` es tooling que operates en la running application, no application code. Go modules en `cli/` have no import dependency en Java modules.
+Use Java 21 LTS (`--release 21`) para todo application code en `poc/` y `pkg/`; Java 25 queda como objetivo documentado. Use Go 1.22+ para todos CLI tooling en `cli/`. La boundary es explicit: `cli/` es tooling que operates en la running application, no application code. Go modules en `cli/` have no import dependency en Java modules.
 
 The Go tooling choice es Bubble Tea (TUI framework) + Lip Gloss (styling) + Bubbles (UI components). Este es la canonical Go TUI stack — la same libraries used en la `charmbracelet` ecosystem (Gum, Soft Serve, etc.).
 
@@ -31,7 +31,7 @@ The Go tooling choice es Bubble Tea (TUI framework) + Lip Gloss (styling) + Bubb
 
 ### Opción A: Java + Go — Java para apps, Go para CLI (elegida)
 - **Ventajas**: Each language used para what it does best; Go binary es ~10MB self-contained, starts instantly (no JVM); Bubble Tea es la canonical Go TUI library con excellent documentation; Go's goroutines handle concurrent channel checks (9 parallel HTTP/WS/Kafka checks) cleanly; demonstrates polyglot capability un reviewers; `cli/risk-smoke --headless` output es un clean exit code para CI sin JVM startup overhead.
-- **Desventajas**: Two languages en la repository; Go module management es separate desde Gradle/Maven; developers must know both; dependency en Go toolchain en addition un Java.
+- **Desventajas**: Two languages en la repository; Go module management es separate desde Gradle/Gradle; developers must know both; dependency en Go toolchain en addition un Java.
 - **Por qué se eligió**: La smoke runner has specific requirements (fast startup, TUI, concurrent checks) que Go satisfies better than Java. La separation es clean — `cli/` es clearly tooling, no application code.
 
 ### Opción B: Java para everything — CLI tooling en Java con Lanterna o JLine
@@ -52,7 +52,7 @@ The Go tooling choice es Bubble Tea (TUI framework) + Lip Gloss (styling) + Bubb
 ## Consecuencias
 
 ### Positivo
-- `cli/risk-smoke` es un self-contained binary con no runtime dependencies — `./risk-smoke --target vertx` works immediately después de build.
+- `cli/risk-smoke` es un self-contained binary con no runtime dependencies — `cd cli/risk-smoke && go run . --target vertx` works immediately después de build.
 - Go's concurrency model (goroutines + channels) makes 9 parallel channel checks clean y testable.
 - Polyglot capability signals breadth — "I use la right tool para la job" es la explicit position.
 - Bubble Tea TUI provides un polished demo: animated spinners per check, color-coded results, final summary table.
@@ -70,7 +70,7 @@ The Go tooling choice es Bubble Tea (TUI framework) + Lip Gloss (styling) + Bubb
 ## Validación
 
 - `cd cli/risk-smoke && go build .` produces un self-contained binary.
-- `./risk-smoke --headless --target vertx` exits 0 when todos 9 channels pass.
+- `cd cli/risk-smoke && go run . --headless --target vertx` exits 0 when todos 9 channels pass.
 - Binary size es < 15MB (typical para un Go CLI con Bubble Tea).
 
 ## Relacionado

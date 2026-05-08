@@ -2,7 +2,7 @@
 # ─── atdd-report.sh ───────────────────────────────────────────────────────────
 # Post-processes Karate JSON reports into structured Markdown output.
 #
-# Inputs (read from target/karate-reports/ after mvn test):
+# Inputs (read from build/karate-reports/ after Gradle test):
 #   - karate-summary.json         (Karate's own summary — if present)
 #   - *.json                      (per-feature Cucumber JSON files)
 #   - karate.log                  (full debug log, written by logback-test.xml)
@@ -17,12 +17,12 @@
 #   out/atdd-karate/latest -> <timestamp>   (symlink)
 #
 # Usage:
-#   ./scripts/atdd-report.sh [exit_code]   (exit_code forwarded from mvn test)
+#   ./scripts/atdd-report.sh [exit_code]   (exit_code forwarded from Gradle test)
 # ──────────────────────────────────────────────────────────────────────────────
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-REPORTS_DIR="$ROOT/atdd-tests/target/karate-reports"
+REPORTS_DIR="$ROOT/atdd-tests/build/karate-reports"
 BASE_URL="${CONTROLLER_URL:-http://localhost:8080}"
 EXIT_CODE="${1:-0}"
 TIMESTAMP="$(date -u +%Y-%m-%dT%H-%M-%S)"
@@ -44,7 +44,7 @@ slugify() {
 # ── Collect feature JSON files ────────────────────────────────────────────────
 
 # Karate 1.5 writes one JSON file per feature (Cucumber format) under
-# target/karate-reports/features/  or directly in target/karate-reports/.
+# build/karate-reports/features/  or directly in build/karate-reports/.
 # We glob both locations.
 
 mapfile -t FEATURE_JSONS < <(
@@ -119,8 +119,8 @@ done
 
 # ── Copy coverage (aggregated cross-module preferred, fallback to per-module) ──
 
-JACOCO_AGGREGATED="$ROOT/atdd-tests/target/site/jacoco-aggregated"
-JACOCO_LOCAL="$ROOT/atdd-tests/target/site/jacoco"
+JACOCO_AGGREGATED="$ROOT/atdd-tests/build/reports/jacoco/merged"
+JACOCO_LOCAL="$ROOT/atdd-tests/build/reports/jacoco/test"
 JACOCO_XML=""
 COVERAGE_REPORT_LABEL=""
 
@@ -168,7 +168,7 @@ for pkg in root.findall('package'):
             branch_cov = f"{pct}%"
             total_branch_covered += covered
             total_branch_missed += missed
-    if name.startswith('com.naranjax'):
+    if name.startswith('io.riskplatform'):
         rows.append(f"{name}|{line_cov}|{branch_cov}")
 
 total_line = total_line_covered + total_line_missed

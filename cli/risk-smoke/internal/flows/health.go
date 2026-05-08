@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"time"
 
-	riskclient "github.com/naranjax/risk-client"
-	"github.com/naranjax/risk-smoke/internal/config"
+	riskclient "github.com/riskplatform/risk-client"
+	"github.com/riskplatform/risk-smoke/internal/config"
 )
 
 // HealthCheck hits GET /healthz on the controller via the risk-client SDK.

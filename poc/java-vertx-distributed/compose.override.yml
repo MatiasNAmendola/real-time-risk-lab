@@ -24,30 +24,42 @@ services:
     build:
       context: ${REPO_ROOT:-.}/poc/java-vertx-distributed
       dockerfile: repository-app/Dockerfile
-    image: naranjax/repository-app:latest
+    image: riskplatform/repository-app:latest
     user: "1003:1003"
     environment:
       PG_HOST:     postgres
       PG_PORT:     "5432"
-      PG_DATABASE: naranjax
-      PG_USER:     naranjax
-      PG_PASSWORD: naranjax
+      PG_DATABASE: riskplatform
+      PG_USER:     riskplatform
+      PG_PASSWORD: riskplatform
       OTEL_SERVICE_NAME:               repository-app
       OTEL_EXPORTER_OTLP_ENDPOINT:     http://otel-collector:4318
       OTEL_EXPORTER_OTLP_PROTOCOL:     http/protobuf
+      # Keep telemetry from becoming the hidden saturator during local bring-up.
+      # Requests still emit trace/log/metric; exporter calls fail fast if OpenObserve
+      # is overloaded instead of holding OkHttp/worker threads for 10s.
+      OTEL_EXPORTER_OTLP_TIMEOUT:      "2000"
+      OTEL_BSP_EXPORT_TIMEOUT:         "2000"
+      OTEL_BLRP_EXPORT_TIMEOUT:        "2000"
+      OTEL_METRIC_EXPORT_INTERVAL:     "60000"
       OTEL_TRACES_EXPORTER:            otlp
       OTEL_METRICS_EXPORTER:           otlp
       OTEL_LOGS_EXPORTER:              otlp
       OTEL_INSTRUMENTATION_VERTX_ENABLED: "true"
-      HAZELCAST_MEMBERS:               controller-app:5701,usecase-app:5701,repository-app:5701
       AWS_ENDPOINT_URL_SECRETSMANAGER: http://moto:5000
       AWS_ACCESS_KEY_ID:               test
       AWS_SECRET_ACCESS_KEY:           test
       AWS_REGION:                      us-east-1
-      DB_SECRET_NAME:                  naranjax/db-password
+      DB_SECRET_NAME:                  riskplatform/db-password
       OPENBAO_URL:                     http://openbao:8200
       OPENBAO_TOKEN:                   root
-      JAVA_TOOL_OPTIONS:               "-Xms128m -Xmx384m"
+      EVENT_BUS_HOST:                  repository-app
+      HAZELCAST_CONFIG_PATH:            /etc/riskplatform/hazelcast/hazelcast.xml
+      # JVM tuned to fit inside mem_limit=512m. Hazelcast network/thread/heartbeat
+      # settings live in the mounted XML below, not in per-service JVM flags.
+      JAVA_TOOL_OPTIONS:               "-Xms96m -Xmx256m -XX:ActiveProcessorCount=2 -XX:+UseG1GC -XX:MaxGCPauseMillis=200 -XX:MaxMetaspaceSize=128m -XX:MaxDirectMemorySize=64m -Dvertx.options.blockedThreadCheckInterval=10000 -Dvertx.options.maxEventLoopExecuteTime=10000000000"
+    volumes:
+      - ${REPO_ROOT:-.}/poc/java-vertx-distributed/hazelcast/hazelcast.xml:/etc/riskplatform/hazelcast/hazelcast.xml:ro
     ports:
       - "6303:6300"
     networks:
@@ -62,13 +74,14 @@ services:
       moto-init:
         condition: service_completed_successfully
     healthcheck:
-      test: ["CMD-SHELL", "wget -qO- http://localhost:8082/healthz 2>/dev/null || exit 0"]
+      test: ["CMD-SHELL", "pgrep -f repository-app >/dev/null || exit 1"]
       interval: 10s
       timeout: 5s
       retries: 10
       start_period: 60s
     mem_limit: 512m
     mem_reservation: 256m
+    cpus: "0.75"
 
   # ============================================================================
   # App — usecase-app (domain / business logic layer)
@@ -77,30 +90,44 @@ services:
     build:
       context: ${REPO_ROOT:-.}/poc/java-vertx-distributed
       dockerfile: usecase-app/Dockerfile
-    image: naranjax/usecase-app:latest
+    image: riskplatform/usecase-app:latest
     user: "1002:1002"
     environment:
       OTEL_SERVICE_NAME:               usecase-app
       OTEL_EXPORTER_OTLP_ENDPOINT:     http://otel-collector:4318
       OTEL_EXPORTER_OTLP_PROTOCOL:     http/protobuf
+      # Keep telemetry from becoming the hidden saturator during local bring-up.
+      # Requests still emit trace/log/metric; exporter calls fail fast if OpenObserve
+      # is overloaded instead of holding OkHttp/worker threads for 10s.
+      OTEL_EXPORTER_OTLP_TIMEOUT:      "2000"
+      OTEL_BSP_EXPORT_TIMEOUT:         "2000"
+      OTEL_BLRP_EXPORT_TIMEOUT:        "2000"
+      OTEL_METRIC_EXPORT_INTERVAL:     "60000"
       OTEL_TRACES_EXPORTER:            otlp
       OTEL_METRICS_EXPORTER:           otlp
       OTEL_LOGS_EXPORTER:              otlp
       OTEL_INSTRUMENTATION_VERTX_ENABLED: "true"
-      HAZELCAST_MEMBERS:               controller-app:5701,usecase-app:5701,repository-app:5701
+      EVENT_BUS_HOST:                  usecase-app
+      HAZELCAST_CONFIG_PATH:            /etc/riskplatform/hazelcast/hazelcast.xml
       KAFKA_BOOTSTRAP_SERVERS:         redpanda:9092
       AWS_ENDPOINT_URL_S3:             http://minio:9000
       AWS_ENDPOINT_URL_SQS:            http://elasticmq:9324
       AWS_ACCESS_KEY_ID:               test
       AWS_SECRET_ACCESS_KEY:           test
+      S3_ACCESS_KEY_ID:                minioadmin
+      S3_SECRET_ACCESS_KEY:            minioadmin
       AWS_REGION:                      us-east-1
       RISK_AUDIT_BUCKET:               risk-audit
       RISK_SQS_QUEUE:                  risk-decisions-queue
-      RULES_CONFIG_PATH:               /etc/naranjax/rules/rules.yaml
+      RULES_CONFIG_PATH:               /etc/riskplatform/rules/rules.yaml
       BARRIER_MODE:                    blocking
-      JAVA_TOOL_OPTIONS:               "-Xms128m -Xmx512m"
+      # usecase-app carries AWS SDK + Hazelcast + ML scoring on init: bumped to
+      # 1G to stop BlockedThreadChecker firing on cold start. Heap=640m leaves
+      # 384m for metaspace/direct/native (AWS SDK is metaspace-heavy).
+      JAVA_TOOL_OPTIONS:               "-Xms96m -Xmx384m -XX:ActiveProcessorCount=2 -XX:+UseG1GC -XX:MaxGCPauseMillis=200 -XX:MaxMetaspaceSize=192m -XX:MaxDirectMemorySize=96m -Dvertx.options.blockedThreadCheckInterval=10000 -Dvertx.options.maxEventLoopExecuteTime=10000000000"
     volumes:
-      - ${REPO_ROOT:-.}/examples/rules-config/v1/rules.yaml:/etc/naranjax/rules/rules.yaml:ro
+      - ${REPO_ROOT:-.}/examples/rules-config/v1/rules.yaml:/etc/riskplatform/rules/rules.yaml:ro
+      - ${REPO_ROOT:-.}/poc/java-vertx-distributed/hazelcast/hazelcast.xml:/etc/riskplatform/hazelcast/hazelcast.xml:ro
     ports:
       - "6302:6300"
     networks:
@@ -114,16 +141,19 @@ services:
         condition: service_completed_successfully
       minio-init:
         condition: service_completed_successfully
+      elasticmq-init:
+        condition: service_completed_successfully
       otel-collector:
         condition: service_started
     healthcheck:
-      test: ["CMD-SHELL", "wget -qO- http://localhost:8081/healthz 2>/dev/null || exit 0"]
+      test: ["CMD-SHELL", "pgrep -f usecase-app >/dev/null || exit 1"]
       interval: 10s
       timeout: 5s
       retries: 10
-      start_period: 60s
+      start_period: 90s
     mem_limit: 768m
-    mem_reservation: 384m
+    mem_reservation: 512m
+    cpus: "0.75"
 
   # ============================================================================
   # App — controller-app (HTTP ingress layer)
@@ -132,23 +162,33 @@ services:
     build:
       context: ${REPO_ROOT:-.}/poc/java-vertx-distributed
       dockerfile: controller-app/Dockerfile
-    image: naranjax/controller-app:latest
+    image: riskplatform/controller-app:latest
     user: "1001:1001"
     environment:
       OTEL_SERVICE_NAME:               controller-app
       OTEL_EXPORTER_OTLP_ENDPOINT:     http://otel-collector:4318
       OTEL_EXPORTER_OTLP_PROTOCOL:     http/protobuf
+      # Keep telemetry from becoming the hidden saturator during local bring-up.
+      # Requests still emit trace/log/metric; exporter calls fail fast if OpenObserve
+      # is overloaded instead of holding OkHttp/worker threads for 10s.
+      OTEL_EXPORTER_OTLP_TIMEOUT:      "2000"
+      OTEL_BSP_EXPORT_TIMEOUT:         "2000"
+      OTEL_BLRP_EXPORT_TIMEOUT:        "2000"
+      OTEL_METRIC_EXPORT_INTERVAL:     "60000"
       OTEL_TRACES_EXPORTER:            otlp
       OTEL_METRICS_EXPORTER:           otlp
       OTEL_LOGS_EXPORTER:              otlp
       OTEL_INSTRUMENTATION_VERTX_ENABLED: "true"
-      HAZELCAST_MEMBERS:               controller-app:5701,usecase-app:5701,repository-app:5701
-      RULES_CONFIG_PATH:               /etc/naranjax/rules/rules.yaml
+      RULES_CONFIG_PATH:               /etc/riskplatform/rules/rules.yaml
       ADMIN_TOKEN:                     admin-secret
       BARRIER_MODE:                    blocking
-      JAVA_TOOL_OPTIONS:               "-Xms128m -Xmx512m"
+      EVENT_BUS_HOST:                  controller-app
+      HAZELCAST_CONFIG_PATH:            /etc/riskplatform/hazelcast/hazelcast.xml
+      # heap=448m fits inside mem_limit=768m with metaspace+direct+native.
+      JAVA_TOOL_OPTIONS:               "-Xms96m -Xmx384m -XX:ActiveProcessorCount=2 -XX:+UseG1GC -XX:MaxGCPauseMillis=200 -XX:MaxMetaspaceSize=128m -XX:MaxDirectMemorySize=64m -Dvertx.options.blockedThreadCheckInterval=10000 -Dvertx.options.maxEventLoopExecuteTime=10000000000"
     volumes:
-      - ${REPO_ROOT:-.}/examples/rules-config/v1/rules.yaml:/etc/naranjax/rules/rules.yaml:ro
+      - ${REPO_ROOT:-.}/examples/rules-config/v1/rules.yaml:/etc/riskplatform/rules/rules.yaml:ro
+      - ${REPO_ROOT:-.}/poc/java-vertx-distributed/hazelcast/hazelcast.xml:/etc/riskplatform/hazelcast/hazelcast.xml:ro
     ports:
       - "8080:8080"
       - "6301:6300"
@@ -161,13 +201,14 @@ services:
       otel-collector:
         condition: service_started
     healthcheck:
-      test: ["CMD-SHELL", "wget -qO- http://localhost:8080/health || exit 1"]
+      test: ["CMD-SHELL", "wget -qO- http://localhost:8080/ready || exit 1"]
       interval: 10s
       timeout: 5s
       retries: 30
       start_period: 120s
     mem_limit: 768m
     mem_reservation: 384m
+    cpus: "0.75"
 
   # ============================================================================
   # App — consumer-app (Kafka downstream consumer for audit/analytics)
@@ -176,12 +217,19 @@ services:
     build:
       context: ${REPO_ROOT:-.}/poc/java-vertx-distributed
       dockerfile: consumer-app/Dockerfile
-    image: naranjax/consumer-app:latest
+    image: riskplatform/consumer-app:latest
     user: "1004:1004"
     environment:
       OTEL_SERVICE_NAME:               consumer-app
       OTEL_EXPORTER_OTLP_ENDPOINT:     http://otel-collector:4318
       OTEL_EXPORTER_OTLP_PROTOCOL:     http/protobuf
+      # Keep telemetry from becoming the hidden saturator during local bring-up.
+      # Requests still emit trace/log/metric; exporter calls fail fast if OpenObserve
+      # is overloaded instead of holding OkHttp/worker threads for 10s.
+      OTEL_EXPORTER_OTLP_TIMEOUT:      "2000"
+      OTEL_BSP_EXPORT_TIMEOUT:         "2000"
+      OTEL_BLRP_EXPORT_TIMEOUT:        "2000"
+      OTEL_METRIC_EXPORT_INTERVAL:     "60000"
       OTEL_TRACES_EXPORTER:            otlp
       OTEL_METRICS_EXPORTER:           otlp
       OTEL_LOGS_EXPORTER:              otlp
@@ -189,9 +237,12 @@ services:
       AWS_ENDPOINT_URL_S3:             http://minio:9000
       AWS_ACCESS_KEY_ID:               test
       AWS_SECRET_ACCESS_KEY:           test
+      S3_ACCESS_KEY_ID:                minioadmin
+      S3_SECRET_ACCESS_KEY:            minioadmin
       AWS_REGION:                      us-east-1
       RISK_AUDIT_BUCKET:               risk-audit
-      JAVA_TOOL_OPTIONS:               "-Xms64m -Xmx256m"
+      # consumer-app does not join Hazelcast cluster (Kafka-only); no EB host.
+      JAVA_TOOL_OPTIONS:               "-Xms64m -Xmx192m -XX:ActiveProcessorCount=1 -XX:+UseG1GC -XX:MaxGCPauseMillis=200 -XX:MaxMetaspaceSize=96m -XX:MaxDirectMemorySize=48m -Dvertx.options.blockedThreadCheckInterval=10000 -Dvertx.options.maxEventLoopExecuteTime=10000000000"
     ports:
       - "6304:6300"
     networks:
@@ -203,10 +254,13 @@ services:
         condition: service_completed_successfully
       minio-init:
         condition: service_completed_successfully
+      elasticmq-init:
+        condition: service_completed_successfully
       otel-collector:
         condition: service_started
     mem_limit: 384m
     mem_reservation: 192m
+    cpus: "0.50"
 
 networks:
   app-net: {}

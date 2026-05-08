@@ -7,7 +7,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/naranjax/risk-smoke/internal/config"
+	"github.com/riskplatform/risk-smoke/internal/config"
 )
 
 // SSECheck opens GET /risk/stream and reads up to 3 events within 5s.

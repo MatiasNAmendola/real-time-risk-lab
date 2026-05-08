@@ -10,7 +10,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/naranjax/risk-smoke/internal/config"
+	"github.com/riskplatform/risk-smoke/internal/config"
 )
 
 // WebhookCheck registers a local HTTP listener as webhook, fires a high-amount

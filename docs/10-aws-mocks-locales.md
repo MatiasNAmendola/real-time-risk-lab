@@ -76,7 +76,7 @@ poc/k8s-local/addons/
 └── 71-aws-mocks-init.yaml   # Job que crea bucket S3, queue SQS, secrets en Moto/OpenBao
 ```
 
-`scripts/demo.sh` expone:
+`poc/k8s-local/scripts/demo.sh` expone:
 - MinIO console: `http://localhost:9001` (minioadmin / minioadmin)
 - ElasticMQ UI: `http://localhost:9325`
 - Moto API: `http://localhost:5000` (sin UI, solo REST)
@@ -149,7 +149,7 @@ Todos los adapters están diseñados para no fallar si el mock no está disponib
 
 ```bash
 # Levantar el stack completo (incluye MinIO, Moto, ElasticMQ, OpenBao)
-cd poc/java-vertx-distributed && ./scripts/up.sh
+./poc/java-vertx-distributed/scripts/up.sh
 
 # Hacer una decisión de alto riesgo
 curl -s -X POST http://localhost:8080/risk \
@@ -170,7 +170,7 @@ aws --endpoint-url http://localhost:9000 \
 # (ver logs del container)
 docker compose logs repository-app | grep SecretsBootstrap
 # Output esperado:
-# [repository-app] SecretsBootstrap: loaded secret 'naranjax/db-password' from Moto Secrets Manager at http://moto:5000
+# [repository-app] SecretsBootstrap: loaded secret 'riskplatform/db-password' from Moto Secrets Manager at http://moto:5000
 ```
 
 ## Riesgos y trampas

@@ -4,13 +4,13 @@
 
 Exploración técnica de un use case de detección de fraude en tiempo real.
 Detección de fraude en tiempo real: 150 TPS, p99 < 300ms.
-Stack: Java 25 LTS, Vert.x 5.0.12, Maven, Postgres 16, Valkey 8, Redpanda, k3d/OrbStack.
+Stack: Java 21 LTS executable baseline, Gradle Kotlin DSL, Vert.x 5.0.12, Postgres 16, Valkey 8, Redpanda, k3d/OrbStack.
 
 Contexto completo: .ai/context/architecture.md
 
 ## Reglas non-negotiable
 
-1. Solo Java 25 LTS. NO bajar a 21. Usar --release 25.
+1. Java 21 LTS es el baseline ejecutable via Gradle (`--release 21`). Java 25 LTS queda como objetivo futuro documentado.
 2. Clean Architecture: domain/ NO importa de application/ ni infrastructure/.
 3. ATDD primero: escribir el .feature antes que el código de producción.
 4. Cada request debe producir trace + log + métrica vía OpenTelemetry.

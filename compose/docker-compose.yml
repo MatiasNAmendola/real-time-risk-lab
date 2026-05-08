@@ -25,13 +25,13 @@ services:
   postgres:
     image: postgres:16-alpine
     environment:
-      POSTGRES_DB:       naranjax
-      POSTGRES_USER:     naranjax
-      POSTGRES_PASSWORD: naranjax
+      POSTGRES_DB:       riskplatform
+      POSTGRES_USER:     riskplatform
+      POSTGRES_PASSWORD: riskplatform
     networks:
       - data-net
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U naranjax -d naranjax"]
+      test: ["CMD-SHELL", "pg_isready -U riskplatform -d riskplatform"]
       interval: 5s
       timeout: 5s
       retries: 10
@@ -39,6 +39,7 @@ services:
       - pg-data:/var/lib/postgresql/data
     mem_limit: 256m
     mem_reservation: 128m
+    cpus: "0.50"
 
   # ============================================================================
   # Infrastructure — Valkey 8 (Redis-compatible cache, idempotency store)
@@ -54,6 +55,7 @@ services:
       retries: 10
     mem_limit: 96m
     mem_reservation: 32m
+    cpus: "0.25"
 
   # ============================================================================
   # Infrastructure — Redpanda (Kafka-compatible broker)
@@ -98,6 +100,7 @@ services:
       - redpanda-data:/var/lib/redpanda/data
     mem_limit: 768m
     mem_reservation: 512m
+    cpus: "0.75"
 
   # Topic creation (one-shot init container, exits cleanly when topic exists)
   redpanda-init:
@@ -128,6 +131,7 @@ services:
         condition: service_started
     mem_limit: 192m
     mem_reservation: 96m
+    cpus: "0.50"
 
   # ============================================================================
   # Observability — OpenObserve (unified traces + logs + metrics)
@@ -154,6 +158,7 @@ services:
       test: ["NONE"]
     mem_limit: 384m
     mem_reservation: 192m
+    cpus: "0.50"
 
   # ============================================================================
   # AWS Mocks — MinIO (S3), Moto (Secrets/SNS/IAM), ElasticMQ (SQS), OpenBao (Vault)
@@ -176,6 +181,7 @@ services:
       timeout: 3s
       retries: 10
     mem_limit: 256m
+    cpus: "0.50"
 
   minio-init:
     image: minio/mc:latest
@@ -203,6 +209,7 @@ services:
       retries: 20
       start_period: 20s
     mem_limit: 256m
+    cpus: "0.50"
 
   # Moto secret seeding (idempotent, fails loudly on real errors).
   # Wait-for: explicitly polls moto-api/ until 200 OK before creating secrets.
@@ -245,8 +252,8 @@ services:
           aws_access_key_id='test',
           aws_secret_access_key='test')
         secrets = [
-            ('naranjax/db-password',     'naranjax'),
-            ('risk-engine/db-password',  'naranjax'),
+            ('riskplatform/db-password',     'riskplatform'),
+            ('risk-engine/db-password',  'riskplatform'),
             ('risk-engine/api-key',      'poc-api-key-local'),
         ]
         # 2) Create (idempotent on ResourceExistsException).
@@ -286,6 +293,7 @@ services:
       retries: 10
       start_period: 10s
     mem_limit: 256m
+    cpus: "0.50"
 
   # ElasticMQ queue seeding (idempotent). Mirrors moto-init / minio-init pattern.
   # Queues must match RISK_SQS_QUEUE env in poc/java-vertx-distributed/compose.override.yml
@@ -336,9 +344,9 @@ services:
     environment:
       PGHOST:     postgres
       PGPORT:     "5432"
-      PGUSER:     naranjax
-      PGPASSWORD: naranjax
-      PGDATABASE: naranjax
+      PGUSER:     riskplatform
+      PGPASSWORD: riskplatform
+      PGDATABASE: riskplatform
     entrypoint: /bin/sh
     command:
       - -ec
@@ -399,7 +407,7 @@ services:
     entrypoint: /bin/sh
     command:
       - -c
-      - "export BAO_ADDR=http://openbao:8200 && export BAO_TOKEN=root && bao kv put secret/naranjax/db-password value=naranjax && bao kv put secret/risk-engine/db-password value=naranjax && bao kv put secret/risk-engine/api-key value=poc-api-key-local && echo 'OpenBao KV secrets seeded'"
+      - "export BAO_ADDR=http://openbao:8200 && export BAO_TOKEN=root && bao kv put secret/riskplatform/db-password value=riskplatform && bao kv put secret/risk-engine/db-password value=riskplatform && bao kv put secret/risk-engine/api-key value=poc-api-key-local && echo 'OpenBao KV secrets seeded'"
     restart: "no"
 
 networks:

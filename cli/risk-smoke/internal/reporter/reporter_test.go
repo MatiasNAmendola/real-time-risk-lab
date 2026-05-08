@@ -8,9 +8,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/naranjax/risk-smoke/internal/config"
-	"github.com/naranjax/risk-smoke/internal/flows"
-	"github.com/naranjax/risk-smoke/internal/reporter"
+	"github.com/riskplatform/risk-smoke/internal/config"
+	"github.com/riskplatform/risk-smoke/internal/flows"
+	"github.com/riskplatform/risk-smoke/internal/reporter"
 )
 
 // stubCheck is a minimal flows.Check for testing.

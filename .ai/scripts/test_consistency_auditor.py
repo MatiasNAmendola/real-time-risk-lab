@@ -267,7 +267,7 @@ class TestProhibitedTerms(unittest.TestCase):
 
     def test_detects_interview_in_public_doc(self) -> None:
         (self.root / 'docs' / 'guide.md').write_text(
-            'This is an interview preparation guide.\n'
+            'This is an technical practice guide.\n'
         )
         result = ca.audit_prohibited_terms()
         self.assertGreater(result['total'], 0)
@@ -277,7 +277,7 @@ class TestProhibitedTerms(unittest.TestCase):
     def test_ignores_interview_in_build_log(self) -> None:
         (self.root / 'vault' / '01-Build-Log').mkdir(parents=True, exist_ok=True)
         (self.root / 'vault' / '01-Build-Log' / 'session-01.md').write_text(
-            'Started this project as interview preparation.\n'
+            'Started this project as technical practice.\n'
         )
         result = ca.audit_prohibited_terms()
         files_flagged = [m['file'] for m in result['matches']]
@@ -285,20 +285,20 @@ class TestProhibitedTerms(unittest.TestCase):
 
     def test_detects_naranja_x_capitalization(self) -> None:
         (self.root / 'docs' / 'arch.md').write_text(
-            'The platform was built for Naranja X as a fraud detection system.\n'
+            'The platform was built for Risk Decision Platform as a fraud detection system.\n'
         )
         result = ca.audit_prohibited_terms()
         terms_found = [m['term'] for m in result['matches']]
-        self.assertIn('Naranja X', terms_found)
+        self.assertIn('Risk Decision Platform', terms_found)
 
-    def test_does_not_match_naranjax_as_path_fragment(self) -> None:
-        # "naranjax" as a lowercase URL slug matches NaranjaX case-insensitively.
+    def test_does_not_match_riskplatform_as_path_fragment(self) -> None:
+        # "riskplatform" as a lowercase URL slug matches Risk Decision Platform case-insensitively.
         # The correct way to avoid the match is to use the excluded paths.
         # This test verifies that a doc inside .ai/research/ is excluded even if
-        # it contains "NaranjaX" verbatim.
+        # it contains "Risk Decision Platform" verbatim.
         (self.root / '.ai' / 'research').mkdir(parents=True, exist_ok=True)
         (self.root / '.ai' / 'research' / 'notes.md').write_text(
-            'NaranjaX uses a fraud detection platform.\n'
+            'Risk Decision Platform uses a fraud detection platform.\n'
         )
         result = ca.audit_prohibited_terms()
         files_flagged = [m['file'] for m in result['matches']]
@@ -321,10 +321,10 @@ class TestProhibitedTerms(unittest.TestCase):
         self.assertEqual(result['total'], 0)
 
     def test_skip_java_package_match(self) -> None:
-        # Java package / Maven coord — should NOT be flagged (ADR-0038).
+        # Java package / Gradle coord — should NOT be flagged (ADR-0038).
         (self.root / 'docs' / 'pkg.md').write_text(
-            'Use the dependency `com.naranjax.poc:risk-client-java:1.2.0`.\n'
-            'Imports look like `import com.naranjax.poc.risk.Engine;`.\n'
+            'Use the dependency `io.riskplatform.poc:risk-client-java:1.2.0`.\n'
+            'Imports look like `import io.riskplatform.rules.Engine;`.\n'
         )
         result = ca.audit_prohibited_terms()
         files_flagged = [m['file'] for m in result['matches']]
@@ -333,7 +333,7 @@ class TestProhibitedTerms(unittest.TestCase):
     def test_skip_urn_match(self) -> None:
         # Schema URN — should NOT be flagged.
         (self.root / 'docs' / 'urn.md').write_text(
-            'Events publish under URN `urn:naranjax:risk:event:v1`.\n'
+            'Events publish under URN `urn:riskplatform:risk:event:v1`.\n'
         )
         result = ca.audit_prohibited_terms()
         files_flagged = [m['file'] for m in result['matches']]
@@ -342,7 +342,7 @@ class TestProhibitedTerms(unittest.TestCase):
     def test_skip_secrets_path_match(self) -> None:
         # Secrets Manager key path — should NOT be flagged.
         (self.root / 'docs' / 'secrets.md').write_text(
-            'Read DB credentials from `naranjax/db-password` in Secrets Manager.\n'
+            'Read DB credentials from `riskplatform/db-password` in Secrets Manager.\n'
         )
         result = ca.audit_prohibited_terms()
         files_flagged = [m['file'] for m in result['matches']]
@@ -351,7 +351,7 @@ class TestProhibitedTerms(unittest.TestCase):
     def test_skip_filesystem_path_match(self) -> None:
         # Java source filesystem path — should NOT be flagged.
         (self.root / 'docs' / 'paths.md').write_text(
-            'Sources live under `src/main/java/com/naranjax/poc/risk/`.\n'
+            'Sources live under `src/main/java/io/riskplatform/poc/risk/`.\n'
         )
         result = ca.audit_prohibited_terms()
         files_flagged = [m['file'] for m in result['matches']]

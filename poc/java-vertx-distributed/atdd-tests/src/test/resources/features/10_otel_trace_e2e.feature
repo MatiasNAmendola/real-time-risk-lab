@@ -11,7 +11,7 @@ Feature: OpenTelemetry end-to-end trace
 
   Background:
     * url baseUrl
-    * def TraceFinder = Java.type('com.naranjax.atdd.support.TraceFinder')
+    * def TraceFinder = Java.type('io.riskplatform.atdd.support.TraceFinder')
 
   Scenario: POST /risk produces a trace spanning all 3 services
     Given path 'risk'

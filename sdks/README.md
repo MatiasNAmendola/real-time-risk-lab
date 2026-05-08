@@ -7,10 +7,10 @@ SDK modules expose stable, versioned contracts for use by consumers outside this
 
 | Module | Coordinates | Language | Description |
 |---|---|---|---|
-| `sdks:risk-events` | `com.naranjax.poc:risk-events:0.1.0-SNAPSHOT` | Java 21 | Shared records: `RiskRequest`, `RiskDecision`, `DecisionEvent` |
-| `sdks:risk-client-java` | `com.naranjax.poc:risk-client:1.0.0-SNAPSHOT` | Java 21 | Full client SDK — REST, SSE, WS, Kafka, SQS, Webhooks, Admin |
-| `sdks/risk-client-typescript` | `@naranjax/risk-client@1.0.0` | TypeScript (Node 18+) | Full client SDK — same facade as Java |
-| `sdks/risk-client-go` | `github.com/naranjax/risk-client@v1.0.0` | Go 1.21+ | Full client SDK — same facade as Java |
+| `sdks:risk-events` | `io.riskplatform.poc:risk-events:0.1.0-SNAPSHOT` | Java 21 | Shared records: `RiskRequest`, `RiskDecision`, `DecisionEvent` |
+| `sdks:risk-client-java` | `io.riskplatform.poc:risk-client:1.0.0-SNAPSHOT` | Java 21 | Full client SDK — REST, SSE, WS, Kafka, SQS, Webhooks, Admin |
+| `sdks/risk-client-typescript` | `@riskplatform/risk-client@1.0.0` | TypeScript (Node 18+) | Full client SDK — same facade as Java |
+| `sdks/risk-client-go` | `github.com/riskplatform/risk-client@v1.0.0` | Go 1.21+ | Full client SDK — same facade as Java |
 
 ## Install
 
@@ -19,20 +19,20 @@ SDK modules expose stable, versioned contracts for use by consumers outside this
 ```kotlin
 // build.gradle.kts
 dependencies {
-    implementation("com.naranjax.poc:risk-client:1.0.0-SNAPSHOT")
+    implementation("io.riskplatform.poc:risk-client:1.0.0-SNAPSHOT")
 }
 ```
 
 ### TypeScript
 
 ```bash
-npm install @naranjax/risk-client
+npm install @riskplatform/risk-client
 ```
 
 ### Go
 
 ```bash
-go get github.com/naranjax/risk-client@v1.0.0
+go get github.com/riskplatform/risk-client@v1.0.0
 ```
 
 ## Client Facade — All 7 Channels

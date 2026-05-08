@@ -16,8 +16,8 @@ Formatear codigo antes de cada commit para mantener consistencia sin esfuerzo ma
 ### Java (poc/java-*/, tests/)
 
 ```bash
-# Verificar que maven-fmt-plugin esta en el pom del modulo
-mvn fmt:format -pl <modulo-modificado>
+# Verificar que gradle-fmt-plugin esta en el pom del modulo
+./gradlew fmt:format -pl <modulo-modificado>
 # O con google-java-format directamente:
 # java -jar google-java-format.jar --replace $(git diff --cached --name-only --diff-filter=ACM | grep "\.java$")
 ```
@@ -71,7 +71,7 @@ if [ -n "$JAVA_FILES" ]; then
     echo "Formatting Java files..."
     for f in $JAVA_FILES; do
         MODULE=$(echo "$f" | cut -d/ -f1-2)
-        mvn fmt:format -pl "$MODULE" -q 2>/dev/null || true
+        ./gradlew fmt:format -pl "$MODULE" -q 2>/dev/null || true
     done
 fi
 

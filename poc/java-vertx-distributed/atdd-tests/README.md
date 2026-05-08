@@ -7,8 +7,8 @@ Implemented with **Karate 1.5** orchestrated by **JUnit 5**, with **JaCoCo 0.8.1
 
 ## Prerequisites
 
-- Java 25
-- Maven 3.9+
+- Java 21 LTS (`--release 21`); Java 25 queda como objetivo documentado
+- Gradle 3.9+
 - `docker compose up` running (all three Vert.x services + Kafka + PostgreSQL + OpenObserve)
 
 ---
@@ -17,16 +17,16 @@ Implemented with **Karate 1.5** orchestrated by **JUnit 5**, with **JaCoCo 0.8.1
 
 ```bash
 # From the repo root — all features
-mvn -pl atdd-tests test
+./gradlew :poc:java-vertx-distributed:atdd-tests:test -Patdd
 
 # With coverage report (runs verify phase, opens HTML report)
 ./scripts/atdd-coverage.sh
 
 # Focused runner (REST only)
-mvn -pl atdd-tests test -Dtest=RestRunner
+./gradlew :poc:java-vertx-distributed:atdd-tests:test -Patdd --tests io.riskplatform.atdd.runners.RestRunner
 
 # CI environment (uses internal Docker DNS names)
-mvn -pl atdd-tests test -Dkarate.env=ci
+./gradlew :poc:java-vertx-distributed:atdd-tests:test -Patdd -Dkarate.env=ci
 ```
 
 ---
@@ -35,10 +35,10 @@ mvn -pl atdd-tests test -Dkarate.env=ci
 
 ```
 atdd-tests/
-├── pom.xml
+├── build.gradle.kts
 ├── README.md
 └── src/test/
-    ├── java/com/naranjax/atdd/
+    ├── java/com/riskplatform/atdd/
     │   ├── RiskAtddSuite.java           # @KarateTest entry point
     │   ├── runners/
     │   │   ├── RestRunner.java          # 01, 02, 07, 08, 09
@@ -95,10 +95,10 @@ The ATDD suite measures real coverage of the four Vert.x services by attaching t
 
 Each service container runs with:
 ```
--javaagent:/jacoco/jacocoagent.jar=output=tcpserver,address=*,port=6300,append=true,includes=com.naranjax.*
+-javaagent:/jacoco/jacocoagent.jar=output=tcpserver,address=*,port=6300,append=true,includes=io.riskplatform.*
 ```
 
-The agent opens a TCP socket on port 6300 inside the container. After all Karate tests finish, the Maven `post-integration-test` phase connects to each service from the host and dumps the accumulated coverage data:
+The agent opens a TCP socket on port 6300 inside the container. After all Karate tests finish, the Gradle `post-integration-test` phase connects to each service from the host and dumps the accumulated coverage data:
 
 | Service | Container port | Host port |
 |---|---|---|
@@ -107,7 +107,7 @@ The agent opens a TCP socket on port 6300 inside the container. After all Karate
 | repository-app | 6300 | 6303 |
 | consumer-app | 6300 | 6304 |
 
-The `jacoco:dump` goals write `.exec` files (`jacoco-controller.exec`, etc.) into `atdd-tests/target/`. The `jacoco:merge` goal combines them into `jacoco-merged.exec`. The final `jacoco:report` goal generates an HTML + XML report at `atdd-tests/target/site/jacoco-aggregated/` using the production `target/classes` from all sibling modules.
+Gradle JaCoCo tasks write execution data under `atdd-tests/build/jacoco/`. The merged report is generated at `atdd-tests/build/reports/jacoco/merged/` using production `build/classes/java/main` from sibling modules.
 
 #### Running end-to-end coverage
 
@@ -123,7 +123,7 @@ The `jacoco:dump` goals write `.exec` files (`jacoco-controller.exec`, etc.) int
 
 # The aggregated report is opened automatically.
 # To view later:
-open atdd-tests/target/site/jacoco-aggregated/index.html
+open atdd-tests/build/reports/jacoco/merged/index.html
 ```
 
 The structured run report (including a per-package coverage table) is written to:
@@ -135,8 +135,8 @@ out/atdd-karate/latest/coverage/
 #### Limitations
 
 - Coverage reflects only code paths exercised by the Karate scenarios. Code paths not touched by any test scenario show 0% coverage regardless of unit test results.
-- The JaCoCo TCP dump requires the services to be running with the agent attached. Running `mvn -pl atdd-tests verify` without compose produces a `Connection refused` error on port 6301 during the dump phase — this is expected behaviour when no stack is running.
-- The JaCoCo agent instruments bytecode at load time. Framework internals (Vert.x bootstrap, Hazelcast cluster manager, OpenTelemetry SDK) are excluded via the `includes=com.naranjax.*` filter.
+- The JaCoCo TCP dump requires the services to be running with the agent attached. Running `./gradlew -pl atdd-tests verify` without compose produces a `Connection refused` error on port 6301 during the dump phase — this is expected behaviour when no stack is running.
+- The JaCoCo agent instruments bytecode at load time. Framework internals (Vert.x bootstrap, Hazelcast cluster manager, OpenTelemetry SDK) are excluded via the `includes=io.riskplatform.*` filter.
 - `append=true` means multiple test runs accumulate coverage data. Restart containers to reset.
 
 ---
@@ -167,7 +167,7 @@ out/atdd-karate/
     ├── features/
     │   ├── 01-health-check.md            # per-feature detail with step table
     │   └── ...
-    └── coverage/                         # JaCoCo HTML report (if mvn verify ran)
+    └── coverage/                         # JaCoCo HTML report (if ./gradlew test jacocoTestReport ran)
         └── index.html
 ```
 
@@ -177,7 +177,7 @@ cat out/atdd-karate/latest/summary.md
 cat out/atdd-karate/latest/features/01-health-check.md
 ```
 
-The full Karate debug log (all HTTP requests, response bodies, match results) is written to `target/karate-reports/karate.log` during the run and copied to `out/atdd-karate/<timestamp>/full.log` by the report script.
+The full Karate debug log (all HTTP requests, response bodies, match results) is written to `build/karate-reports/karate.log` during the run and copied to `out/atdd-karate/<timestamp>/full.log` by the report script.
 
 ---
 
@@ -185,8 +185,8 @@ The full Karate debug log (all HTTP requests, response bodies, match results) is
 
 | Situation | Behaviour |
 |---|---|
-| Services not running | `atdd.sh` exits with clear message before Maven starts |
-| Direct `mvn test` with services down | All scenarios FAIL with connection refused / timeout (Karate shows per-scenario cause) |
+| Services not running | `atdd.sh` exits with clear message before Gradle starts |
+| Direct `./gradlew test` with services down | All scenarios FAIL with connection refused / timeout (Karate shows per-scenario cause) |
 | Kafka not running | Feature 06 FAILS with `AssertionError: Expected N records...within Xms but got 0` |
 | OpenObserve not running | Feature 10 FAILS with `AssertionError: No spans found...` |
 | Feature 08 (`@ignore`) | Skipped unconditionally by Karate tag filter |

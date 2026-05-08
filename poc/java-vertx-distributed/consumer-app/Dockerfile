@@ -19,6 +19,6 @@ COPY jacoco-agent/jacocoagent.jar /jacoco/jacocoagent.jar
 EXPOSE 6300
 
 ENTRYPOINT ["java", \
-  "-javaagent:/jacoco/jacocoagent.jar=output=tcpserver,address=*,port=6300,append=true,includes=com.naranjax.*", \
+  "-javaagent:/jacoco/jacocoagent.jar=output=tcpserver,address=*,port=6300,append=true,includes=io.riskplatform.*", \
   "-javaagent:/otel/opentelemetry-javaagent.jar", \
   "-jar", "app.jar"]

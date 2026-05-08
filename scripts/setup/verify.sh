@@ -34,9 +34,8 @@ declare -a VERIFY_TOOLS=(
   "core|jq|jq --version|jq-([0-9]+\.[0-9]+)|1.6.0|0"
   "core|yq|yq --version|version v([0-9]+\.[0-9]+\.[0-9]+)|4.40.0|0"
   "core|make|make --version|GNU Make ([0-9]+\.[0-9]+)|3.80|0"
-  # languages (5 tools — node via fnm is optional, only required for TS SDK)
-  "languages|java|java -version 2>&1|version.\"([0-9]+)|25|0"
-  "languages|mvn|mvn --version|Apache Maven ([0-9]+\.[0-9]+\.[0-9]+)|3.9.0|0"
+  # languages (4 tools — node via fnm is optional, only required for TS SDK)
+  "languages|java|java -version 2>&1|version.\"([0-9]+)|21|0"
   "languages|go|go version|go([0-9]+\.[0-9]+\.[0-9]+)|1.23.0|0"
   "languages|python3|python3 --version|Python ([0-9]+\.[0-9]+\.[0-9]+)|3.11.0|0"
   "languages|node-toolchain|true|()|0|1"
@@ -58,6 +57,8 @@ declare -a VERIFY_TOOLS=(
   # observability: optional CLI helpers. The services export OTEL without these binaries.
   "observability|otel-cli|otel-cli version 2>&1|v([0-9]+\.[0-9]+\.[0-9]+)|0.0.1|1"
   "observability|websocat|websocat --version 2>&1|websocat ([0-9]+\.[0-9]+\.[0-9]+)|1.0.0|1"
+  # bench: k6 (Grafana load testing). Optional — only required for ./nx bench k6.
+  "optional|k6|k6 version 2>&1|k6 v([0-9]+\.[0-9]+\.[0-9]+)|0.50.0|1"
 )
 
 # ── State tracking ─────────────────────────────────────────────────────────────
@@ -160,7 +161,7 @@ verify_tool() {
   fi
 
   # Check java major version. Prefer $JAVA_HOME/bin/java over `which java`
-  # so verify reflects the JDK Gradle/Maven actually pick up.
+  # so verify reflects the JDK Gradle/Gradle actually pick up.
   if [[ "$name" == "java" ]]; then
     local java_bin=""
     if [[ -n "${JAVA_HOME:-}" && -x "${JAVA_HOME}/bin/java" ]]; then
@@ -180,7 +181,7 @@ verify_tool() {
     output="$("$java_bin" -version 2>&1 || true)"
     if [[ "$output" =~ version[[:space:]]\"([0-9]+) ]]; then
       local major="${BASH_REMATCH[1]}"
-      # Project rule R1 mandates Java 25 LTS, but Java 21 LTS is accepted
+      # Project rule R1 uses Java 21 LTS as the executable baseline; Java 25 LTS is documented as a target
       # as a fallback so devs on Temurin 21 don't get false-positives
       # while waiting for a 25 install. Anything <21 is still flagged.
       if [[ "$major" -ge 21 ]]; then

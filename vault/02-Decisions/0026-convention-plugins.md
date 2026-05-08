@@ -15,13 +15,13 @@ Aceptado el 2026-05-07.
 
 ## Contexto
 
-A Gradle multi-module build con 10+ subprojects (`pkg:*`, `sdks:*`) needs consistent configuration: Java 25 toolchain, UTF-8 encoding, JUnit 5 test runner, JaCoCo coverage, dependency catalog usage, y eventually shadow JAR packaging para application modules. Without un sharing mechanism, each `build.gradle.kts` duplicates these blocks, y un change (e.g., upgrading JUnit 5 version) requires editing every module.
+A Gradle multi-module build con 10+ subprojects (`pkg:*`, `sdks:*`) needs consistent configuration: Java 21 toolchain (`--release 21`), UTF-8 encoding, JUnit 5 test runner, JaCoCo coverage, dependency catalog usage, y eventually shadow JAR packaging para application modules. Without un sharing mechanism, each `build.gradle.kts` duplicates these blocks, y un change (e.g., upgrading JUnit 5 version) requires editing every module.
 
 Gradle provides two sharing mechanisms: parent project (`subprojects {}` o `allprojects {}` blocks en la root `build.gradle.kts`) y convention plugins (separate Gradle build en `build-logic/` que produces plugins consumed por subprojects). La `subprojects {}` approach es simpler initially pero has known problems a scale: it applies configuration un todos subprojects even when specific subprojects need different configuration, y it makes IDE navigation difficult (subproject-specific configuration es en la parent, no en la subproject).
 
 ## Decisión
 
-Define todos shared build configuration como convention plugins en `build-logic/`. La plugins are: `naranja.java-conventions` (toolchain, encoding, base Java config), `naranja.library-conventions` (extends java-conventions, adds JUnit 5, JaCoCo, AssertJ), `naranja.app-conventions` (extends library-conventions, adds shadow JAR para fat JAR packaging), `naranja.testing-conventions` (extends library-conventions, adds Testcontainers y testing-specific dependencies). Subprojects declare only la applicable plugin ID en their `build.gradle.kts` — typically `id("naranja.library-conventions")` para `pkg/*` modules.
+Define todos shared build configuration como convention plugins en `build-logic/`. La plugins are: `riskplatform.java-conventions` (toolchain, encoding, base Java config), `riskplatform.library-conventions` (extends java-conventions, adds JUnit 5, JaCoCo, AssertJ), `riskplatform.app-conventions` (extends library-conventions, adds shadow JAR para fat JAR packaging), `riskplatform.testing-conventions` (extends library-conventions, adds Testcontainers y testing-specific dependencies). Subprojects declare only la applicable plugin ID en their `build.gradle.kts` — typically `id("riskplatform.library-conventions")` para `pkg/*` modules.
 
 ## Alternativas consideradas
 
@@ -48,8 +48,8 @@ Define todos shared build configuration como convention plugins en `build-logic/
 ## Consecuencias
 
 ### Positivo
-- `pkg:resilience/build.gradle.kts` es 3 lines: `plugins { id("naranja.library-conventions") }` plus dependencies.
-- Toolchain upgrade desde Java 25 a un future Java version requires one edit en `build-logic/naranja.java-conventions.gradle.kts`.
+- `pkg:resilience/build.gradle.kts` es 3 lines: `plugins { id("riskplatform.library-conventions") }` plus dependencies.
+- Toolchain upgrade desde Java 21 a Java 25 (cuando el tooling lo soporte) requires one edit en `build-logic/riskplatform.java-conventions.gradle.kts`.
 - Convention plugins son versioned con la repository — no external plugin registry dependency.
 
 ### Negativo
@@ -58,12 +58,12 @@ Define todos shared build configuration como convention plugins en `build-logic/
 
 ### Mitigaciones
 - `BUILDING.md` documents la two-build structure y explains `build-logic/`.
-- Convention plugin names (`naranja.*-conventions`) son self-documenting.
+- Convention plugin names (`riskplatform.*-conventions`) son self-documenting.
 
 ## Validación
 
-- `./gradlew :pkg:resilience:build` succeeds using only `id("naranja.library-conventions")` en la module's `build.gradle.kts`.
-- Removing un dependency desde `naranja.library-conventions` cascades un todos `pkg/*` modules en next build.
+- `./gradlew :pkg:resilience:build` succeeds using only `id("riskplatform.library-conventions")` en la module's `build.gradle.kts`.
+- Removing un dependency desde `riskplatform.library-conventions` cascades un todos `pkg/*` modules en next build.
 - `./gradlew build --configuration-cache` reports cache hit en second run.
 
 ## Relacionado

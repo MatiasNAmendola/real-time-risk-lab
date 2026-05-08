@@ -1,6 +1,6 @@
 ---
 name: testing-atdd
-applies_to: ["**/src/test/**/*.java", "**/src/test/**/*.feature", "**/pom.xml"]
+applies_to: ["**/src/test/**/*.java", "**/src/test/**/*.feature", "**/build.gradle.kts"]
 priority: high
 ---
 
@@ -25,7 +25,7 @@ ATDD primero para features de integracion. TDD para internals de dominio.
 | ATDD sobre Vert.x HTTP | Karate | 1.5+ | `poc/java-vertx-distributed/atdd-tests/` |
 | ATDD bare-javac | Cucumber-JVM | 7+ | `tests/risk-engine-atdd/` |
 | Unit tests | JUnit 5 | 5.11+ | modulo correspondiente |
-| Coverage | JaCoCo | 0.8.12+ | todos los modulos Maven |
+| Coverage | JaCoCo | 0.8.12+ | todos los modulos Gradle |
 
 ## Cobertura minima
 
@@ -61,7 +61,7 @@ Feature: <nombre del comportamiento>
 ## Verificacion
 
 ```bash
-mvn test -pl atdd-tests          # Karate
-mvn test -pl tests/risk-engine-atdd  # Cucumber
-mvn verify -pl <module>          # JaCoCo check
+./gradlew :poc:java-vertx-distributed:atdd-tests:test -Patdd          # Karate
+./gradlew :tests:risk-engine-atdd:test  # Cucumber
+./gradlew :<module-path>:test :<module-path>:jacocoTestReport          # JaCoCo check
 ```

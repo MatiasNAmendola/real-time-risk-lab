@@ -21,11 +21,11 @@ A circuit breaker es la standard protection pattern: después de `failureThresho
 
 The decision es whether un implement este como un hand-written state machine o un depend en un library (`pkg/resilience` uses un custom implementation; Resilience4j y Failsafe son la production-grade Java alternatives).
 
-The bare-javac PoC constraint es zero external dependencies más allá de la JDK. Adding Resilience4j would require un build system (Maven/Gradle) y introduce un dependency que contradicts la "bare-javac" premise.
+The bare-javac PoC constraint es zero external dependencies más allá de la JDK. Adding Resilience4j would require un build system (Gradle/Gradle) y introduce un dependency que contradicts la "bare-javac" premise.
 
 ## Decisión
 
-Implement `CircuitBreaker` como un hand-written, synchronization-based state machine en `poc/java-risk-engine/src/main/java/com/naranjax/interview/risk/infrastructure/resilience/CircuitBreaker.java`. La implementation has three fields: `failureThreshold` (int), `openDuration` (Duration), y `openUntilNanos` (long). State transitions are: CLOSED → OPEN (on nth failure) → CLOSED (on timeout expiry + next `allowRequest()` call). La `success()` method resets failure count.
+Implement `CircuitBreaker` como un hand-written, synchronization-based state machine en `poc/java-risk-engine/src/main/java/io/riskplatform/engine/infrastructure/resilience/CircuitBreaker.java`. La implementation has three fields: `failureThreshold` (int), `openDuration` (Duration), y `openUntilNanos` (long). State transitions are: CLOSED → OPEN (on nth failure) → CLOSED (on timeout expiry + next `allowRequest()` call). La `success()` method resets failure count.
 
 A más complete implementation lives en `pkg/resilience/` (Gradle module) con half-open state, health percentage, y event listeners para observability.
 
@@ -38,8 +38,8 @@ A más complete implementation lives en `pkg/resilience/` (Gradle module) con ha
 
 ### Opción B: Resilience4j
 - **Ventajas**: Production-grade; handles half-open, bulkhead, rate limiter, retry, time limiter en un composable API; Micrometer integration para metrics; widely used en Spring Boot applications; supports ambos functional y imperative usage patterns.
-- **Desventajas**: Maven/Gradle dependency required; adds 3-4 transitive JARs (resilience4j-core, resilience4j-circuitbreaker, vavr o similar); inconsistent con la bare-javac zero-dependency constraint; would require either Maven POM o Gradle build file, violating ADR-0017.
-- **Por qué no**: Appropriate para production o la Vert.x PoC where Maven es already en use. Not appropriate para un PoC demonstrating framework-free Java.
+- **Desventajas**: Gradle/Gradle dependency required; adds 3-4 transitive JARs (resilience4j-core, resilience4j-circuitbreaker, vavr o similar); inconsistent con la bare-javac zero-dependency constraint; would require either Gradle POM o Gradle build file, violating ADR-0017.
+- **Por qué no**: Appropriate para production o la Vert.x PoC where Gradle es already en use. Not appropriate para un PoC demonstrating framework-free Java.
 
 ### Opción C: Failsafe
 - **Ventajas**: Fluent API; supports circuit breaker + retry + timeout composably; lighter than Resilience4j; Apache 2.0 license.

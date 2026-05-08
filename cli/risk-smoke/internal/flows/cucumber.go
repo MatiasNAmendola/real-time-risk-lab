@@ -10,20 +10,20 @@ import (
 	"strings"
 	"time"
 
-	"github.com/naranjax/risk-smoke/internal/config"
+	"github.com/riskplatform/risk-smoke/internal/config"
 )
 
-// CucumberCheck executes `mvn -pl tests/risk-engine-atdd test -q` and parses
-// target/cucumber.json. It reports quantity of scenarios pass/fail/skip and
+// CucumberCheck executes `./gradlew :tests:risk-engine-atdd:test -q` and parses
+// build/cucumber-reports/report.json. It reports quantity of scenarios pass/fail/skip and
 // global status. This check is opt-in (slow, ~60s first run).
 type CucumberCheck struct {
 	// ProjectRoot is the path to the monorepo root. If empty it is auto-detected
-	// via git rev-parse or by climbing directories until pom.xml is found.
+	// via git rev-parse or by climbing directories until settings.gradle.kts is found.
 	ProjectRoot string
 }
 
 func (c *CucumberCheck) ID() string   { return CheckCucumberBare }
-func (c *CucumberCheck) Name() string { return "Cucumber bare — ATDD (Maven)" }
+func (c *CucumberCheck) Name() string { return "Cucumber bare — ATDD (Gradle)" }
 
 // cucumberFeature mirrors the minimal structure of a cucumber.json entry.
 type cucumberFeature struct {
@@ -32,7 +32,7 @@ type cucumberFeature struct {
 }
 
 type cucumberElement struct {
-	Type  string       `json:"type"`
+	Type  string         `json:"type"`
 	Steps []cucumberStep `json:"steps"`
 }
 
@@ -47,12 +47,7 @@ type cucumberStepResult struct {
 func (c *CucumberCheck) Run(cfg *config.Config) Result {
 	startedAt := time.Now()
 
-	// --- 1. Maven available? ---
-	if _, err := exec.LookPath("mvn"); err != nil {
-		return skipResult(CheckCucumberBare, startedAt, "maven not in PATH")
-	}
-
-	// --- 2. Resolve project root ---
+	// --- 1. Resolve project root ---
 	root := c.ProjectRoot
 	if root == "" {
 		root = detectProjectRoot()
@@ -61,39 +56,38 @@ func (c *CucumberCheck) Run(cfg *config.Config) Result {
 		return skipResult(CheckCucumberBare, startedAt, "could not detect monorepo root")
 	}
 
-	atddPom := filepath.Join(root, "tests", "risk-engine-atdd", "pom.xml")
-	if _, err := os.Stat(atddPom); os.IsNotExist(err) {
+	gradlew := filepath.Join(root, "gradlew")
+	if _, err := os.Stat(gradlew); os.IsNotExist(err) {
 		return skipResult(CheckCucumberBare, startedAt,
-			fmt.Sprintf("tests/risk-engine-atdd/pom.xml not found (looked at %s)", atddPom))
+			fmt.Sprintf("Gradle wrapper not found (looked at %s)", gradlew))
 	}
 
-	// --- 3. Run Maven ---
+	// --- 2. Run Gradle ---
 	ctx, cancel := context.WithTimeout(context.Background(), 90*time.Second)
 	defer cancel()
 
 	//nolint:gosec
-	cmd := exec.CommandContext(ctx, "mvn",
-		"-pl", "tests/risk-engine-atdd",
-		"test", "-q",
+	cmd := exec.CommandContext(ctx, gradlew,
+		":tests:risk-engine-atdd:test", "-q",
 		"-DskipFailureExit=true",
 	)
 	cmd.Dir = root
 
-	mvnOut, _ := cmd.CombinedOutput()
-	mvnExitCode := 0
+	gradleOut, _ := cmd.CombinedOutput()
+	gradleExitCode := 0
 	if cmd.ProcessState != nil {
-		mvnExitCode = cmd.ProcessState.ExitCode()
+		gradleExitCode = cmd.ProcessState.ExitCode()
 	}
 
 	artifacts := map[string]string{
-		"mvn_output": string(mvnOut),
+		"gradle_output": string(gradleOut),
 	}
-	if mvnExitCode != 0 && len(mvnOut) == 0 {
-		artifacts["mvn_stderr"] = fmt.Sprintf("exit code %d (no output)", mvnExitCode)
+	if gradleExitCode != 0 && len(gradleOut) == 0 {
+		artifacts["gradle_stderr"] = fmt.Sprintf("exit code %d (no output)", gradleExitCode)
 	}
 
 	// --- 4. Parse cucumber.json ---
-	reportPath := filepath.Join(root, "tests", "risk-engine-atdd", "target", "cucumber.json")
+	reportPath := filepath.Join(root, "tests", "risk-engine-atdd", "build", "cucumber-reports", "report.json")
 	jsonBytes, err := os.ReadFile(reportPath)
 	if err != nil {
 		dur := time.Since(startedAt)
@@ -102,12 +96,12 @@ func (c *CucumberCheck) Run(cfg *config.Config) Result {
 			Passed:    false,
 			StartedAt: startedAt,
 			Duration:  dur,
-			ErrMsg:    fmt.Sprintf("cucumber.json not found after mvn run: %v", err),
-			Detail:    "FAILED — cucumber.json not found after mvn run",
+			ErrMsg:    fmt.Sprintf("cucumber report JSON not found after Gradle run: %v", err),
+			Detail:    "FAILED — cucumber report JSON not found after Gradle run",
 			Artifacts: artifacts,
 			Details: []DetailEntry{
-				{Timestamp: startedAt, Step: "mvn test", Status: "FAIL",
-					Note: fmt.Sprintf("exit %d, report missing", mvnExitCode)},
+				{Timestamp: startedAt, Step: "gradle test", Status: "FAIL",
+					Note: fmt.Sprintf("exit %d, report missing", gradleExitCode)},
 			},
 		}
 	}
@@ -247,7 +241,7 @@ func skipResult(id string, startedAt time.Time, reason string) Result {
 
 // detectProjectRoot tries to find the monorepo root by:
 //  1. git rev-parse --show-toplevel (fast, reliable inside a repo)
-//  2. Walking up from cwd looking for a pom.xml or settings.gradle.kts
+//  2. Walking up from cwd looking for settings.gradle.kts
 func detectProjectRoot() string {
 	// Try git first
 	out, err := exec.Command("git", "rev-parse", "--show-toplevel").Output()
@@ -266,9 +260,6 @@ func detectProjectRoot() string {
 	dir := cwd
 	for {
 		if _, e := os.Stat(filepath.Join(dir, "settings.gradle.kts")); e == nil {
-			return dir
-		}
-		if _, e := os.Stat(filepath.Join(dir, "pom.xml")); e == nil {
 			return dir
 		}
 		parent := filepath.Dir(dir)

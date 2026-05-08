@@ -7,7 +7,7 @@ Feature: Kafka event publication after risk decision
 
   Background:
     * url baseUrl
-    * def KafkaSteps = Java.type('com.naranjax.atdd.support.KafkaSteps')
+    * def KafkaSteps = Java.type('io.riskplatform.atdd.support.KafkaSteps')
 
   Scenario: POST /risk publishes a well-formed event to risk-decisions topic
     # Use a unique transactionId to avoid matching events from other scenarios

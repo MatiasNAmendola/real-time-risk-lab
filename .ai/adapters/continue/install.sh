@@ -20,7 +20,7 @@ cat > "$DEST" <<'EOF'
 {
   "mergeBehavior": "merge",
   "rules": [
-    "Java 25 LTS only. Do NOT downgrade to 21. Use --release 25 in pom.xml.",
+    "Java 21 LTS baseline operativo. Usar --release 21; Java 25 LTS queda como objetivo documentado.",
     "Clean Architecture: domain/ must NOT import from application/ or infrastructure/.",
     "ATDD first: write .feature file before any production code.",
     "Every request must produce trace + log + metric via OpenTelemetry. correlationId in MDC and header.",

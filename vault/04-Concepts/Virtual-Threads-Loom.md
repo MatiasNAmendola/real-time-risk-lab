@@ -10,7 +10,7 @@ Threads livianos manejados por la JVM, introducidos en Java 21 (preview) y estab
 
 ## Cuándo usar
 
-Workloads de I/O bloqueante donde la programación reactiva (Vert.x, WebFlux) es overkill o aumenta la complejidad. Java 25 hace de los virtual threads el default para `Executors.newVirtualThreadPerTaskExecutor()`.
+Workloads de I/O bloqueante donde la programación reactiva (Vert.x, WebFlux) es overkill o aumenta la complejidad. Java 21+ hace de los virtual threads el default para `Executors.newVirtualThreadPerTaskExecutor()`.
 
 ## Cuándo NO usar
 

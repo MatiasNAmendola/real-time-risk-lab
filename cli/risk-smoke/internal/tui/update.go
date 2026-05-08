@@ -3,7 +3,7 @@ package tui
 import (
 	"github.com/charmbracelet/bubbles/spinner"
 	tea "github.com/charmbracelet/bubbletea"
-	"github.com/naranjax/risk-smoke/internal/flows"
+	"github.com/riskplatform/risk-smoke/internal/flows"
 )
 
 // Update is the Elm-style update function.

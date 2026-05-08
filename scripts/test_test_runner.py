@@ -328,8 +328,32 @@ class TestCrossPlatformStats(unittest.TestCase):
         groups, composites = load_test_groups()
         self.assertIsInstance(groups, dict)
         self.assertIsInstance(composites, dict)
-        self.assertIn("unit", groups)
+        self.assertIn("quick-check", groups)
         self.assertIn("quick", composites)
+
+    def test_real_quick_is_live_demo_safe(self):
+        """
+        Regression guard for the live-demo quick composite.
+
+        `quick` must stay genuinely quick: no Gradle/JUnit invocations. Full
+        unit + ArchUnit validation belongs in ci-fast.
+        """
+        groups, composites = load_test_groups()
+        jobs = [TestGroup.from_dict(name, groups[name]) for name in composites["quick"]]
+        levels = _topological_levels(jobs)
+        level_names = [[job.name for job in level] for level in levels]
+        self.assertEqual(level_names, [["quick-check"]])
+        self.assertLessEqual(sum(job.duration_estimate_sec for job in jobs), 5)
+        self.assertTrue(all("./gradlew" not in job.cmd for job in jobs))
+
+    def test_ci_fast_keeps_real_unit_and_archunit(self):
+        """ci-fast remains the real verification composite beyond live quick."""
+        groups, composites = load_test_groups()
+        jobs = [TestGroup.from_dict(name, groups[name]) for name in composites["ci-fast"]]
+        names = [job.name for job in jobs]
+        self.assertIn("unit-java-fast", names)
+        self.assertIn("arch", names)
+        self.assertTrue(next(job for job in jobs if job.name == "arch").exclusive)
 
 
 if __name__ == "__main__":

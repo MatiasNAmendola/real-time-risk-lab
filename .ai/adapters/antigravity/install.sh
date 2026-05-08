@@ -23,13 +23,13 @@ cat > "$GEMINI_FILE" <<'EOF'
 
 Technical architecture exploration for Risk Decision Platform.
 Real-time fraud detection: 150 TPS, p99 < 300ms.
-Stack: Java 25 LTS, Vert.x 5.0.12, Maven, Postgres 16, Valkey 8, Redpanda, k3d/OrbStack.
+Stack: Java 21 LTS baseline operativo (Java 25 LTS objetivo documentado), Gradle Kotlin DSL, Vert.x 5.0.12, Postgres 16, Valkey 8, Redpanda, k3d/OrbStack.
 
 Full context: .ai/context/architecture.md
 
 ## Non-negotiable rules
 
-1. Java 25 LTS only. Do NOT downgrade to 21. Use --release 25.
+1. Java 21 LTS baseline operativo. Usar --release 21; Java 25 LTS queda como objetivo documentado.
 2. Clean Architecture: domain/ does NOT import from application/ or infrastructure/.
 3. ATDD first: write .feature before production code.
 4. Every request must produce trace + log + metric via OpenTelemetry.

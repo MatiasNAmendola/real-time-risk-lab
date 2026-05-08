@@ -21,7 +21,7 @@ Campos de envelope (siempre presentes, sin importar el tipo de evento):
   "eventVersion":   "1",
   "occurredAt":     "2024-05-07T14:32:10.123Z",
   "producer":       "risk-decision-engine",
-  "schemaRef":      "urn:naranjax:risk:DecisionEvaluated:1"
+  "schemaRef":      "urn:riskplatform:risk:DecisionEvaluated:1"
 }
 ```
 

@@ -64,7 +64,7 @@ Use k3d como la Kubernetes distribution (runs k3s en Docker containers). Add aut
 
 ## Validación
 
-- `poc/k8s-local/scripts/setup.sh` creates un k3d cluster y logs la Docker context used.
+- `poc/k8s-local/scripts/up.sh` creates un k3d cluster y logs la Docker context used.
 - On OrbStack: script uses OrbStack Docker context; cluster starts en ~30 seconds.
 - On Docker Desktop: script uses default context; cluster starts en ~60 seconds.
 - `kubectl get nodes` returns 1+ node después de setup en ambos environments.

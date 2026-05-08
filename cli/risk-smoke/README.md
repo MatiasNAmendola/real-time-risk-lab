@@ -101,7 +101,7 @@ Comma-separated list of check IDs. Only those checks are run (TUI or headless).
 ```go
 package flows
 
-import "github.com/naranjax/risk-smoke/internal/config"
+import "github.com/riskplatform/risk-smoke/internal/config"
 
 const CheckMyNew = "mynew"
 
@@ -193,19 +193,19 @@ Examples:
 
 ## Cucumber bare check
 
-Runs the Maven Cucumber-JVM ATDD suite for the **bare-javac** `java-risk-engine` module
+Runs the Gradle Cucumber-JVM ATDD suite for the **bare-javac** `java-risk-engine` module
 (no HTTP server needed — pure in-process logic). Invokes:
 
 ```bash
-mvn -pl tests/risk-engine-atdd test -q -DskipFailureExit=true
+./gradlew -pl tests/risk-engine-atdd test -q -DskipFailureExit=true
 ```
 
-then parses `tests/risk-engine-atdd/target/cucumber.json` and reports per-feature
+then parses `tests/risk-engine-atdd/build/cucumber-reports/report.json` and reports per-feature
 scenario counts (passed / failed / skipped).
 
 ### Why is it opt-in?
 
-Maven has a cold-start time of ~60 s on the first run (dependency download). Including
+Gradle has a cold-start time of ~60 s on the first run (dependency download). Including
 it in the default smoke set would make `risk-smoke --headless` slow for every CI job
 that only needs the HTTP/Kafka checks. The Cucumber suite is therefore **disabled by
 default** and must be explicitly enabled.
@@ -220,16 +220,16 @@ default** and must be explicitly enabled.
 ./bin/risk-smoke --only health,cucumber-bare --headless
 
 # Auto-include in every run (e.g. in a dedicated CI stage)
-RISK_SMOKE_INCLUDE_MAVEN=1 ./bin/risk-smoke --headless
+RISK_SMOKE_INCLUDE_ATDD=1 ./bin/risk-smoke --headless
 ```
 
 ### Preconditions
 
 | Precondition | Behaviour if missing |
 |---|---|
-| `mvn` in `$PATH` | SKIP with message "maven not in PATH" |
-| `tests/risk-engine-atdd/pom.xml` exists | SKIP with path hint |
-| `target/cucumber.json` generated after run | FAIL with message |
+| `./gradlew` in `$PATH` | SKIP with message "gradle not in PATH" |
+| `tests/risk-engine-atdd/build.gradle.kts` exists | SKIP with path hint |
+| `build/cucumber-reports/report.json` generated after run | FAIL with message |
 
 ---
 
@@ -241,4 +241,4 @@ RISK_SMOKE_INCLUDE_MAVEN=1 ./bin/risk-smoke --headless
 | `RISK_SMOKE_KAFKA_BROKER`     | `localhost:19092`          |
 | `RISK_SMOKE_OPENOBSERVE_URL`  | `http://localhost:5080`    |
 | `RISK_SMOKE_KAFKA_TOPIC`      | `risk-decisions`           |
-| `RISK_SMOKE_INCLUDE_MAVEN`    | _(unset)_ — set to `1` to auto-include `cucumber-bare` |
+| `RISK_SMOKE_INCLUDE_ATDD`    | _(unset)_ — set to `1` to auto-include `cucumber-bare` |

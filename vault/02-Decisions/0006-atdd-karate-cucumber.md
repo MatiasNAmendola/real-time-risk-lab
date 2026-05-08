@@ -62,8 +62,8 @@ Use Karate DSL (`poc/java-vertx-distributed/atdd-tests/`) for the Vert.x platfor
 
 ## Validación
 
-- `cd poc/java-vertx-distributed && mvn -pl atdd-tests verify` passes all 10 Karate feature files.
-- `cd tests/risk-engine-atdd && mvn verify` passes all Cucumber-JVM scenarios.
+- `cd poc/java-vertx-distributed && ./gradlew -pl atdd-tests verify` passes all 10 Karate feature files.
+- `cd tests/risk-engine-atdd && ./gradlew test jacocoTestReport` passes all Cucumber-JVM scenarios.
 - Karate coverage report shows cross-module coverage from ATDD scenarios.
 
 ## Relacionado

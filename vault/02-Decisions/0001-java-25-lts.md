@@ -1,13 +1,13 @@
 ---
 adr: "0001"
-title: Java 25 LTS
+title: Java 21 baseline operativo y Java 25 LTS objetivo
 status: accepted
 date: 2026-05-07
 deciders: [Mati]
 tags: [decision/accepted, area/runtime, area/java]
 ---
 
-# ADR-0001: Java 25 LTS como JDK baseline
+# ADR-0001: Java 21 baseline operativo y Java 25 LTS como objetivo
 
 ## Estado
 
@@ -23,11 +23,11 @@ JEPs clave que diferencian Java 25 de versiones LTS anteriores: Virtual Threads 
 
 ## Decisión
 
-Usar Java 25 LTS como compiler target (`--release 25`) para todos los módulos `poc/` y `pkg/*`. El toolchain de Gradle en `build-logic/naranja.java-conventions.gradle.kts` se pin-ea a Java 25. Los módulos Maven setean `<maven.compiler.release>25</maven.compiler.release>`. Java 26 no se usa: la estabilidad LTS se prefiere para un argumento de target productivo.
+Usar **Java 21 LTS como compiler target operativo** (`--release 21`) para todos los módulos. Mantener **Java 25 LTS como objetivo arquitectónico documentado** para runtime moderno cuando el ecosistema de tooling soporte classfile 25 sin fricción. Java 26 no se usa como baseline: se prefiere estabilidad LTS.
 
 ## Alternativas consideradas
 
-### Opción A: Java 25 LTS (elegida)
+### Opción A: Java 21 LTS baseline operativo + Java 25 LTS objetivo (elegida)
 - **Ventajas**: LTS actual — defendible como target productivo en cualquier conversación 2026; Virtual Threads, Structured Concurrency y Scoped Values todos finalizados; Gradle 8.11.1 y Vert.x 5 lo soportan; disponible en Apple M1 vía Homebrew; demuestra currency sin perseguir un feature release.
 - **Desventajas**: No todos los equipos productivos migraron de 17 o 21; la JVM del benchmark resolvió a Temurin 21 en runtime (discrepancia entre compile target y runtime — documentada en doc 12); algunas imágenes Docker de CI son anteriores a Java 25.
 - **Por qué se eligió**: La señal de diseño es conocimiento actualizado. "Targeteo Java 25 en greenfield; la migración desde 17 se hace en stages vía `--enable-preview`" es la respuesta correcta para un staff engineer en 2026.
@@ -52,7 +52,7 @@ Usar Java 25 LTS como compiler target (`--release 25`) para todos los módulos `
 ### Positivo
 - Virtual Threads (`Executors.newVirtualThreadPerTaskExecutor()`) en `HttpController` no son `--enable-preview` — API estable.
 - Structured Concurrency y Scoped Values son talking points finalizados para design reviews.
-- `--release 25` previene usar features preview de Java 26 accidentalmente.
+- `--release 21` evita fricción de classfile 25 en tooling y previene depender de features no disponibles en el baseline real.
 
 ### Negativo
 - La JVM del benchmark resolvió a JDK 21.0.4 Temurin en runtime (doc 12) — el compile target y el runtime difieren. Esto es una discrepancia para explicar, no una elección de diseño.
@@ -64,12 +64,12 @@ Usar Java 25 LTS como compiler target (`--release 25`) para todos los módulos `
 
 ## Validación
 
-- `./gradlew :pkg:resilience:build` usa el toolchain Java pin-eado en `build-logic/naranja.java-conventions.gradle.kts`.
+- `./gradlew :pkg:resilience:build` usa el toolchain Java pin-eado en `build-logic/riskplatform.java-conventions.gradle.kts`.
 - `HttpController.java` usa `Executors.newVirtualThreadPerTaskExecutor()` — sin necesidad de flag `--enable-preview`.
 
 ## Addendum 2026-05-08: target de bytecode bajado temporalmente a 21
 
-Durante Phase 2 (migración a Gradle) descubrimos que varios tools de build fallan con `--release 25`:
+Durante Phase 2 (migración a Gradle) descubrimos que varios tools de build fallan con `--release 21`:
 
 - **JMH 1.37**: el annotation processor no produce `META-INF/BenchmarkList` con bytecode 25 — los benchmarks corren vacíos.
 - **plugin `com.gradleup.shadow`** (fat jars Vert.x): `Class major version 69 not supported`.
@@ -79,7 +79,7 @@ Decisión pragmática: `--release 21` en los convention plugins. **El runtime no
 
 Esto NO es una regresión de este ADR. Es un workaround temporal hasta que el ecosistema de build tools se ponga al día. Triggers para revertir documentados en `docs/26-java-version-compat-2026.md`.
 
-Cuando los tres tools (JMH, Shadow, Karate) publiquen versiones compatibles con classfile 25, el cambio es una línea por convention plugin: `release.set(21)` → `release.set(25)`.
+Cuando JMH, Shadow, Karate y ArchUnit publiquen versiones compatibles con classfile 25, el cambio objetivo será una línea por convention plugin: `release.set(21)` → `release.set(25)`.
 
 ## Relacionado
 

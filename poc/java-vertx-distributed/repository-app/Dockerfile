@@ -13,13 +13,14 @@ RUN addgroup -g 1003 appgroup && adduser -u 1003 -G appgroup -D appuser
 USER 1003:1003
 
 COPY --from=build /workspace/app.jar app.jar
+COPY hazelcast/hazelcast.xml /etc/riskplatform/hazelcast/hazelcast.xml
 COPY otel/opentelemetry-javaagent.jar /otel/opentelemetry-javaagent.jar
 COPY jacoco-agent/jacocoagent.jar /jacoco/jacocoagent.jar
 
 EXPOSE 6300
 
 ENTRYPOINT ["java", \
-  "-javaagent:/jacoco/jacocoagent.jar=output=tcpserver,address=*,port=6300,append=true,includes=com.naranjax.*", \
+  "-javaagent:/jacoco/jacocoagent.jar=output=tcpserver,address=*,port=6300,append=true,includes=io.riskplatform.*", \
   "-javaagent:/otel/opentelemetry-javaagent.jar", \
   "-Dhazelcast.local.publicAddress=repository-app:5701", \
   "-jar", "app.jar"]

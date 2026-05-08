@@ -6,7 +6,7 @@ preconditions:
   - .ai/context/decisions-log.md existe
 postconditions:
   - ADR agregado al decisions-log.md con numero secuencial
-  - Decision guardada en Engram con topic_key naranjax/adr/<numero>
+  - Decision guardada en Engram con topic_key riskplatform/adr/<numero>
   - Commit: "docs(adr): ADR-<N> <titulo>"
 related_rules: []
 ---
@@ -47,8 +47,8 @@ related_rules: []
    mem_save(
      title: "ADR-<N>: <titulo>",
      type: "decision",
-     topic_key: "naranjax/adr/<N>",
-     project: "naranjax/practica-entrevista",
+     topic_key: "riskplatform/adr/<N>",
+     project: "riskplatform/risk-platform-practice",
      content: <contenido completo del ADR>
    )
    ```

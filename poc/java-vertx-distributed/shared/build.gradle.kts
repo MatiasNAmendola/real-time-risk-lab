@@ -1,5 +1,5 @@
 plugins {
-    id("naranja.library-conventions")
+    id("riskplatform.library-conventions")
 }
 
 val libs = the<org.gradle.accessors.dm.LibrariesForLibs>()

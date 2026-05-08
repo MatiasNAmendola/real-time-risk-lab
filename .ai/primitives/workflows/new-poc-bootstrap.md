@@ -1,7 +1,7 @@
 ---
 name: new-poc-bootstrap
 description: Como arrancar una nueva PoC siguiendo todas las convenciones del repo
-steps: [create-dir, pom, layout, readme, scripts, docker-compose, git, inventory]
+steps: [create-dir, gradle, layout, readme, scripts, docker-compose, git, inventory]
 ---
 
 # Workflow: new-poc-bootstrap
@@ -23,17 +23,17 @@ Cuando el roadmap (docs/03-poc-roadmap.md) indica una nueva PoC o cuando se deci
 Ver `.ai/primitives/skills/bootstrap-new-poc.md` para el detalle.
 
 ```bash
-mkdir -p poc/<poc-name>/{src/main/java/com/naranjax/interview/<domain>,src/test,scripts}
+mkdir -p poc/<poc-name>/{src/main/java/io/riskplatform/practice/<domain>,src/test,scripts}
 ```
 
-### 3. pom.xml con Java 25 y Vert.x 5.0.12
+### 3. build.gradle.kts con Java 21 y Vert.x 5.0.12
 
-Copiar de `poc/java-vertx-distributed/pom.xml` como base. Ajustar `artifactId`.
+Copiar de `poc/java-vertx-distributed/build.gradle.kts` como base. Ajustar `artifactId`.
 
 ### 4. Layout canonico
 
 ```
-src/main/java/com/naranjax/interview/<domain>/
+src/main/java/io/riskplatform/practice/<domain>/
 ├── domain/{entity,repository,usecase,service,rule}
 ├── application/{usecase/<aggregate>,mapper,dto}
 ├── infrastructure/{controller,consumer,repository,resilience,time}
@@ -59,7 +59,7 @@ Solo los servicios necesarios para este PoC. Versiones exactas (ver `.ai/context
 ### 8. .gitignore local
 
 ```
-target/
+build/
 *.class
 .env.local
 ```
@@ -78,7 +78,7 @@ Agregar a `.ai/context/poc-inventory.md` con estado "en progreso".
 ## Checklist
 
 - [ ] Directorio bajo `poc/` (no en `tests/` ni `cli/`)
-- [ ] pom.xml con Java 25, maven.compiler.release=25
+- [ ] build.gradle.kts con Java 21 y `--release 21`; Java 25 solo como objetivo documentado
 - [ ] Layout canonico completo
 - [ ] README.md con proposito y como correr
 - [ ] scripts/ ejecutables

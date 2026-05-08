@@ -8,18 +8,18 @@ interface EnvCoords {
 
 const ENV_MAP: Record<Environment, EnvCoords> = {
   PROD: {
-    restBaseUrl: 'https://risk.naranjax.com',
-    kafkaBroker: 'kafka.naranjax.com:9092',
+    restBaseUrl: 'https://risk.riskplatform.com',
+    kafkaBroker: 'kafka.riskplatform.com:9092',
     sqsQueueUrl: 'https://sqs.us-east-1.amazonaws.com/123456789/risk-decisions-prod',
   },
   STAGING: {
-    restBaseUrl: 'https://risk-staging.naranjax.com',
-    kafkaBroker: 'kafka-staging.naranjax.com:9092',
+    restBaseUrl: 'https://risk-staging.riskplatform.com',
+    kafkaBroker: 'kafka-staging.riskplatform.com:9092',
     sqsQueueUrl: 'https://sqs.us-east-1.amazonaws.com/123456789/risk-decisions-staging',
   },
   DEV: {
-    restBaseUrl: 'https://risk-dev.naranjax.com',
-    kafkaBroker: 'kafka-dev.naranjax.com:9092',
+    restBaseUrl: 'https://risk-dev.riskplatform.com',
+    kafkaBroker: 'kafka-dev.riskplatform.com:9092',
     sqsQueueUrl: 'https://sqs.us-east-1.amazonaws.com/123456789/risk-decisions-dev',
   },
   LOCAL: {

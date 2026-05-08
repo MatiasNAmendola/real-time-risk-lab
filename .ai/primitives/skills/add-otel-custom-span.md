@@ -16,7 +16,7 @@ related_rules: [observability-otel, java-version]
 
 ## Pasos
 
-1. **Dependencia** en pom.xml (API, no SDK — el agent provee el SDK):
+1. **Dependencia** en build.gradle.kts (API, no SDK — el agent provee el SDK):
    ```xml
    <dependency>
      <groupId>io.opentelemetry</groupId>
@@ -28,7 +28,7 @@ related_rules: [observability-otel, java-version]
 2. **Obtener Tracer** (una vez por clase):
    ```java
    private static final Tracer tracer =
-       GlobalOpenTelemetry.getTracer("com.naranjax.risk", "1.0.0");
+       GlobalOpenTelemetry.getTracer("io.riskplatform.risk", "1.0.0");
    ```
 
 3. **Crear span manual**:

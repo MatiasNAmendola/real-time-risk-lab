@@ -15,7 +15,7 @@ Aceptado el 2026-05-07.
 
 ## Contexto
 
-Tras estudiar el layout canónico enterprise de Go (ver [[Enterprise-Go-Layout-Reference]]), la estructura `internal/{domain,application,infrastructure}` mapea limpiamente a los anillos de Clean Architecture. El PoC inicial bare-javac usaba un layout plano — todas las clases en `com.naranjax.interview.risk` — que no demostraba la intención arquitectural con claridad. Un layout plano hace invisible la regla de dependencias (domain no puede depender de infrastructure): no hay estructura de packages que la codifique.
+Tras estudiar el layout canónico enterprise de Go (ver [[Enterprise-Go-Layout-Reference]]), la estructura `internal/{domain,application,infrastructure}` mapea limpiamente a los anillos de Clean Architecture. El PoC inicial bare-javac usaba un layout plano — todas las clases en `io.riskplatform.engine` — que no demostraba la intención arquitectural con claridad. Un layout plano hace invisible la regla de dependencias (domain no puede depender de infrastructure): no hay estructura de packages que la codifique.
 
 La pregunta es qué convención de layout de packages adoptar para el PoC Java. Las opciones van desde el layout convencional layer-based de Spring Boot hasta patterns tácticos DDD estrictos. El layout debe ser: (1) legible para ingenieros Go familiarizados con el layout enterprise Go, (2) consistente con los principios de Clean Architecture, y (3) usable como target de verificación con ArchUnit (los packages deben codificar los límites de capas).
 
@@ -31,8 +31,8 @@ Refactorizar `poc/java-risk-engine/` para espejar el layout canónico enterprise
 - **Por qué se eligió**: El stack target mezcla servicios Java y Go. Usar un layout familiar para ingenieros Go demostrando que los principios de Clean Architecture son universales (no específicos de Go) es la señal de diseño más fuerte.
 
 ### Opción B: Layered packages estándar de Spring Boot (package-by-layer)
-- **Ventajas**: Familiar para cualquier Java developer; output estándar de archetype IntelliJ/Maven; esperado por convención Spring Boot; no requiere explicación.
-- **Desventajas**: Package-by-layer mezcla niveles de abstracción: `com.naranjax.service` contiene tanto domain services como application services; `com.naranjax.repository` contiene tanto interfaces de ports como implementaciones de adapters; la regla de dependencias no es visible — una clase de `service` puede importar desde `controller` sin ningún indicador estructural de violación.
+- **Ventajas**: Familiar para cualquier Java developer; output estándar de archetype IntelliJ/Gradle; esperado por convención Spring Boot; no requiere explicación.
+- **Desventajas**: Package-by-layer mezcla niveles de abstracción: `io.riskplatform.service` contiene tanto domain services como application services; `io.riskplatform.repository` contiene tanto interfaces de ports como implementaciones de adapters; la regla de dependencias no es visible — una clase de `service` puede importar desde `controller` sin ningún indicador estructural de violación.
 - **Por qué no**: Package-by-layer oculta la intención arquitectural. Un reviewer no puede decir si la arquitectura es Clean Architecture, Hexagonal, o spaghetti plano solo a partir de los package names.
 
 ### Opción C: Patrones tácticos DDD (Aggregate, ValueObject, interfaces Repository explícitas en el domain package)

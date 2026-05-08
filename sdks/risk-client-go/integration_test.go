@@ -12,7 +12,7 @@ import (
 	"testing"
 	"time"
 
-	riskclient "github.com/naranjax/risk-client"
+	riskclient "github.com/riskplatform/risk-client"
 	"github.com/stretchr/testify/require"
 )
 

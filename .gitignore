@@ -59,18 +59,26 @@ kubeconfig*
 .azure/
 
 # -----------------------------------------------------------------------------
-# Java / Kotlin / Gradle / Maven
+# Java / Kotlin / Gradle / generated JVM artifacts
 # -----------------------------------------------------------------------------
-.gradle/
-build/
+/.gradle/
+**/.gradle/
+**/.kotlin/
+/.gradle-cache/
+/.gradle-test-kit/
+/build/
 **/build/
+/out/
+/bench/out/
+/cli/risk-smoke/out/
+/poc/java-vertx-distributed/out/
 target/
 **/target/
-out/
-**/out/
-.gradle-cache/
-.mvn/timing.properties
-.mvn/wrapper/maven-wrapper.jar
+generated/
+**/generated/
+generated-sources/
+**/generated-sources/
+dependency-reduced-pom.xml
 *.class
 *.jar
 *.war
@@ -132,8 +140,7 @@ pnpm-debug.log*
 .next/
 dist/
 **/dist/
-lib/
-**/lib/
+/sdks/risk-client-typescript/lib/
 *.tsbuildinfo
 
 # -----------------------------------------------------------------------------
@@ -148,6 +155,14 @@ coverage.out
 # Docker / compose / local runtime artifacts
 # -----------------------------------------------------------------------------
 .docker/
+logs/
+**/logs/
+caches/
+**/caches/
+cache/
+**/cache/
+.cache/
+**/.cache/
 *.pid
 *.sock
 *.seed
@@ -158,14 +173,15 @@ coverage.out
 # -----------------------------------------------------------------------------
 # Project generated outputs
 # -----------------------------------------------------------------------------
-out/
 .ai/scripts/.cache/
-.ai/logs/*.jsonl
+!.ai/logs/
+.ai/logs/*
 .ai/state/anchor-*.md
 .ai/state/session-*.md
 .ai/state/*.local.*
 !.ai/logs/.gitkeep
 !.ai/state/anchor-template.md
+vault/01-Sessions/handoffs/
 
 # Obsidian local workspace state (keep notes/config that are source-like)
 vault/.obsidian/workspace*.json

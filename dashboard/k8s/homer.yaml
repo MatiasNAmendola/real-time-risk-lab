@@ -11,7 +11,7 @@ metadata:
   namespace: homer
 data:
   config.yml: |
-    title: "Naranja X — Practica Entrevista (k8s)"
+    title: "Risk Decision Platform — Practica Entrevista (k8s)"
     subtitle: "Risk platform — cluster services"
     logo: "assets/logo.svg"
     header: true

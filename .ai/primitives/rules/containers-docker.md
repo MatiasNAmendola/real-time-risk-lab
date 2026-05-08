@@ -20,7 +20,7 @@ priority: medium
   HEALTHCHECK --interval=10s --timeout=3s --retries=3 \
     CMD wget -qO- http://localhost:8080/healthz || exit 1
   ```
-- No copiar `.git/`, `target/` completo, o secretos al imagen.
+- No copiar `.git/`, `build/` completo, o secretos al imagen.
 - WORKDIR explícito: `WORKDIR /app`.
 
 ## docker-compose

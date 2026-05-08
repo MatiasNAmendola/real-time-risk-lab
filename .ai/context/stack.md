@@ -4,8 +4,8 @@
 
 | Componente | Version | Notas |
 |---|---|---|
-| Java | 25 LTS | OpenJDK 25 via Homebrew. `--release 25`. |
-| Maven | 3.9.x | `mvn -version` |
+| Java | 21 LTS baseline | `--release 21` por compatibilidad de tooling; Java 25 LTS queda como objetivo documentado. |
+| Gradle | 3.9.x | `./gradlew --version` |
 | Go | 1.22+ | Para `cli/risk-smoke/` |
 | Bash | 5.x | Scripts de setup |
 
@@ -85,10 +85,14 @@
 
 ```bash
 java -version           # 25.x
-mvn -version            # 3.9.x
+./gradlew --version            # 3.9.x
 go version              # 1.22+
 docker version          # cualquier version reciente
 kubectl version         # 1.29+
 helm version            # 3.14+
 k3d version             # 5.6+
 ```
+
+## Workflows curados
+
+- `.ai/primitives/workflows/technical-practice-checklist.md` — checklist previo a compartir la exploración técnica.

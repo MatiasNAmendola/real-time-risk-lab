@@ -66,7 +66,7 @@ Use `openbao/openbao:latest` (MPL-2.0) instead de `hashicorp/vault` (BSL-1.1) en
 ## Validación
 
 - `docker run openbao/openbao:latest server -dev` starts successfully.
-- `bao kv put secret/naranjax/db password=test` y `bao kv get secret/naranjax/db` work correctly.
+- `bao kv put secret/riskplatform/db password=test` y `bao kv get secret/riskplatform/db` work correctly.
 - AWS SDK endpoint override un OpenBao's Secrets Manager compatibility endpoint resolves secrets correctly en integration tests.
 
 ## Relacionado

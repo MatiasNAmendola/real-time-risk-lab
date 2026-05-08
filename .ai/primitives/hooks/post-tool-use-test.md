@@ -22,10 +22,10 @@ Despues de editar un archivo Java o Go, correr automaticamente los tests del mod
 | Path del archivo editado | Comando de test |
 |---|---|
 | `poc/java-risk-engine/src/**` | `cd poc/java-risk-engine && ./scripts/test.sh` |
-| `poc/java-vertx-distributed/<module>/src/**` | `mvn test -pl poc/java-vertx-distributed/<module>` |
-| `poc/java-vertx-distributed/atdd-tests/**` | `mvn test -pl poc/java-vertx-distributed/atdd-tests` |
-| `poc/vertx-risk-platform/src/**` | `mvn test -pl poc/vertx-risk-platform` |
-| `tests/risk-engine-atdd/**` | `mvn test -pl tests/risk-engine-atdd` |
+| `poc/java-vertx-distributed/<module>/src/**` | `./gradlew test -pl poc/java-vertx-distributed/<module>` |
+| `poc/java-vertx-distributed/atdd-tests/**` | `./gradlew test -pl poc/java-vertx-distributed/atdd-tests` |
+| `poc/vertx-risk-platform/src/**` | `./gradlew test -pl poc/vertx-risk-platform` |
+| `tests/risk-engine-atdd/**` | `./gradlew :tests:risk-engine-atdd:test` |
 | `cli/risk-smoke/**/*.go` | `cd cli/risk-smoke && go test ./...` |
 
 ## Implementacion en Claude Code
@@ -57,7 +57,7 @@ FILE_PATH=$(echo "$1" | python3 -c "import sys,json; d=json.load(sys.stdin); pri
 if [[ "$FILE_PATH" == poc/java-vertx-distributed/* ]]; then
     MODULE=$(echo "$FILE_PATH" | cut -d/ -f1-3)
     echo "Running tests for $MODULE..."
-    mvn test -pl "$MODULE" -q 2>&1 | tail -5
+    ./gradlew test -pl "$MODULE" -q 2>&1 | tail -5
 elif [[ "$FILE_PATH" == poc/java-risk-engine/* ]]; then
     echo "Running java-risk-engine tests..."
     cd poc/java-risk-engine && ./scripts/test.sh 2>&1 | tail -5

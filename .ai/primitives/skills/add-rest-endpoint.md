@@ -3,7 +3,7 @@ name: add-rest-endpoint
 intent: Agregar un nuevo endpoint REST a controller-app respetando OpenAPI y Clean Architecture
 inputs: [path, http_method, request_schema, response_schema, use_case_name]
 preconditions:
-  - poc/java-vertx-distributed o poc/vertx-risk-platform compila (mvn package -DskipTests)
+  - poc/java-vertx-distributed o poc/vertx-risk-platform compila (./gradlew shadowJar)
   - El use case correspondiente existe en application/usecase/
 postconditions:
   - Endpoint registrado en el Router de Vert.x
@@ -64,7 +64,7 @@ related_rules: [java-version, architecture-clean, testing-atdd, observability-ot
        And the response contains ...
    ```
 
-8. **Verificar**: `mvn test -pl atdd-tests` debe pasar en verde.
+8. **Verificar**: `./gradlew :poc:java-vertx-distributed:atdd-tests:test -Patdd` debe pasar en verde.
 
 ## Notas
 - No introducir lógica de negocio en el controller/handler.

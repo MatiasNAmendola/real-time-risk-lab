@@ -8,10 +8,10 @@ import (
 	"time"
 
 	tea "github.com/charmbracelet/bubbletea"
-	"github.com/naranjax/risk-smoke/internal/config"
-	"github.com/naranjax/risk-smoke/internal/flows"
-	"github.com/naranjax/risk-smoke/internal/reporter"
-	"github.com/naranjax/risk-smoke/internal/tui"
+	"github.com/riskplatform/risk-smoke/internal/config"
+	"github.com/riskplatform/risk-smoke/internal/flows"
+	"github.com/riskplatform/risk-smoke/internal/reporter"
+	"github.com/riskplatform/risk-smoke/internal/tui"
 )
 
 func main() {
@@ -30,7 +30,7 @@ func main() {
 	)
 
 	flag.Usage = func() {
-		fmt.Fprintf(os.Stderr, `risk-smoke — NaranjaX Risk Engine smoke runner
+		fmt.Fprintf(os.Stderr, `risk-smoke — Risk Decision Platform Risk Engine smoke runner
 
 USAGE
   risk-smoke [flags]
@@ -49,7 +49,7 @@ CHECK IDs (for --only)
   webhook         Register local listener, fire DECLINE tx, wait callback
   kafka           Consume topic risk-decisions (Redpanda)
   otel            POST /risk → traceresponse → OpenObserve trace lookup
-  cucumber-bare   Run Maven Cucumber ATDD for java-risk-engine (opt-in, slow)
+  cucumber-bare   Run Gradle Cucumber ATDD for java-risk-engine (opt-in, slow)
 
 EXAMPLES
   risk-smoke                                        # interactive TUI
@@ -64,7 +64,7 @@ ENV VARS
   RISK_SMOKE_KAFKA_BROKER     (default: localhost:19092)
   RISK_SMOKE_OPENOBSERVE_URL  (default: http://localhost:5080)
   RISK_SMOKE_KAFKA_TOPIC      (default: risk-decisions)
-  RISK_SMOKE_INCLUDE_MAVEN    set to 1 to auto-include cucumber-bare in every run
+  RISK_SMOKE_INCLUDE_ATDD    set to 1 to auto-include cucumber-bare in every run
 `)
 	}
 	flag.Parse()

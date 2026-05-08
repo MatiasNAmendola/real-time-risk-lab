@@ -18,15 +18,31 @@ for arg in "$@"; do
 done
 
 echo "========================================"
-echo "NaranjaX Performance Comparison Runner"
+echo "Risk Decision Platform Performance Comparison Runner"
 echo "========================================"
 
 # ── 1. Build ──────────────────────────────────────────────────────────────────
-echo "[1/4] Building all bench modules via Gradle..."
-"$REPO_ROOT/gradlew" -p "$REPO_ROOT" \
-  :bench:inprocess-bench:shadowJar \
-  :bench:distributed-bench:shadowJar \
-  :bench:runner:shadowJar
+# Skip Gradle entirely if jars are already present. Use --rebuild or REBUILD=1
+# to force a full rebuild.
+REBUILD="${REBUILD:-0}"
+for arg in "$@"; do [[ "$arg" == "--rebuild" ]] && REBUILD=1; done
+_jars_present() {
+  ls "$BENCH_DIR/inprocess-bench/build/libs"/inprocess-bench-*.jar  2>/dev/null | grep -qv -- '-sources' \
+    && ls "$BENCH_DIR/distributed-bench/build/libs"/distributed-bench-*.jar 2>/dev/null | grep -qv -- '-sources' \
+    && ls "$BENCH_DIR/runner/build/libs"/runner-*.jar 2>/dev/null | grep -qv -- '-sources'
+}
+if [[ "$REBUILD" == "0" ]] && _jars_present; then
+  echo "[1/4] Bench jars already present — skipping Gradle (set REBUILD=1 to force)."
+else
+  echo "[1/4] Building bench modules via Gradle (incremental, --build-cache)..."
+  EXTRA_FLAGS="--build-cache --parallel"
+  [[ "${NX_CONFIG_CACHE:-0}" == "1" ]] && EXTRA_FLAGS="$EXTRA_FLAGS --configuration-cache"
+  "$REPO_ROOT/gradlew" -p "$REPO_ROOT" \
+    :bench:inprocess-bench:shadowJar \
+    :bench:distributed-bench:shadowJar \
+    :bench:runner:shadowJar \
+    $EXTRA_FLAGS
+fi
 
 # ── 2. In-process benchmark ───────────────────────────────────────────────────
 echo "[2/4] Running in-process (JMH) benchmark..."

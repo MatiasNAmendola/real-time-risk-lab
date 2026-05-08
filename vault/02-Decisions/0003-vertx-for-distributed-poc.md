@@ -23,7 +23,7 @@ La restricción es la señal de diseño: el framework debe defenderse no como "l
 
 ## Decisión
 
-Se elige Vert.x 5 (`io.vertx:vertx-stack-depchain:5.0.12`) con Hazelcast TCP cluster manager para la PoC distribuida. Cada módulo Maven (`controller-app`, `usecase-app`, `repository-app`, `consumer-app`) se empaqueta como fat JAR independiente. El event bus clusterizado de Vert.x maneja el messaging intra-cluster; Kafka (Redpanda) maneja la publicación asíncrona de eventos hacia consumers externos.
+Se elige Vert.x 5 (`io.vertx:vertx-stack-depchain:5.0.12`) con Hazelcast TCP cluster manager para la PoC distribuida. Cada módulo Gradle (`controller-app`, `usecase-app`, `repository-app`, `consumer-app`) se empaqueta como fat JAR independiente. El event bus clusterizado de Vert.x maneja el messaging intra-cluster; Kafka (Redpanda) maneja la publicación asíncrona de eventos hacia consumers externos.
 
 ## Alternativas consideradas
 

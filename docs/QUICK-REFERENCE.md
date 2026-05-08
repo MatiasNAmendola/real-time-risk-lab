@@ -48,27 +48,56 @@ Corredor paralelo con throttling de recursos. Grupos definidos en `.ai/test-grou
 
 ### Composites disponibles
 
-| Composite | Grupos incluidos |
-|-----------|------------------|
-| `quick` | `unit`, `arch` |
-| `service-bare` | `unit`, `atdd-cucumber`, `smoke` |
-| `service-vertx` | `atdd-karate`, `smoke` |
-| `service-monolith` | `monolith`, `atdd-monolith` |
-| `sdk` | `sdk-java`, `sdk-typescript`, `sdk-go` |
-| `sdk-integration` | `sdk-java-integration`, `sdk-typescript-integration`, `sdk-go-integration`, `sdk-contract` |
-| `ci-fast` | `unit`, `arch`, `sdk-java`, `sdk-typescript`, `sdk-go` |
-| `ci-full` | `unit`, `arch`, `atdd-cucumber`, `atdd-karate`, `monolith`, `smoke`, `integration`, `sdk-java`, `sdk-typescript`, `sdk-go`, `bench-inproc` |
-| `all` | `ci-full` + `bench-distributed` + `coverage-audit` |
+| Composite | Uso | Grupos incluidos |
+|-----------|-----|------------------|
+| `quick` | Demo live rápido | `quick-check` |
+| `unit-sdk` | Unit tests de SDKs sin infra | `unit-sdk-java`, `unit-sdk-typescript`, `unit-sdk-go` |
+| `integration-compose` | Suites que usan compose/stack compartido | `integration-compose-*` en modo exclusivo |
+| `sdk-integration` | Integración de SDKs contra compose | `sdk-java-integration`, `sdk-typescript-integration`, `sdk-go-integration` |
+| `ci-fast` | CI rápido sin Docker obligatorio | `unit-java-fast`, `arch`, `unit-sdk-*` |
+| `ci-full` | CI completo de aplicación + SDK + contract + k6 smoke | unit, arch, component, Testcontainers, compose, SDK integration, `contract`, `bench-inproc`, `k6` |
+| `k8s` / `ci-k8s` | Infra/k8s/nightly | `k8s-smoke`, `k8s-canary`, `k8s-bluegreen`, `k8s-rolling`, `k8s-argocd`, `k8s-eso` |
+| `all` | Todo lo no-k8s + bench distribuido + coverage | `ci-full` + `bench-distributed` + `coverage-audit` |
+
+### Matriz recomendada por contexto
+
+| Contexto | Comando | Intención |
+|----------|---------|-----------|
+| Demo live | `./nx test --composite quick` | Guardrail sin Gradle/JUnit: boundaries de código + aviso de artefactos. |
+| Pre-push | `./nx test --composite ci-fast` | Unit Java real + ArchUnit + SDK unit, sin levantar infra. |
+| CI fast | `./nx test --composite ci-fast --json` | Feedback barato, SKIP grácil si falta algún tool opcional. |
+| CI full | `./nx test --composite ci-full --with-infra-compose --json` | Aplicación completa, Testcontainers/compose, SDK integration, contract y k6 smoke. |
+| Infra/k8s/nightly | `./nx test --composite k8s --with-infra-k8s --json` | Validación de rollouts/Argo/ESO sobre cluster local. |
 
 ### Grupos atómicos (selección)
 
-`unit`, `arch`, `atdd-cucumber`, `atdd-karate`, `smoke`, `integration`, `monolith`, `atdd-monolith`, `vertx-platform`, `atdd-vertx-platform`, `sdk-java`, `sdk-typescript`, `sdk-go`, `sdk-java-integration`, `sdk-typescript-integration`, `sdk-go-integration`, `sdk-contract`, `bench-inproc`, `bench-distributed`, `coverage-audit`.
+`unit-java-fast`, `arch`, `unit-sdk-java`, `unit-sdk-typescript`, `unit-sdk-go`, `component-vertx`, `integration-testcontainers`, `integration-compose-vertx-atdd`, `integration-compose-smoke`, `integration-compose-monolith-unit`, `integration-compose-monolith-atdd`, `integration-compose-vertx-platform-atdd`, `sdk-java-integration`, `sdk-typescript-integration`, `sdk-go-integration`, `contract`, `k6`, `k8s-*`, `bench-inproc`, `bench-distributed`, `coverage-audit`.
+
+### `./nx test k8s-*` (cluster local requerido)
+
+Estos grupos requieren `./nx up k8s` previamente (k3d u OrbStack k8s). Ver
+[doc 36](36-k8s-deployment-tests.md).
+
+| Grupo | Cubre | Duración aprox. |
+|-------|-------|-----------------|
+| `k8s-smoke` | helm install + pods Ready + `/healthz` | 1 min |
+| `k8s-canary` | Canary 20→50→100 + rollback automático | 6 min |
+| `k8s-bluegreen` | activeService swap blue→green | 3 min |
+| `k8s-rolling` | RollingUpdate zero-downtime | 3 min |
+| `k8s-argocd` | Application Synced + Healthy | 1 min |
+| `k8s-eso` | ExternalSecret → Secret nativo | 2 min |
+| `k8s-rollouts` | Toda la suite k8s | 12 min |
 
 ### Skip por toolchain faltante
 
 Cada grupo declara en `.ai/test-groups.yaml` el campo `requires:` con las CLIs necesarias (`docker`, `fnm`, `npm`, `node`, `go`). Si falta alguna, el runner emite SKIP con la razón en lugar de fallar con exit 127. Sintaxis OR soportada: `requires: ["fnm|npm"]` (cumple cualquiera). Ver [doc 27](27-test-runner.md).
 
 ---
+
+## Performance positioning
+
+- [`37-java-go-performance-positioning.md`](37-java-go-performance-positioning.md) — Java moderno vs Go: performance, concurrencia y trade-offs respaldados por fuentes primarias.
+- [`38-java-apps-architecture-performance-matrix.md`](38-java-apps-architecture-performance-matrix.md) — Matriz de apps Java: misma lógica conceptual, distintos stacks/topologías, beneficios de Vert.x y gaps de benchmark.
 
 ## Audit
 
@@ -124,6 +153,23 @@ JMH y carga distribuida. Resolución dinámica del jar (no hardcodea versión).
 | `bench inproc -wi N -i N -f N` | Custom warmup / iterations / forks | `./nx bench inproc -wi 3 -i 5 -f 1` |
 | `bench distributed` | Generación de carga HTTP contra server vivo | `./nx bench distributed` |
 | `bench competition` | Ambos benchmarks comparados | `./nx bench competition` |
+
+### k6 (Grafana load testing)
+
+`./nx bench k6 <scenario> [--target SVC] [--vus N] [--duration T]`
+
+| Subcomando | Descripción | Ejemplo |
+|------------|-------------|---------|
+| `bench k6 smoke` | 1 VU, 30s — el servicio arranca | `./nx bench k6 smoke --target bare` |
+| `bench k6 load` | 32 VUs, 2 min — sustained, gate p99 < 300ms | `./nx bench k6 load --target distributed` |
+| `bench k6 stress` | Ramp 0→100 VUs en 5 min — find the knee | `./nx bench k6 stress --target vertx-platform` |
+| `bench k6 spike` | 0→200 VUs en 30s, hold 1m — burst tolerance | `./nx bench k6 spike --target distributed` |
+| `bench k6 soak` | 16 VUs, 30 min — leak detection | `./nx bench k6 soak --target distributed` |
+| `bench k6 competition <scenario>` | Mismo scenario contra los 4 servicios + comparison.md | `./nx bench k6 competition load` |
+
+Targets: `bare` (8081), `monolith` (8090), `vertx-platform` (8180), `distributed` (8080).
+Push a OpenObserve: `export K6_PROMETHEUS_RW_SERVER_URL=http://localhost:5080/api/prom/push` antes del run.
+Detalle: [bench/k6/README.md](../bench/k6/README.md) y [ADR-0040](../vault/02-Decisions/0040-k6-for-load-testing.md).
 
 ---
 
@@ -182,7 +228,7 @@ JMH y carga distribuida. Resolución dinámica del jar (no hardcodea versión).
 
 | Subcomando | Descripción | Ejemplo |
 |------------|-------------|---------|
-| `build` | `./gradlew clean build` | `./nx build` |
+| `build [target] [--rebuild]` | Smart incremental build (jars cacheados). Targets: `monolith`, `vertx`, `vrp`, `bare-javac`, `bench-distributed`, `bench-inprocess`, `all`. | `./nx build monolith` |
 | `run risk-engine [--port N]` | Bare-javac HTTP risk engine | `./nx run risk-engine --port 8080` |
 | `run vertx` / `run vertx-platform` / `run java-monolith` / `run k8s` | Arranca un stack puntual | `./nx run vertx` |
 | `status` | Containers docker + pods k8s corriendo | `./nx status` |
@@ -204,8 +250,35 @@ Todos los scripts escriben en `out/<name>/<timestamp>/`. El symlink `latest` apu
 | `./nx audit consistency` | `out/audit-consistency/latest/` |
 | `./nx audit codebase-access` | `out/codebase-access-audit/latest/` |
 | `./nx bench inproc` | `out/bench-inprocess/latest/` |
+| `./nx bench k6 <scenario>` | `out/k6/<scenario>/latest/` |
+| `./nx bench k6 competition <scenario>` | `out/k6-competition/latest/` |
 | `./nx debug snapshot` | `out/debug/<ts>/` |
 | `./nx up vertx` | `out/vertx-up/latest/` |
 | `./nx up k8s` | `out/k8s-up/latest/` |
 
 Lecciones aprendidas durante Phase 6 + Phase 9: ver [doc 34](34-lessons-learned.md).
+
+---
+
+## Build performance
+
+Default fast path: `./nx build [target]` hace **incremental** y **skip si los jars son frescos** (newer than sources). Sin contention de Gradle daemons cuando múltiples agentes corren en paralelo (lock por target en `.gradle/.nx-build-locks/`).
+
+| Caso | Comando | Tiempo típico |
+|------|---------|---------------|
+| Cold build (sin jars) | `./nx build monolith` | 3–5 min |
+| Warm (no source changes) | `./nx build monolith` | < 2 s (skip) |
+| Incremental (1 archivo cambió) | `./nx build monolith` | 15–30 s |
+| Force rebuild | `NX_REBUILD=1 ./nx build monolith` ó `./nx build monolith --rebuild` | 3–5 min |
+| Legacy `gradle clean build` | `./nx build --legacy-clean` | 5–8 min (CI) |
+
+Bench scripts (`bench/scripts/run-comparison.sh`) skipean Gradle si los jars existen. Forzar con `REBUILD=1` ó `--rebuild`.
+
+Limpiar caches:
+```bash
+./gradlew --stop
+rm -rf ~/.gradle/caches/build-cache-*
+rm -rf .gradle/.nx-build-locks/
+```
+
+Concurrency guard: si dos agentes lanzan `./nx build monolith` simultáneamente, el segundo espera al primero (lockfile con PID-liveness check). Para fallar rápido en vez de esperar: `NX_BUILD_NOWAIT=1 ./nx build monolith`.

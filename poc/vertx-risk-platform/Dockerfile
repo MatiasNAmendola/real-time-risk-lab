@@ -6,7 +6,7 @@
 #
 # Build (from repo root):
 #   ./gradlew :poc:vertx-risk-platform:shadowJar
-#   docker build -f poc/vertx-risk-platform/Dockerfile poc/vertx-risk-platform -t naranjax/vrp-pod:latest
+#   docker build -f poc/vertx-risk-platform/Dockerfile poc/vertx-risk-platform -t riskplatform/vrp-pod:latest
 #
 # Or via compose override (see compose.override.yml).
 ##############################################################################
@@ -20,14 +20,14 @@ WORKDIR /build
 COPY build/libs/vertx-risk-platform.jar app.jar
 
 # ── Stage 2: runtime ─────────────────────────────────────────────────────────
-FROM eclipse-temurin:21-jre-alpine AS runtime
+FROM eclipse-temurin:21-jdk AS runtime
 
 # Create a non-root group and user per pod (UIDs set at compose level via user: field)
 # UIDs 1101-1103 are reserved for this PoC (1001-1004 used by java-vertx-distributed)
-RUN addgroup -g 1100 vrp && \
-    adduser -u 1101 -G vrp -s /bin/sh -D vrp-controller && \
-    adduser -u 1102 -G vrp -s /bin/sh -D vrp-usecase && \
-    adduser -u 1103 -G vrp -s /bin/sh -D vrp-repository
+RUN groupadd -g 1100 vrp && \
+    useradd -u 1101 -g vrp -s /bin/sh -M vrp-controller && \
+    useradd -u 1102 -g vrp -s /bin/sh -M vrp-usecase && \
+    useradd -u 1103 -g vrp -s /bin/sh -M vrp-repository
 
 WORKDIR /app
 COPY --from=builder /build/app.jar app.jar

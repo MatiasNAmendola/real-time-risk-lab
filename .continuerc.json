@@ -1,7 +1,7 @@
 {
   "mergeBehavior": "merge",
   "rules": [
-    "Java 25 LTS only. Do NOT downgrade to 21. Use --release 25 in pom.xml.",
+    "Executable baseline is Java 21 LTS via Gradle toolchains (--release 21); Java 25 is only the documented future target until tooling is frictionless.",
     "Clean Architecture: domain/ must NOT import from application/ or infrastructure/.",
     "ATDD first: write .feature file before any production code.",
     "Every request must produce trace + log + metric via OpenTelemetry. correlationId in MDC and header.",

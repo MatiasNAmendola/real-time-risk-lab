@@ -7,6 +7,10 @@
 
 ---
 
+> **Scope clarification (2026-05-08):** this PoC is intentionally **layer-as-pod**, not true microservices.
+> `controller-app`, `usecase-app`, `repository-app` and `consumer-app` are layers of the same Risk Decision bounded context.
+> For real bounded-context service-to-service (`risk-decision-service` ↔ `fraud-rules-service` ↔ `ml-scorer-service`), use `../service-mesh-demo`.
+
 ## Architecture
 
 ```
@@ -86,7 +90,7 @@ sequenceDiagram
 
 | Component | Version | Role |
 |-----------|---------|------|
-| Java | 25 | All JVMs |
+| Java | 21 LTS bytecode baseline (`--release 21`) | All JVMs; Java 25 remains a documented target |
 | Vert.x | 5.0.12 | Async HTTP + clustered event bus |
 | Hazelcast | 5.3.x (embedded) | Cluster manager for Vert.x event bus |
 | PostgreSQL | 16 | Customer features store |
@@ -101,8 +105,8 @@ sequenceDiagram
 
 ### Prerequisites
 - Docker with Compose v2
-- Java 25 (`javac --version` → `javac 25`)
-- Maven 3.9+
+- Java 21+ available to Gradle toolchains (repo compiles with `--release 21`)
+- Gradle wrapper (`./gradlew` from repo root)
 
 ### Commands
 
@@ -160,7 +164,7 @@ Seeded customers:
 
 ## ATDD
 
-Acceptance tests live in the `atdd-tests/` Maven module and are implemented with **Karate 1.5** + **JUnit 5**.
+Acceptance tests live in the `atdd-tests/` Gradle module and are implemented with **Karate 1.5** + **JUnit 5**.
 
 ### Prerequisites
 
@@ -174,10 +178,10 @@ Same as running the PoC: `docker compose up` must be running.
 
 # Run all features + generate JaCoCo coverage report
 ./scripts/atdd-coverage.sh
-# Report opens automatically at: atdd-tests/target/site/jacoco/index.html
+# Report opens automatically at: atdd-tests/build/reports/jacoco/test/index.html
 
 # Run only REST features during development
-mvn -pl atdd-tests test -Dtest=RestRunner
+./gradlew :poc:java-vertx-distributed:atdd-tests:test -Patdd --tests io.riskplatform.atdd.runners.RestRunner
 
 # Run against CI environment (Docker internal DNS)
 KARATE_ENV=ci ./scripts/atdd.sh
@@ -208,9 +212,9 @@ ERROR: expected service at http://localhost:8080 — run docker compose up first
        Hint: ./scripts/up.sh
 ```
 
-The `atdd.sh` script does a pre-flight health check and exits with a clear message before Maven even starts.
+The `atdd.sh` script does a pre-flight health check and exits with a clear message before Gradle even starts.
 
-If you run `mvn -pl atdd-tests test` directly (bypassing the script), Karate will fail immediately on the first `Background` step with a connection refused / timeout, and the Surefire report will show all scenarios as FAILED with a meaningful cause.
+If you run `./gradlew :poc:java-vertx-distributed:atdd-tests:test -Patdd` directly (bypassing the script), Karate will fail immediately on the first `Background` step with a connection refused / timeout, and the Surefire report will show all scenarios as FAILED with a meaningful cause.
 
 ### Expected behaviour with services UP
 
@@ -439,4 +443,4 @@ open http://localhost:8200/ui  # token: root
 - **OTel agent version** — the `latest/download` URL from GitHub always resolves to the newest 2.x stable release.
 - **Vert.x 5 WebSocket API** — `reject()`/`accept()` moved to `ServerWebSocketHandshake`; `webSocketHandshakeHandler` used for path-based routing.
 - **Micrometer registry** — `BackendRegistries.getDefaultNow()` may return null if the OTel bridge hasn't initialized yet; metrics are skipped gracefully with a WARN log.
-- **atdd-tests module** — karate-junit5 1.5.0 is not in Maven Central; build uses `-pl '!atdd-tests'` to skip it. ATDD tests still live in the module for reference.
+- **atdd-tests module** — karate-junit5 1.5.0 is not in JVM artifact registry; build uses `-pl '!atdd-tests'` to skip it. ATDD tests still live in the module for reference.

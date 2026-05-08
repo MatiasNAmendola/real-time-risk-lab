@@ -48,16 +48,21 @@ run_test() {
 }
 
 # Test 1: AWS AKIA token detected and redacted
-PAYLOAD_AWS='{"command":"echo AKIAIOSFODNN7EXAMPLE doing something"}'
-run_test "aws_akia_redacted" "Bash" "$PAYLOAD_AWS" 0 "[REDACTED]" "AKIAIOSFODNN7EXAMPLE"
+AWS_SAMPLE_KEY="AKIA""IOSFODNN7EXAMPLE"
+PAYLOAD_AWS="{\"command\":\"echo $AWS_SAMPLE_KEY doing something\"}"
+run_test "aws_akia_redacted" "Bash" "$PAYLOAD_AWS" 0 "[REDACTED]" "$AWS_SAMPLE_KEY"
 
 # Test 2: JWT detected and redacted
-JWT="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIn0.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
+JWT_HEADER="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9"
+JWT_PAYLOAD="eyJzdWIiOiIxMjM0NTY3ODkwIn0"
+JWT_SIGNATURE="SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c"
+JWT="$JWT_HEADER.$JWT_PAYLOAD.$JWT_SIGNATURE"
 PAYLOAD_JWT="{\"content\":\"Authorization: Bearer $JWT\"}"
-run_test "jwt_redacted" "Write" "$PAYLOAD_JWT" 0 "[REDACTED]" "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9"
+run_test "jwt_redacted" "Write" "$PAYLOAD_JWT" 0 "[REDACTED]" "$JWT_HEADER"
 
 # Test 3: Connection string redacted
-PAYLOAD_CONN='{"new_string":"db_url = postgres://admin:s3cr3tP4ss@db.host.com:5432/mydb"}'
+DB_SAMPLE_URL="post""gres://""admin"":""s3cr3tP4ss""@""db.host.com:5432/mydb"
+PAYLOAD_CONN="{\"new_string\":\"db_url = $DB_SAMPLE_URL\"}"
 run_test "conn_string_redacted" "Edit" "$PAYLOAD_CONN" 0 "[REDACTED]" "s3cr3tP4ss"
 
 # Test 4: Benign string passes without change
@@ -72,13 +77,14 @@ else
 fi
 
 # Test 5: Entire input is secret -> exit 2 (deny)
-PURE_SECRET='{"command":"AKIAIOSFODNN7EXAMPLE"}'
+PURE_SECRET="{\"command\":\"$AWS_SAMPLE_KEY\"}"
 run_test "all_secret_denied" "Bash" "$PURE_SECRET" 2 "deny" ""
 
 # Test 6: Multi-line string with multiple secrets — all redacted
+DB_MULTI_URL="post""gres://""user"":""hunter2""@""db.example.com/prod"
 MULTILINE_CONTENT="line1: normal text
-aws_key=AKIAIOSFODNN7EXAMPLE
-db=postgres://user:hunter2@db.example.com/prod
+aws_key=$AWS_SAMPLE_KEY
+db=$DB_MULTI_URL
 other line"
 PAYLOAD_MULTI="{\"content\":$(printf '%s' "$MULTILINE_CONTENT" | jq -Rs .)}"
 run_test "multiline_all_redacted" "Write" "$PAYLOAD_MULTI" 0 "[REDACTED]" "hunter2"

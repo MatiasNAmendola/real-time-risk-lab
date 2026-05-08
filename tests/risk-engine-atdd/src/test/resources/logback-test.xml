@@ -12,7 +12,7 @@
 
     <!-- File: DEBUG — full detail captured for report.sh post-processing -->
     <appender name="FILE" class="ch.qos.logback.core.FileAppender">
-        <file>target/cucumber.log</file>
+        <file>build/cucumber.log</file>
         <append>false</append>
         <encoder>
             <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{60} - %msg%n</pattern>
@@ -24,7 +24,7 @@
         <appender-ref ref="FILE"/>
     </root>
 
-    <logger name="com.naranjax" level="DEBUG">
+    <logger name="io.riskplatform" level="DEBUG">
         <appender-ref ref="FILE"/>
     </logger>
 </configuration>

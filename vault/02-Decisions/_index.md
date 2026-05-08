@@ -10,7 +10,7 @@ Total de ADRs: 39
 
 ## Cómo leer
 
-Cada ADR sigue el formato de Nygard con una sección "Alternativas consideradas" enriquecida que muestra al menos 3 opciones no triviales con ventajas/desventajas/racional. Valores de status: `accepted` (activo), `superseded by [[NNNN-...]]` (reemplazado), `deprecated` (ya no aplica).
+Cada ADR sigue el formato de Nygard con una sección "Alternativas consideradas" enriquecida que muestra al menos 3 opciones no triviales con ventajas/desventajas/racional. Valores de status: `accepted` (activo), `superseded by <ADR-id>` (reemplazado), `deprecated` (ya no aplica).
 
 ---
 
@@ -18,7 +18,7 @@ Cada ADR sigue el formato de Nygard con una sección "Alternativas consideradas"
 
 | ADR | Título | Status | Área | Fecha |
 |-----|--------|--------|------|-------|
-| [[0001-java-25-lts]] | Java 25 LTS como JDK baseline | accepted | runtime/java | 2026-05-07 |
+| [[0001-java-25-lts]] | Java 21 baseline operativo + Java 25 objetivo | accepted | runtime/java | 2026-05-07 |
 | [[0002-enterprise-go-layout-in-java]] | Adoptar el layout enterprise Go en el PoC Java | accepted | architecture/layout | 2026-05-07 |
 | [[0003-vertx-for-distributed-poc]] | Vert.x 5 con Hazelcast para el PoC distribuido | accepted | distributed/framework | 2026-05-07 |
 | [[0004-openobserve-otel]] | OpenObserve como backend OTEL unificado | accepted | observability/otel | 2026-05-07 |
@@ -34,8 +34,8 @@ Cada ADR sigue el formato de Nygard con una sección "Alternativas consideradas"
 | [[0014-idempotency-keys-client-supplied]] | Las idempotency keys las provee el cliente | accepted | events/reliability | 2026-05-07 |
 | [[0015-event-versioning-field]] | Event versioning vía campo eventVersion | accepted | events/schema | 2026-05-07 |
 | [[0016-circuit-breaker-custom]] | Circuit breaker custom (sin Resilience4j) | accepted | resilience/poc | 2026-05-07 |
-| [[0017-bare-javac-didactic-poc]] | Bare-javac para PoC didáctico (sin build tool en día 0) | accepted | poc/tooling | 2026-05-07 |
-| [[0018-maven-before-gradle]] | Maven en PoCs antes de Gradle (cronológico) | accepted | tooling/build | 2026-05-07 |
+| [[0017-bare-javac-didactic-poc]] | Bare-javac para PoC didáctico (sin build tool en día 0) | accepted | tooling | 2026-05-07 |
+| [[0018-maven-before-gradle]] | Gradle en PoCs antes de Gradle (cronológico) | accepted | tooling/build | 2026-05-07 |
 | [[0019-gradle-kotlin-dsl]] | Gradle 8 con Kotlin DSL y version catalog | accepted | build/tooling | 2026-05-07 |
 | [[0020-pkg-shared-modules]] | Módulos compartidos pkg/* como reactor Gradle | accepted | architecture/build | 2026-05-07 |
 | [[0021-testcontainers-integration]] | Testcontainers para integration tests | accepted | testing/infrastructure | 2026-05-07 |
@@ -55,7 +55,7 @@ Cada ADR sigue el formato de Nygard con una sección "Alternativas consideradas"
 | [[0035-java-go-polyglot]] | Dos lenguajes — Java para apps, Go para CLI | accepted | architecture/tooling | 2026-05-07 |
 | [[0036-archunit-structural-verification]] | ArchUnit para verificación estructural de la arquitectura | accepted | testing/architecture | 2026-05-07 |
 | [[0037-virtual-threads-http-server]] | Virtual threads como executor del servidor HTTP | accepted | runtime/java/concurrency | 2026-05-07 |
-| [[0038-naranjax-package-namespace]] | Mantener `com.naranjax.poc.*` como identificador técnico legacy | accepted | architecture/packaging | 2026-05-07 |
+| [[0038-riskplatform-package-namespace]] | Mantener `io.riskplatform.poc.*` como identificador técnico legacy | accepted | architecture/packaging | 2026-05-07 |
 | [[0039-vertx-eventbus-host-advertisement]] | Configurar `EventBusOptions.setHost()` en cada Main del PoC distribuido | accepted | distributed/networking | 2026-05-07 |
 
 ---
@@ -89,7 +89,7 @@ Cada ADR sigue el formato de Nygard con una sección "Alternativas consideradas"
 
 ### Build y tooling
 - [[0017-bare-javac-didactic-poc]] — bare-javac
-- [[0018-maven-before-gradle]] — cronología Maven
+- [[0018-maven-before-gradle]] — cronología Gradle
 - [[0019-gradle-kotlin-dsl]] — Gradle 8 + Kotlin DSL
 - [[0026-convention-plugins]] — plugins de build-logic/
 
@@ -124,4 +124,4 @@ Las cinco decisiones con más probabilidad de ser discutidas en un design review
 2. **[[0008-outbox-pattern-explicit]]** — Identificar y arreglar un dual-write gap como mejora arquitectural al PoC. Demuestra conciencia de dominio y patrones de confiabilidad.
 3. **[[0015-event-versioning-field]]** — Elegir un approach pragmático de versionado con un path documentado de migración a schema registry. Demuestra saber cuándo NO agregar infraestructura.
 4. **[[0002-enterprise-go-layout-in-java]]** — Traducir el layout de clean architecture de Go a Java. Demuestra reconocimiento de patrones arquitecturales cross-language.
-5. **[[0037-virtual-threads-http-server]]** — Virtual threads como executor HTTP con throughput medido (1528 req/s). Demuestra adopción práctica de Java 25.
+5. **[[0037-virtual-threads-http-server]]** — Virtual threads como executor HTTP con throughput medido (1528 req/s). Demuestra adopción práctica de Java moderno sobre baseline 21.

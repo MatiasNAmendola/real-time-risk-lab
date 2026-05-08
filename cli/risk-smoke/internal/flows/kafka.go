@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/twmb/franz-go/pkg/kgo"
-	"github.com/naranjax/risk-smoke/internal/config"
+	"github.com/riskplatform/risk-smoke/internal/config"
 )
 
 // KafkaCheck consumes up to 5 messages from the risk-decisions topic.

@@ -6,7 +6,7 @@ metadata:
   finalizers:
     - resources-finalizer.argocd.argoproj.io
 spec:
-  description: NaranjaX interview PoC — local k8s replica of mega-infra patterns
+  description: Risk Decision Platform PoC — local k8s replica of platform patterns
 
   # Allow any local/git source
   sourceRepos:

@@ -9,7 +9,7 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/sqs"
 )
 
-// Client is the entry point for the NaranjaX Risk Engine Go SDK.
+// Client is the entry point for the Risk Decision Platform Go SDK.
 //
 //	client, err := riskclient.New(ctx, riskclient.Config{
 //	    Environment: riskclient.Local,

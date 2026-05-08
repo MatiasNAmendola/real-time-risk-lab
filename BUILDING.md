@@ -6,7 +6,7 @@
 - El resolver Foojay aprovisiona automáticamente un toolchain Java 21 si no está instalado.
 - No se requiere instalación global de Gradle — el wrapper descarga Gradle 8.11.1 en la primera corrida.
 
-> **¿Por qué bytecode 21 y no 25?** La decisión arquitectónica (ADR-0001) fija Java 25 LTS, pero JMH 1.37, el plugin Shadow y Karate 1.4 fallan con classfile 25 en 2026-05. Compromiso pragmático: bytecode 21, runtime 25. Ver `docs/26-java-version-compat-2026.md` para detalles completos + triggers para revertir.
+> **¿Por qué bytecode 21 y no 25?** La decisión arquitectónica (ADR-0001) documenta Java 25 LTS como objetivo, pero JMH 1.37, el plugin Shadow y Karate 1.4 fallan con classfile 25 en 2026-05. Compromiso pragmático: bytecode 21; runtime JDK 21+ (Java 25 opcional como objetivo). Ver `docs/26-java-version-compat-2026.md` para detalles completos + triggers para revertir.
 
 ## Primera corrida
 
@@ -22,7 +22,7 @@ Las corridas siguientes usan la cache local y son significativamente más rápid
 
 Este monorepo usa dos builds Gradle compuestos en conjunto:
 
-- **build-logic/** — un composite build que define los convention plugins (`naranja.*-conventions`).
+- **build-logic/** — un composite build que define los convention plugins (`riskplatform.*-conventions`).
   Se resuelve antes del build raíz para que los plugins estén disponibles durante la configuración.
 - **Build raíz** — el reactor principal que incluye todos los subproyectos `pkg:*`, `sdks:*`, `poc:*`, `tests:*` y `bench:*`.
 
@@ -32,10 +32,10 @@ se hereda:
 
 | Plugin | Para qué |
 |---|---|
-| `naranja.library-conventions` | librerías compartidas `pkg/*` y `sdks/*` |
-| `naranja.app-conventions` | aplicaciones ejecutables (`poc/java-risk-engine`) |
-| `naranja.fatjar-conventions` | apps Vert.x que requieren fat-jars Shadow |
-| `naranja.testing-conventions` | módulos de test standalone |
+| `riskplatform.library-conventions` | librerías compartidas `pkg/*` y `sdks/*` |
+| `riskplatform.app-conventions` | aplicaciones ejecutables (`poc/java-risk-engine`) |
+| `riskplatform.fatjar-conventions` | apps Vert.x que requieren fat-jars Shadow |
+| `riskplatform.testing-conventions` | módulos de test standalone |
 
 ## Comandos comunes
 
@@ -97,8 +97,8 @@ Para forzar una configuración limpia:
 
 1. Crear el directorio y el build file:
    ```
-   mkdir -p pkg/<name>/src/main/java/com/naranjax/poc/pkg/<name>
-   echo 'plugins { id("naranja.library-conventions") }' > pkg/<name>/build.gradle.kts
+   mkdir -p pkg/<name>/src/main/java/io/riskplatform/poc/pkg/<name>
+   echo 'plugins { id("riskplatform.library-conventions") }' > pkg/<name>/build.gradle.kts
    ```
 2. Agregar `"pkg:<name>"` al bloque `include(...)` en `settings.gradle.kts`.
 3. Escribir las fuentes en `pkg/<name>/src/main/java/...`.
@@ -115,21 +115,21 @@ La fase 2 agregó todos los módulos de aplicación y tests al reactor Gradle:
 
 | Módulo | Convention | Descripción |
 |---|---|---|
-| `poc:java-risk-engine` | `naranja.app-conventions` | Risk engine bare-javac, Clean/Hexagonal Architecture |
-| `poc:java-vertx-distributed:shared` | `naranja.library-conventions` | DTOs / puertos compartidos |
-| `poc:java-vertx-distributed:controller-app` | `naranja.fatjar-conventions` | Vert.x HTTP + WS + SSE |
-| `poc:java-vertx-distributed:usecase-app` | `naranja.fatjar-conventions` | Verticle de evaluación de riesgo |
-| `poc:java-vertx-distributed:repository-app` | `naranja.fatjar-conventions` | Persistencia / Hazelcast |
-| `poc:java-vertx-distributed:consumer-app` | `naranja.fatjar-conventions` | Consumer Kafka |
-| `poc:java-vertx-distributed:atdd-tests` | `naranja.testing-conventions` | Suite Karate ATDD (requiere `-Patdd`) |
-| `tests:risk-engine-atdd` | `naranja.testing-conventions` | Suite Cucumber ATDD (requiere `-Patdd`) |
-| `tests:architecture` | `naranja.testing-conventions` | Tests ArchUnit de 15 reglas de boundaries |
-| `tests:integration` | `naranja.testing-conventions` | Tests de integración Testcontainers (requiere `-Pintegration`) |
-| `bench:inprocess-bench` | `naranja.fatjar-conventions` | Benchmarks JMH in-process |
-| `bench:distributed-bench` | `naranja.fatjar-conventions` | Generador de carga HTTP |
-| `bench:runner` | `naranja.fatjar-conventions` | Runner de reportes comparativos |
+| `poc:java-risk-engine` | `riskplatform.app-conventions` | Risk engine bare-javac, Clean/Hexagonal Architecture |
+| `poc:java-vertx-distributed:shared` | `riskplatform.library-conventions` | DTOs / puertos compartidos |
+| `poc:java-vertx-distributed:controller-app` | `riskplatform.fatjar-conventions` | Vert.x HTTP + WS + SSE |
+| `poc:java-vertx-distributed:usecase-app` | `riskplatform.fatjar-conventions` | Verticle de evaluación de riesgo |
+| `poc:java-vertx-distributed:repository-app` | `riskplatform.fatjar-conventions` | Persistencia / Hazelcast |
+| `poc:java-vertx-distributed:consumer-app` | `riskplatform.fatjar-conventions` | Consumer Kafka |
+| `poc:java-vertx-distributed:atdd-tests` | `riskplatform.testing-conventions` | Suite Karate ATDD (requiere `-Patdd`) |
+| `tests:risk-engine-atdd` | `riskplatform.testing-conventions` | Suite Cucumber ATDD (requiere `-Patdd`) |
+| `tests:architecture` | `riskplatform.testing-conventions` | Tests ArchUnit de 15 reglas de boundaries |
+| `tests:integration` | `riskplatform.testing-conventions` | Tests de integración Testcontainers (requiere `-Pintegration`) |
+| `bench:inprocess-bench` | `riskplatform.fatjar-conventions` | Benchmarks JMH in-process |
+| `bench:distributed-bench` | `riskplatform.fatjar-conventions` | Generador de carga HTTP |
+| `bench:runner` | `riskplatform.fatjar-conventions` | Runner de reportes comparativos |
 
-Todos los `pom.xml` legacy fueron renombrados a `pom.maven-legacy.xml` como referencia histórica.
+Todos los `build.gradle.kts` legacy fueron renombrados a `pom.gradle-legacy.xml` como referencia histórica.
 
 ### Violaciones de ArchUnit corregidas en la Fase 2
 

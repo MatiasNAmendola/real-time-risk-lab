@@ -4,11 +4,11 @@ intent: Agregar un feature test con Cucumber-JVM para ATDD en tests/risk-engine-
 inputs: [feature_name, scenarios, step_definitions_package]
 preconditions:
   - tests/risk-engine-atdd/ existe
-  - pom.xml tiene cucumber-java y cucumber-junit5 en scope test
+  - build.gradle.kts tiene cucumber-java y cucumber-junit5 en scope test
 postconditions:
   - Feature file en src/test/resources/features/
   - Step definitions en src/test/java/.../steps/
-  - mvn test en tests/risk-engine-atdd pasa en verde
+  - ./gradlew test en tests/risk-engine-atdd pasa en verde
 related_rules: [testing-atdd, java-version, naming-conventions]
 ---
 
@@ -63,11 +63,11 @@ related_rules: [testing-atdd, java-version, naming-conventions]
    @Suite
    @IncludeEngines("cucumber")
    @SelectClasspathResource("features")
-   @ConfigurationParameter(key = GLUE_PROPERTY_NAME, value = "com.naranjax.steps")
+   @ConfigurationParameter(key = GLUE_PROPERTY_NAME, value = "io.riskplatform.steps")
    class CucumberRunner {}
    ```
 
-4. **Ejecutar**: `mvn test -pl tests/risk-engine-atdd`.
+4. **Ejecutar**: `./gradlew :tests:risk-engine-atdd:test`.
 
 ## Notas
 - Version: Cucumber-JVM 7+ con JUnit 5.

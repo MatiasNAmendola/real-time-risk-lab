@@ -70,7 +70,7 @@ Manifests y Helm values son identical regardless de la backend — la abstractio
 
 ## Validación
 
-- On OrbStack: `./poc/k8s-local/scripts/setup.sh` logs `using OrbStack built-in cluster` y deploys sin `k3d cluster create`.
+- On OrbStack: `./poc/k8s-local/scripts/up.sh` logs `using OrbStack built-in cluster` y deploys sin `k3d cluster create`.
 - On Docker Desktop: same script logs `using k3d cluster` y creates un k3d cluster antes de deploying.
 - `kubectl get nodes` succeeds en ambos cases después de setup.
 

@@ -1,6 +1,6 @@
 # Decisions Log (ADR-style)
 
-## ADR-001: Java 25 LTS como version canonica
+## ADR-001: Java 21 baseline operativo + Java 25 objetivo LTS
 
 **Status**: accepted
 **Date**: 2026-01-01
@@ -10,16 +10,16 @@
 Se necesita elegir una version de Java para todas las PoCs. El objetivo es demostrar dominio del lenguaje moderno y ser defensible como production target.
 
 ### Decision
-Java 25 LTS. `--release 25` en todo el codigo.
+Baseline actual Java 21 LTS con `--release 21`; Java 25 LTS queda como objetivo documentado cuando el tooling lo soporte.
 
 ### Consecuencias positivas
 - Virtual threads (Loom) disponibles para I/O bloqueante.
 - Records y sealed classes disponibles.
 - Version LTS: soporte a largo plazo, usable en produccion.
-- OpenJDK 25 via Homebrew disponible localmente al 2026-05-07.
+- Java 25 queda como objetivo LTS futuro; el build verificable actual se mantiene en Java 21.
 
 ### Consecuencias negativas / riesgos
-- Java 26 existe pero no es LTS. Usar 25 es la eleccion correcta para produccion.
+- Java 26 existe pero no es LTS. Java 25 es el objetivo LTS documentado, no el build actual.
 - Algunas librerias mayores (como ciertas versiones de Hazelcast) pueden tener advertencias con Java 25+.
 
 ---
@@ -60,7 +60,7 @@ Vert.x 5.0.12.
 ### Consecuencias positivas
 - Event loop model alineado con el modelo reactivo del use case.
 - Excelente performance: benchmark muestra ~150K req/s en hardware modesto.
-- Vert.x 5 usa Java 25 features nativamente.
+- Vert.x 5 corre bien sobre Java moderno; el repo lo compila con bytecode Java 21 para evitar fricción de tooling.
 - Menor overhead que Spring Boot (no application context pesado).
 
 ### Consecuencias negativas / riesgos
@@ -123,7 +123,7 @@ Moto (multi-servicio), MinIO (S3), ElasticMQ (SQS), OpenBao (Secrets Manager).
 Se necesita una estrategia de testing que demuestre ATDD y sea demostrable en review tecnica.
 
 ### Decision
-- Karate 1.5+ para ATDD sobre Vert.x (dentro de los PoCs Maven).
+- Karate 1.5+ para ATDD sobre Vert.x (dentro de los PoCs Gradle).
 - Cucumber-JVM 7 para ATDD en `tests/risk-engine-atdd/` (independiente de frameworks).
 
 ### Consecuencias positivas

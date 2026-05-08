@@ -1,5 +1,5 @@
 {
-  "name": "@naranjax/risk-client",
+  "name": "@riskplatform/risk-client",
   "version": "1.0.0",
   "description": "Risk engine client SDK",
   "main": "dist/index.js",

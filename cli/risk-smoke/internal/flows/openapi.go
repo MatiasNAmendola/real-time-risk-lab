@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/naranjax/risk-smoke/internal/config"
+	"github.com/riskplatform/risk-smoke/internal/config"
 )
 
 // OpenAPICheck fetches /openapi.json and validates "webhooks" key presence.

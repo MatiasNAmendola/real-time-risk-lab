@@ -1,13 +1,13 @@
-# Arquitectura del repo — naranjax/practica-entrevista
+# Arquitectura del repo — riskplatform/risk-platform-practice
 
 ## Diagrama general
 
 ```mermaid
 graph TB
-    subgraph repo["practica-entrevista/"]
+    subgraph repo["risk-platform-practice/"]
         subgraph poc["poc/ — Proofs of Concept"]
             jre["java-risk-engine<br/>bare-javac, Clean Arch<br/>sin frameworks"]
-            jvd["java-vertx-distributed<br/>4 modulos Maven<br/>layer-as-pod"]
+            jvd["java-vertx-distributed<br/>4 modulos Gradle<br/>layer-as-pod"]
             vrp["vertx-risk-platform<br/>Vert.x 5 completo<br/>REST+SSE+WS+Webhook+Kafka"]
             k8s["k8s-local<br/>k3d/OrbStack<br/>ArgoCD + addons"]
         end
@@ -23,7 +23,7 @@ graph TB
         subgraph docs["docs/"]
             d0["00-mapa-tecnico"]
             d1["01-design-conversation-framework"]
-            d9["09-simulacro"]
+            d9["09-question-bank"]
         end
 
         subgraph ai[".ai/ — primitives system"]
@@ -45,7 +45,7 @@ graph TB
 
 ```
 poc/java-risk-engine/
-├── src/main/java/com/naranjax/<package>/risk/
+├── src/main/java/io/riskplatform/<package>/risk/
 │   ├── domain/{entity,repository,usecase,service,rule}
 │   ├── application/{usecase,mapper,dto,common}
 │   ├── infrastructure/{controller,consumer,repository,resilience,time}
@@ -56,7 +56,7 @@ poc/java-risk-engine/
 
 **Patrones demostrados**: Circuit Breaker, Idempotencia, Outbox, Correlation ID, Virtual Threads, ATDD.
 
-**Como correr**: `./scripts/run.sh` (bare javac, sin Maven).
+**Como correr**: `./scripts/run.sh` (bare javac, sin Gradle).
 
 ## PoC: java-vertx-distributed
 

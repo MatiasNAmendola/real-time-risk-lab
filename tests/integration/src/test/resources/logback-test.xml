@@ -12,7 +12,7 @@
   <logger name="tc" level="WARN"/>
 
   <!-- Integration test classes log at DEBUG -->
-  <logger name="com.naranjax.integration" level="DEBUG"/>
+  <logger name="io.riskplatform.integration" level="DEBUG"/>
 
   <root level="INFO">
     <appender-ref ref="STDOUT"/>

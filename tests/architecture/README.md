@@ -35,14 +35,14 @@ Total: 15 ArchUnit rules across 2 test classes.
 
 ```bash
 # Bare-javac tests only (no Docker needed)
-cd tests/architecture && mvn test -Dtest=BareJavacArchitectureTest
+cd tests/architecture && ./gradlew test -Dtest=BareJavacArchitectureTest
 
 # Vert.x tests (requires compiled Vert.x modules)
-cd poc/java-vertx-distributed && mvn package -DskipTests
-cd ../../tests/architecture && mvn test -Dtest=VertxDistributedArchitectureTest
+cd poc/java-vertx-distributed && ./gradlew shadowJar
+cd ../../tests/architecture && ./gradlew test -Dtest=VertxDistributedArchitectureTest
 
 # All tests
-cd tests/architecture && mvn test
+cd tests/architecture && ./gradlew test
 ```
 
 ## Failure messages
@@ -56,8 +56,8 @@ Example failure:
 ```
 Architecture Violation [Priority: MEDIUM] - Rule 'application.* must not import
 infrastructure.repository.* concrete adapters' was violated (1 times):
-  Method <com.naranjax.interview.risk.application.usecase.risk.SomeService.doThing()>
-  calls constructor <com.naranjax.interview.risk.infrastructure.repository.ml.FakeRiskModelScorer.<init>()>
+  Method <io.riskplatform.engine.application.usecase.risk.SomeService.doThing()>
+  calls constructor <io.riskplatform.engine.infrastructure.repository.ml.FakeRiskModelScorer.<init>()>
   in (SomeService.java:42)
 ```
 

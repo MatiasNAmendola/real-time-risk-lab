@@ -145,7 +145,7 @@ lógica de fallback (ver `bench/scripts/competition.sh`) que chequea el path har
 solo cuando existe:
 
 ```bash
-if [[ -x "/opt/homebrew/opt/openjdk/bin/java" ]]; then
+if test -x "/opt/homebrew/opt/openjdk/bin/java"; then
   JAVA="/opt/homebrew/opt/openjdk/bin/java"
 fi
 ```

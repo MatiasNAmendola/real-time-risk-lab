@@ -1,38 +1,28 @@
----
-name: java-version
-applies_to: ["**/*.java", "**/pom.xml", "**/Dockerfile", "**/.java-version"]
-priority: high
----
+# Regla — versión Java
 
-# Regla: java-version
+## Estado canónico operativo
 
-## Mandatorio
+- El baseline ejecutable actual del repo es **Java 21 LTS**.
+- Todo código Java debe compilar con `--release 21` mediante Gradle toolchains/convention plugins.
+- Java 25 LTS queda como **objetivo arquitectónico documentado**, no como requisito actual de build.
 
-- Java 25 LTS canonico. NO downgradearlo a 21 ni upgradear a 26 (26 no es LTS).
-- `--release 25` en javac directo o `<maven.compiler.release>25</maven.compiler.release>` en pom.xml.
-- En Dockerfile: `FROM eclipse-temurin:25-jre-alpine` o equivalente LTS.
-- `.java-version` (si existe): debe contener `25`.
+## Por qué no `--release 25` todavía
 
-## Virtual Threads (Project Loom)
+El repo usa Gradle, Shadow/JMH/Karate/ArchUnit y tooling que todavía puede fallar con classfile 25. El compromiso defendible para la demo es:
 
-- Usar `Thread.ofVirtual().start(...)` o `Executors.newVirtualThreadPerTaskExecutor()` cuando aplique I/O bloqueante.
-- En Vert.x 5: el event loop ya es non-blocking. Virtual threads aplican para workers o integraciones con libs bloqueantes (JDBC sync, etc.).
-- No bloquear el event loop de Vert.x con operaciones largas; usar `vertx.executeBlocking()` si es necesario.
+> “El baseline ejecutable está en Java 21 LTS por compatibilidad de tooling, y dejé documentada la discusión de migrar a Java 25 LTS para aprovechar runtime moderno.”
 
-## Sealed Classes y Records
+## Regla práctica
 
-- Preferir `record` para Value Objects y DTOs (da equals/hashCode/toString gratis).
-- Preferir `sealed interface` para tipos de dominio con alternativas finitas (ej. `RuleResult`).
+- No cambiar el build a Java 25 sin validar todo el pipeline.
+- No afirmar en README/STATUS que el build real usa Java 25.
+- Si se ejecuta con JDK 25, debe seguir generando bytecode `--release 21` hasta que el ADR de compatibilidad se actualice.
 
-## No usar
-
-- `var` en contextos donde oscurece el tipo (APIs publicas, returns de metodos).
-- Reflection sin documentacion clara del motivo.
-- Clases de sun.misc o com.sun.* (no son parte del API publico).
-
-## Verificacion
+## Verificación
 
 ```bash
-java -version  # debe mostrar 25.x
-mvn -pl <module> compile  # debe pasar con --release 25
+./gradlew clean build -x test
+./nx test --composite quick
 ```
+
+Ver también: `docs/26-java-version-compat-2026.md`.

@@ -4,12 +4,12 @@ intent: Arrancar una nueva PoC siguiendo las convenciones del repo (layout, nami
 inputs: [poc_name, poc_purpose, primary_pattern]
 preconditions:
   - poc/ directory existe en el repo raiz
-  - Java 25 y Maven 3.9+ instalados
+  - Java 21+ y Gradle wrapper disponibles
 postconditions:
   - poc/<poc_name>/ creado con layout canónico
   - README.md con proposito, como correr, stack
-  - pom.xml con Java 25, Vert.x 5.0.12, dependencias minimas
-  - .gitignore con target/, *.class, etc.
+  - build.gradle.kts con Java 21 baseline, Vert.x 5.0.12, dependencias minimas
+  - .gitignore con build/, *.class, etc.
 related_rules: [java-version, architecture-clean, naming-conventions, containers-docker]
 ---
 
@@ -19,18 +19,18 @@ related_rules: [java-version, architecture-clean, naming-conventions, containers
 
 1. **Crear directorio**:
    ```bash
-   mkdir -p poc/<poc-name>/{src/main/java/com/naranjax/interview/<domain>,src/test/java,scripts}
+   mkdir -p poc/<poc-name>/{src/main/java/io/riskplatform/practice/<domain>,src/test/java,scripts}
    ```
 
-2. **pom.xml minimo** con Java 25 y Vert.x:
+2. **build.gradle.kts minimo** con Java 21 baseline y Vert.x:
    ```xml
    <project>
-     <groupId>com.naranjax.interview</groupId>
+     <groupId>io.riskplatform.practice</groupId>
      <artifactId>poc-<poc-name></artifactId>
      <version>1.0.0-SNAPSHOT</version>
      <properties>
        <java.version>25</java.version>
-       <maven.compiler.release>25</maven.compiler.release>
+       <gradle.compiler.release>21</gradle.compiler.release>
        <vertx.version>5.0.12</vertx.version>
      </properties>
      <dependencies>
@@ -47,7 +47,7 @@ related_rules: [java-version, architecture-clean, naming-conventions, containers
 
 3. **Layout canonico** (estilo enterprise Go):
    ```
-   src/main/java/com/naranjax/interview/<domain>/
+   src/main/java/io/riskplatform/practice/<domain>/
    ├── domain/
    │   ├── entity/
    │   ├── repository/      # puertos de salida

@@ -7,11 +7,11 @@ source: tests/risk-engine-atdd/
 
 # atdd-cucumber
 
-Suite de tests [[ATDD]] para el motor de riesgo bare-javac usando Cucumber-JVM. 7 features Gherkin con step definitions en Java. Módulo Maven independiente.
+Suite de tests [[ATDD]] para el motor de riesgo bare-javac usando Cucumber-JVM. 7 features Gherkin con step definitions en Java. Módulo Gradle independiente.
 
 ## Qué demuestra
 
-- Patrones de step definitions de Cucumber-JVM (Java 25, sin glue de Spring)
+- Patrones de step definitions de Cucumber-JVM (Java 21 baseline, sin glue de Spring)
 - Loop externo de [[ATDD]] para el motor [[Clean-Architecture]]
 - Estructura de escenarios [[BDD]]: Given/When/Then
 - Independencia: el módulo de tests no tiene dependencias de código productivo más allá del JAR del motor
@@ -23,14 +23,14 @@ Suite de tests [[ATDD]] para el motor de riesgo bare-javac usando Cucumber-JVM. 
 | Cucumber-JVM | 7.x |
 | JUnit 5 | runner |
 | Java | 25 LTS |
-| Maven | módulo único |
+| Gradle | módulo único |
 
 ## Cómo correrlo
 
 ```bash
 cd tests/risk-engine-atdd
-mvn verify
-# reporte HTML: target/cucumber-reports/
+./gradlew test jacocoTestReport
+# reporte HTML: build/cucumber-reports/
 ```
 
 ## Cobertura de features (7 features)

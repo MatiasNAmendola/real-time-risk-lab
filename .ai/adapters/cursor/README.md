@@ -22,7 +22,7 @@ Cursor lee rules MDC (`.cursor/rules/*.mdc`) con frontmatter especifico.
 ```yaml
 ---
 description: Descripcion corta de la rule
-globs: ["**/*.java", "**/pom.xml"]
+globs: ["**/*.java", "**/build.gradle.kts"]
 alwaysApply: false
 ---
 ```

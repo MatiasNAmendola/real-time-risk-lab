@@ -23,7 +23,7 @@ The repository serves multiple audiences con different reading modes:
 - La agent tooling (Claude Code, Cursor): needs structured context un provide accurate AI assistance.
 - Long-term: needs un grow sin becoming un monolith de undifferentiated markdown.
 
-Three distinct content types exist: reference documentation con process context (`docs/`), architectural knowledge base con bidirectional links (`vault/`), y AI tooling primitives (`./ai/`). Mixing them would create navigation confusion.
+Three distinct content types exist: reference documentation con process context (`docs/`), architectural knowledge base con bidirectional links (`vault/`), y AI tooling primitives (`.ai/`). Mixing them would create navigation confusion.
 
 ## Decisión
 
@@ -31,7 +31,7 @@ Maintain three separate documentation layers con distinct purposes y conventions
 
 - `docs/`: Linear, numbered markdown files (`00-mapa-tecnico.md`, `04-clean-architecture-java.md`). Written en Spanish (the author's primary language para deep thinking). Content: investigation notes, design rationale, how-to guides, benchmark reports, working notes. Not cross-linked — linear reading order implied.
 
-- `vault/`: Obsidian-format knowledge base. Cross-linked via `[[wikilinks]]`. Organized por knowledge type: `00-MOCs/` (maps de content), `02-Decisions/` (ADRs), concepts, patterns. Written en English (universal technical vocabulary). Content: durable architectural knowledge que accumulates a través de exploration sessions.
+- `vault/`: Obsidian-format knowledge base. Cross-linked via wikilinks Obsidian. Organized por knowledge type: `00-MOCs/` (maps de content), `02-Decisions/` (ADRs), concepts, patterns. Written en English (universal technical vocabulary). Content: durable architectural knowledge que accumulates a través de exploration sessions.
 
 - `.ai/`: Tooling context para AI coding assistants. Content: project context files, skill definitions, agent personas, convention catalogs. Not intended para human reading como primary audience.
 
@@ -73,7 +73,7 @@ Maintain three separate documentation layers con distinct purposes y conventions
 ### Mitigaciones
 - `README.md` a repository root explains la three layers y links un each.
 - vault/00-MOCs/ provides navigation entry points desde dentro de la vault.
-- Wikilinks en vault/ son rendered como links en any markdown viewer que supports standard `[[name]]` syntax (GitHub renders them como text; Obsidian renders them como links).
+- Wikilinks en vault/ son rendered como links en any markdown viewer que supports standard Obsidian wikilink syntax (GitHub renders them como text; Obsidian renders them como links).
 
 ## Validación
 

@@ -76,9 +76,9 @@ Cada subobjeto es un facade — implementación interna usa la lib específica d
 
 | SDK | Path en repo | Distribución | Stack interno |
 |---|---|---|---|
-| **risk-client-java** | `sdks/risk-client-java/` | Maven Central → `com.naranjax.poc:risk-client:1.x` | Java 25 stdlib + kafka-clients + AWS SDK v2 |
-| **@naranjax/risk-client** | `sdks/risk-client-typescript/` | npm | fetch nativo + EventSource + WebSocket + kafkajs + @aws-sdk/client-sqs |
-| **risk-client-go** | `sdks/risk-client-go/` | Go module → `github.com/naranjax/risk-client` | net/http + coder/websocket + r3labs/sse + twmb/franz-go + AWS SDK v2 Go |
+| **risk-client-java** | `sdks/risk-client-java/` | JVM artifact registry → `io.riskplatform.poc:risk-client:1.x` | Java 21 LTS baseline + kafka-clients + AWS SDK v2 |
+| **@riskplatform/risk-client** | `sdks/risk-client-typescript/` | npm | fetch nativo + EventSource + WebSocket + kafkajs + @aws-sdk/client-sqs |
+| **risk-client-go** | `sdks/risk-client-go/` | Go module → `github.com/riskplatform/risk-client` | net/http + coder/websocket + r3labs/sse + twmb/franz-go + AWS SDK v2 Go |
 
 Los tres exponen API equivalente — los métodos tienen los mismos nombres modificados por convenciones idiomáticas (camelCase Java/TS, PascalCase Go públicos).
 
@@ -97,7 +97,7 @@ spec change → openapi.yaml + asyncapi.yaml updated in source
   → CI corre codegen para los 3 SDKs (DTOs/types)
   → Hand-written wrappers en cada SDK quedan estables
   → CI bumpea version del SDK según diff (major/minor/patch)
-  → CI publica al registry (Maven Central, npm, Go module proxy)
+  → CI publica al registry (JVM artifact registry, npm, Go module proxy)
 ```
 
 DTOs/types se generan. Lógica de retry, auth, tracing se escribe a mano por idiomática en cada lenguaje.
@@ -108,7 +108,7 @@ DTOs/types se generan. Lógica de retry, auth, tracing se escribe a mano por idi
 |---|---|
 | `sdks/risk-events` (records compartidos) | `1.0.0` |
 | `risk-client-java` | `1.0.0` |
-| `@naranjax/risk-client` | `1.0.0` |
+| `@riskplatform/risk-client` | `1.0.0` |
 | `risk-client-go` | `v1.0.0` |
 | OpenAPI spec (`info.version`) | `1.0.0` |
 | AsyncAPI spec (`info.version`) | `1.0.0` |
@@ -138,14 +138,14 @@ DTOs/types se generan. Lógica de retry, auth, tracing se escribe a mano por idi
 
 ### Tooling de bumping
 
-- Java/Maven: `mvn versions:set -DnewVersion=1.1.0`
+- Java/Gradle: `./gradlew versions:set -DnewVersion=1.1.0`
 - Java/Gradle: editar `gradle/libs.versions.toml` + tag git.
 - npm: `npm version patch|minor|major`.
 - Go: tag `git tag v1.1.0 && git push --tags` — Go modules versionan por tag.
 
 ### CHANGELOG por SDK
 
-`sdks/risk-client-{java,typescript,go}/CHANGELOG.md` formato keep-a-changelog:
+`sdks/risk-client-java/README.md`, `sdks/risk-client-typescript/README.md` y `sdks/risk-client-go/README.md` formato keep-a-changelog:
 
 ```markdown
 # Changelog
@@ -167,7 +167,7 @@ DTOs/types se generan. Lógica de retry, auth, tracing se escribe a mano por idi
 
 ### Compatibility matrix
 
-`docs/22-compatibility-matrix.md` (futuro) cruza versiones de server × SDK:
+`docs/22-client-sdks.md` (sección de compatibilidad) cruza versiones de server × SDK:
 
 | Server\\SDK | Java 1.0 | Java 1.1 | Java 2.0 | TS 1.0 | TS 2.0 | Go 1.0 |
 |---|---|---|---|---|---|---|
@@ -204,7 +204,7 @@ DTOs/types se generan. Lógica de retry, auth, tracing se escribe a mano por idi
 
 ## Migration playbook (template)
 
-`docs/migrations/from-1.x-to-2.x.md` (cuando aplique):
+`docs/22-client-sdks.md` (sección de migración, cuando aplique):
 
 ```markdown
 # Migration: server 1.x → 2.x
@@ -305,13 +305,13 @@ Una sola superficie. El consumidor configura una vez. La infraestructura debajo 
 
 Cuando el implementer del SDK arranque (post Phase 2 + scrub), va a producir:
 
-1. `sdks/risk-client-java/` — Maven module con records compartidos + facade pattern + tests.
+1. `sdks/risk-client-java/` — Gradle module con records compartidos + facade pattern + tests.
 2. `sdks/risk-client-typescript/` — TypeScript con npm package.json + tests Jest.
 3. `sdks/risk-client-go/` — Go module con `go.mod` + tests + bench.
 4. `sdks/risk-events/` (existente) — DTOs/records compartidos, codegenerados desde OpenAPI/AsyncAPI.
 5. `cli/risk-smoke/` refactor — usar `risk-client-go` en lugar de implementaciones ad-hoc.
-6. `docs/22-compatibility-matrix.md` — tabla server × SDK versions.
-7. `docs/migrations/` — playbooks templates.
+6. `docs/22-client-sdks.md` — tabla server × SDK versions en esta misma guía.
+7. `docs/22-client-sdks.md` — playbooks templates embebidos hasta que exista una carpeta dedicada.
 8. `CHANGELOG.md` por SDK.
 9. CI pipeline conceptual (no implementado, documentado): codegen → bump → publish.
 
@@ -321,7 +321,7 @@ Cuando el implementer del SDK arranque (post Phase 2 + scrub), va a producir:
 - AsyncAPI spec: servido por Vertx en `/asyncapi.json`.
 - Eventos: `sdks/risk-events/` con records.
 - Política SemVer: este doc.
-- Migration playbooks: `docs/migrations/`.
+- Migration playbooks: sección futura dentro de `docs/22-client-sdks.md` hasta que exista una carpeta dedicada.
 
 ## Implementation status
 
@@ -420,7 +420,7 @@ Tests: 9 passed, 9 total
 --- PASS: TestIntegration_WebhookList_IncludesRegisteredSub        (0.13s)
 --- PASS: TestIntegration_AdminListRules_AtLeastOneEnabledRule     (0.09s)
 --- PASS: TestIntegration_AdminTestRule_ReturnsValidDecision       (0.09s)
-ok      github.com/naranjax/risk-client  1.411s
+ok      github.com/riskplatform/risk-client  1.411s
 ```
 
 ### Simulated output — Cross-SDK contract test
@@ -441,8 +441,8 @@ CrossSdkContractTest
 
 | Suite | Path |
 |---|---|
-| Java integration | `sdks/risk-client-java/src/integrationTest/java/.../RiskClientIntegrationTest.java` |
+| Java integration | `sdks/risk-client-java/src/integrationTest/java/io/riskplatform/poc/risk/client/RiskClientIntegrationTest.java` |
 | TypeScript integration | `sdks/risk-client-typescript/test/integration/risk-client.integration.test.ts` |
 | Go integration | `sdks/risk-client-go/integration_test.go` |
-| Cross-SDK contract | `sdks/contract-test/src/test/java/.../CrossSdkContractTest.java` |
+| Cross-SDK contract | `sdks/contract-test/src/test/java/io/riskplatform/poc/risk/contract/CrossSdkContractTest.java` |
 | Contract scripts | `sdks/contract-test/src/test/scripts/invoke_ts.sh`, `invoke_go.sh` |

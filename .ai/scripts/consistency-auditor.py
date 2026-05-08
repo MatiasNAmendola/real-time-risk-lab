@@ -10,7 +10,7 @@ Sub-commands:
   xrefs            — broken Markdown and wikilink cross-references
   stale            — cited paths that no longer exist on the filesystem
   terms            — canonical terminology violations (alias used instead of canonical)
-  prohibited-terms — interview-prep or company-specific terms in public docs
+  prohibited-terms — technical-practice or company-specific terms in public docs
   all              — run all sub-audits and produce a unified report
 
 Output flags:
@@ -341,7 +341,7 @@ ORPHAN_SUGGESTION = {
     'primitives_workflows': '.ai/context/stack.md',
     'primitives_hooks': '.ai/context/stack.md',
     'docs': 'README.md or docs/00-START-HERE.md',
-    'sessions': 'vault/00-MOCs/Naranja-X-Interview.md',
+    'sessions': 'vault/00-MOCs/Risk Platform overview note',
 }
 
 
@@ -841,14 +841,15 @@ def audit_terms() -> dict[str, Any]:
 # Paths where prohibited terms are allowed (historical / research context)
 PROHIBITED_TERMS_EXCLUDED = [
     "vault/01-Build-Log/",
+    "vault/01-Sessions/handoffs/",
     ".ai/research/",
     "out/",
     "_personal/",
     # Self-referential: this doc documents the rules themselves (meta).
     "docs/30-consistency-audit.md",
-    # ADR explaining why the package namespace remains `naranjax` despite the
+    # ADR explaining why the package namespace remains `riskplatform` despite the
     # public narrative — necessarily mentions the company name. See ADR-0038.
-    "vault/02-Decisions/0038-naranjax-package-namespace.md",
+    "vault/02-Decisions/0038-riskplatform-package-namespace.md",
     # IDE-agent steering files (Kiro, Windsurf, Cursor, etc.). Not public docs;
     # they encode private project context for AI coding assistants only.
     ".kiro/",
@@ -863,17 +864,17 @@ PROHIBITED_TERMS: dict[str, list[str]] = {
 }
 
 # Technical identifier patterns that should NOT be flagged as prohibited terms.
-# These are stable code-level identifiers (Java packages, Maven coords, schema URNs,
+# These are stable code-level identifiers (Java packages, JVM artifact coordinates, schema URNs,
 # Secrets Manager keys, filesystem paths) — not marketing copy. See ADR-0038.
 TECHNICAL_IDENTIFIER_PATTERNS = [
-    r"com\.naranjax",          # Java package / Maven coord (com.naranjax.poc.*)
-    r"urn:naranjax:",          # Schema URN (urn:naranjax:risk:event:v1)
-    r"naranjax/[a-z0-9_<>-]+", # Secrets Manager key / repo path / topic-key namespace (naranjax/db-password, naranjax/<subtema>)
-    r"com/naranjax/",          # Filesystem path (src/main/java/com/naranjax/...)
-    r"[a-z0-9-]+\.naranjax\.com", # Infrastructure DNS hostname (risk-staging.naranjax.com, auth.naranjax.com)
-    r"github\.com/naranjax/",  # Git remote / module path
-    r"@naranjax/",             # NPM scoped package (@naranjax/risk-client)
-    r"practica-entrevista(?:[/`\"\s]|$)", # Repo filesystem path (practica-entrevista/, "practica-entrevista/", or trailing)
+    r"com\.riskplatform",          # Java package / Gradle coord (io.riskplatform.poc.*)
+    r"urn:riskplatform:",          # Schema URN (urn:riskplatform:risk:event:v1)
+    r"riskplatform/[a-z0-9_<>-]+", # Secrets Manager key / repo path / topic-key namespace (riskplatform/db-password, riskplatform/<subtema>)
+    r"com/riskplatform/",          # Filesystem path (src/main/java/io/riskplatform/...)
+    r"[a-z0-9-]+\.riskplatform\.com", # Infrastructure DNS hostname (risk-staging.riskplatform.com, auth.riskplatform.com)
+    r"github\.com/riskplatform/",  # Git remote / module path
+    r"@riskplatform/",             # NPM scoped package (@riskplatform/risk-client)
+    r"risk-platform-practice(?:[/`\"\s]|$)", # Repo filesystem path (risk-platform-practice/, "risk-platform-practice/", or trailing)
     r"\d{2}-simulacro",        # Numbered docs dir reference (09-simulacro)
 ]
 
@@ -907,11 +908,11 @@ def _term_present_outside_identifiers(text: str, term: str) -> tuple[bool, str]:
 
 
 def audit_prohibited_terms() -> dict[str, Any]:
-    """Detects interview-prep terminology in public-facing docs.
+    """Detects technical-practice terminology in public-facing docs.
 
     Public docs MUST NOT contain: 'interview', 'entrevista', 'simulacro', 'cheatsheet'.
     'Naranja X' / 'NaranjaX' permitted only in build-log (historical context).
-    Technical identifiers (com.naranjax.*, urn:naranjax:*, naranjax/<key>, com/naranjax/)
+    Technical identifiers (io.riskplatform.*, urn:riskplatform:*, riskplatform/<key>, com/riskplatform/)
     are NOT flagged — see ADR-0038.
     """
     matches: list[dict[str, str]] = []
@@ -1215,7 +1216,7 @@ SUBCOMMANDS = ['inventory', 'orphans', 'qa-coverage', 'xrefs', 'stale', 'terms',
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
         prog='consistency-auditor.py',
-        description='Documentation consistency auditor for the practica-entrevista repo.',
+        description='Documentation consistency auditor for the risk-platform-practice repo.',
     )
     parser.add_argument(
         'subcommand',

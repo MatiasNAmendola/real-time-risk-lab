@@ -32,7 +32,7 @@ ATDD tests en la Vert.x PoC continue un use docker compose because they test la 
 ### Opción A: Testcontainers en JVM test lifecycle (elegida)
 - **Ventajas**: No manual `docker compose up` required antes de running integration tests; containers son isolated per test class — no state leakage entre test classes; Testcontainers handles port assignment (avoids port conflicts en CI); container lifecycle es tied un test lifecycle — no orphaned containers if tests abort; reproducible regardless de local environment state.
 - **Desventajas**: Container startup adds 5-15 seconds per test class un CI time; requires Docker daemon accessible desde la test JVM; Testcontainers pulls images en first run (network required); container reuse a través de test classes requires opt-in configuration (`reuse = true`).
-- **Por qué se eligió**: For `pkg/*` library integration tests, la isolation y reproducibility benefits outweigh la startup cost. La alternative (docker compose up antes de mvn test) requires external orchestration que creates CI configuration complexity.
+- **Por qué se eligió**: For `pkg/*` library integration tests, la isolation y reproducibility benefits outweigh la startup cost. La alternative (docker compose up antes de ./gradlew test) requires external orchestration que creates CI configuration complexity.
 
 ### Opción B: docker-compose para todos integration tests
 - **Ventajas**: Services start once y son reused a través de todos test classes — faster total test time; same compose file como la application PoC — no duplication.
@@ -53,7 +53,7 @@ ATDD tests en la Vert.x PoC continue un use docker compose because they test la 
 
 ### Positivo
 - `./gradlew :tests:integration:test` es self-contained — no pre-steps required.
-- `pkg/testing/IntegrationTestSupport` es reusable: new integration test classes extend it y get todos infrastructure containers para free.
+- `tests/integration/src/test/java/io/riskplatform/integration/IntegrationTestSupport.java` es reusable: new integration test classes extend it y get todos infrastructure containers para free.
 - Container reuse (`reuse = true` en Testcontainers) reduces startup cost para desarrollo local runs.
 
 ### Negativo

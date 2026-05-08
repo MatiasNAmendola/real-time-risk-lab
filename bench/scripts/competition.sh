@@ -25,7 +25,8 @@ BENCH_DIR="$(cd "${SCRIPT_DIR}/.." && pwd)"
 REPO_ROOT="$(cd "${BENCH_DIR}/.." && pwd)"
 
 BARE_ENGINE_DIR="${REPO_ROOT}/poc/java-risk-engine"
-DISTRIBUTED_JAR="${BENCH_DIR}/distributed-bench/target/distributed-bench.jar"
+DISTRIBUTED_JAR_DIR="${BENCH_DIR}/distributed-bench/build/libs"
+DISTRIBUTED_JAR=""
 
 JAVA="${JAVA:-java}"
 JAVAC="${JAVAC:-javac}"
@@ -75,12 +76,17 @@ die() { echo "[competition] ERROR: $*" >&2; exit 1; }
 log "Output dir: ${OUT}"
 log "Workload: requests=${REQUESTS}, concurrency=${CONCURRENCY}, warmup=${WARMUP}"
 
-# ── Ensure distributed-bench JAR is built ────────────────────────────────────
-if [[ ! -f "${DISTRIBUTED_JAR}" ]]; then
-  log "distributed-bench JAR not found, building..."
-  (cd "${BENCH_DIR}" && mvn -q package -pl distributed-bench -am) \
-    || die "Failed to build distributed-bench. Run: cd bench && mvn package -pl distributed-bench -am"
+
+# ── Ensure distributed-bench shadowJar is built (Gradle) ──────────────────────
+DISTRIBUTED_JAR="$(ls "${DISTRIBUTED_JAR_DIR}"/*.jar 2>/dev/null | grep -v -- '-sources\.jar$' | head -1 || true)"
+if [[ -z "${DISTRIBUTED_JAR}" || ! -f "${DISTRIBUTED_JAR}" ]]; then
+  log "distributed-bench JAR not found, building via Gradle..."
+  (cd "${REPO_ROOT}" && ./gradlew :bench:distributed-bench:shadowJar -q) \
+    || die "Failed to build distributed-bench. Run: ./gradlew :bench:distributed-bench:shadowJar"
+  DISTRIBUTED_JAR="$(ls "${DISTRIBUTED_JAR_DIR}"/*.jar 2>/dev/null | grep -v -- '-sources\.jar$' | head -1 || true)"
+  [[ -f "${DISTRIBUTED_JAR}" ]] || die "Build succeeded but no jar found in ${DISTRIBUTED_JAR_DIR}"
 fi
+log "distributed-bench JAR: ${DISTRIBUTED_JAR}"
 
 # ── Helper: check HTTP endpoint ───────────────────────────────────────────────
 wait_for_http() {
@@ -88,7 +94,7 @@ wait_for_http() {
   local max_wait="${2:-30}"
   local elapsed=0
   while [[ "${elapsed}" -lt "${max_wait}" ]]; do
-    if curl -sf --max-time 2 "${url}" > /dev/null 2>&1; then
+    if curl -sf --max-time 8 "${url}" > /dev/null 2>&1; then
       return 0
     fi
     sleep 1
@@ -97,29 +103,25 @@ wait_for_http() {
   return 1
 }
 
-# ── Step 1: Check bare-javac is compiled (compile if not) ─────────────────────
-BARE_BUILD="${BARE_ENGINE_DIR}/build/classes"
+# ── Step 1: Build bare-javac shadowJar (Gradle, includes all dep classes) ─────
+BARE_JAR_DIR="${BARE_ENGINE_DIR}/build/libs"
+BARE_JAR=""
 if [[ "${SKIP_BARE}" == "false" ]]; then
-  if [[ ! -d "${BARE_BUILD}" ]]; then
-    log "bare-javac not compiled. Compiling now..."
-    mkdir -p "${BARE_BUILD}"
-    # shellcheck disable=SC2207
-    JAVA_SOURCES=()
-    while IFS= read -r -d '' f; do
-      JAVA_SOURCES+=("$f")
-    done < <(find "${BARE_ENGINE_DIR}/src/main/java" -name '*.java' -print0)
-    "${JAVAC}" --release 25 -d "${BARE_BUILD}" "${JAVA_SOURCES[@]}" \
-      || die "Compilation of bare-javac failed. Fix errors and retry."
-    log "Compilation complete."
-  else
-    log "bare-javac build dir found, skipping compilation."
+  BARE_JAR="$(ls "${BARE_JAR_DIR}"/java-risk-engine.jar 2>/dev/null | head -1 || true)"
+  if [[ -z "${BARE_JAR}" || ! -f "${BARE_JAR}" ]]; then
+    log "bare-javac shadowJar not found. Building via Gradle..."
+    (cd "${REPO_ROOT}" && ./gradlew :poc:java-risk-engine:shadowJar -q) \
+      || die "Failed to build java-risk-engine shadowJar."
+    BARE_JAR="${BARE_JAR_DIR}/java-risk-engine.jar"
+    [[ -f "${BARE_JAR}" ]] || die "shadowJar build succeeded but jar not found at ${BARE_JAR}"
   fi
+  log "bare-javac jar: ${BARE_JAR}"
 fi
 
 # ── Step 2: Check pre-started services ───────────────────────────────────────
 if [[ "${SKIP_MONOLITH}" == "false" ]]; then
-  log "Checking java-monolith at localhost:${MONOLITH_PORT}/health ..."
-  if ! curl -sf --max-time 2 "http://localhost:${MONOLITH_PORT}/health" > /dev/null 2>&1; then
+  log "Checking java-monolith at localhost:${MONOLITH_PORT}/healthz ..."
+  if ! curl -sf --max-time 8 "http://localhost:${MONOLITH_PORT}/healthz" > /dev/null 2>&1; then
     echo "" >&2
     echo "[competition] ERROR: java-monolith is not running." >&2
     echo "              Start it first: ./nx run java-monolith" >&2
@@ -132,7 +134,7 @@ fi
 
 if [[ "${SKIP_VRP}" == "false" ]]; then
   log "Checking vertx-risk-platform at localhost:${VRP_PORT}/health ..."
-  if ! curl -sf --max-time 2 "http://localhost:${VRP_PORT}/health" > /dev/null 2>&1; then
+  if ! curl -sf --max-time 8 "http://localhost:${VRP_PORT}/health" > /dev/null 2>&1; then
     echo "" >&2
     echo "[competition] ERROR: vertx-risk-platform controller-pod is not running." >&2
     echo "              Start it first: ./nx up vertx-platform" >&2
@@ -144,8 +146,8 @@ if [[ "${SKIP_VRP}" == "false" ]]; then
 fi
 
 if [[ "${SKIP_DISTRIBUTED}" == "false" ]]; then
-  log "Checking java-vertx-distributed at localhost:${VERTX_PORT}/healthz ..."
-  if ! curl -sf --max-time 2 "http://localhost:${VERTX_PORT}/healthz" > /dev/null 2>&1; then
+  log "Checking java-vertx-distributed at localhost:${VERTX_PORT}/health ..."
+  if ! curl -sf --max-time 8 "http://localhost:${VERTX_PORT}/health" > /dev/null 2>&1; then
     echo "" >&2
     echo "[competition] ERROR: java-vertx-distributed stack is not running." >&2
     echo "              Start it first: ./nx up vertx" >&2
@@ -161,8 +163,7 @@ BARE_PID=""
 if [[ "${SKIP_BARE}" == "false" ]]; then
   log "Starting bare-javac HTTP server on port ${BARE_PORT}..."
   RISK_HTTP_PORT="${BARE_PORT}" \
-  "${JAVA}" -cp "${BARE_BUILD}" \
-    com.naranjax.interview.risk.infrastructure.controller.HttpRunner \
+  "${JAVA}" -jar "${BARE_JAR}" \
     --port "${BARE_PORT}" \
     > "${OUT}/bare.log" 2>&1 &
   BARE_PID=$!
@@ -192,8 +193,9 @@ run_phase() {
   local n="$2"
   local base_url="$3"
   local out_dir="$4"
-  log "  Phase [${name}]: ${n} requests -> ${base_url}"
-  "${JAVA}" -jar "${DISTRIBUTED_JAR}" "${n}" "${CONCURRENCY}" "${base_url}" "${out_dir}" \
+  local risk_path="${5:-/risk}"
+  log "  Phase [${name}]: ${n} requests -> ${base_url}${risk_path}"
+  "${JAVA}" -jar "${DISTRIBUTED_JAR}" "${n}" "${CONCURRENCY}" "${base_url}" "${out_dir}" "${risk_path}" \
     || { log "  Phase ${name} failed (exit $?)"; return 1; }
 }
 
@@ -203,7 +205,7 @@ mkdir -p "${WARMUP_DIR}"
 log "--- Warmup phase (${WARMUP} reqs each, not measured) ---"
 [[ "${SKIP_BARE}" == "false" ]]     && run_phase "warmup-bare"     "${WARMUP}" "http://localhost:${BARE_PORT}"    "${WARMUP_DIR}" || true
 [[ "${SKIP_MONOLITH}" == "false" ]] && run_phase "warmup-monolith" "${WARMUP}" "http://localhost:${MONOLITH_PORT}" "${WARMUP_DIR}" || true
-[[ "${SKIP_VRP}" == "false" ]]      && run_phase "warmup-vrp"      "${WARMUP}" "http://localhost:${VRP_PORT}"     "${WARMUP_DIR}" || true
+[[ "${SKIP_VRP}" == "false" ]]      && run_phase "warmup-vrp"      "${WARMUP}" "http://localhost:${VRP_PORT}"     "${WARMUP_DIR}" "/risk/evaluate" || true
 [[ "${SKIP_DISTRIBUTED}" == "false" ]] && run_phase "warmup-vertx" "${WARMUP}" "http://localhost:${VERTX_PORT}"  "${WARMUP_DIR}" || true
 
 # ── Step 5: Measured run ──────────────────────────────────────────────────────
@@ -233,7 +235,7 @@ if [[ "${SKIP_MONOLITH}" == "false" ]]; then
 fi
 
 if [[ "${SKIP_VRP}" == "false" ]]; then
-  run_phase "vrp" "${REQUESTS}" "http://localhost:${VRP_PORT}" "${VRP_OUT}"
+  run_phase "vrp" "${REQUESTS}" "http://localhost:${VRP_PORT}" "${VRP_OUT}" "/risk/evaluate"
   VRP_JSON="$(find "${VRP_OUT}" -maxdepth 1 -name '*.json' -print0 2>/dev/null | xargs -0 ls -t 2>/dev/null | head -1)"
   log "vertx-risk-platform result: ${VRP_JSON}"
 fi

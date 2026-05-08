@@ -37,7 +37,7 @@
 - [x] docs/10-aws-mocks-locales.md
 - [x] docs/11-atdd.md
 - [x] poc/java-risk-engine: Clean Architecture, functional engine, benchmarks
-- [x] poc/java-vertx-distributed: 4 Maven modules, docker-compose, Hazelcast
+- [x] poc/java-vertx-distributed: 4 Gradle modules, docker-compose, Hazelcast
 - [x] poc/k8s-local: ArgoCD, Argo Rollouts canary, kube-prom, ESO, Redpanda, OpenObserve, AWS mocks
 - [x] .ai/ system with IDE-agnostic primitives
 
@@ -79,7 +79,7 @@
 cd poc/java-risk-engine && ./scripts/run.sh
 
 # PoC 2
-cd poc/java-vertx-distributed && docker-compose up -d && mvn test -pl atdd-tests
+./nx up vertx && ./gradlew :poc:java-vertx-distributed:atdd-tests:test -Patdd
 
 # PoC 3
 cd poc/k8s-local && ./scripts/up.sh && ./scripts/status.sh
@@ -103,3 +103,22 @@ cd cli/risk-smoke && go run .
 - Hazelcast configuration details in production at scale.
 - Kafka partition sharding optimization for 150 TPS.
 - Internal details of how IRSA works.
+
+---
+
+## 2026-05-08 — Java vs Go performance positioning
+
+- [x] Added `docs/37-java-go-performance-positioning.md` with primary-source research on Java 21+ vs Go performance trade-offs.
+- [x] Added Q&A H8 in `docs/09-architecture-question-bank.md` for technical discussion: “¿Por qué Java para performance si Go suele ser más liviano?”
+- [x] Linked the new doc from `docs/00-START-HERE.md` and `docs/QUICK-REFERENCE.md`.
+- Decision framing: Java 21 LTS remains the executable baseline; Java 25 remains documented target. Go is acknowledged as stronger for startup/footprint/binario único; Java is defended for long-running hot services, JIT, GC, virtual threads and enterprise observability.
+
+
+## 2026-05-08 — Java apps architecture/performance matrix
+
+- [x] Added `docs/38-java-apps-architecture-performance-matrix.md` to consolidate the Java PoC portfolio narrative: same risk decision domain, different stacks/topologies.
+- [x] Documented `java-vertx-distributed` as layer-as-pod and `service-mesh-demo` as true service-to-service bounded contexts.
+- [x] Linked the new matrix from `docs/00-START-HERE.md` and `docs/QUICK-REFERENCE.md`.
+- Next step: run comparable k6/JMH benchmarks with and without simulated ML latency to turn expected performance ordering into measured data.
+- [x] Clarified wording after web research: do not claim Vert.x requires grouping controllers/usecases/repositories in pods; say Vert.x provides verticles/EventBus and the PoC chooses its deployment topology.
+- [x] Added final layer-as-pod wording: `java-vertx-distributed` uses Vert.x verticles/adapters per layer in separate processes/pods to evidence permissions isolation, boundary enforcement, blast radius, scaling profiles and network/serialization cost; this is a PoC topology, not a Vert.x prescription or business microservices claim.

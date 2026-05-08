@@ -15,7 +15,7 @@ Aceptado el 2026-05-07.
 
 ## Contexto
 
-The ATDD tests en `poc/java-vertx-distributed/atdd-tests/` run como un separate Maven module (or standalone JVM process) y exercise la Vert.x application running en Docker containers. Standard JaCoCo file-based coverage only works when la test JVM y la application JVM son la same process — un `exec` file es written a JVM shutdown.
+The ATDD tests en `poc/java-vertx-distributed/atdd-tests/` run como un separate Gradle module (or standalone JVM process) y exercise la Vert.x application running en Docker containers. Standard JaCoCo file-based coverage only works when la test JVM y la application JVM son la same process — un `exec` file es written a JVM shutdown.
 
 For la ATDD scenario: la application JVMs (`controller-app`, `usecase-app`, `repository-app`) run en Docker containers; la Karate test runner runs en la host JVM (or un separate container). Standard JaCoCo `destFile` cannot capture coverage desde la Docker-hosted application JVMs.
 
@@ -33,7 +33,7 @@ Configure each Vert.x application module un start con la JaCoCo agent en TCP ser
 - **Por qué se eligió**: Cross-module ATDD coverage es la señal de diseño: "I know how un measure whether ATDD scenarios actually exercise la code paths they claim to." Without TCP attach, ATDD coverage data es unavailable.
 
 ### Opción B: Standard JaCoCo exec file per module, no cross-JVM coverage
-- **Ventajas**: Standard JaCoCo configuration; no TCP setup; works con standard Maven JaCoCo plugin.
+- **Ventajas**: Standard JaCoCo configuration; no TCP setup; works con standard Gradle JaCoCo plugin.
 - **Desventajas**: Only captures coverage desde unit y integration tests que run en la same JVM como la code; ATDD tests exercising Docker-deployed application JVMs produce zero coverage data; cannot show que un Karate scenario covering la "APPROVE path" actually executes `EvaluateRiskUseCase`.
 - **Por qué no**: For ATDD tests que run contra un live application (docker compose up), file-based JaCoCo es technically insufficient. La coverage report would show zero ATDD contribution.
 
@@ -64,7 +64,7 @@ Configure each Vert.x application module un start con la JaCoCo agent en TCP ser
 
 ## Validación
 
-- `cd poc/java-vertx-distributed && mvn -pl atdd-tests verify` produces JaCoCo XML reports showing coverage desde Karate scenarios.
+- `cd poc/java-vertx-distributed && ./gradlew -pl atdd-tests verify` produces JaCoCo XML reports showing coverage desde Karate scenarios.
 - Coverage report includes lines desde `EvaluateRiskVerticle.java` marked como covered por ATDD scenarios.
 - `jacoco-agent/` module exists con agent JAR bundling y report generation configuration.
 

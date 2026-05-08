@@ -14,8 +14,8 @@ class TestSmartTruncator(unittest.TestCase):
     def test_detect_pytest(self):
         self.assertEqual(self.t.detect_command_type("pytest -v", ""), "test")
 
-    def test_detect_mvn_test(self):
-        self.assertEqual(self.t.detect_command_type("mvn test", ""), "test")
+    def test_detect_./gradlew_test(self):
+        self.assertEqual(self.t.detect_command_type("./gradlew test", ""), "test")
 
     def test_detect_go_test(self):
         self.assertEqual(self.t.detect_command_type("go test ./...", ""), "test")
@@ -66,7 +66,7 @@ class TestSmartTruncator(unittest.TestCase):
         lines.append("[ERROR] Compilation failure: cannot find symbol")
         lines.append("[WARNING] deprecated API used at line 55")
         output = "\n".join(lines)
-        result = self.t.truncate(output, "mvn build", max_chars=500)
+        result = self.t.truncate(output, "./gradlew build", max_chars=500)
         self.assertIn("ERROR", result)
 
     # --- truncation: lint output ---

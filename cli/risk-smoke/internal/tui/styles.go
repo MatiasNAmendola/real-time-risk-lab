@@ -2,7 +2,7 @@ package tui
 
 import "github.com/charmbracelet/lipgloss"
 
-// NaranjaX palette.
+// Risk Decision Platform palette.
 var (
 	colorOrange  = lipgloss.Color("#FF6B00")
 	colorGreen   = lipgloss.Color("#00C853")

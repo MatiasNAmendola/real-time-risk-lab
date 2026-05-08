@@ -18,16 +18,16 @@ Prerequisites: Docker (or OrbStack / Colima) must be running.
 
 # Or directly from the module
 cd tests/integration
-mvn verify -Pintegration
+./gradlew test jacocoTestReport -Pintegration
 ```
 
-Surefire excludes `*IntegrationTest` by default. The `integration` Maven profile activates Failsafe, which includes them in the `verify` phase.
+Surefire excludes `*IntegrationTest` by default. The `integration` Gradle profile activates Failsafe, which includes them in the `verify` phase.
 
 To compile without running tests:
 
 ```bash
 cd tests/integration
-mvn package -DskipTests
+./gradlew shadowJar
 ```
 
 ## Containers and test mapping
@@ -43,7 +43,7 @@ mvn package -DskipTests
 
 ## Performance: container reuse
 
-By default Testcontainers tears down containers after each test run. Enable reuse so containers persist across Maven invocations (saves ~10 s per run):
+By default Testcontainers tears down containers after each test run. Enable reuse so containers persist across Gradle invocations (saves ~10 s per run):
 
 ```bash
 echo "testcontainers.reuse.enable=true" >> ~/.testcontainers.properties
@@ -51,12 +51,12 @@ echo "testcontainers.reuse.enable=true" >> ~/.testcontainers.properties
 
 Reuse relies on a hash of the container definition. Changing the image tag or environment variables automatically starts a fresh container.
 
-All containers in `IntegrationTestSupport` are declared `static`, so within a single Maven run they are shared across test classes in the same classloader — only one Postgres container starts regardless of how many test classes reference it.
+All containers in `IntegrationTestSupport` are declared `static`, so within a single Gradle run they are shared across test classes in the same classloader — only one Postgres container starts regardless of how many test classes reference it.
 
 ## Adding a new test
 
 1. Identify which container(s) you need (see table above).
-2. Create a class in the appropriate package under `src/test/java/com/naranjax/integration/`.
+2. Create a class in the appropriate package under `src/test/java/io/riskplatform/integration/`.
 3. Annotate the class with `@Testcontainers` and extend `IntegrationTestSupport`.
 4. Declare only the containers you need as `@Container static final` fields, referencing the shared instances from the parent class.
 5. Write `@Test` methods using AssertJ assertions.
@@ -82,4 +82,4 @@ class MyNewIntegrationTest extends IntegrationTestSupport {
 
 - Docker must be running locally. The script at `scripts/integration-tests.sh` exits with code 2 and a clear error message if Docker is not available.
 - In CI, replace the local Docker daemon with [Testcontainers Cloud](https://testcontainers.com/cloud/) to avoid privileged containers. Configuration is outside the scope of this module.
-- Java 25 with `--enable-preview` is required; set `JAVA_HOME` accordingly before running.
+- Java 21 LTS is the executable baseline (`--release 21`); set `JAVA_HOME` to JDK 21+ before running. Java 25 is optional as a runtime target only.

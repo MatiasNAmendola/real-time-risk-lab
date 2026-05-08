@@ -1,6 +1,6 @@
 # pkg/ — Shared Library Modules
 
-Estructura de shared libraries para apps internas, equivalente al patron de pkg/ en un monorepo enterprise Go. Each module is a self-contained Gradle subproject published under `com.naranjax.poc`.
+Estructura de shared libraries para apps internas, equivalente al patron de pkg/ en un monorepo enterprise Go. Each module is a self-contained Gradle subproject published under `io.riskplatform.poc`.
 
 ## Modules
 
@@ -18,9 +18,9 @@ Estructura de shared libraries para apps internas, equivalente al patron de pkg/
 
 ## Adding a new pkg module
 
-1. Create `pkg/<name>/build.gradle.kts` with `plugins { id("naranja.library-conventions") }`.
+1. Create `pkg/<name>/build.gradle.kts` with `plugins { id("riskplatform.library-conventions") }`.
 2. Add `"pkg:<name>"` to the `include(...)` block in `settings.gradle.kts`.
-3. Create sources under `pkg/<name>/src/main/java/com/naranjax/poc/pkg/<name>/`.
+3. Create sources under `pkg/<name>/src/main/java/io/riskplatform/poc/pkg/<name>/`.
 4. Other modules declare a dependency with `implementation(project(":pkg:<name>"))`.
 
 ## Phase 2 migration note

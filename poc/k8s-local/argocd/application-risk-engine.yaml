@@ -18,7 +18,7 @@ spec:
     # For local-only testing with k3d, use the absolute filesystem path:
     #   repoURL: ${REPO_ROOT}
     # For GitOps (recommended), push and use:
-    #   repoURL: https://github.com/your-org/practica-entrevista.git
+    #   repoURL: https://github.com/your-org/risk-platform-practice.git
     repoURL: ${REPO_ROOT}
     targetRevision: HEAD
     path: poc/k8s-local/apps/risk-engine

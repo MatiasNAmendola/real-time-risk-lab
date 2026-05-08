@@ -2,9 +2,10 @@
 
 | PoC | Que demuestra | Como correr | Stack | Estado |
 |---|---|---|---|---|
-| `poc/java-risk-engine` | Clean Architecture sin frameworks, Circuit Breaker, Idempotencia, Outbox, Virtual Threads, Correlation ID, benchmarks latencia | `./scripts/run.sh` luego `./scripts/test.sh` | Java 25, bare javac (sin Maven), JUnit 5 | Estable, demostrable |
-| `poc/java-vertx-distributed` | Arquitectura distribuida layer-as-pod, Vert.x 5 + Hazelcast cluster, 4 modulos Maven separados, ATDD Karate | `docker-compose up -d && mvn package && mvn test -pl atdd-tests` | Java 25, Vert.x 5.0.12, Maven 3.9, Postgres 16, Valkey 8, Redpanda, Hazelcast, Karate 1.5+ | Estable, ATDD parcial |
-| `poc/vertx-risk-platform` | Todos los patrones de comunicacion (REST/SSE/WS/Webhook/Kafka), OpenAPI, AsyncAPI, OTEL completo | `mvn package && ./scripts/run.sh` luego `cd cli/risk-smoke && go run .` | Java 25, Vert.x 5.0.12, Redpanda, Postgres 16, Valkey 8, otelcol 0.141.0, OpenObserve | En progreso (extensión comunicacion) |
+| `poc/java-risk-engine` | Clean Architecture sin frameworks, Circuit Breaker, Idempotencia, Outbox, Virtual Threads, Correlation ID, benchmarks latencia | `./scripts/run.sh` luego `./scripts/test.sh` | Java 21 LTS baseline, bare javac (sin Gradle), JUnit 5; Java 25 objetivo documentado | Estable, demostrable |
+| `poc/java-vertx-distributed` | Arquitectura distribuida layer-as-pod, Vert.x 5 + Hazelcast cluster, 4 modulos Gradle separados, ATDD Karate | `docker-compose up -d && ./gradlew shadowJar && ./gradlew :poc:java-vertx-distributed:atdd-tests:test -Patdd` | Java 21 LTS baseline, Vert.x 5.0.12, Gradle, Postgres 16, Valkey 8, Redpanda, Hazelcast, Karate 1.5+; Java 25 objetivo documentado | Estable, ATDD parcial |
+| `poc/service-mesh-demo` | Service-to-service real entre bounded contexts: risk-decision, fraud-rules, ml-scorer y audit via Vert.x EventBus RPC/async | `./scripts/up.sh && ./scripts/demo.sh` | Java 21 baseline, Vert.x 5.0.12, Hazelcast EventBus cluster, Docker Compose | En progreso |
+| `poc/vertx-risk-platform` | Todos los patrones de comunicacion (REST/SSE/WS/Webhook/Kafka), OpenAPI, AsyncAPI, OTEL completo | `./gradlew shadowJar && ./scripts/run.sh` luego `cd cli/risk-smoke && go run .` | Java 21 LTS baseline, Vert.x 5.0.12, Redpanda, Postgres 16, Valkey 8, otelcol 0.141.0, OpenObserve; Java 25 objetivo documentado | En progreso (extensión comunicacion) |
 | `poc/k8s-local` | Replica local de infra produccion: ArgoCD GitOps, Canary Argo Rollouts, SLO con Prometheus, External Secrets, AWS mocks | `./scripts/up.sh` luego `./scripts/status.sh` | k3d v5+/OrbStack, Helm 3, ArgoCD 9.2.4, Argo Rollouts 2.40.5, kube-prometheus 80.11.0, ESO 1.2.1, Redpanda, OpenObserve, Moto/MinIO/ElasticMQ/OpenBao | Estable |
 
 ## Detalle por PoC
@@ -34,9 +35,20 @@ cd poc/java-risk-engine
 ```bash
 cd poc/java-vertx-distributed
 docker-compose up -d
-mvn package -DskipTests
+./gradlew shadowJar
 # controller-app escucha en :8080
-mvn test -pl atdd-tests  # ATDD en verde
+./gradlew :poc:java-vertx-distributed:atdd-tests:test -Patdd  # ATDD en verde
+```
+
+### service-mesh-demo
+
+PoC dedicado a service-to-service real: cuatro bounded contexts independientes se comunican por Vert.x EventBus. Se usa para explicar que `java-vertx-distributed` es layer-as-pod, no microservicios colaborando.
+
+```bash
+cd poc/service-mesh-demo
+./scripts/up.sh
+./scripts/demo.sh
+./scripts/down.sh
 ```
 
 ### vertx-risk-platform
@@ -49,7 +61,7 @@ mvn test -pl atdd-tests  # ATDD en verde
 **Comando de demo**:
 ```bash
 cd poc/vertx-risk-platform
-mvn package && ./scripts/run.sh
+./gradlew shadowJar && ./scripts/run.sh
 # En otra terminal:
 cd cli/risk-smoke && go run .  # TUI con 9 checks
 ```
@@ -73,5 +85,5 @@ kubectl argo rollouts get rollout risk-engine -n risk-engine  # canary
 
 | Componente | Que es | Como correr | Estado |
 |---|---|---|---|
-| `tests/risk-engine-atdd` | Cucumber-JVM 7 ATDD sobre API HTTP | `mvn test` (requiere app en :8080) | En progreso |
+| `tests/risk-engine-atdd` | Cucumber-JVM 7 ATDD sobre API HTTP | `./gradlew test` (requiere app en :8080) | En progreso |
 | `cli/risk-smoke` | Go + Bubble Tea TUI con 9 smoke checks | `go run .` (requiere app en :8080) | En progreso |

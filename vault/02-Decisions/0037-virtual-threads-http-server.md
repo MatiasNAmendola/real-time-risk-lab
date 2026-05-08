@@ -7,7 +7,7 @@ deciders: [Mati]
 tags: [decision/accepted, area/runtime, area/java, area/concurrency]
 ---
 
-# ADR-0037: Virtual Threads (Java 25) como executor del HTTP Server
+# ADR-0037: Virtual Threads (Java 21+) como executor del HTTP Server
 
 ## Estado
 
@@ -19,7 +19,7 @@ La PoC bare-javac suma un servidor HTTP (`HttpController`) usando `com.sun.net.h
 
 La decisión es qué executor proveer. Las opciones: el default (thread pool interno del JDK), un thread pool de plataforma de tamaño fijo, un thread pool cacheado, o un executor virtual-thread-per-task (Java 21+ estable).
 
-Esta es una feature concreta y demostrable de Java 25 que conviene poner al frente: los virtual threads son la primitiva de concurrencia nueva más relevante de Java moderno, y mostrarlos en un servidor HTTP funcionando demuestra entendimiento práctico, no solo familiaridad con la JEP.
+Esta es una feature concreta y demostrable de Java moderno (disponible desde Java 21) que conviene poner al frente: los virtual threads son la primitiva de concurrencia nueva más relevante de Java moderno, y mostrarlos en un servidor HTTP funcionando demuestra entendimiento práctico, no solo familiaridad con la JEP.
 
 ## Decisión
 
@@ -30,12 +30,12 @@ Se pasa `Executors.newVirtualThreadPerTaskExecutor()` como executor a `HttpServe
 ### Opción A: executor virtual-thread-per-task (elegida)
 - **Ventajas**: cada request obtiene su propio virtual thread, sin necesidad de dimensionar thread pool; el I/O bloqueante (llamadas a base, invocación al scorer) no bloquea threads de plataforma; escala a alta concurrencia sin tuning; cambio de una línea desde el default; artefacto reviewable: `Executors.newVirtualThreadPerTaskExecutor()` queda visible y discutible al instante; la memoria por virtual thread es del orden de kilobytes contra megabytes de los threads de plataforma.
 - **Desventajas**: los virtual threads no son adecuados para trabajo CPU-bound (siguen pinneando carrier threads en loops intensivos de CPU); las thread-locals se comportan distinto (pinning); los bloques `synchronized` pinnean el virtual thread al carrier —se prefiere `ReentrantLock`.
-- **Por qué se eligió**: el handler HTTP en la PoC bare-javac es I/O-bound (llamada al scorer con latencia de 20-160ms). Los virtual threads son el executor óptimo para este workload. El cambio de una sola línea es la feature de Java 25 más visible en el codebase.
+- **Por qué se eligió**: el handler HTTP en la PoC bare-javac es I/O-bound (llamada al scorer con latencia de 20-160ms). Los virtual threads son el executor óptimo para este workload. El cambio de una sola línea es la feature de Java moderno más visible en el codebase.
 
 ### Opción B: thread pool de plataforma fijo (`Executors.newFixedThreadPool(N)`)
 - **Ventajas**: uso predecible de recursos; fácil de dimensionar (N = 2x CPU cores para I/O-bound); patrón Java estándar.
-- **Desventajas**: requiere tuning —un N equivocado causa o desperdicio de recursos o queuing; el I/O bloqueante bloquea el thread de plataforma; escalar exige cambiar N y redeployar; no demuestra features de Java 25.
-- **Por qué no**: el sizing de thread pool es justamente el problema que resuelven los virtual threads. Usar un pool fijo en una PoC que demuestra Java 25 pierde el punto de diseño principal.
+- **Desventajas**: requiere tuning —un N equivocado causa o desperdicio de recursos o queuing; el I/O bloqueante bloquea el thread de plataforma; escalar exige cambiar N y redeployar; no demuestra features modernas de Java.
+- **Por qué no**: el sizing de thread pool es justamente el problema que resuelven los virtual threads. Usar un pool fijo en una PoC que demuestra Java moderno pierde el punto de diseño principal.
 
 ### Opción C: thread pool de plataforma cacheado (`Executors.newCachedThreadPool()`)
 - **Ventajas**: unbounded, sin queuing de requests; los threads se reutilizan cuando hay disponibles.

@@ -5,8 +5,8 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/naranjax/risk-smoke/internal/config"
-	"github.com/naranjax/risk-smoke/internal/flows"
+	"github.com/riskplatform/risk-smoke/internal/config"
+	"github.com/riskplatform/risk-smoke/internal/flows"
 )
 
 func TestHealthCheck_Pass(t *testing.T) {

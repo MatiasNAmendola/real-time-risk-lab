@@ -34,8 +34,8 @@ Entorno Kubernetes local que demuestra GitOps + canary deployment + observabilid
 
 ```bash
 cd poc/k8s-local
-./scripts/bootstrap.sh          # crea cluster k3d + instala addons
-./scripts/deploy-risk-engine.sh  # despliega el Helm chart
+poc/k8s-local/scripts/up.sh          # crea cluster k3d + instala addons
+poc/k8s-local/scripts/up.sh  # despliega el Helm chart
 kubectl argo rollouts get rollout risk-engine --watch
 ```
 

@@ -1,7 +1,7 @@
 # Risk Decision Platform — ATDD Module (Cucumber-JVM)
 
 Acceptance-test suite for the bare-javac risk engine PoC.
-Standalone Maven project — does not modify any file under `poc/java-risk-engine/`.
+Standalone Gradle project — does not modify any file under `poc/java-risk-engine/`.
 
 ---
 
@@ -19,7 +19,7 @@ Standalone Maven project — does not modify any file under `poc/java-risk-engin
 
 ## Reports
 
-Después de cada `mvn test` (o `./scripts/atdd-bare.sh`), el script `scripts/report.sh` genera un árbol de reportes en:
+Después de cada `./gradlew test` (o `./scripts/atdd-bare.sh`), el script `scripts/report.sh` genera un árbol de reportes en:
 
 ```
 <repo-root>/out/atdd-cucumber/
@@ -34,7 +34,7 @@ Después de cada `mvn test` (o `./scripts/atdd-bare.sh`), el script `scripts/rep
     ├── coverage/
     │   ├── jacoco-summary.md        # cobertura por paquete
     │   └── matrix.md                # qué feature cubre qué capa
-    ├── full.log                     # log completo (copia de target/cucumber.log)
+    ├── full.log                     # log completo (copia de build/cucumber.log)
     └── meta.json                    # timestamp, duration, exit code, env
 ```
 
@@ -63,7 +63,7 @@ El symlink `latest` siempre apunta al run más reciente. Los runs anteriores se 
 ```bash
 # Todos los features (excluye @wip por default)
 cd tests/risk-engine-atdd
-mvn test
+./gradlew test
 
 # Desde la raíz del repo
 ./scripts/atdd-bare.sh
@@ -72,25 +72,25 @@ mvn test
 ## Correr un feature solo por tag
 
 ```bash
-mvn test -Dcucumber.filter.tags=@idempotency
-mvn test -Dcucumber.filter.tags=@outbox
-mvn test -Dcucumber.filter.tags=@correlation-id
-mvn test -Dcucumber.filter.tags=@new-device
-mvn test -Dcucumber.filter.tags=@high-amount
-mvn test -Dcucumber.filter.tags=@low-risk
+./gradlew test -Dcucumber.filter.tags=@idempotency
+./gradlew test -Dcucumber.filter.tags=@outbox
+./gradlew test -Dcucumber.filter.tags=@correlation-id
+./gradlew test -Dcucumber.filter.tags=@new-device
+./gradlew test -Dcucumber.filter.tags=@high-amount
+./gradlew test -Dcucumber.filter.tags=@low-risk
 ```
 
 ## Correr incluyendo @wip
 
 ```bash
-mvn test -Dcucumber.filter.tags="@wip"
+./gradlew test -Dcucumber.filter.tags="@wip"
 ```
 
 ## Coverage
 
 ```bash
-mvn verify
-# Reporte en: target/site/jacoco/index.html
+./gradlew test jacocoTestReport
+# Reporte en: build/reports/jacoco/test/index.html
 
 # O con script:
 ./scripts/atdd-bare-coverage.sh
@@ -118,9 +118,9 @@ mvn verify
 ## Cómo agregar un feature nuevo
 
 1. **Escribir el Gherkin primero** — crea un archivo en `src/test/resources/features/NN_nombre.feature`.
-2. **Correr `mvn test`** — Cucumber reporta los steps como "undefined" y genera stubs.
+2. **Correr `./gradlew test`** — Cucumber reporta los steps como "undefined" y genera stubs.
 3. **Ver fallar** — el step sin implementar aparece como `PENDING`.
-4. **Implementar los steps** — agrega un archivo en `src/test/java/com/naranjax/atdd/steps/`.
+4. **Implementar los steps** — agrega un archivo en `src/test/java/io/riskplatform/atdd/steps/`.
 5. **Volver a correr** — los scenarios deben pasar.
 
 ```
@@ -166,5 +166,5 @@ Para implementar el test, el PoC debería agregar una regla de aprobación inmed
 - **AssertJ** para assertions fluidas.
 - **JaCoCo 0.8.x** para cobertura de las clases de la PoC compiladas localmente.
 - **Java 21** (fuentes del PoC + tests).
-- **Opción A**: `build-helper-maven-plugin add-source` compila las fuentes del PoC directamente.
+- **Opción A**: `build-helper-gradle-plugin add-source` compila las fuentes del PoC directamente.
   No hay dependencia de clases precompiladas; el PoC permanece sin modificaciones.

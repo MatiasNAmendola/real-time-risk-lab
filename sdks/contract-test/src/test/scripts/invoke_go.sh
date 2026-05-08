@@ -35,7 +35,7 @@ import (
   "os"
   "time"
 
-  riskclient "github.com/naranjax/risk-client"
+  riskclient "github.com/riskplatform/risk-client"
 )
 
 func main() {

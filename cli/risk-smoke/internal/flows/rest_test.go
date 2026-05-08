@@ -7,8 +7,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/naranjax/risk-smoke/internal/config"
-	"github.com/naranjax/risk-smoke/internal/flows"
+	"github.com/riskplatform/risk-smoke/internal/config"
+	"github.com/riskplatform/risk-smoke/internal/flows"
 )
 
 func TestRESTCheck_Pass(t *testing.T) {

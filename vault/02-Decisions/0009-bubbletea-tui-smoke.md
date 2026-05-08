@@ -55,7 +55,7 @@ Build `cli/risk-smoke/` en Go using Bubble Tea + Lip Gloss + Bubbles. TUI mode p
 ## Consecuencias
 
 ### Positivo
-- Self-contained binary (`./risk-smoke`) starts en < 50ms — instant feedback durante demo.
+- Self-contained binary (``cd cli/risk-smoke && go run .``) starts en < 50ms — instant feedback durante demo.
 - TUI mode shows 9 concurrent channel checks con animated spinners — polished live demo.
 - `--headless` mode produces exit code 0/1 para CI gating.
 - Go goroutines handle SSE (persistent HTTP connection) y WebSocket (bidirectional) concurrently sin blocking.
@@ -63,7 +63,7 @@ Build `cli/risk-smoke/` en Go using Bubble Tea + Lip Gloss + Bubbles. TUI mode p
 ### Negativo
 - Go toolchain required en addition un Java toolchain.
 - Bubble Tea Elm Architecture has un learning curve.
-- Go module en `cli/` es outside la Gradle/Maven reactor.
+- Go module en `cli/` es outside la Gradle/Gradle multi-project build.
 
 ### Mitigaciones
 - `cli/risk-smoke/README.md` documents build y run instructions.
@@ -72,7 +72,7 @@ Build `cli/risk-smoke/` en Go using Bubble Tea + Lip Gloss + Bubbles. TUI mode p
 ## Validación
 
 - `cd cli/risk-smoke && go build -o risk-smoke .` produces un binary < 15MB.
-- `./risk-smoke --headless --target vertx` exits 0 when todos 9 channels pass.
+- ``cd cli/risk-smoke && go run .` --headless --target vertx` exits 0 when todos 9 channels pass.
 - TUI mode shows animated progress para each de la 9 channel checks.
 
 ## Relacionado

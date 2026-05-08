@@ -84,7 +84,7 @@ Los seis gaps identificados en la auditoría original fueron implementados en `p
 En producción una regla sin nombre no puede auditarse ni desactivarse feature-flag. This demonstrates the difference between domain modeling and scripting.
 
 **Plan de unificación:**  
-Extraer `FraudRule` + `HighAmountRule` a `pkg/risk-domain/rules/`. Ambos PoCs dependen del módulo compartido. `EvaluateRiskVerticle` instancia `RuleBasedDecisionPolicy` en lugar de su `applyPolicy()` inline.
+Extraer `FraudRule` + `HighAmountRule` a `pkg/risk-domain/src/main/java/io/riskplatform/poc/risk/rule/`. Ambos PoCs dependen del módulo compartido. `EvaluateRiskVerticle` instancia `RuleBasedDecisionPolicy` en lugar de su `applyPolicy()` inline.
 
 **Esfuerzo:** bajo.
 
@@ -116,7 +116,7 @@ Agregar `newDevice: boolean` a `RiskRequest` (shared). Migrar `FeatureSnapshot` 
 El dominio necesita señales crudas para poder aplicar reglas deterministas (ej. `chargebackCount90d > 0` en `FallbackDecisionPolicy`). El score pre-calculado es útil como feature adicional pero no reemplaza las señales. Si Phase 2 comparte el módulo de dominio, necesita un `FeatureSnapshot` canónico.
 
 **Plan de unificación:**  
-Definir `FeatureSnapshot` canónico en `pkg/risk-domain/entity/` con el superconjunto de campos: `customerAgeDays`, `chargebackCount90d`, `riskScore`, `country`. El repo Postgres retorna todos los campos relevantes. El `InMemoryFeatureProvider` de bare-javac completa los nuevos campos.
+Definir `FeatureSnapshot` canónico en `pkg/risk-domain/src/main/java/io/riskplatform/poc/risk/engine/` con el superconjunto de campos: `customerAgeDays`, `chargebackCount90d`, `riskScore`, `country`. El repo Postgres retorna todos los campos relevantes. El `InMemoryFeatureProvider` de bare-javac completa los nuevos campos.
 
 **Esfuerzo:** medio.
 
@@ -132,7 +132,7 @@ Definir `FeatureSnapshot` canónico en `pkg/risk-domain/entity/` con el supercon
 Sin budget dinámico, el scorer puede consumir tiempo que no existe, causando que la respuesta HTTP supere el SLA aunque internamente haya tomado la decisión correcta. It is a key technical differentiator in staff-level design discussions.
 
 **Plan de unificación:**  
-Extraer `LatencyBudget` a `pkg/observability/` o `pkg/risk-domain/budget/`. `EvaluateRiskVerticle` recibe el budget a partir del timestamp del mensaje de EventBus y lo pasa al scorer. Requiere cambiar la interfaz del verticle para aceptar un timeout de entrada.
+Extraer `LatencyBudget` a `pkg/observability/` o `pkg/risk-domain/src/main/java/io/riskplatform/poc/risk/engine/`. `EvaluateRiskVerticle` recibe el budget a partir del timestamp del mensaje de EventBus y lo pasa al scorer. Requiere cambiar la interfaz del verticle para aceptar un timeout de entrada.
 
 **Esfuerzo:** medio.
 
@@ -148,7 +148,7 @@ Extraer `LatencyBudget` a `pkg/observability/` o `pkg/risk-domain/budget/`. `Eva
 The CB is the most frequently discussed resilience pattern in distributed systems design reviews. Sin él el PoC Vert.x no demuestra degradación controlada bajo fallo del dependency externo.
 
 **Plan de unificación:**  
-Definir `CircuitBreakerPort` como interfaz en `pkg/risk-domain/ports/`. La implementación concreta queda en `pkg/infrastructure/resilience/`. Ambos PoCs inyectan la implementación. Esto también resuelve una futura violación ArchUnit si se activa la regla de que domain no depende de infraestructura.
+Definir `CircuitBreakerPort` como interfaz en `pkg/risk-domain/src/main/java/io/riskplatform/poc/risk/engine/`. La implementación concreta queda en `pkg/resilience/src/main/java/io/riskplatform/poc/pkg/resilience/`. Ambos PoCs inyectan la implementación. Esto también resuelve una futura violación ArchUnit si se activa la regla de que domain no depende de infraestructura.
 
 **Esfuerzo:** bajo (la implementación ya existe; falta el port y el wire en Vertx).
 
@@ -206,14 +206,14 @@ Documentar la diferencia como decisión intencional. Si se unifica el dominio, `
 
 | Step | Acción | Module destino | Quién consume | Phase |
 |---|---|---|---|---|
-| 1 | Extraer `FraudRule` interface + `HighAmountRule` + `NewDeviceYoungCustomerRule` | `pkg/risk-domain/rules/` | bare-javac + vertx-distributed | Phase 2 |
-| 2 | Definir `FeatureSnapshot` canónico (superconjunto de campos de ambos PoCs) | `pkg/risk-domain/entity/` | ambos | Phase 2 |
-| 3 | Extraer `RuleBasedDecisionPolicy`, `ScoreDecisionPolicy`, `FallbackDecisionPolicy` | `pkg/risk-domain/service/` | ambos | Phase 2 |
-| 4 | Extraer `LatencyBudget` | `pkg/risk-domain/budget/` o `pkg/observability/` | ambos | Phase 2 |
-| 5 | Definir `CircuitBreakerPort` (interface) en domain; mover impl a infra | `pkg/risk-domain/ports/` + `pkg/infrastructure/resilience/` | ambos (resuelve ArchUnit) | Phase 2 |
+| 1 | Extraer `FraudRule` interface + `HighAmountRule` + `NewDeviceYoungCustomerRule` | `pkg/risk-domain/src/main/java/io/riskplatform/poc/risk/rule/` | bare-javac + vertx-distributed | Phase 2 |
+| 2 | Definir `FeatureSnapshot` canónico (superconjunto de campos de ambos PoCs) | `pkg/risk-domain/src/main/java/io/riskplatform/poc/risk/engine/` | ambos | Phase 2 |
+| 3 | Extraer `RuleBasedDecisionPolicy`, `ScoreDecisionPolicy`, `FallbackDecisionPolicy` | `pkg/risk-domain/src/main/java/io/riskplatform/poc/risk/engine/` | ambos | Phase 2 |
+| 4 | Extraer `LatencyBudget` | `pkg/risk-domain/src/main/java/io/riskplatform/poc/risk/engine/` o `pkg/observability/` | ambos | Phase 2 |
+| 5 | Definir `CircuitBreakerPort` (interface) en domain; mover impl a infra | `pkg/risk-domain/src/main/java/io/riskplatform/poc/risk/engine/` + `pkg/resilience/src/main/java/io/riskplatform/poc/pkg/resilience/` | ambos (resuelve ArchUnit) | Phase 2 |
 | 6 | Implementar `IdempotencyStore` en `EvaluateRiskVerticle` (in-memory con `ConcurrentHashMap`) | `usecase-app` | vertx-distributed | Phase 2 |
 | 7 | Agregar `newDevice` a `RiskRequest` shared + `customerAgeDays` a `FeatureSnapshot` shared + schema Postgres | `shared/`, `repository-app/`, `DbBootstrap.java` | vertx-distributed | Phase 2 |
-| 8 | Alinear umbrales `ScoreDecisionPolicy` entre PoCs (definir score range canónico) | `pkg/risk-domain/service/` | ambos | Phase 2 |
+| 8 | Alinear umbrales `ScoreDecisionPolicy` entre PoCs (definir score range canónico) | `pkg/risk-domain/src/main/java/io/riskplatform/poc/risk/engine/` | ambos | Phase 2 |
 | 9 | Outbox real con Postgres transacción + relay en `usecase-app` | `pkg/events/` + `usecase-app` | vertx-distributed | Phase 2 + AWS wire |
 | 10 | Activar ArchUnit en ambos PoCs usando el módulo compartido de dominio | módulo de test de cada PoC | ambos | Phase 2 |
 | 11 | Reemplazar `InMemoryDecisionIdempotencyStore` de Vertx por SetNX en Valkey | `usecase-app` infra layer | vertx-distributed | AWS wire (post Phase 2) |
@@ -231,9 +231,9 @@ La paridad lógica está cerrada. La duplicación es deuda técnica intencional 
 ## 5. Lo que SI es paritario
 
 - **Vocabulario de decisión:** APPROVE, REVIEW, DECLINE aparecen con los mismos nombres en ambos PoCs. Bare-javac usa `enum Decision`; Vertx usa String constants en factory methods. Un módulo shared puede exponer el enum y los dos consumen lo mismo.
-- **Estructura de paquetes:** ambos siguen `controller → usecase → domain → infrastructure/repository`. Bare-javac lo hace con paquetes Java explícitos; Vertx lo hace con módulos Maven separados que mapean a pods. El principio es idéntico.
+- **Estructura de paquetes:** ambos siguen `controller → usecase → domain → infrastructure/repository`. Bare-javac lo hace con paquetes Java explícitos; Vertx lo hace con módulos Gradle separados que mapean a pods. El principio es idéntico.
 - **Correlación ID end-to-end:** los dos propagan `correlationId` desde el header HTTP hasta el log estructurado del resultado. La mecánica difiere (value object vs. MDC String) pero el commitment de observabilidad es el mismo.
-- **Records compartibles:** `TransactionId`, `CustomerId`, `Money`, `CorrelationId`, `IdempotencyKey` en bare-javac son records Java sin dependencias. Pueden moverse a `pkg/risk-domain/entity/` y ser consumidos directamente por Vertx shared con cero cambios de lógica.
+- **Records compartibles:** `TransactionId`, `CustomerId`, `Money`, `CorrelationId`, `IdempotencyKey` en bare-javac son records Java sin dependencias. Pueden moverse a `pkg/risk-domain/src/main/java/io/riskplatform/poc/risk/engine/` y ser consumidos directamente por Vertx shared con cero cambios de lógica.
 - **Estilo de tests ATDD:** bare-javac tiene smoke tests con asserts explícitos que validan behavior desde afuera (idempotencia, trace, HTTP). Vertx tiene una suite Karate completa con 10 feature files. Ambos validan el comportamiento observable, no la implementación interna. La diferencia es el framework, no la filosofia.
 - **Fake ML scorer con comportamiento no trivial:** los dos implementan un scorer que produce variabilidad (bare-javac: latencia aleatoria + error aleatorio + score calculado; Vertx: score pre-materializado en DB con valor fijo por customer). Ninguno hardcodea siempre el mismo resultado.
 - **Separación de responsabilidades controller / usecase / repository:** en ninguno de los dos el controller toma decisiones de negocio, y el repositorio no conoce la policy de decisión. La separación está respetada en ambos.

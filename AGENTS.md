@@ -17,10 +17,10 @@ Este repo es una exploración técnica de un caso de uso de detección de fraude
 ## 2. Layout del repo
 
 ```
-practica-entrevista/
+risk-platform-practice/
 ├── poc/
 │   ├── java-risk-engine/        # Clean Architecture sin frameworks (bare-javac)
-│   ├── java-vertx-distributed/  # Vert.x 5, 4 modulos Maven, layer-as-pod
+│   ├── java-vertx-distributed/  # Vert.x 5, 4 modulos Gradle, layer-as-pod
 │   ├── vertx-risk-platform/     # Plataforma Vert.x completa (todos los patrones)
 │   └── k8s-local/               # k3d/OrbStack + ArgoCD + addons completos
 ├── tests/
@@ -42,8 +42,8 @@ Arquitectura completa: [.ai/context/architecture.md](.ai/context/architecture.md
 | PoC | Que demuestra | Como correr |
 |---|---|---|
 | `java-risk-engine` | Clean Architecture pura, benchmarks | `./scripts/run.sh` |
-| `java-vertx-distributed` | Arquitectura distribuida Vert.x | `docker-compose up && mvn test -pl atdd-tests` |
-| `vertx-risk-platform` | REST+SSE+WS+Webhook+Kafka+OTEL | `mvn package && ./scripts/run.sh` |
+| `java-vertx-distributed` | Arquitectura distribuida Vert.x | `./nx up vertx && ./gradlew :poc:java-vertx-distributed:atdd-tests:test -Patdd` |
+| `vertx-risk-platform` | REST+SSE+WS+Webhook+Kafka+OTEL | `./gradlew shadowJar && ./scripts/run.sh` |
 | `k8s-local` | ArgoCD, canary, SLO, AWS mocks | `./scripts/up.sh` |
 
 Inventario completo: [.ai/context/poc-inventory.md](.ai/context/poc-inventory.md)
@@ -54,9 +54,8 @@ Inventario completo: [.ai/context/poc-inventory.md](.ai/context/poc-inventory.md
 
 Estas 5 reglas se aplican en TODO el codigo de este repo. No hay excepciones.
 
-### R1: Java 25 LTS
-Java 25 canonico. NO bajar a 21. NO subir a 26 (no es LTS).
-`<maven.compiler.release>25</maven.compiler.release>` en todo pom.xml.
+### R1: Java baseline real + objetivo LTS
+Baseline ejecutable actual: **Java 21 LTS** (`--release 21`) por compatibilidad de Gradle/JMH/Karate/ArchUnit. Objetivo documentado: **Java 25 LTS** cuando el tooling soporte classfile 25 sin fricción. No afirmar Java 25 como build real si el repo compila con 21.
 Regla completa: [.ai/primitives/rules/java-version.md](.ai/primitives/rules/java-version.md)
 
 ### R2: Layout enterprise Go en Java

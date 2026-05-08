@@ -1,14 +1,14 @@
 ---
 name: add-jacoco-coverage-target
-intent: Agregar o actualizar un target de cobertura JaCoCo en un modulo Maven
+intent: Agregar o actualizar un target de cobertura JaCoCo en un modulo Gradle
 inputs: [module_path, line_coverage_target, branch_coverage_target]
 preconditions:
-  - pom.xml del modulo existe
+  - build.gradle.kts del modulo existe
   - Hay tests ejecutables en el modulo
 postconditions:
-  - JaCoCo plugin configurado en pom.xml
-  - mvn verify falla si coverage < target
-  - Reporte generado en target/site/jacoco/
+  - JaCoCo plugin configurado en build.gradle.kts
+  - ./gradlew test jacocoTestReport falla si coverage < target
+  - Reporte generado en build/reports/jacoco/test/
 related_rules: [java-version, testing-atdd]
 ---
 
@@ -16,11 +16,11 @@ related_rules: [java-version, testing-atdd]
 
 ## Pasos
 
-1. **Agregar plugin en pom.xml**:
+1. **Agregar plugin en build.gradle.kts**:
    ```xml
    <plugin>
      <groupId>org.jacoco</groupId>
-     <artifactId>jacoco-maven-plugin</artifactId>
+     <artifactId>jacoco-gradle-plugin</artifactId>
      <version>0.8.12</version>
      <executions>
        <execution>
@@ -70,11 +70,11 @@ related_rules: [java-version, testing-atdd]
    </configuration>
    ```
 
-3. **Verificar**: `mvn verify -pl <module>`. El build falla si coverage < target.
+3. **Verificar**: `./gradlew :<module-path>:test :<module-path>:jacocoTestReport`. El build falla si coverage < target.
 
-4. **Ver reporte**: abrir `<module>/target/site/jacoco/index.html`.
+4. **Ver reporte**: abrir `<module>/build/reports/jacoco/test/index.html`.
 
 ## Notas
-- JaCoCo 0.8+ soporta Java 25.
-- Para PoC bare-javac sin Maven: generar reporte manualmente con `jacoco-cli.jar`.
+- JaCoCo corre sobre el baseline actual Java 21; validar compatibilidad antes de subir classfile target.
+- Para PoC bare-javac sin Gradle: generar reporte manualmente con `jacoco-cli.jar`.
 - El target de coverage debe ser realista: no pongas 100% si hay codigo de infraestructura dificil de testear.

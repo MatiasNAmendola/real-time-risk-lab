@@ -33,7 +33,7 @@ related_rules: [naming-conventions]
 
 | Componente | Version |
 |---|---|
-| Java | 25 LTS |
+| Java | 21 LTS baseline (`--release 21`); Java 25 objetivo documentado |
 | Vert.x | 5.0.12 |
 | ... | ... |
 
@@ -49,8 +49,8 @@ related_rules: [naming-conventions]
 
 ### Prerequisitos
 - Docker Desktop / OrbStack corriendo
-- Java 25 en PATH (`java -version`)
-- Maven 3.9+ (`mvn -version`)
+- JDK 21+ en PATH (`java -version`); Java 25 es opcional
+- Gradle 3.9+ (`./gradlew --version`)
 
 ### Levantar dependencias
 ```bash
@@ -59,7 +59,7 @@ docker-compose up -d
 
 ### Compilar y correr
 ```bash
-mvn package -DskipTests
+./gradlew shadowJar
 ./scripts/run.sh
 ```
 

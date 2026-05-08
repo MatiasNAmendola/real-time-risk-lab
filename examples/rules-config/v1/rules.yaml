@@ -1,6 +1,6 @@
 # rules.yaml — v1.0.0
 # Config inicial del motor de reglas declarativo.
-# Propietario: Risk Team — NaranjaX
+# Propietario: Risk Team — Risk Decision Platform
 # Este archivo es la fuente de verdad para el PoC.
 # En produccion se sincroniza via ArgoCD a un ConfigMap k8s.
 

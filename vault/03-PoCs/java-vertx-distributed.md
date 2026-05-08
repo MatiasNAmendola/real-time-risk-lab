@@ -25,7 +25,7 @@ Plataforma de riesgo distribuida con [[Layer-as-Pod]] usando Vert.x 5 + Hazelcas
 | Java | 25 LTS |
 | Vert.x | 5.x |
 | Hazelcast | 5.x (cluster manager TCP) |
-| Maven | multi-módulo |
+| Gradle | multi-módulo |
 | OTel Java agent | 2.x |
 | Kafka | Redpanda (local) |
 

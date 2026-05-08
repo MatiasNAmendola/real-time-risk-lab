@@ -1,5 +1,5 @@
 plugins {
-    id("naranja.fatjar-conventions")
+    id("riskplatform.fatjar-conventions")
 }
 
 val libs = the<org.gradle.accessors.dm.LibrariesForLibs>()
@@ -10,7 +10,7 @@ dependencies {
     annotationProcessor(libs.jmh.annprocess)
     implementation(libs.jackson.databind)
 
-    // Risk-engine sources (replaces build-helper-maven-plugin add-source)
+    // Risk-engine sources (replaces the legacy extra source-set wiring)
     implementation(project(":poc:java-risk-engine"))
     implementation(project(":pkg:risk-domain"))
 }

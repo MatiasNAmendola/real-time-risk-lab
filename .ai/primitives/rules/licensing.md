@@ -1,6 +1,6 @@
 ---
 name: licensing
-applies_to: ["**/pom.xml", "**/docker-compose*.yml", "**/go.mod"]
+applies_to: ["**/build.gradle.kts", "**/docker-compose*.yml", "**/go.mod"]
 priority: medium
 ---
 
@@ -12,7 +12,7 @@ priority: medium
 |---|---|---|
 | Java / OpenJDK | GPL v2 + Classpath Exception | Libre para uso |
 | Vert.x 5 | Apache 2.0 | Libre para uso y redistribucion |
-| Maven | Apache 2.0 | Libre |
+| Gradle | Apache 2.0 | Libre |
 | Karate | MIT | Libre |
 | Cucumber-JVM | MIT | Libre |
 | JaCoCo | EPL 2.0 | Libre (con atribucion) |
@@ -50,7 +50,7 @@ priority: medium
 
 ## Agregar nueva dependencia
 
-Antes de agregar una dependencia al pom.xml o go.mod:
-1. Verificar licencia en Maven Central o la documentacion oficial.
+Antes de agregar una dependencia al build.gradle.kts o go.mod:
+1. Verificar licencia en JVM artifact registry o la documentacion oficial.
 2. Si es AGPL o GPL: consultar con el equipo antes de incluir.
 3. Documentar en este archivo si es una licencia no-estandar.

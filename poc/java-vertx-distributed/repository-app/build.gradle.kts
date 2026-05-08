@@ -1,5 +1,5 @@
 plugins {
-    id("naranja.fatjar-conventions")
+    id("riskplatform.fatjar-conventions")
 }
 
 val libs = the<org.gradle.accessors.dm.LibrariesForLibs>()
@@ -20,6 +20,6 @@ tasks.named<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar>("shadowJ
     archiveBaseName.set("repository-app")
     archiveClassifier.set("")
     manifest {
-        attributes("Main-Class" to "com.naranjax.distributed.repository.RepositoryMain")
+        attributes("Main-Class" to "io.riskplatform.distributed.repository.RepositoryMain")
     }
 }

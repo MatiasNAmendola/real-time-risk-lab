@@ -1,6 +1,6 @@
 plugins {
-    id("naranja.fatjar-conventions")
-    id("naranja.testing-conventions")
+    id("riskplatform.fatjar-conventions")
+    id("riskplatform.testing-conventions")
 }
 
 val libs = the<org.gradle.accessors.dm.LibrariesForLibs>()
@@ -51,7 +51,8 @@ tasks.withType<Test>().configureEach {
 tasks.named<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar>("shadowJar") {
     archiveBaseName.set("java-monolith")
     archiveClassifier.set("")
+    archiveVersion.set("")
     manifest {
-        attributes("Main-Class" to "com.naranjax.monolith.Application")
+        attributes("Main-Class" to "io.riskplatform.monolith.Application")
     }
 }

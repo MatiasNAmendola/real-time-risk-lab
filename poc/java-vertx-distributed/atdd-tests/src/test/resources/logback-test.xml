@@ -13,7 +13,7 @@
 
   <!-- File: DEBUG — full Karate + app logs for post-test report generation -->
   <appender name="FILE" class="ch.qos.logback.core.FileAppender">
-    <file>target/karate-reports/karate.log</file>
+    <file>build/karate-reports/karate.log</file>
     <append>false</append>
     <encoder>
       <pattern>%d{HH:mm:ss.SSS} [%-5level] [%logger{36}] %msg%n</pattern>
@@ -29,7 +29,7 @@
   </logger>
 
   <!-- Our own support helpers at DEBUG -->
-  <logger name="com.naranjax.atdd" level="DEBUG">
+  <logger name="io.riskplatform.atdd" level="DEBUG">
     <appender-ref ref="FILE"/>
   </logger>
 

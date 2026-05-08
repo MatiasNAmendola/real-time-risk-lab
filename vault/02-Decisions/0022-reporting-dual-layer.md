@@ -15,7 +15,7 @@ Aceptado el 2026-05-07.
 
 ## Contexto
 
-The CLI smoke runner (`cli/risk-smoke/`) y benchmark runner (`poc/java-risk-engine/BenchmarkRunner`) need un report results en two contexts: interactive terminal sessions durante development/demo, y non-interactive CI/CD pipelines where output es captured un files para later analysis.
+The CLI smoke runner (`cli/risk-smoke/`) y benchmark runner (`poc/java-risk-engine/src/main/java/io/riskplatform/engine/cmd/BenchmarkRunner.java`) need un report results en two contexts: interactive terminal sessions durante development/demo, y non-interactive CI/CD pipelines where output es captured un files para later analysis.
 
 For la smoke demo, la output must communicate a un glance: did todos 9 communication channels pass? What fue la p99 latency? For CI, la raw data must be archived en `out/` para trend analysis y reproducibility verification.
 
@@ -60,7 +60,7 @@ The `out/` directory es gitignored — results son local artifacts, no source co
 
 ### Mitigaciones
 - `out/` es gitignored; cleanup es un `rm -rf out/` command.
-- doc 12 references specific `out/inprocess/{timestamp}.json` files que should be preserved como documentation artifacts (copied un `docs/benchmarks/` if long-term preservation es needed).
+- doc 12 references specific `out/inprocess/{timestamp}.json` files que should be preserved como documentation artifacts (preserved under `out/` if long-term preservation es needed).
 
 ## Validación
 

@@ -17,7 +17,7 @@ Aceptado el 2026-05-07.
 
 Clean architecture's dependency rule — domain cannot depend en infrastructure, application cannot depend en infrastructure controllers — es un convention enforced por naming y package structure. In un bare-javac project con no framework un enforce it, un developer can accidentally import `HttpController` desde `domain/` sin any compile error. La violation es invisible until un code reviewer catches it.
 
-`tests/architecture/` provides un standalone Maven module que imports la compiled bytecode de ambos PoCs y verifies structural rules using ArchUnit. La rules include: no `domain.*` class may import desde `infrastructure.*`; no `application.*` class may import `infrastructure.controller.*`; use case interfaces must be en `domain.usecase`, no `application.usecase`; etc.
+`tests/architecture/` provides un standalone Gradle module que imports la compiled bytecode de ambos PoCs y verifies structural rules using ArchUnit. La rules include: no `domain.*` class may import desde `infrastructure.*`; no `application.*` class may import `infrastructure.controller.*`; use case interfaces must be en `domain.usecase`, no `application.usecase`; etc.
 
 ArchUnit operates en bytecode — it analyzes compiled `.class` files, no source — so it catches violations even when package naming es consistent pero import paths son wrong.
 
@@ -31,7 +31,7 @@ Two test classes cover la two PoCs independently, allowing architectural evoluti
 
 ### Opción A: ArchUnit bytecode analysis (elegida)
 - **Ventajas**: Operates en compiled bytecode — catches violations regardless de IDE o tooling; rules son executable y version-controlled alongside la code; failure messages include la specific import violation y line number; supports layering rules, package naming rules, class annotation rules, y cycle detection.
-- **Desventajas**: Requires la PoC JARs para ser compiled antes de ArchUnit tests run (build order dependency); ArchUnit es un external dependency en `tests/architecture/pom.xml`; rule language es Java-based (not DSL), requiring algunos ArchUnit API knowledge.
+- **Desventajas**: Requires la PoC JARs para ser compiled antes de ArchUnit tests run (build order dependency); ArchUnit es un external dependency en `tests/architecture/build.gradle.kts`; rule language es Java-based (not DSL), requiring algunos ArchUnit API knowledge.
 - **Por qué se eligió**: ArchUnit es la industry standard para architectural verification en Java. La bytecode analysis approach catches violations que convention-based approaches miss. La test output es un CI artifact que proves la architecture es enforced, no just intended.
 
 ### Opción B: Manual code review + naming conventions
@@ -58,18 +58,18 @@ Two test classes cover la two PoCs independently, allowing architectural evoluti
 
 ### Negativo
 - `tests/architecture/` module must be compiled y run después de la PoC JARs son built — dependency en CI pipeline.
-- ArchUnit rules using string-based package names (`"com.naranjax.interview.risk.domain.."`) son brittle if packages son refactored — rules must be updated con la refactoring.
+- ArchUnit rules using string-based package names (`"io.riskplatform.engine.domain.."`) son brittle if packages son refactored — rules must be updated con la refactoring.
 - False negative risk: ArchUnit loads bytecode desde la target directory — if la PoC es no recompiled después de un violation es introduced, la old bytecode es analyzed y la test may pass.
 
 ### Mitigaciones
-- CI build order: `mvn -pl poc/java-risk-engine clean package` antes de `mvn -pl tests/architecture verify`.
+- CI build order: `./gradlew -pl poc/java-risk-engine clean package` antes de `./gradlew -pl tests/architecture verify`.
 - Package rename refactorings trigger immediate ArchUnit test failures (rules reference la old package name) — este es un feature, no un bug: la rules must be updated explicitly.
 
 ## Validación
 
-- `cd tests/architecture && mvn test` passes con ambos `BareJavacArchitectureTest` y `VertxDistributedArchitectureTest` green.
-- Manually adding `import com.naranjax.interview.risk.infrastructure.controller.HttpController` a un domain class causes `BareJavacArchitectureTest` un fail con un specific violation message.
-- `tests/architecture/target/surefire-reports/` contains XML reports (verified: files exist).
+- `cd tests/architecture && ./gradlew test` passes con ambos `BareJavacArchitectureTest` y `VertxDistributedArchitectureTest` green.
+- Manually adding `import io.riskplatform.engine.infrastructure.controller.HttpController` a un domain class causes `BareJavacArchitectureTest` un fail con un specific violation message.
+- `out/test-runner/latest/job-arch.log` contains XML reports (verified: files exist).
 
 ## Relacionado
 
@@ -80,4 +80,4 @@ Two test classes cover la two PoCs independently, allowing architectural evoluti
 ## Referencias
 
 - ArchUnit: https://www.archunit.org/
-- `tests/architecture/src/test/java/com/naranjax/arch/`
+- `tests/architecture/src/test/java/io/riskplatform/arch/`

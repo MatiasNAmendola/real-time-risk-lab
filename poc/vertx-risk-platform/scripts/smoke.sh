@@ -5,6 +5,9 @@ REPO_ROOT="$(cd "$ROOT/../.." && pwd)"
 
 source "$REPO_ROOT/scripts/lib/output.sh"
 init_output "vertx-platform-smoke"
+CONTROLLER_PORT="${CONTROLLER_PORT:-18080}"
+USECASE_PORT="${USECASE_PORT:-18081}"
+REPOSITORY_PORT="${REPOSITORY_PORT:-18082}"
 
 run_check() {
   local label="$1"; shift
@@ -26,24 +29,24 @@ run_check() {
 SMOKE_FAIL=0
 
 printf '\n-- health --\n' | tee -a "$OUT_DIR/stdout.log"
-run_check "controller health" http://localhost:8080/health
-run_check "usecase health"    http://localhost:8081/health
-run_check "repository health" http://localhost:8082/health
+run_check "controller health" http://localhost:${CONTROLLER_PORT}/health
+run_check "usecase health"    http://localhost:${USECASE_PORT}/health
+run_check "repository health" http://localhost:${REPOSITORY_PORT}/health
 
 printf '\n-- evaluate --\n' | tee -a "$OUT_DIR/stdout.log"
 run_check "evaluate tx-001" \
-  -X POST http://localhost:8080/risk/evaluate \
+  -X POST http://localhost:${CONTROLLER_PORT}/risk/evaluate \
   -H 'content-type: application/json' \
   -d '{"transactionId":"tx-vertx-001","customerId":"user-123","amountInCents":70000,"newDevice":false,"correlationId":"corr-vertx-001","idempotencyKey":"idem-vertx-001"}'
 
 printf '\n-- idempotent retry --\n' | tee -a "$OUT_DIR/stdout.log"
 run_check "idempotent retry" \
-  -X POST http://localhost:8080/risk/evaluate \
+  -X POST http://localhost:${CONTROLLER_PORT}/risk/evaluate \
   -H 'content-type: application/json' \
   -d '{"transactionId":"tx-vertx-001","customerId":"user-123","amountInCents":70000,"newDevice":false,"correlationId":"corr-vertx-retry","idempotencyKey":"idem-vertx-001"}'
 
 printf '\n-- controller cannot access repository --\n' | tee -a "$OUT_DIR/stdout.log"
-curl -sS http://localhost:8080/debug/try-repository 2>&1 | head -20 | tee -a "$OUT_DIR/stdout.log"
+curl -sS http://localhost:${CONTROLLER_PORT}/debug/try-repository 2>&1 | head -20 | tee -a "$OUT_DIR/stdout.log"
 
 {
   echo "# Vertx Risk Platform Smoke"

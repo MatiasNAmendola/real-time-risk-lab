@@ -1,0 +1,39 @@
+# Faster intervals so the test suite finishes in minutes, not hours.
+# Used by CanaryRolloutTest and CanaryRollbackTest via `helm -f`.
+replicaCount: 3
+
+image:
+  repository: ghcr.io/riskplatform/risk-engine
+  tag: v1
+  pullPolicy: IfNotPresent
+
+ingress:
+  enabled: false
+
+externalSecret:
+  enabled: false
+
+# Argo Rollouts canary tuned for tests: short pauses, same step shape.
+rollouts:
+  enabled: true
+  canary:
+    pauseSeconds: 5      # production = 30
+    analysisInterval: 5s
+    successCondition: "result[0] >= 0.99"
+
+# Permissive readiness so test images come up fast.
+readinessProbe:
+  httpGet:
+    path: /readyz
+    port: 8080
+  initialDelaySeconds: 2
+  periodSeconds: 2
+  failureThreshold: 3
+
+livenessProbe:
+  httpGet:
+    path: /healthz
+    port: 8080
+  initialDelaySeconds: 5
+  periodSeconds: 5
+  failureThreshold: 3

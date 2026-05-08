@@ -4,7 +4,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/naranjax/risk-smoke/internal/config"
+	"github.com/riskplatform/risk-smoke/internal/config"
 )
 
 func TestDefault_Defaults(t *testing.T) {

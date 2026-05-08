@@ -72,7 +72,7 @@ spec:
 
               aws --endpoint-url http://moto.aws-mocks.svc:5000 secretsmanager create-secret \
                 --name risk-engine/db-password \
-                --secret-string '{"password":"poc-db-pass-123"}' \
+                --secret-string "{\"password\":\"${POC_DB_PASSWORD:-local-dev-password}\"}" \
                 --region us-east-1 \
                 2>/dev/null || true
 

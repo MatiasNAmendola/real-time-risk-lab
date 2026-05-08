@@ -26,7 +26,7 @@ The constraint es engineering time: two PoCs que share no production code requir
 Maintain two separate PoCs con different scopes y different primary audiences:
 
 - `poc/java-risk-engine/`: bare-javac, no framework, demonstrates domain modeling, clean architecture dependency rules, virtual threads, circuit breaker, outbox pattern, idempotency, y JMH benchmarking. Primary señal de diseño: "domain logic can be designed y implemented sin framework crutches."
-- `poc/java-vertx-distributed/`: Vert.x 5 multi-module Maven reactor, demonstrates layer-as-pod physical distribution, event bus cluster, Kafka integration, SSE, WebSocket, webhook fan-out, full OTEL instrumentation. Primary señal de diseño: "distributed systems tradeoffs son understood y implementable here."
+- `poc/java-vertx-distributed/`: Vert.x 5 multi-module Gradle multi-project build, demonstrates layer-as-pod physical distribution, event bus cluster, Kafka integration, SSE, WebSocket, webhook fan-out, full OTEL instrumentation. Primary señal de diseño: "distributed systems tradeoffs son understood y implementable here."
 
 The two PoCs converge en `pkg/*` shared modules (Gradle) para cross-cutting concerns, ensuring que duplication es bounded y intentional.
 

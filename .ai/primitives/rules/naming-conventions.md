@@ -1,6 +1,6 @@
 ---
 name: naming-conventions
-applies_to: ["**/*.java", "**/*.yaml", "**/*.sql", "**/*.md", "**/pom.xml"]
+applies_to: ["**/*.java", "**/*.yaml", "**/*.sql", "**/*.md", "**/build.gradle.kts"]
 priority: medium
 ---
 
@@ -15,7 +15,7 @@ priority: medium
 | Metodos | camelCase | `evaluateTransaction()`, `findById()` |
 | Variables | camelCase | `correlationId`, `amountARS` |
 | Constantes | SCREAMING_SNAKE_CASE | `MAX_RETRY_COUNT`, `DEFAULT_TIMEOUT_MS` |
-| Packages | lowercase.separado.puntos | `com.naranjax.interview.risk.domain.entity` |
+| Packages | lowercase.separado.puntos | `io.riskplatform.engine.domain.entity` |
 | Enums | PascalCase, valores SCREAMING_SNAKE | `RiskDecision.APPROVE`, `RiskDecision.DECLINE` |
 
 ## Archivos y directorios

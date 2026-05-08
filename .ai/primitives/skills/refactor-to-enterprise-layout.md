@@ -17,7 +17,7 @@ related_rules: [architecture-clean, clean-arch-boundaries, java-version, naming-
 
 ## Pasos
 
-1. **Snapshot antes**: `mvn test` verde, git commit.
+1. **Snapshot antes**: `./gradlew test` verde, git commit.
 
 2. **Mapear clases existentes a destino**:
    | Clase actual | Destino |
@@ -36,17 +36,17 @@ related_rules: [architecture-clean, clean-arch-boundaries, java-version, naming-
 3. **Mover archivos** (IntelliJ: Refactor > Move, o `mv` + sed para imports):
    ```bash
    # Ejemplo: mover y actualizar imports
-   find src -name "*.java" -exec sed -i 's/com.naranjax.old.RiskDecision/com.naranjax.domain.entity.RiskDecision/g' {} \;
+   find src -name "*.java" -exec sed -i 's/io.riskplatform.old.RiskDecision/io.riskplatform.domain.entity.RiskDecision/g' {} \;
    ```
 
 4. **Verificar boundary violations**:
    ```bash
    # domain/ no debe importar de application/ o infrastructure/
-   grep -r "import com.naranjax.infrastructure" src/main/java/com/naranjax/domain/ && echo "VIOLATION"
-   grep -r "import com.naranjax.application" src/main/java/com/naranjax/domain/ && echo "VIOLATION"
+   grep -r "import io.riskplatform.infrastructure" src/main/java/io/riskplatform/domain/ && echo "VIOLATION"
+   grep -r "import io.riskplatform.application" src/main/java/io/riskplatform/domain/ && echo "VIOLATION"
    ```
 
-5. **`mvn test`** verde de nuevo.
+5. **`./gradlew test`** verde de nuevo.
 
 ## Notas
 - Hacer el refactor en commits atomicos (mover entidades, luego application, luego infrastructure).

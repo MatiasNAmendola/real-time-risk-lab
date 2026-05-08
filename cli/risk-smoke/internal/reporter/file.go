@@ -10,7 +10,7 @@ import (
 	"text/template"
 	"time"
 
-	"github.com/naranjax/risk-smoke/internal/flows"
+	"github.com/riskplatform/risk-smoke/internal/flows"
 )
 
 // FileReporter writes structured reports under outDir/runID/.

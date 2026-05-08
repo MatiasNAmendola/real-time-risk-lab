@@ -7,9 +7,9 @@
  *
  * Run with: ./gradlew :sdks:contract-test:test
  */
-plugins { id("naranja.library-conventions") }
+plugins { id("riskplatform.library-conventions") }
 
-group   = "com.naranjax.poc"
+group   = "io.riskplatform.poc"
 version = "1.0.0-SNAPSHOT"
 
 dependencies {

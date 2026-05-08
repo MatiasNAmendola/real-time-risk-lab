@@ -45,5 +45,5 @@ related_rules: [architecture-clean, java-version, naming-conventions]
 
 ## Notas
 - VOs no tienen ID. Dos VOs con los mismos valores son iguales.
-- Preferir `record` en Java 25 por inmutabilidad garantizada y sintaxis concisa.
+- Preferir `record` (disponible desde Java 16; baseline actual Java 21) por inmutabilidad y sintaxis concisa.
 - No incluir logica que consulte infraestructura.

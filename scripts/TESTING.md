@@ -88,13 +88,13 @@ Provider auto-detection: checks for an `orbstack` kubectl context first, then fo
 
 ```bash
 # ArchUnit
-cd tests/architecture && mvn test
+cd tests/architecture && ./gradlew test
 
 # Cucumber ATDD (bare-javac engine)
 ./scripts/atdd-bare.sh
 
 # Testcontainers integration (Docker must be running)
-cd tests/integration && mvn -Pintegration verify
+cd tests/integration && ./gradlew -Pintegration verify
 
 # Go smoke checks (headless / CI)
 cd cli/risk-smoke && ./bin/risk-smoke --headless
@@ -178,14 +178,14 @@ cat out/test-all/latest/infra.log
 | Suite shows SKIP with "infra not up" | Run with `--with-infra-compose` or `--with-infra-k8s` |
 | Suite shows SKIP with "requires --with-infra-k8s" | k8s-smoke needs the k8s mode specifically |
 | `integration` shows SKIP with "Docker daemon not running" | Start Docker Desktop / OrbStack |
-| `arch` fails with "Could not find project" | Check `tests/architecture/pom.xml` exists |
+| `arch` fails with "Could not find project" | Check `tests/architecture/build.gradle.kts` exists |
 | `kubectl not found` | Run `./setup.sh --only kubernetes` |
 | `helm not found` | Run `./setup.sh --only kubernetes` |
 | `k3d not found` | Run `./setup.sh --only kubernetes` |
 | `ERROR: --with-infra-compose and --with-infra-k8s are mutually exclusive` | Choose one infra mode |
 | risk-engine pods not Ready | Check `infra.log`; run `kubectl get pods -n risk` manually |
 | Port-forward not binding | Another process may hold the port; kill it and re-run |
-| Maven timeout | Increase timeout in `test-all.sh` (default 600 s) or run the suite directly |
+| Gradle timeout | Increase timeout in `test-all.sh` (default 600 s) or run the suite directly |
 
 For any failed suite:
 

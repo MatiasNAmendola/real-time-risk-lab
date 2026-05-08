@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Post-process Cucumber JSON + JaCoCo into structured report tree.
 # Usage: ./scripts/report.sh [exit_code]
-# Called automatically from root scripts/atdd-bare.sh after mvn test.
+# Called automatically from root scripts/atdd-bare.sh after Gradle test.
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -9,10 +9,10 @@ ATDD_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 PROJECT_ROOT="$(cd "$ATDD_DIR/../.." && pwd)"
 
 # Input artifacts
-CUCUMBER_JSON="$ATDD_DIR/target/cucumber-reports/report.json"
-CUCUMBER_LOG="$ATDD_DIR/target/cucumber.log"
-JACOCO_XML="$ATDD_DIR/target/site/jacoco/jacoco.xml"
-JACOCO_HTML_INDEX="$ATDD_DIR/target/site/jacoco/index.html"
+CUCUMBER_JSON="$ATDD_DIR/build/cucumber-reports/report.json"
+CUCUMBER_LOG="$ATDD_DIR/build/cucumber.log"
+JACOCO_XML="$ATDD_DIR/build/reports/jacoco/test/jacocoTestReport.xml"
+JACOCO_HTML_INDEX="$ATDD_DIR/build/reports/jacoco/test/html/index.html"
 
 # Output tree
 TIMESTAMP="$(date -u '+%Y-%m-%dT%H-%M-%S')"

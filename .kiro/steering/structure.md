@@ -2,7 +2,7 @@
 inclusion: fileMatch
 filePatterns:
   - "**/*.java"
-  - "**/pom.xml"
+  - "**/build.gradle.kts"
 ---
 
 # Project Structure

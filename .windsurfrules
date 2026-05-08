@@ -1,19 +1,19 @@
-# NaranjaX practica-entrevista — Windsurf Rules (legacy compat, pre-Wave 8)
+# Risk Decision Platform practice — Windsurf Rules (legacy compat, pre-Wave 8)
 # Para Windsurf Wave 8+, las rules estan en .windsurf/rules/*.md
 
 ## Proyecto
 
-Preparacion para entrevista tecnica NaranjaX Transactional Risk (Staff/Architect).
+Preparacion tecnica Risk Decision Platform Transactional Risk (Staff/Architect).
 Sistema de fraude tiempo real: 150 TPS, p99 < 300ms.
-Stack: Java 25 LTS, Vert.x 5.0.12, Maven, Postgres 16, Valkey 8, Redpanda, k3d/OrbStack.
+Stack: Java 21 LTS baseline operativo, Gradle Kotlin DSL, Vert.x 5.0.12, Postgres 16, Valkey 8, Redpanda, k3d/OrbStack.
 
 Full context: .ai/context/architecture.md
 
 ## Java version
 
-- Java 25 LTS canonico. NO downgrade a 21. NO upgrade a 26.
-- --release 25 en todo pom.xml.
-- Virtual threads para I/O bloqueante.
+- Java 21 LTS es el baseline ejecutable actual via Gradle (`--release 21`). Java 25 LTS queda como objetivo futuro documentado.
+- Gradle Kotlin DSL es la build canonica.
+- Gradle Kotlin DSL es la build canonica.
 - Records para Value Objects.
 
 ## Clean Architecture layout

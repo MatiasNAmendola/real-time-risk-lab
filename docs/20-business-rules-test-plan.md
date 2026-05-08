@@ -183,7 +183,7 @@ Implementacion sugerida del test: usar `CountDownLatch` para sincronizar el inic
 
 ## 3. Escenarios ATDD (Karate + Cucumber)
 
-Archivo: `tests/integration/features/12_backoffice_rules.feature`
+Archivo: `tests/risk-engine-atdd/src/test/resources/features/12_backoffice_rules.feature`
 
 ### Escenario 1: Risk admin baja threshold y decision cambia
 

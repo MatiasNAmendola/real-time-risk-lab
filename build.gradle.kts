@@ -7,7 +7,7 @@ plugins {
 }
 
 allprojects {
-    group = "com.naranjax.poc"
+    group = "io.riskplatform.poc"
     version = "0.1.0-SNAPSHOT"
 }
 

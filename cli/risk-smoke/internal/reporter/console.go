@@ -6,7 +6,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/naranjax/risk-smoke/internal/flows"
+	"github.com/riskplatform/risk-smoke/internal/flows"
 )
 
 // ConsoleReporter writes one-line-per-check output to a writer (usually os.Stdout).

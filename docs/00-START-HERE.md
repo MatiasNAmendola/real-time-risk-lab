@@ -22,9 +22,11 @@ Una exploración técnica de un use case de detección de fraude productivo, que
 ### Si tu objetivo es entender la arquitectura
 
 1. **`docs/12-rendimiento-y-separacion.md`** — comparación de las 3 arquitecturas con números reales. La pieza central.
-2. **`docs/04-clean-architecture-java.md`** — Clean Architecture aplicada a Java enterprise.
-3. **`docs/13-paridad-logica-poc.md`** — qué cambia y qué NO cambia entre las 3 PoCs.
-4. **`vault/02-Decisions/`** — 37 ADRs con análisis de alternativas Opción A/B/C/D.
+2. **`docs/38-java-apps-architecture-performance-matrix.md`** — matriz de apps Java: misma lógica, distintas topologías/stacks y beneficios de Vert.x.
+3. **`docs/37-java-go-performance-positioning.md`** — investigación con fuentes primarias: Java moderno vs Go en performance/concurrencia.
+4. **`docs/04-clean-architecture-java.md`** — Clean Architecture aplicada a Java enterprise.
+5. **`docs/13-paridad-logica-poc.md`** — qué cambia y qué NO cambia entre las PoCs.
+6. **`vault/02-Decisions/`** — 37 ADRs con análisis de alternativas Opción A/B/C/D.
 
 ### Si tu objetivo es entender el enfoque de testing
 
@@ -43,6 +45,7 @@ Una exploración técnica de un use case de detección de fraude productivo, que
 1. **`docs/16-agent-os-principles.md`** — 8 principios de orquestación de agentes IA.
 2. **`docs/22-client-sdks.md`** — diseño multi-lenguaje + SemVer.
 3. **`docs/27-test-runner.md`** — test runner con DAG + throttling de recursos.
+4. **`.ai/scripts/quick-check.py`** — guardrail sub-segundo de demo: boundaries fuente + freshness warnings sin invocar Gradle.
 4. **`docs/30-consistency-audit.md`** — meta-cobertura de docs.
 
 ---
@@ -195,3 +198,55 @@ Si querés compartir esto con un reviewer externo:
 ## Principio de cierre
 
 > "La cobertura de tests es lo que casi todos miden. La cobertura de docs, la cobertura de CLI y la cobertura de primitivas es lo que distingue un sistema mantenible de uno frágil. Cuando entrás a un repo nuevo, los primeros tres son los que revelan si vas a poder operarlo o sufrirlo."
+
+---
+
+## Índice operativo para auditoría de consistencia
+
+Esta sección existe para que el auditor documental tenga referencias explícitas a módulos, documentos y scripts que son parte del inventario curado.
+
+### Módulos Gradle inventariados
+
+- `poc:java-risk-engine`
+- `poc:java-monolith`
+- `poc:java-monolith:atdd-tests`
+- `poc:java-vertx-distributed:shared`
+- `poc:java-vertx-distributed:controller-app`
+- `poc:java-vertx-distributed:usecase-app`
+- `poc:java-vertx-distributed:repository-app`
+- `poc:java-vertx-distributed:consumer-app`
+- `poc:service-mesh-demo:shared`
+- `poc:service-mesh-demo:risk-decision-service`
+- `poc:service-mesh-demo:fraud-rules-service`
+- `poc:service-mesh-demo:ml-scorer-service`
+- `poc:service-mesh-demo:audit-service`
+- `poc:vertx-risk-platform`
+- `poc:vertx-risk-platform:atdd-tests`
+- `tests:risk-engine-atdd`
+- `tests:architecture`
+- `bench:distributed-bench`
+- `bench:runner`
+
+### Documentos secundarios incluidos en el mapa público
+
+- `docs/06-vertx-pods-locales.md`
+- `docs/07-staff-design-mindset.md`
+- `docs/08-technical-discussion-simulation.md`
+- `docs/14-primitive-usage-retro.md`
+- `docs/15-script-output-audit.md`
+- `docs/17-decision-stack-observability-local.md`
+- `docs/18-rules-engine-design.md`
+- `docs/19-backoffice-simulation-design.md`
+- `docs/32-failure-debug-toolkit.md`
+- `docs/35-runbook-demo-fails.md`
+
+### Scripts y tests auxiliares
+
+- `scripts/TESTING.md`
+- `scripts/diagnose-saturation.sh`
+- `scripts/nx-completion.bash`
+- `scripts/test_nx.sh`
+- `scripts/test_test_runner.py`
+- `.ai/scripts/test_agent_bus.py`
+- `.ai/scripts/test_consistency_auditor.py`
+- `.ai/scripts/test_workflow_runner.py`

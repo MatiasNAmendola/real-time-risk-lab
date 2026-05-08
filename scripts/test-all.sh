@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# test-all.sh — Unified test orchestrator for the naranjax/practica-entrevista monorepo.
+# test-all.sh — Unified test orchestrator for the riskplatform/risk-platform-practice monorepo.
 # Runs all test suites and produces a unified report under out/test-all/<timestamp>/.
 #
 # Usage:
@@ -503,20 +503,20 @@ run_suite() {
   local exit_code=0
   case "$id" in
     arch)
-      if [[ ! -f "$PROJECT_ROOT/tests/architecture/pom.xml" ]]; then
-        echo "SKIP — tests/architecture/pom.xml not found" > "$suite_out/stdout.log"
+      if [[ ! -f "$PROJECT_ROOT/tests/architecture/build.gradle.kts" ]]; then
+        echo "SKIP — tests/architecture/build.gradle.kts not found" > "$suite_out/stdout.log"
         touch "$suite_out/stderr.log"
         echo "0" > "$suite_out/exit-code"
         echo "SKIP"
         return
       fi
-      (cd "$PROJECT_ROOT/tests/architecture" && \
-        timeout 600 mvn test \
+      (cd "$PROJECT_ROOT" && \
+        timeout 600 ./gradlew :tests:architecture:test \
           > "$suite_out/stdout.log" 2> "$suite_out/stderr.log") || exit_code=$?
       ;;
     cucumber)
-      if [[ ! -f "$PROJECT_ROOT/tests/risk-engine-atdd/pom.xml" ]]; then
-        echo "SKIP — tests/risk-engine-atdd/pom.xml not found" > "$suite_out/stdout.log"
+      if [[ ! -f "$PROJECT_ROOT/tests/risk-engine-atdd/build.gradle.kts" ]]; then
+        echo "SKIP — tests/risk-engine-atdd/build.gradle.kts not found" > "$suite_out/stdout.log"
         touch "$suite_out/stderr.log"
         echo "0" > "$suite_out/exit-code"
         echo "SKIP"
@@ -526,8 +526,8 @@ run_suite() {
         > "$suite_out/stdout.log" 2> "$suite_out/stderr.log" || exit_code=$?
       ;;
     integration)
-      if [[ ! -f "$PROJECT_ROOT/tests/integration/pom.xml" ]]; then
-        echo "SKIP — tests/integration/pom.xml not found" > "$suite_out/stdout.log"
+      if [[ ! -f "$PROJECT_ROOT/tests/integration/build.gradle.kts" ]]; then
+        echo "SKIP — tests/integration/build.gradle.kts not found" > "$suite_out/stdout.log"
         touch "$suite_out/stderr.log"
         echo "0" > "$suite_out/exit-code"
         echo "SKIP"
@@ -541,8 +541,8 @@ run_suite() {
         echo "SKIP"
         return
       fi
-      (cd "$PROJECT_ROOT/tests/integration" && \
-        timeout 600 mvn -Pintegration verify \
+      (cd "$PROJECT_ROOT" && \
+        timeout 600 ./gradlew :tests:integration:test \
           > "$suite_out/stdout.log" 2> "$suite_out/stderr.log") || exit_code=$?
       ;;
     smoke)

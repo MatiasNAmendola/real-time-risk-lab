@@ -1,0 +1,29 @@
+# Stand-alone Rollout used as a fixture for ad-hoc canary timing experiments.
+# Steps mirror the helm chart but with 5s pauses for fast tests.
+apiVersion: argoproj.io/v1alpha1
+kind: Rollout
+metadata:
+  name: risk-engine-fast
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: risk-engine-fast
+  template:
+    metadata:
+      labels:
+        app: risk-engine-fast
+    spec:
+      containers:
+        - name: risk-engine
+          image: ghcr.io/riskplatform/risk-engine:v1
+          ports:
+            - containerPort: 8080
+  strategy:
+    canary:
+      steps:
+        - setWeight: 20
+        - pause: { duration: 5s }
+        - setWeight: 50
+        - pause: { duration: 5s }
+        - setWeight: 100

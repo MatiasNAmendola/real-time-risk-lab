@@ -1,1 +1,1 @@
-plugins { id("naranja.library-conventions") }
+plugins { id("riskplatform.library-conventions") }

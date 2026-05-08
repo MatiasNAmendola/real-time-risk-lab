@@ -65,6 +65,52 @@ check_btop() {
   fi
 }
 
+check_k6() {
+  if has_command k6; then
+    local output version
+    output="$(k6 version 2>&1 || true)"
+    version="$(extract_version "$output" 'k6 v([0-9]+\.[0-9]+\.[0-9]+)')"
+    log_tool_status "k6" "${version:-installed}" "optional_ok"
+  else
+    log_tool_status "k6" "" "optional"
+    OPTIONAL_MISSING+=("k6")
+  fi
+}
+
+install_k6() {
+  local os pkg_mgr
+  os="$(detect_os)"
+  pkg_mgr="$(detect_package_manager)"
+  log_step "Installing k6..."
+  case "$os" in
+    macos)
+      case "$pkg_mgr" in
+        brew) install_with_brew "k6" ;;
+        *)    log_info "Install k6 manually: https://k6.io/docs/get-started/installation/" ;;
+      esac
+      ;;
+    linux|wsl)
+      case "$pkg_mgr" in
+        apt)
+          log_info "Add Grafana repo and install k6:"
+          log_info "  sudo gpg -k && sudo gpg --no-default-keyring --keyring /usr/share/keyrings/k6-archive-keyring.gpg --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys C5AD17C747E3415A3642D57D77C6C491D6AC1D69"
+          log_info "  echo \"deb [signed-by=/usr/share/keyrings/k6-archive-keyring.gpg] https://dl.k6.io/deb stable main\" | sudo tee /etc/apt/sources.list.d/k6.list"
+          log_info "  sudo apt-get update && sudo apt-get install -y k6"
+          ;;
+        dnf|yum)
+          log_info "Add Grafana repo and install k6:"
+          log_info "  sudo dnf install -y https://dl.k6.io/rpm/repo.rpm && sudo dnf install -y k6"
+          ;;
+        *)
+          log_info "Install k6 via curl:"
+          log_info "  curl -sL https://github.com/grafana/k6/releases/latest/download/k6-linux-amd64.tar.gz | tar xz"
+          log_info "  sudo mv k6-*/k6 /usr/local/bin/"
+          ;;
+      esac
+      ;;
+  esac
+}
+
 install_obsidian() {
   local os pkg_mgr
   os="$(detect_os)"
@@ -147,6 +193,7 @@ group_check() {
   check_watch
   check_htop
   check_btop
+  check_k6
 }
 
 group_install() {
@@ -163,6 +210,7 @@ group_install() {
         watch)    install_watch    && record_install "watch"    || record_failure "watch" "install failed" ;;
         htop)     install_htop     && record_install "htop"     || record_failure "htop" "install failed" ;;
         btop)     install_btop     && record_install "btop"     || record_failure "btop" "install failed" ;;
+        k6)       install_k6       && record_install "k6"       || record_failure "k6" "install failed" ;;
       esac
     else
       record_skip "$tool"

@@ -15,7 +15,7 @@ Mecanismos implementados:
 - `context-budget-meter.sh` — telemetria de tokens por turno, loggeada en JSONL.
 - `context_diet.py` — rules subset por task type: implement/review/debug/explore/test.
 
-Ejemplo de impacto: un `mvn test` output de 80KB queda reducido a un resumen de errores + stack de los primeros 5 fallos (~3KB).
+Ejemplo de impacto: un `./gradlew test` output de 80KB queda reducido a un resumen de errores + stack de los primeros 5 fallos (~3KB).
 
 ## Principio 2: Inter-agent communication is a protocol, not a free-for-all
 
@@ -23,20 +23,20 @@ Cada mensaje entre agentes debe declarar su context_mode (`full`/`summary`/`refe
 
 Mecanismos:
 
-- `handoff_schema.py` — `HandoffEnvelope` con `schema_version = "naranja/handoff-envelope/v1"`.
+- `session_envelope.py` — contrato conceptual de transferencia de contexto con `schema_version` versionado.
 - `agent_bus.py` — bus append-only con ack via `fcntl.flock`. CLI incluido.
 
 Ejemplo de uso:
 
 ```python
-from handoff_schema import HandoffEnvelope
+from session_envelope import SessionEnvelope
 from agent_bus import AgentBus
 from pathlib import Path
 
-bus = AgentBus(Path(".ai/logs/agent-bus.jsonl"))
+bus = AgentBus(Path("out/agent-logs/agent-bus.jsonl"))
 
 # El orchestrator manda contexto resumido al agente implementador
-env = HandoffEnvelope.create(
+env = SessionEnvelope.create(
     sender="orchestrator",
     recipient="impl-agent",
     intent="Implementar endpoint POST /orders con validacion de stock",
@@ -53,13 +53,13 @@ bus.ack(msgs[0].message_id, status="processing")
 
 ## Principio 3: Sessions are first-class
 
-Una sesion empieza con un boot que carga contexto, no con un prompt frio. Termina con un handoff que persiste lo aprendido.
+Una sesion empieza con un boot que carga contexto, no con un prompt frio. Termina con un resumen de sesión que persiste lo aprendido.
 
 Mecanismos:
 
 - `session-bootstrap.sh` — hook UserPromptSubmit, carga anchor del ciclo anterior.
-- `pre-compact-anchor.sh` — hook PreCompact, escribe `.ai/state/anchor-<sessionid>.md` antes de que el contexto se comprima.
-- `session-handoff.sh` — hook Stop, genera `vault/01-Sessions/handoffs/<ts>-handoff.md` con topics, files, stats.
+- `pre-compact-anchor.sh` — hook PreCompact, escribe `out/agent-state/anchor-<sessionid>.md` antes de que el contexto se comprima.
+- `session-summary.sh` — hook Stop conceptual, genera un resumen privado de topics, files y stats.
 
 Flujo:
 
@@ -67,7 +67,7 @@ Flujo:
 Session N starts  -> session-bootstrap.sh reads anchor-N-1.md
 Session N runs    -> mem_save decisions, skill routing logged
 Context compacts  -> pre-compact-anchor.sh writes anchor-N.md
-Session N ends    -> session-handoff.sh writes handoff.md
+Session N ends    -> session summary persists learnings
 Session N+1 starts-> session-bootstrap.sh reads anchor-N.md
 ```
 
@@ -145,7 +145,7 @@ Portabilidad:
 |-------------|-----------------|----------|
 | session-bootstrap | UserPromptSubmit | regla estatica o invocacion manual |
 | pre-compact-anchor | PreCompact | checkpoint manual |
-| session-handoff | Stop | post-session manual |
+| session-summary | Stop | post-session manual |
 | context-budget-meter | UserPromptSubmit | pre-prompt script |
 | smart_truncator | PostToolUse (Bash) | wrapper de CLI |
 
@@ -156,7 +156,6 @@ TODO: cuando exista `.ai/research/ide-hooks-2026.md`, agregar aqui una referenci
 ```
 .ai/lib/
   smart_truncator.py    — truncacion estructurada por command type
-  handoff_schema.py     — HandoffEnvelope con context_mode + schema versioning
   context_pruner.py     — dedup por MD5 + stub de results antiguos
   context_diet.py       — rule bundles por task type
   prompt_cache.py       — PromptCacheBuilder para Anthropic API
@@ -164,7 +163,6 @@ TODO: cuando exista `.ai/research/ide-hooks-2026.md`, agregar aqui una referenci
 .ai/scripts/
   agent_bus.py          — bus JSONL con flock + CLI
   context-diet.py       — CLI wrapper de context_diet
-  session-handoff.sh    — hook Stop
   pre-compact-anchor.sh — hook PreCompact
   context-budget-meter.sh — hook UserPromptSubmit (observer)
 

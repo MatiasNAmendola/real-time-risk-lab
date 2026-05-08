@@ -1,4 +1,4 @@
-module github.com/naranjax/risk-smoke
+module github.com/riskplatform/risk-smoke
 
 go 1.26
 
@@ -7,7 +7,7 @@ require (
 	github.com/charmbracelet/bubbletea v1.3.10
 	github.com/charmbracelet/lipgloss v1.1.0
 	github.com/coder/websocket v1.8.14
-	github.com/naranjax/risk-client v1.0.0
+	github.com/riskplatform/risk-client v1.0.0
 	github.com/twmb/franz-go v1.21.1
 )
 
@@ -51,4 +51,4 @@ require (
 	golang.org/x/text v0.3.8 // indirect
 )
 
-replace github.com/naranjax/risk-client => ../../sdks/risk-client-go
+replace github.com/riskplatform/risk-client => ../../sdks/risk-client-go

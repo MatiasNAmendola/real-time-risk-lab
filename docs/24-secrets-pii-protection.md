@@ -12,7 +12,7 @@ Antes de que Claude ejecute un Edit/Write/Bash, los inputs se escanean. Si hay s
 
 Patterns cubiertos: AWS keys, GitHub tokens, Slack tokens, Stripe live, OpenAI/Anthropic keys, npm tokens, JWT, private key headers, connection strings con password.
 
-El hook escribe cada deteccion a `.ai/logs/secret-detections-YYYY-MM-DD.jsonl` con timestamp, tool, campos redactados, nombres de patterns y los primeros 8 chars del valor original para correlacion forense sin exponer el secret completo.
+El hook escribe cada deteccion a `out/security/secret-detections-YYYY-MM-DD.jsonl` con timestamp, tool, campos redactados, nombres de patterns y los primeros 8 chars del valor original para correlacion forense sin exponer el secret completo.
 
 ### Capa 2: SecretRef late-binding
 
@@ -67,7 +67,7 @@ python3 -m unittest .ai/lib/test_secret_ref.py
 python3 -m unittest .ai/lib/test_memory_scanner.py
 
 # Inspeccionar log de detecciones del dia
-tail -f .ai/logs/secret-detections-$(date -u +%Y-%m-%d).jsonl
+tail -f out/security/secret-detections-$(date -u +%Y-%m-%d).jsonl
 ```
 
 ## Key Design Principle

@@ -25,7 +25,7 @@ ADR-0005 established la production-realistic compose stack. Este ADR addresses l
 
 ## Decisión
 
-Use Moto server container via Testcontainers para AWS service integration tests en `tests/integration/`. Each test class starts un `MotoServerContainer` (from `pkg/testing/IntegrationTestSupport`) que provides un single endpoint para todos AWS service mocks. Tests configure AWS SDK clients con endpoint override pointing un la Moto container. La Moto container replaces LocalStack para la integration test layer.
+Use Moto server container via Testcontainers para AWS service integration tests en `tests/integration/`. Each test class starts un `MotoServerContainer` (from `tests/integration/src/test/java/io/riskplatform/integration/IntegrationTestSupport.java`) que provides un single endpoint para todos AWS service mocks. Tests configure AWS SDK clients con endpoint override pointing un la Moto container. La Moto container replaces LocalStack para la integration test layer.
 
 The production-realistic compose stack (ADR-0005) es used para ATDD tests que need full-stack behavior. Integration tests use Moto server para speed y isolation.
 

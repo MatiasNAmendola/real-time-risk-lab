@@ -31,7 +31,7 @@ services:
     build:
       context: ${REPO_ROOT:-.}/poc/vertx-risk-platform
       dockerfile: Dockerfile
-    image: naranjax/vrp-repository-pod:latest
+    image: riskplatform/vrp-repository-pod:latest
     user: "1103:1100"
     command: ["repository"]
     environment:
@@ -66,7 +66,7 @@ services:
     build:
       context: ${REPO_ROOT:-.}/poc/vertx-risk-platform
       dockerfile: Dockerfile
-    image: naranjax/vrp-usecase-pod:latest
+    image: riskplatform/vrp-usecase-pod:latest
     user: "1102:1100"
     command: ["usecase"]
     environment:
@@ -103,7 +103,7 @@ services:
     build:
       context: ${REPO_ROOT:-.}/poc/vertx-risk-platform
       dockerfile: Dockerfile
-    image: naranjax/vrp-controller-pod:latest
+    image: riskplatform/vrp-controller-pod:latest
     user: "1101:1100"
     command: ["controller"]
     environment:
