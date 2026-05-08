@@ -1,5 +1,5 @@
 ---
-description: Clean Architecture and Java conventions for Risk Decision Platform risk engine
+description: Clean Architecture and Java conventions for Real-Time Risk Lab risk engine
 globs: ["**/*.java", "**/*.gradle.kts"]
 alwaysApply: false
 ---

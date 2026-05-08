@@ -1,9 +1,9 @@
-# Risk Decision Platform practice — Windsurf Rules (legacy compat, pre-Wave 8)
+# Real-Time Risk Lab — Windsurf Rules (legacy compat, pre-Wave 8)
 # Para Windsurf Wave 8+, las rules estan en .windsurf/rules/*.md
 
 ## Proyecto
 
-Preparacion tecnica Risk Decision Platform Transactional Risk (Staff/Architect).
+Exploración técnica Real-Time Risk Lab real-time transactional risk patterns.
 Sistema de fraude tiempo real: 150 TPS, p99 < 300ms.
 Stack: Java 21 LTS baseline operativo, Gradle Kotlin DSL, Vert.x 5.0.12, Postgres 16, Valkey 8, Redpanda, k3d/OrbStack.
 

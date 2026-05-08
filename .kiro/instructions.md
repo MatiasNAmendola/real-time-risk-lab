@@ -1,8 +1,8 @@
-# Kiro Instructions — Risk Decision Platform
+# Kiro Instructions — Real-Time Risk Lab
 
 ## Project
 
-Risk Decision Platform — Three-Architecture Exploration.
+Real-Time Risk Lab — Architecture Exploration.
 Technical exploration of a real-time fraud detection use case: 150 TPS, p99 < 300ms.
 
 ## Before any implementation

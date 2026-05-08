@@ -1,5 +1,5 @@
 ###############################################################################
-# Risk Decision Platform — strong .gitignore
+# Real-Time Risk Lab — strong .gitignore
 # Keep source, docs, Gradle wrapper and reproducible config in Git.
 # Keep local/generated state, build products, caches and secrets out.
 ###############################################################################
@@ -71,7 +71,7 @@ kubeconfig*
 /out/
 /bench/out/
 /cli/risk-smoke/out/
-/poc/java-vertx-distributed/out/
+/poc/vertx-layer-as-pod-eventbus/out/
 target/
 **/target/
 generated/

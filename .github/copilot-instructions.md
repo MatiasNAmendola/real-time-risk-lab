@@ -1,8 +1,8 @@
-# GitHub Copilot Instructions — Risk Decision Platform
+# GitHub Copilot Instructions — Real-Time Risk Lab
 
 ## Project context
 
-Risk Decision Platform — Three-Architecture Exploration.
+Real-Time Risk Lab — Architecture Exploration.
 Technical exploration of a real-time fraud detection use case: 150 TPS, p99 < 300ms latency.
 Stack: Java 21 LTS executable baseline, Gradle Kotlin DSL, Vert.x 5.0.12, Postgres 16, Valkey 8, Redpanda, k3d/OrbStack.
 

@@ -1,12 +1,12 @@
-# Project: Risk Decision Platform
+# Project: Real-Time Risk Lab
 
-Risk Decision Platform exploration: Transactional Risk (Staff/Architect scope).
+Real-Time Risk Lab exploration: real-time transactional risk patterns.
 Date: 2026-05-08
 
 ## PoCs
-- poc/java-risk-engine: Clean Architecture bare-javac, no frameworks
-- poc/java-vertx-distributed: 4 Gradle modules as separate pods
-- poc/vertx-risk-platform: Full Vert.x 5 with all comm patterns
+- poc/no-vertx-clean-engine: Clean Architecture bare-javac, no frameworks
+- poc/vertx-layer-as-pod-eventbus: 4 Gradle modules as separate pods
+- poc/vertx-layer-as-pod-http: Full Vert.x 5 with all comm patterns
 - poc/k8s-local: k3d/OrbStack + ArgoCD + Argo Rollouts + kube-prom + AWS mocks
 
 ## Key decisions

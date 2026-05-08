@@ -1,5 +1,5 @@
 {
-  "instructions": "Risk Decision Platform practice technical practice. Stack: Java 21 LTS executable baseline, Gradle Kotlin DSL, Vert.x 5.0.12, Postgres 16, Valkey 8, Redpanda. Java 25 is a documented future target only. Clean Architecture: domain/ must NOT import from application/ or infrastructure/. ATDD first: write .feature before production code. Every request must produce trace + log + metric via OpenTelemetry. Check .ai/primitives/skills/ and .ai/primitives/rules/ before implementing. Do not touch: poc/, tests/, cli/, docs/, vault/.",
+  "instructions": "Real-Time Risk Lab technical exploration. Stack: Java 21 LTS executable baseline, Gradle Kotlin DSL, Vert.x 5.0.12, Postgres 16, Valkey 8, Redpanda. Java 25 is a documented future target only. Clean Architecture: domain/ must NOT import from application/ or infrastructure/. ATDD first: write .feature before production code. Every request must produce trace + log + metric via OpenTelemetry. Check .ai/primitives/skills/ and .ai/primitives/rules/ before implementing. Do not touch: poc/, tests/, cli/, docs/, vault/.",
   "provider": "anthropic",
   "model": "claude-sonnet-4-6",
   "mcp": {

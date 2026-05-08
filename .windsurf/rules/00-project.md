@@ -1,11 +1,11 @@
 ---
 trigger: always_on
-description: Risk Decision Platform practice project context and non-negotiable rules
+description: Real-Time Risk Lab project context and non-negotiable rules
 ---
 
-# Proyecto: Risk Decision Platform — Technical Practice
+# Proyecto: Real-Time Risk Lab — Technical Exploration
 
-Preparacion tecnica de Risk Decision Platform staff/architecture discussion.
+Exploración técnica de Real-Time Risk Lab technical leadership discussion.
 Sistema de fraude tiempo real: 150 TPS, p99 < 300ms.
 Stack: Java 21 LTS executable baseline, Gradle Kotlin DSL, Vert.x 5.0.12, Postgres 16, Valkey 8, Redpanda, k3d/OrbStack.
 
