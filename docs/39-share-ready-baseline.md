@@ -43,8 +43,8 @@ Resultado: apto para v0.1 con hardening menor. Criterios verificados:
 
 - **Correlación/trace**: `/risk` mantiene `X-Correlation-Id`; las respuestas `200` y `502` exponen trace headers para diagnóstico local.
 - **Body inválido**: `/webhooks` responde `400` JSON ante JSON inválido o body vacío, en vez de permitir NPE.
-- **Filtros de webhook**: `APPROVE, REVIEW` se normaliza a `APPROVE,REVIEW`. Si el trim deja lista vacía, el endpoint responde `400`; no registra un webhook imposible de disparar silenciosamente.
-- **Dominio permitido**: filtros fuera de `APPROVE`, `REVIEW`, `DECLINE` responden `400` con valores inválidos y permitidos.
+- **Filtros de webhook**: `APPROVE, REVIEW` se normaliza a `APPROVE,REVIEW`. Si el input parsea vacío, por ejemplo `" , "`, se usa el default explícito `APPROVE,REVIEW,DECLINE` y se loguea warning; no queda un filtro vacío ambiguo.
+- **Dominio permitido**: filtros no vacíos fuera de `APPROVE`, `REVIEW`, `DECLINE` responden `400` con valores inválidos y permitidos.
 
 ## Próximo criterio de trabajo
 

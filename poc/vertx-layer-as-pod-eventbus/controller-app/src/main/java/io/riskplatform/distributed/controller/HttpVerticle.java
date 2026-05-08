@@ -24,6 +24,7 @@ import io.opentelemetry.api.trace.SpanContext;
 
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -194,15 +195,13 @@ public class HttpVerticle extends AbstractVerticle {
                 ctx.response().setStatusCode(400).end(new JsonObject().put("error","url required").encode());
                 return;
             }
-            List<String> filters = java.util.Arrays.stream(filter.split(","))
+            List<String> filters = Arrays.stream(filter.split(","))
                 .map(String::trim)
                 .filter(value -> !value.isBlank())
                 .toList();
             if (filters.isEmpty()) {
-                ctx.response().setStatusCode(400)
-                    .putHeader("Content-Type", "application/json")
-                    .end(new JsonObject().put("error","filter must include at least one decision").encode());
-                return;
+                log.warn("[controller-app] webhook filter '{}' parsed to empty list, using default", filter);
+                filters = List.of("APPROVE", "REVIEW", "DECLINE");
             }
             List<String> invalidFilters = filters.stream()
                 .filter(value -> !List.of("APPROVE", "REVIEW", "DECLINE").contains(value))
