@@ -104,6 +104,13 @@ assert_exit0 "./nx test --help exits 0" "$NX" test --help
 assert_output_contains "./nx test --help shows 'smoke'" "smoke" "$NX" test --help
 assert_output_contains "./nx test --help shows 'atdd'" "atdd" "$NX" test --help
 assert_output_contains "./nx test --help shows 'integration'" "integration" "$NX" test --help
+assert_output_contains "./nx test all dry-run uses composite" "DRY RUN -- plan" "$NX" test all --dry-run
+
+# ---------------------------------------------------------------------------
+# ./nx proc exposes repo-scoped process control
+# ---------------------------------------------------------------------------
+assert_exit0 "./nx proc status exits 0" env NX_PROC_GUARD_PS_FIXTURE=empty "$NX" proc status
+assert_output_contains "./nx proc stop defaults to dry-run" "Dry-run\\|No matching processes" env NX_PROC_GUARD_PS_FIXTURE=empty "$NX" proc stop --only-kind test-runner
 
 # ---------------------------------------------------------------------------
 # ./nx bench --help shows subcommands

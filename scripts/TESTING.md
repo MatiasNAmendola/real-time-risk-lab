@@ -82,6 +82,7 @@ the source of truth; verify current group names with `./nx test --list`.
 | Docker/Testcontainers suite fails before tests start | Start Docker Desktop/OrbStack and rerun the specific group. |
 | k8s suite cannot find `kubectl`, `helm`, or `k3d` | Run `./nx setup --verify` and install missing optional tooling. |
 | ArchUnit XML/reporting race appears | Ensure `arch` remains `exclusive: true` and runs in its own scheduler level. |
+| Need to inspect or stop stuck `nx`/Gradle test processes | Use `./nx proc status` and `./nx proc stop` instead of ad-hoc `ps | grep`. `stop` is dry-run unless `--yes` is passed. |
 | Need to add a suite | Edit `.ai/test-groups.yaml`, then update `docs/27-test-runner.md`. |
 
 For failed `nx test` jobs:

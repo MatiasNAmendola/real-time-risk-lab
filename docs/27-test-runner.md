@@ -212,6 +212,29 @@ Aliases backward-compatible (proxy hacia `--group`):
 ./nx test all
 ```
 
+## Control de procesos
+
+Para diagnosticar corridas colgadas o procesos huérfanos del runner, no uses
+`ps | grep` manual. El wrapper repo-scoped es:
+
+```bash
+./nx proc status
+./nx proc status --include-gradle-daemons
+./nx proc stop                         # dry-run por defecto
+./nx proc stop --only-kind test-runner --yes
+./nx proc stop --include-gradle-daemons --signal TERM --yes
+```
+
+Principios:
+
+- Por defecto solo muestra procesos cuyo comando referencia este repo, más sus
+  descendientes vivos.
+- Los Gradle daemons globales quedan fuera salvo que pases
+  `--include-gradle-daemons`.
+- `stop` es seguro por defecto: imprime qué mataría y exige `--yes`.
+- La salida trunca comandos largos para que el diagnóstico sea legible; usá
+  `--truncate 0` para verlos completos.
+
 ## Output
 
 Cada corrida produce:

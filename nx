@@ -149,6 +149,9 @@ COMMANDS:
   failures [--suite NAME] [--json] [--since DURATION]
       Aggregate test failures from all suite formats (Surefire, Cucumber, Karate, smoke)
 
+  proc status|stop [--include-gradle-daemons]
+      Repo-scoped process inventory/control for nx/test/Gradle runs
+
   logs [--service NAME] [--since DURATION] [--grep PATTERN] [--errors] [--correlation-id ID]
       Tail and filter service logs via debug-runner
 
@@ -182,6 +185,8 @@ EXAMPLES:
   ./nx failures
   ./nx failures --suite atdd-karate
   ./nx failures --json
+  ./nx proc status
+  ./nx proc stop --only-kind test-runner --yes
   ./nx logs --service controller-app --errors
   ./nx debug diagnose
   ./nx debug snapshot
@@ -836,7 +841,13 @@ nx_test() {
       python3 "$REPO_ROOT/scripts/test-runner.py" "$sub" ${rest[@]:+"${rest[@]}"} || _test_post_hooks $?
       return
       ;;
-    all|smoke|atdd-karate|atdd-cucumber|integration|architecture|unit)
+    all)
+      # Public help advertises `./nx test all`; runner models it as a composite.
+      python3 "$REPO_ROOT/scripts/test-runner.py" --composite all ${rest[@]:+"${rest[@]}"} \
+        || _test_post_hooks $?
+      return
+      ;;
+    smoke|atdd-karate|atdd-cucumber|integration|architecture|unit)
       # Backward compatibility: map legacy subcommand names to runner --group
       local group_name="$sub"
       # Remap 'architecture' to 'arch' (runner canonical name)
@@ -1190,6 +1201,12 @@ nx_failures() {
   exec python3 "$script" "$@"
 }
 
+nx_proc() {
+  local script="$REPO_ROOT/scripts/process-guard.py"
+  _require_script "$script"
+  exec python3 "$script" "$@"
+}
+
 nx_logs() {
   # If first arg looks like a service name (no --), forward to docker logs (legacy)
   # If first arg is a flag, use debug-runner
@@ -1391,6 +1408,7 @@ main() {
     audit)         nx_audit "$@" ;;
     scrub)         nx_scrub "$@" ;;
     failures)      nx_failures "$@" ;;
+    proc)          nx_proc "$@" ;;
     debug)         nx_debug "$@" ;;
     completion)    nx_completion "$@" ;;
     help)          nx_help "$@" ;;
