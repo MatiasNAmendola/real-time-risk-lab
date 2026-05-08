@@ -34,7 +34,9 @@ func (s *SyncClient) EvaluateBatch(ctx context.Context, reqs []RiskRequest) ([]R
 func (s *SyncClient) Health(ctx context.Context) (*HealthStatus, error) {
 	var status HealthStatus
 	if err := s.http.getJSON(ctx, s.baseURL+"/healthz", &status); err != nil {
-		return nil, err
+		if fallbackErr := s.http.getJSON(ctx, s.baseURL+"/health", &status); fallbackErr != nil {
+			return nil, err
+		}
 	}
 	return &status, nil
 }

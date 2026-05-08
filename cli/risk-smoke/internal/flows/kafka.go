@@ -6,8 +6,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/twmb/franz-go/pkg/kgo"
 	"github.com/riskplatform/risk-smoke/internal/config"
+	"github.com/twmb/franz-go/pkg/kgo"
 )
 
 // KafkaCheck consumes up to 5 messages from the risk-decisions topic.
@@ -37,6 +37,16 @@ func (c *KafkaCheck) Run(cfg *config.Config) Result {
 		}
 	}
 	defer cl.Close()
+
+	if _, _, err := postSmokeRisk(cfg, "kafka-smoke", 75000); err != nil {
+		return Result{
+			ID:      CheckKafka,
+			Passed:  false,
+			Request: req,
+			ErrMsg:  fmt.Sprintf("trigger transaction error: %v", err),
+			Detail:  fmt.Sprintf("FAILED — trigger transaction error: %v", err),
+		}
+	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()

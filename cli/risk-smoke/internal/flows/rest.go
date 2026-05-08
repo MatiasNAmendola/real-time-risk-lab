@@ -44,7 +44,6 @@ func (c *RESTCheck) Run(cfg *config.Config) Result {
 			CustomerID:     fmt.Sprintf("u-%03d", i+1),
 			AmountCents:    amount,
 			IdempotencyKey: fmt.Sprintf("idem-smoke-%03d", i+1),
-			MerchantID:     fmt.Sprintf("m-%03d", i+1),
 		}
 
 		stepStart := time.Now()

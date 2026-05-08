@@ -10,16 +10,16 @@ import (
 
 // Check IDs — used as map keys and --only filter values.
 const (
-	CheckHealth        = "health"
-	CheckOpenAPI       = "openapi"
-	CheckAsyncAPI      = "asyncapi"
-	CheckREST          = "rest"
-	CheckSSE           = "sse"
-	CheckWebSocket     = "websocket"
-	CheckWebhook       = "webhook"
-	CheckKafka         = "kafka"
-	CheckOTEL          = "otel"
-	CheckCucumberBare  = "cucumber-bare"
+	CheckHealth       = "health"
+	CheckOpenAPI      = "openapi"
+	CheckAsyncAPI     = "asyncapi"
+	CheckREST         = "rest"
+	CheckSSE          = "sse"
+	CheckWebSocket    = "websocket"
+	CheckWebhook      = "webhook"
+	CheckKafka        = "kafka"
+	CheckOTEL         = "otel"
+	CheckCucumberBare = "cucumber-bare"
 )
 
 // DetailEntry captures a single step/event within a check execution.
@@ -36,9 +36,9 @@ type Result struct {
 	ID        string
 	Passed    bool
 	Skipped   bool
-	Detail    string            // 1-line summary for console
-	Request   string            // raw request info (legacy; kept for TUI)
-	Response  string            // raw response info (legacy; kept for TUI)
+	Detail    string // 1-line summary for console
+	Request   string // raw request info (legacy; kept for TUI)
+	Response  string // raw response info (legacy; kept for TUI)
 	ErrMsg    string
 	Latency   string
 	Duration  time.Duration     // precise duration

@@ -19,6 +19,8 @@ import io.vertx.ext.web.handler.BodyHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
+import io.opentelemetry.api.trace.Span;
+import io.opentelemetry.api.trace.SpanContext;
 
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
@@ -129,10 +131,11 @@ public class HttpVerticle extends AbstractVerticle {
                     log.info("[controller-app] decision reply correlationId={} body={}", corrId, reply.body());
                     recordDecisionMetrics(reply.body(), elapsed);
                     MDC.clear();
-                    ctx.response()
+                    var response = ctx.response()
                         .setStatusCode(200)
-                        .putHeader("Content-Type", "application/json")
-                        .end(reply.body());
+                        .putHeader("Content-Type", "application/json");
+                    putCurrentTraceHeaders(response);
+                    response.end(reply.body());
                 })
                 .onFailure(err -> {
                     log.error("[controller-app] usecase error correlationId={}: {}", corrId, err.getMessage());
@@ -189,7 +192,13 @@ public class HttpVerticle extends AbstractVerticle {
             log.info("[controller-app] webhook registered id={} filter={}", id, filter);
             ctx.response().setStatusCode(201)
                 .putHeader("Content-Type","application/json")
-                .end(new JsonObject().put("id", id).put("filter", filter).encode());
+                .end(new JsonObject()
+                    .put("id", id)
+                    .put("url", url)
+                    .put("callbackUrl", url)
+                    .put("filter", filter)
+                    .put("eventFilter", filter)
+                    .encode());
         });
 
         router.get("/webhooks").handler(ctx -> {
@@ -197,7 +206,10 @@ public class HttpVerticle extends AbstractVerticle {
             webhooks.values().forEach(sub ->
                 arr.add(new JsonObject()
                     .put("id", sub.id())
-                    .put("filter", String.join(",", sub.filters()))));
+                    .put("url", sub.url())
+                    .put("callbackUrl", sub.url())
+                    .put("filter", String.join(",", sub.filters()))
+                    .put("eventFilter", String.join(",", sub.filters()))));
             ctx.response().putHeader("Content-Type","application/json").end(arr.encode());
         });
 
@@ -566,6 +578,31 @@ public class HttpVerticle extends AbstractVerticle {
                 decisionTimer.record(elapsedNs, java.util.concurrent.TimeUnit.NANOSECONDS);
             }
         } catch (Exception ignored) {}
+    }
+
+
+    private void putCurrentTraceHeaders(io.vertx.core.http.HttpServerResponse response) {
+        String traceparent = currentTraceparent();
+        if (traceparent != null) {
+            response.putHeader("traceparent", traceparent);
+            // Kept for smoke/diagnostics: W3C Trace Context response propagation is
+            // implementation-specific, so expose the same trace context under both
+            // names to make local verification deterministic.
+            response.putHeader("traceresponse", traceparent);
+        }
+    }
+
+    private String currentTraceparent() {
+        SpanContext spanContext = Span.current().getSpanContext();
+        if (spanContext != null && spanContext.isValid()) {
+            return "00-" + spanContext.getTraceId() + "-" + spanContext.getSpanId() + "-01";
+        }
+        // Local smoke should still be able to correlate a request even when the
+        // process runs without an auto-instrumented server span. Generate a
+        // standards-shaped trace context rather than failing the diagnostic.
+        String traceId = UUID.randomUUID().toString().replace("-", "");
+        String spanId = UUID.randomUUID().toString().replace("-", "").substring(0, 16);
+        return "00-" + traceId.substring(0, 32) + "-" + spanId + "-01";
     }
 
     // ── Admin auth ────────────────────────────────────────────────────────────

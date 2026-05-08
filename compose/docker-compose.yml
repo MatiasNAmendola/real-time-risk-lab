@@ -76,9 +76,9 @@ services:
       - --node-id
       - "0"
       - --kafka-addr
-      - PLAINTEXT://0.0.0.0:29092,OUTSIDE://0.0.0.0:9092
+      - PLAINTEXT://0.0.0.0:29092,OUTSIDE://0.0.0.0:9092,HOST://0.0.0.0:19092
       - --advertise-kafka-addr
-      - PLAINTEXT://redpanda:29092,OUTSIDE://redpanda:9092
+      - PLAINTEXT://redpanda:29092,OUTSIDE://redpanda:9092,HOST://localhost:19092
       - --pandaproxy-addr
       - 0.0.0.0:8082
       - --advertise-pandaproxy-addr
@@ -90,6 +90,8 @@ services:
       - warn
     networks:
       - data-net
+    ports:
+      - "19092:19092"
     healthcheck:
       test: ["CMD-SHELL", "rpk cluster health 2>&1 | grep -E 'Healthy:.+true' || exit 1"]
       interval: 15s

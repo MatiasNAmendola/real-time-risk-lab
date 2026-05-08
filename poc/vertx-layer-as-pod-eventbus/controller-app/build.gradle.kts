@@ -11,6 +11,7 @@ dependencies {
     implementation(libs.vertx.web)
     implementation(libs.vertx.hazelcast)
     implementation(libs.vertx.micrometer.metrics)
+    implementation(libs.opentelemetry.api)
     implementation(libs.micrometer.registry.otlp)
     implementation(libs.bundles.jackson)
     implementation(libs.bundles.logging)

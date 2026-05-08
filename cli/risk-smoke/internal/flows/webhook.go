@@ -22,7 +22,7 @@ func (c *WebhookCheck) Name() string { return "Webhook — register + callback" 
 
 func (c *WebhookCheck) Run(cfg *config.Config) Result {
 	// 1. Bind a random local port.
-	ln, err := net.Listen("tcp", "127.0.0.1:0")
+	ln, err := net.Listen("tcp", "0.0.0.0:0")
 	if err != nil {
 		return Result{
 			ID:     CheckWebhook,
@@ -31,7 +31,8 @@ func (c *WebhookCheck) Run(cfg *config.Config) Result {
 			Detail: fmt.Sprintf("FAILED — %v", err),
 		}
 	}
-	localAddr := fmt.Sprintf("http://%s/webhook", ln.Addr().String())
+	_, port, _ := net.SplitHostPort(ln.Addr().String())
+	localAddr := fmt.Sprintf("http://host.docker.internal:%s/webhook", port)
 	req := fmt.Sprintf("localListener=%s, registerURL=%s/webhook/register", localAddr, cfg.BaseURL)
 
 	received := make(chan string, 1)
@@ -56,10 +57,10 @@ func (c *WebhookCheck) Run(cfg *config.Config) Result {
 	}()
 
 	// 2. Register webhook.
-	regURL := cfg.BaseURL + "/webhook/register"
+	regURL := cfg.BaseURL + "/webhooks"
 	regBody, _ := json.Marshal(map[string]interface{}{
-		"callbackUrl": localAddr,
-		"events":      []string{"DECLINE"},
+		"url":    localAddr,
+		"filter": "DECLINE,REVIEW",
 	})
 	regResp, err := http.Post(regURL, "application/json", bytes.NewReader(regBody))
 	if err != nil {
@@ -84,16 +85,8 @@ func (c *WebhookCheck) Run(cfg *config.Config) Result {
 		}
 	}
 
-	// 3. Fire transaction likely to trigger DECLINE (amount=200000).
-	txBody, _ := json.Marshal(map[string]interface{}{
-		"transactionId":  "wh-smoke-001",
-		"customerId":     "u-webhook-001",
-		"amountCents":    200000,
-		"correlationId":  "corr-wh-smoke-001",
-		"idempotencyKey": "idem-wh-smoke-001",
-		"merchantId":     "m-webhook-001",
-	})
-	txResp, err := http.Post(cfg.BaseURL+"/risk", "application/json", bytes.NewReader(txBody))
+	// 3. Fire transaction likely to trigger webhook fanout.
+	status, body, err := postSmokeRisk(cfg, "webhook-smoke", 200000)
 	if err != nil {
 		return Result{
 			ID:      CheckWebhook,
@@ -103,7 +96,8 @@ func (c *WebhookCheck) Run(cfg *config.Config) Result {
 			Detail:  fmt.Sprintf("FAILED — transaction error: %v", err),
 		}
 	}
-	txResp.Body.Close()
+	_ = status
+	_ = body
 
 	// 4. Wait for callback up to 3s.
 	select {
