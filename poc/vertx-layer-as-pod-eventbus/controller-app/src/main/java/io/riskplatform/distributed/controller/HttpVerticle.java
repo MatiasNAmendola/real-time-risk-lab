@@ -194,21 +194,41 @@ public class HttpVerticle extends AbstractVerticle {
                 ctx.response().setStatusCode(400).end(new JsonObject().put("error","url required").encode());
                 return;
             }
-            String id = UUID.randomUUID().toString();
             List<String> filters = java.util.Arrays.stream(filter.split(","))
                 .map(String::trim)
                 .filter(value -> !value.isBlank())
                 .toList();
+            if (filters.isEmpty()) {
+                ctx.response().setStatusCode(400)
+                    .putHeader("Content-Type", "application/json")
+                    .end(new JsonObject().put("error","filter must include at least one decision").encode());
+                return;
+            }
+            List<String> invalidFilters = filters.stream()
+                .filter(value -> !List.of("APPROVE", "REVIEW", "DECLINE").contains(value))
+                .toList();
+            if (!invalidFilters.isEmpty()) {
+                ctx.response().setStatusCode(400)
+                    .putHeader("Content-Type", "application/json")
+                    .end(new JsonObject()
+                        .put("error","invalid filter value")
+                        .put("invalid", invalidFilters)
+                        .put("allowed", List.of("APPROVE", "REVIEW", "DECLINE"))
+                        .encode());
+                return;
+            }
+            String id = UUID.randomUUID().toString();
+            String normalizedFilter = String.join(",", filters);
             webhooks.put(id, new WebhookSub(id, url, filters));
-            log.info("[controller-app] webhook registered id={} filter={}", id, filter);
+            log.info("[controller-app] webhook registered id={} filter={}", id, normalizedFilter);
             ctx.response().setStatusCode(201)
                 .putHeader("Content-Type","application/json")
                 .end(new JsonObject()
                     .put("id", id)
                     .put("url", url)
                     .put("callbackUrl", url)
-                    .put("filter", filter)
-                    .put("eventFilter", filter)
+                    .put("filter", normalizedFilter)
+                    .put("eventFilter", normalizedFilter)
                     .encode());
         });
 

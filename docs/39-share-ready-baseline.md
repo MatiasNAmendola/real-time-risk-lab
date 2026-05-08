@@ -3,11 +3,11 @@
 **Fecha**: 2026-05-08  
 **Anchor recomendado**: `v0.1-shareable` / `share/v0.1`
 
-Este documento marca el primer baseline público razonable de Real-Time Risk Lab después del reframing masivo a “real-time risk lab”. No intenta reescribir la historia de Git; deja explícito qué commits son el punto estable para compartir y qué partes de la historia previa tienen baja auditabilidad.
+Este documento marca el primer baseline público razonable de **Real-Time Risk Lab**. No intenta reescribir la historia de Git; deja explícito qué commit es el punto estable para compartir y qué partes de la historia previa tienen baja auditabilidad.
 
 ## Qué queda marcado como v0.1
 
-- Repo framed como laboratorio técnico de riesgo/fraude en tiempo real.
+- **Real-Time Risk Lab** presentado como laboratorio técnico de riesgo/fraude en tiempo real.
 - Baseline ejecutable: **Java 21 LTS** con `--release 21`.
 - Objetivo documentado, no operativo: **Java 25 LTS** cuando Gradle/JMH/Karate/ArchUnit soporten classfile 25 sin fricción.
 - Test runner local más seguro para laptop:
@@ -22,7 +22,7 @@ Este documento marca el primer baseline público razonable de Real-Time Risk Lab
 La wave de reframing dejó dos commits grandes:
 
 - `a48734f chore: prepare risk platform repo for sharing` — 667 archivos.
-- `b2f8dc1 refactor: organize real-time risk lab modules` — 347 archivos.
+- `b2f8dc1 refactor: organize real-time risk lab modules` — 347 archivos. Se preserva el subject original del commit, aunque el nombre canónico del proyecto en la documentación es **Real-Time Risk Lab**.
 
 Son aceptables como sprint de preparación pública, pero no son ideales para bisect ni review fina. A partir de v0.1, el criterio recomendado es continuar con commits chicos, scope único y mensaje preciso, como en la wave de estabilización laptop-safe.
 
@@ -30,20 +30,21 @@ Son aceptables como sprint de preparación pública, pero no son ideales para bi
 
 ### `scripts/process-guard.py`
 
-Resultado: apto para v0.1 con defaults conservadores.
+Resultado: apto para v0.1 con defaults conservadores. Criterios verificados:
 
-- `status` sólo lista procesos relacionados al repo por defecto.
-- `stop` es dry-run salvo `--yes`.
-- Gradle daemons globales quedan fuera salvo `--include-gradle-daemons` explícito.
-- Se agregó manejo amable para señales inválidas, evitando stack traces en CLI.
+- **Scope**: `status` sólo lista procesos relacionados al repo por defecto; no hace matching global salvo el caso explícito de Gradle daemons.
+- **Seguridad operacional**: `stop` es dry-run salvo `--yes`; además excluye el propio helper y su shell padre.
+- **Gradle global**: Gradle daemons globales quedan fuera salvo `--include-gradle-daemons` explícito.
+- **UX de error**: señales inválidas devuelven exit `2` con mensaje `invalid signal: <value>`, evitando stack traces en CLI.
 
 ### `HttpVerticle.java` del EventBus stack
 
-Resultado: apto para v0.1 con hardening menor.
+Resultado: apto para v0.1 con hardening menor. Criterios verificados:
 
-- `/risk` mantiene `X-Correlation-Id` y ahora también agrega trace headers en errores 502.
-- `/webhooks` valida body vacío como 400 JSON en vez de permitir NPE.
-- Los filtros de webhook se trimmean para que `APPROVE, REVIEW` matchee igual que `APPROVE,REVIEW`.
+- **Correlación/trace**: `/risk` mantiene `X-Correlation-Id`; las respuestas `200` y `502` exponen trace headers para diagnóstico local.
+- **Body inválido**: `/webhooks` responde `400` JSON ante JSON inválido o body vacío, en vez de permitir NPE.
+- **Filtros de webhook**: `APPROVE, REVIEW` se normaliza a `APPROVE,REVIEW`. Si el trim deja lista vacía, el endpoint responde `400`; no registra un webhook imposible de disparar silenciosamente.
+- **Dominio permitido**: filtros fuera de `APPROVE`, `REVIEW`, `DECLINE` responden `400` con valores inválidos y permitidos.
 
 ## Próximo criterio de trabajo
 
