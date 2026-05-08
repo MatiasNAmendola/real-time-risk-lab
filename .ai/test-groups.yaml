@@ -39,7 +39,7 @@ groups:
     # Fast, no-infra Java unit slice. Do NOT use `./gradlew test` here:
     # that traverses every Gradle test task (architecture, integration, k8s,
     # ATDD placeholders, component tests) and makes `quick` slow/flaky.
-    cmd: "./gradlew :pkg:errors:test :pkg:config:test :pkg:resilience:test :pkg:events:test :pkg:kafka:test :pkg:observability:test :pkg:repositories:test :pkg:integration-audit:test :pkg:testing:test :pkg:risk-domain:test :poc:no-vertx-clean-engine:test --parallel"
+    cmd: "./gradlew :pkg:errors:test :pkg:config:test :pkg:resilience:test :pkg:events:test :pkg:kafka:test :pkg:observability:test :pkg:repositories:test :pkg:integration-audit:test :pkg:testing:test :pkg:risk-domain:test :poc:no-vertx-clean-engine:test"
     needs_infra: false
     cost_cpu: medium
     cost_ram_mb: 800
@@ -58,7 +58,7 @@ groups:
     exclusive: true
 
   unit-sdk-java:
-    cmd: "./gradlew :sdks:risk-client-java:test :sdks:risk-events:test --parallel"
+    cmd: "./gradlew :sdks:risk-client-java:test :sdks:risk-events:test"
     needs_infra: false
     cost_cpu: low
     cost_ram_mb: 700
@@ -288,7 +288,7 @@ groups:
 
   # Backward-compatible aliases for existing docs/scripts.
   unit:
-    cmd: "./gradlew :pkg:errors:test :pkg:config:test :pkg:resilience:test :pkg:events:test :pkg:kafka:test :pkg:observability:test :pkg:repositories:test :pkg:integration-audit:test :pkg:testing:test :pkg:risk-domain:test :poc:no-vertx-clean-engine:test --parallel"
+    cmd: "./gradlew :pkg:errors:test :pkg:config:test :pkg:resilience:test :pkg:events:test :pkg:kafka:test :pkg:observability:test :pkg:repositories:test :pkg:integration-audit:test :pkg:testing:test :pkg:risk-domain:test :poc:no-vertx-clean-engine:test"
     needs_infra: false
     cost_cpu: medium
     cost_ram_mb: 800
@@ -296,7 +296,7 @@ groups:
     exclusive: false
 
   sdk-java:
-    cmd: "./gradlew :sdks:risk-client-java:test :sdks:risk-events:test --parallel"
+    cmd: "./gradlew :sdks:risk-client-java:test :sdks:risk-events:test"
     needs_infra: false
     cost_cpu: low
     cost_ram_mb: 700

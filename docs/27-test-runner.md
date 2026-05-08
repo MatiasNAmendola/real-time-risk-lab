@@ -36,6 +36,10 @@ El topological sort es determinístico: el mismo input siempre produce el mismo 
 de ejecución, lo que hace el output del dry-run estable y útil para revisión del plan
 en CI.
 
+La ejecución usa un `ThreadPoolExecutor`: cada thread solo espera a un proceso hijo
+(`gradlew`, `npm`, `go`, docker tools). Esto evita el overhead de `multiprocessing`
+en macOS y reduce el riesgo de semáforos filtrados o bloqueos del runtime Python.
+
 ### Throttle de recursos
 
 El scheduler trackea dos recursos a través de todos los jobs corriendo:
@@ -57,6 +61,12 @@ de reservas.
 Los jobs exclusivos (benchmarks, compose, contract, k6 y k8s) usan un flag `_exclusive_running`: cuando uno está
 corriendo, ningún otro job puede despacharse, y un job exclusivo no arranca hasta que
 no haya otros jobs corriendo.
+
+Además, las invocaciones Gradle son **single-flight**: el runner no lanza dos
+`./gradlew ...` al mismo tiempo. Esto evita tormentas de Gradle daemons,
+contención sobre `.gradle/noVersion/buildLogic.lock` y congelamientos de laptop.
+Mientras corre Gradle, solo pueden convivir jobs livianos no-Gradle si el límite
+de recursos lo permite.
 
 ### Seguridad ante deadlock
 
@@ -151,6 +161,10 @@ hace SKIP graciosamente.
 **Pinning por proyecto:** `sdks/risk-client-typescript/.node-version` fija la
 versión usada (actualmente `22.14.0`). fnm la respeta automáticamente.
 
+`--parallel` usa un default conservador de `2` para desarrollo local. `--auto-parallel`
+es opt-in y deriva el máximo desde la cantidad de cores; usalo en CI o en una
+máquina dedicada, no durante trabajo interactivo.
+
 `--max-cpu` (default 80%) y `--max-ram` (default 80% de la RAM total del sistema) son
 los techos. Con 4 SDKs costando cada uno 15% de CPU y 400MB de RAM en una máquina de 16GB:
 los 4 corren concurrentemente sin tocar ningún techo.
@@ -181,7 +195,8 @@ Matriz recomendada:
 | Demo live | `./nx test --composite quick` |
 | Pre-push | `./nx test --composite ci-fast` |
 | CI fast | `./nx test --composite ci-fast --json` |
-| CI full | `./nx test --composite ci-full --with-infra-compose --json` |
+| Full local no-k8s | `./nx test all --with-infra-compose` |
+| CI full | `./nx test --composite ci-full --with-infra-compose --json --auto-parallel` |
 | Infra/k8s/nightly | `./nx test --composite k8s --with-infra-k8s --json` |
 
 ## Referencia de CLI
@@ -197,7 +212,7 @@ Matriz recomendada:
 ./nx test --composite integration-compose --auto-infra  compose-up automático
 ./nx test --composite all --max-cpu 70 --max-ram 6000
 ./nx test --json                            Output JSON para CI
-./nx test --parallel N                      Forzar N jobs concurrentes
+./nx test --parallel N                      Forzar N jobs concurrentes (default local: 2)
 ./nx test --out-dir /tmp/run-001           Output dir custom
 ```
 

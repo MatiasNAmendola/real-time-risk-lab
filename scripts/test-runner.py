@@ -22,7 +22,7 @@ import subprocess
 import sys
 import threading
 import time
-from concurrent.futures import ProcessPoolExecutor, Future, FIRST_COMPLETED, wait as futures_wait
+from concurrent.futures import ThreadPoolExecutor, Future, FIRST_COMPLETED, wait as futures_wait
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
@@ -313,6 +313,10 @@ class TestGroup:
     def cost_cpu_pct(self) -> int:
         return CPU_COST_MAP.get(self.cost_cpu, 35)
 
+    @property
+    def uses_gradle(self) -> bool:
+        return "./gradlew" in self.cmd or "gradle-wrapper.jar" in self.cmd
+
     @classmethod
     def from_dict(cls, name: str, d: dict[str, Any]) -> "TestGroup":
         req = d.get("requires", []) or []
@@ -389,11 +393,16 @@ def _compose_up(dry_run: bool = False) -> bool:
 
 
 # ---------------------------------------------------------------------------
-# Job execution (runs in subprocess via ProcessPoolExecutor)
+# Job execution (runs in subprocess via ThreadPoolExecutor)
 # ---------------------------------------------------------------------------
 
 def _run_job_fn(name: str, cmd: str, out_dir_str: str) -> JobResult:
-    """Execute a single test group. Designed to be picklable for ProcessPoolExecutor."""
+    """Execute a single test group.
+
+    The heavy work is the child process (`gradlew`, `npm`, `go`, docker tools),
+    so a thread pool is enough and avoids multiprocessing semaphore overhead on
+    constrained macOS sandboxes/laptops.
+    """
     import subprocess, time, os
     from pathlib import Path
 
@@ -570,6 +579,7 @@ class TestRunner:
         self._reserved_cpu_pct: int = 0
         self._reserved_ram_mb: int = 0
         self._exclusive_running: bool = False
+        self._gradle_running: bool = False
         self._lock = threading.Lock()
         self._monitor = ResourceMonitor()
         self._results: list[JobResult] = []
@@ -579,6 +589,11 @@ class TestRunner:
         if self._exclusive_running:
             return False
         if job.exclusive and (self._reserved_cpu_pct > 0 or self._reserved_ram_mb > 0):
+            return False
+        # Multiple concurrent Gradle invocations are expensive on laptops and
+        # have reproduced buildLogic.lock contention. Keep Gradle single-flight
+        # while still allowing lightweight non-Gradle jobs to run beside it.
+        if job.uses_gradle and self._gradle_running:
             return False
         new_cpu = self._reserved_cpu_pct + job.cost_cpu_pct
         new_ram = self._reserved_ram_mb + job.cost_ram_mb
@@ -594,6 +609,8 @@ class TestRunner:
             self._reserved_ram_mb += job.cost_ram_mb
             if job.exclusive:
                 self._exclusive_running = True
+            if job.uses_gradle:
+                self._gradle_running = True
 
     def _release(self, job: TestGroup) -> None:
         with self._lock:
@@ -601,6 +618,8 @@ class TestRunner:
             self._reserved_ram_mb = max(0, self._reserved_ram_mb - job.cost_ram_mb)
             if job.exclusive:
                 self._exclusive_running = False
+            if job.uses_gradle:
+                self._gradle_running = False
 
     def _print_status(self, msg: str) -> None:
         if not self.json_output:
@@ -672,7 +691,7 @@ class TestRunner:
 
         all_results: list[JobResult] = list(skip_results)
 
-        with ProcessPoolExecutor(max_workers=self.parallel) as pool:
+        with ThreadPoolExecutor(max_workers=self.parallel) as pool:
             for level in levels:
                 level_results = self._run_level(level, pool)
                 all_results.extend(level_results)
@@ -685,7 +704,7 @@ class TestRunner:
         return all_results
 
     def _run_level(
-        self, jobs: list[TestGroup], pool: ProcessPoolExecutor
+        self, jobs: list[TestGroup], pool: ThreadPoolExecutor
     ) -> list[JobResult]:
         pending = list(jobs)  # jobs not yet submitted
         futures: dict[Future, TestGroup] = {}
@@ -791,6 +810,7 @@ class TestRunner:
                     "cost_cpu": j.cost_cpu,
                     "cost_ram_mb": j.cost_ram_mb,
                     "exclusive": j.exclusive,
+                    "uses_gradle": j.uses_gradle,
                 }
                 for j in jobs
             ],
@@ -886,9 +906,9 @@ def _build_parser() -> argparse.ArgumentParser:
     p.add_argument(
         "--parallel",
         type=int,
-        default=0,
+        default=2,
         metavar="N",
-        help="Max concurrent jobs (0 = auto)",
+        help="Max concurrent jobs (default: 2; use 0 with --auto-parallel for CPU-derived)",
     )
     p.add_argument(
         "--auto-parallel",
@@ -1003,8 +1023,10 @@ def main() -> int:
     cpu_count = get_cpu_count()
     total_ram = get_total_ram_mb()
 
-    if args.auto_parallel or args.parallel == 0:
+    if args.auto_parallel:
         parallel = max(1, cpu_count - 1)
+    elif args.parallel == 0:
+        parallel = 2
     else:
         parallel = args.parallel
 

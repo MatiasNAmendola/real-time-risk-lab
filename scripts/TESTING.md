@@ -11,7 +11,7 @@
 |---|---|---|
 | Live demo guardrail | `./nx test --composite quick` | Sub-second/seconds check; no Gradle/JUnit. |
 | Pre-push / real fast verification | `./nx test --composite ci-fast` | Unit Java + SDK units + ArchUnit, with `arch` isolated. |
-| Full local non-k8s sweep | `./nx test --composite ci-full --auto-infra` | Uses Docker/Compose where required. |
+| Full local non-k8s sweep | `./nx test all --with-infra-compose` | Uses Docker/Compose where required; conservative local parallelism. |
 | Kubernetes / infra validation | `./nx test --composite k8s --auto-infra` | Requires k8s tooling. |
 | List groups and composites | `./nx test --list` | Reads `.ai/test-groups.yaml`. |
 
@@ -82,6 +82,7 @@ the source of truth; verify current group names with `./nx test --list`.
 | Docker/Testcontainers suite fails before tests start | Start Docker Desktop/OrbStack and rerun the specific group. |
 | k8s suite cannot find `kubectl`, `helm`, or `k3d` | Run `./nx setup --verify` and install missing optional tooling. |
 | ArchUnit XML/reporting race appears | Ensure `arch` remains `exclusive: true` and runs in its own scheduler level. |
+| Laptop freezes during `all` | Do not use `--auto-parallel` locally. The runner defaults to `--parallel 2` and keeps Gradle single-flight; if needed, lower further with `./nx test all --with-infra-compose --parallel 1 --max-cpu 50 --max-ram 6000`. |
 | Need to inspect or stop stuck `nx`/Gradle test processes | Use `./nx proc status` and `./nx proc stop` instead of ad-hoc `ps | grep`. `stop` is dry-run unless `--yes` is passed. |
 | Need to add a suite | Edit `.ai/test-groups.yaml`, then update `docs/27-test-runner.md`. |
 
