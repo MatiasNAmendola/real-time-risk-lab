@@ -17,7 +17,7 @@ echo "  naranja-poc — Service Access (run each port-forward in a separate shel
 echo "════════════════════════════════════════════════════════════════════════════"
 echo ""
 
-ARGOCD_PASS=$(kubectl -n argocd get secret argocd-initial-admin-secret \
+ARGOCD_PASS=$(kubectl -n argocd get secret argocd-initial-admin \
   -o jsonpath='{.data.password}' 2>/dev/null | base64 -d 2>/dev/null || echo "run after cluster is up")
 
 printf "  %-16s → %s\n" "ArgoCD" \
@@ -38,7 +38,7 @@ printf "  %-16s   URL: http://localhost:9093\n\n" ""
 
 printf "  %-16s → %s\n" "OpenObserve" \
   "kubectl -n openobserve port-forward svc/openobserve 5080:5080"
-printf "  %-16s   URL: http://localhost:5080  (root@example.com / Complexpass#123)\n\n" ""
+printf "  %-16s   URL: http://localhost:5080  (root@example.com / ${OPENOBSERVE_PASSWORD:-change-me-openobserve-local})\n\n" ""
 
 printf "  %-16s → %s\n" "Redpanda Con." \
   "kubectl -n redpanda port-forward svc/redpanda-console 9000:8080"
@@ -59,7 +59,7 @@ echo ""
 
 printf "  %-16s → %s\n" "MinIO Console" \
   "kubectl -n aws-mocks port-forward svc/minio 9001:9001"
-printf "  %-16s   URL: http://localhost:9001  (minioadmin / minioadmin)\n\n" ""
+printf "  %-16s   URL: http://localhost:9001  (${MINIO_ROOT_USER} / ${MINIO_ROOT_PASSWORD})\n\n" ""
 
 printf "  %-16s → %s\n" "MinIO API (S3)" \
   "kubectl -n aws-mocks port-forward svc/minio 9000:9000"

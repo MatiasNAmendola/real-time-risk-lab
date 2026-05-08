@@ -58,7 +58,7 @@ class RiskClientTest {
 
         config = ClientConfig.builder()
                 .environment(Environment.LOCAL)
-                .apiKey("test-key")
+                .apiKey(System.getenv().getOrDefault("RISK_CLIENT_API_KEY", "change-me-client-api-key"))
                 .timeout(Duration.ofMillis(280))
                 .retry(RetryPolicy.exponentialBackoff())
                 .build();
@@ -172,7 +172,7 @@ class RiskClientTest {
     void webhooks_verify_accepts_valid_hmac() {
         WebhooksClient webhooks = new WebhooksClient(config, mockHttp);
         byte[] payload = "{\"decision\":\"DECLINE\"}".getBytes();
-        String secret  = "test-secret";
+        String secret  = System.getenv().getOrDefault("RISK_WEBHOOK_TEST_SECRET", "change-me-webhook-secret");
 
         // compute expected signature
         try {

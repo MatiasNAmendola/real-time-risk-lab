@@ -448,7 +448,7 @@ Runtime.getRuntime().addShutdownHook(new Thread(token::cancel));
 void evaluate_low_amount_returns_approve() {
     RiskClient client = RiskClient.builder()
         .environment(Environment.LOCAL)
-        .apiKey("test-key")
+        .apiKey(System.getenv("RISK_CLIENT_API_KEY"))
         .timeout(Duration.ofMillis(500))
         .build();
 

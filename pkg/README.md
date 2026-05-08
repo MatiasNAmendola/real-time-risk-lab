@@ -25,4 +25,4 @@ Estructura de shared libraries para apps internas, equivalente al patron de pkg/
 
 ## Phase 2 migration note
 
-Classes in this directory are **copies** of originals in `poc/java-risk-engine/`. Once Phase 2 migrates the application modules, the duplicates in the PoC will be removed and apps will depend on these modules directly.
+Classes in this directory are **copies** of originals in `poc/no-vertx-clean-engine/`. Once Phase 2 migrates the application modules, the duplicates in the PoC will be removed and apps will depend on these modules directly.

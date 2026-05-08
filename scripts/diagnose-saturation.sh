@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
-PROJECT_RE='risk|vertx|service-mesh|java-vertx-distributed'
+PROJECT_RE='risk|vertx|service-mesh|vertx-layer-as-pod-eventbus'
 
 echo "== Java processes that look project-related =="
 ps -axo pid,ppid,stat,etime,command | awk -v re="$PROJECT_RE" 'NR==1 || tolower($0) ~ re {print}'

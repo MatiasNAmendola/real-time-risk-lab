@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Run the distributed HTTP load generator against the Vert.x controller-app.
-# Assumes docker compose is already up: cd poc/java-vertx-distributed && docker compose up -d
+# Assumes docker compose is already up: cd poc/vertx-layer-as-pod-eventbus && docker compose up -d
 #
 # Usage:
 #   ./scripts/run-distributed.sh [N] [M] [baseUrl]

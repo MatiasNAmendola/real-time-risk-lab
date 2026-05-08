@@ -1,0 +1,10 @@
+{
+  "service": "vertx-layer-as-pod-eventbus",
+  "target": "vertx-layer-as-pod-eventbus",
+  "baseUrl": "http://localhost:8080",
+  "expectedSlo": {
+    "p99Ms": 300,
+    "errorRate": 0.01
+  },
+  "notes": "Vert.x clustered EventBus + Hazelcast. Layer-as-pod topology."
+}

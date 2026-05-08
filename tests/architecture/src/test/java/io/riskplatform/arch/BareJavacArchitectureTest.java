@@ -42,7 +42,7 @@ class BareJavacArchitectureTest {
         // The Gradle build file injects this path via the system property "risk.engine.classes.dir".
         // Fall back to the project-relative path for IDE runs.
         String classesDir = System.getProperty("risk.engine.classes.dir",
-            "../../poc/java-risk-engine/build/classes/java/main");
+            "../../poc/no-vertx-clean-engine/build/classes/java/main");
         File dir = new File(classesDir);
         if (!dir.exists() || !dir.isDirectory()) {
             System.err.println("""
@@ -50,7 +50,7 @@ class BareJavacArchitectureTest {
                 Bare-javac PoC compiled classes not found at: """ + dir.getAbsolutePath() + """
 
                 Fix: ./gradlew :tests:architecture:test
-                     (builds :poc:java-risk-engine first via project dependency)
+                     (builds :poc:no-vertx-clean-engine first via project dependency)
                 ========================================================
                 """);
         }
@@ -64,7 +64,7 @@ class BareJavacArchitectureTest {
 
         assumeTrue(classes.size() > 0,
             "No classes found in " + dir.getAbsolutePath() + " — " +
-            "ensure :poc:java-risk-engine was compiled before running this test");
+            "ensure :poc:no-vertx-clean-engine was compiled before running this test");
     }
 
     // ── Rule 1: Domain must not depend on Infrastructure ────────────────────────

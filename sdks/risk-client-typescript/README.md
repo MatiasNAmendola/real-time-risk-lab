@@ -477,7 +477,7 @@ describe('RiskClient integration', () => {
   let client: RiskClient;
 
   beforeAll(() => {
-    client = new RiskClient({ environment: Environment.LOCAL, apiKey: 'test-key', timeoutMs: 500 });
+    client = new RiskClient({ environment: Environment.LOCAL, apiKey: process.env.RISK_CLIENT_API_KEY ?? 'change-me-client-api-key', timeoutMs: 500 });
   });
 
   it('evaluate low amount returns APPROVE', async () => {

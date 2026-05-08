@@ -1,7 +1,0 @@
-{
-  "service": "java-monolith",
-  "target": "monolith",
-  "baseUrl": "http://localhost:8090",
-  "expectedSlo": { "p99Ms": 300, "errorRate": 0.01 },
-  "notes": "Spring-style monolith controller. Network + serialization overhead vs bare-javac."
-}

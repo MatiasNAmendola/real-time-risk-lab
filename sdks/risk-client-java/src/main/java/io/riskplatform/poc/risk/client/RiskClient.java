@@ -21,12 +21,12 @@ import java.net.http.HttpClient;
 import java.time.Duration;
 
 /**
- * Entry point for the Risk Decision Platform Client SDK.
+ * Entry point for the Real-Time Risk Lab Client SDK.
  *
  * <pre>{@code
  * RiskClient client = RiskClient.builder()
  *     .environment(Environment.LOCAL)
- *     .apiKey("test-key")
+ *     .apiKey(System.getenv("RISK_CLIENT_API_KEY"))
  *     .timeout(Duration.ofMillis(280))
  *     .retry(RetryPolicy.exponentialBackoff())
  *     .build();

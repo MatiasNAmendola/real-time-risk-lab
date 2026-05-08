@@ -16,7 +16,7 @@ exporters:
   otlphttp/openobserve:
     endpoint: http://openobserve:5080/api/default/
     headers:
-      Authorization: "Basic YWRtaW5AZXhhbXBsZS5jb206Q29tcGxleHBhc3Mj"  # admin@example.com:Complexpass#
+      Authorization: "${env:OPENOBSERVE_BASIC_AUTH_HEADER}"
       organization: default
       stream-name: default
     tls:

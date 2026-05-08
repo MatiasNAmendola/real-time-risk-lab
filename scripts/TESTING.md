@@ -29,7 +29,7 @@ This summary mirrors `docs/27-test-runner.md`; if it drifts, update that doc and
 | Unit Java fast | `unit-java-fast` | No | Explicit Gradle unit slice; never `./gradlew test`. |
 | Unit SDK | `unit-sdk` | No | Java/TypeScript/Go SDK unit tests. |
 | Architecture | `arch` | No | ArchUnit; exclusive to avoid Gradle/JUnit XML report races. |
-| Component Vert.x | `component-vertx` | No | In-process Vert.x component tests. |
+| Component Vert.x | `component-vertx-layer-as-pod-http` | No | In-process Vert.x component tests. |
 | Integration Testcontainers | `integration-testcontainers` | Docker | Ephemeral container integration tests. |
 | Integration Compose | `integration-compose` | Compose | ATDD/smoke suites against local distributed stack. |
 | SDK integration | `sdk-integration` | Compose | SDKs against a real local server. |

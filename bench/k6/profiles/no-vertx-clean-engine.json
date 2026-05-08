@@ -1,0 +1,7 @@
+{
+  "service": "no-vertx-clean-engine",
+  "target": "no-vertx-clean-engine",
+  "baseUrl": "http://localhost:8081",
+  "expectedSlo": { "p99Ms": 250, "errorRate": 0.005 },
+  "notes": "Pure Clean Architecture, virtual-thread HttpServer, no framework overhead."
+}

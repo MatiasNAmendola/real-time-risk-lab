@@ -51,7 +51,7 @@ function makeSqsMock(sendResult?: unknown, receiveResult?: unknown) {
 
 function makeClient(sqsOverride?: SQSClient): RiskClient {
   return new RiskClient(
-    { environment: 'LOCAL', apiKey: 'test-key', timeoutMs: 5000 },
+    { environment: 'LOCAL', apiKey: process.env.RISK_CLIENT_API_KEY ?? 'change-me-client-api-key', timeoutMs: 5000 },
     sqsOverride,
   );
 }
@@ -126,7 +126,7 @@ test('webhooks.list returns array', async () => {
 });
 
 test('webhooks.verify accepts valid HMAC-SHA256 signature', () => {
-  const secret  = 'test-secret';
+  const secret  = process.env.RISK_WEBHOOK_TEST_SECRET ?? 'change-me-webhook-secret';
   const payload = Buffer.from('{"decision":"DECLINE"}');
   const sig     = crypto.createHmac('sha256', secret).update(payload).digest('hex');
   expect(makeClient().webhooks.verify(payload, sig, secret)).toBe(true);

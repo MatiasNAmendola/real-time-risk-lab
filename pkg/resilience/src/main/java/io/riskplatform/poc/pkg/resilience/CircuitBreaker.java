@@ -3,7 +3,7 @@ package io.riskplatform.poc.pkg.resilience;
 import java.time.Duration;
 
 /**
- * Copied from poc/java-risk-engine with package re-mapped to io.riskplatform.poc.pkg.resilience.
+ * Copied from poc/no-vertx-clean-engine with package re-mapped to io.riskplatform.poc.pkg.resilience.
  * Original: io.riskplatform.engine.infrastructure.resilience.CircuitBreaker
  *
  * Phase 2: apps will depend on this module and drop their local copy.

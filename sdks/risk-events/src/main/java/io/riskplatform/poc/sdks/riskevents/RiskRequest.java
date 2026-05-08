@@ -4,7 +4,7 @@ package io.riskplatform.sdks.riskevents;
  * Canonical SDK record for requesting a risk evaluation.
  *
  * <p>Field names align with the deployed Vert.x server contract:
- * see {@code poc/java-vertx-distributed/shared/.../RiskRequest.java} and
+ * see {@code poc/vertx-layer-as-pod-eventbus/shared/.../RiskRequest.java} and
  * {@code controller-app/src/main/resources/openapi.yaml}.
  *
  * <p>{@code idempotencyKey} is optional. When present, the server short-circuits

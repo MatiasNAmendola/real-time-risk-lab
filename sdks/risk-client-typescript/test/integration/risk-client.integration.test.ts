@@ -4,7 +4,7 @@
  * Assumes the full Vertx distributed stack is already running on localhost:8080.
  * Start the stack before running these tests:
  *
- *   docker compose -f poc/java-vertx-distributed/docker-compose.yml up -d --wait
+ *   docker compose -f poc/vertx-layer-as-pod-eventbus/docker-compose.yml up -d --wait
  *
  * Run with: npm run test:integration
  *
@@ -26,7 +26,7 @@ import { execSync } from 'child_process';
 
 const BASE_URL = process.env.RISK_BASE_URL ?? 'http://localhost:8080';
 const COMPOSE_FILE =
-  '../../poc/java-vertx-distributed/docker-compose.yml';
+  '../../poc/vertx-layer-as-pod-eventbus/docker-compose.yml';
 
 let client: RiskClient;
 let dockerStarted = false;
@@ -46,7 +46,7 @@ beforeAll(async () => {
     }
   }
 
-  client = new RiskClient({ environment: 'LOCAL', apiKey: 'test', timeoutMs: 10_000 });
+  client = new RiskClient({ environment: 'LOCAL', apiKey: process.env.RISK_CLIENT_API_KEY ?? 'change-me-client-api-key', timeoutMs: 10_000 });
 
   // Poll /healthz until the server is ready (up to 60 s).
   const deadline = Date.now() + 60_000;

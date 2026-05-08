@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# setup.sh — Main orchestrator for the risk-platform-practice toolchain setup
+# setup.sh — Main orchestrator for the real-time-risk-lab toolchain setup
 # Requires bash 4+
 set -uo pipefail
 
@@ -54,7 +54,7 @@ GROUP_ORDER=(core languages containers kubernetes aws streaming observability op
 print_help() {
   cat <<EOF
 
-${BOLD_CYAN}Risk Decision Platform — Setup${RESET}
+${BOLD_CYAN}Real-Time Risk Lab — Setup${RESET}
 
 ${BOLD}USAGE${RESET}
   ./setup.sh [OPTIONS]
@@ -227,7 +227,7 @@ main() {
     exec "${SETUP_DIR}/verify.sh"
   fi
 
-  section_header "Risk Decision Platform — Setup"
+  section_header "Real-Time Risk Lab — Setup"
 
   if [[ "$DRY_RUN" == "1" ]]; then
     printf '  %s[DRY RUN]%s No changes will be made.\n\n' "${BOLD_YELLOW}" "${RESET}"

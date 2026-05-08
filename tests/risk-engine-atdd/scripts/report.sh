@@ -260,7 +260,7 @@ ts_iso      = timestamp[:10] + "T" + timestamp[11:].replace("-", ":") + "Z"
 
 sm = []
 sm.append(f"# ATDD Cucumber run — {ts_iso}\n")
-sm.append(f"**Project**: java-risk-engine (bare-javac via Cucumber-JVM)  ")
+sm.append(f"**Project**: no-vertx-clean-engine (bare-javac via Cucumber-JVM)  ")
 sm.append(f"**Features**: {len(feature_rows)} · **Scenarios**: {total_scenarios} · "
           f"**PASS**: {total_pass} · **FAIL**: {total_fail} · **SKIP (@wip)**: {total_skip}  ")
 sm.append(f"**Duration**: {total_dur_s:.1f}s  ")
@@ -294,7 +294,7 @@ with open(summary_md_path, "w") as f:
 # ---- summary.txt (plain, no markdown) -------------------------
 txt = []
 txt.append(f"ATDD Cucumber run — {ts_iso}")
-txt.append(f"Project : java-risk-engine (bare-javac via Cucumber-JVM)")
+txt.append(f"Project : no-vertx-clean-engine (bare-javac via Cucumber-JVM)")
 txt.append(f"Features: {len(feature_rows)}  Scenarios: {total_scenarios}  PASS: {total_pass}  FAIL: {total_fail}  SKIP: {total_skip}")
 txt.append(f"Duration: {total_dur_s:.1f}s  Exit code: {exit_code}")
 txt.append("")

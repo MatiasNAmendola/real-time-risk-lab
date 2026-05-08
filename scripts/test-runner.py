@@ -372,11 +372,11 @@ def _compose_up(dry_run: bool = False) -> bool:
 
     Uses scripts/up.sh which composes the shared infra
     (compose/docker-compose.yml) plus the vertx app override
-    (poc/java-vertx-distributed/compose.override.yml) and blocks until the
+    (poc/vertx-layer-as-pod-eventbus/compose.override.yml) and blocks until the
     stack is healthy. The stack is left UP for the duration of the test run
     and is intentionally NOT torn down between jobs (compose-dependent jobs
     must observe a stable, long-lived stack)."""
-    up_script = REPO_ROOT / "poc" / "java-vertx-distributed" / "scripts" / "up.sh"
+    up_script = REPO_ROOT / "poc" / "vertx-layer-as-pod-eventbus" / "scripts" / "up.sh"
     if not up_script.exists():
         print(f"[runner] WARN: up.sh not found: {up_script}")
         return False

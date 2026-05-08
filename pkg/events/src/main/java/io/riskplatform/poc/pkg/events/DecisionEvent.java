@@ -4,7 +4,7 @@ import java.time.Instant;
 import java.util.UUID;
 
 /**
- * Copied from poc/java-risk-engine with re-packaged types.
+ * Copied from poc/no-vertx-clean-engine with re-packaged types.
  * Original: io.riskplatform.engine.domain.entity.DecisionEvent
  *
  * Decision and reason fields are kept as Strings to avoid coupling

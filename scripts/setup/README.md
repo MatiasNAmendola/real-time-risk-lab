@@ -1,4 +1,4 @@
-# Risk Decision Platform — Setup
+# Real-Time Risk Lab — Setup
 
 Intelligent, idempotent cross-platform installer for the full project toolchain.
 Detects what is already installed, installs only what is missing, validates versions,

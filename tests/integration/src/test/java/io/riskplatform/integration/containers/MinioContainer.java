@@ -9,8 +9,10 @@ public final class MinioContainer extends GenericContainer<MinioContainer> {
     private static final String IMAGE = "minio/minio:RELEASE.2024-11-07T00-52-20Z";
     public static final int API_PORT = 9000;
     public static final int CONSOLE_PORT = 9001;
-    public static final String ROOT_USER = "minioadmin";
-    public static final String ROOT_PASSWORD = "minioadmin";
+    public static final String ROOT_USER =
+            System.getenv().getOrDefault("MINIO_ROOT_USER", "change-me-minio-user");
+    public static final String ROOT_PASSWORD =
+            System.getenv().getOrDefault("MINIO_ROOT_PASSWORD", "change-me-minio-password");
 
     public MinioContainer(DockerImageName image) {
         super(image);

@@ -1,7 +1,0 @@
-{
-  "service": "vertx-risk-platform",
-  "target": "vertx-platform",
-  "baseUrl": "http://localhost:8180",
-  "expectedSlo": { "p99Ms": 280, "errorRate": 0.01 },
-  "notes": "Vert.x 5 reactive monolith with REST/SSE/WS/Webhook/Kafka."
-}

@@ -1,7 +1,7 @@
 // payload.js — generates valid RiskRequest payloads.
 //
-// Schema mirrors what the four services accept (bare-javac, monolith,
-// vertx-platform, distributed). Fields:
+// Schema mirrors what the four services accept (no-Vert.x baseline, Vert.x monolith,
+// Vert.x HTTP layer-as-pod, Vert.x EventBus layer-as-pod). Fields:
 //   transactionId    UUID v4
 //   customerId       string (cust_NNNN)
 //   amountCents      integer in [100, 5_000_000]

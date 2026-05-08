@@ -7,7 +7,7 @@ val libs = the<org.gradle.accessors.dm.LibrariesForLibs>()
 dependencies {
     // Pull the risk engine as a testImplementation dependency so its classes
     // are on the test classpath (replaces the legacy extra source-set wiring).
-    testImplementation(project(":poc:java-risk-engine"))
+    testImplementation(project(":poc:no-vertx-clean-engine"))
     testImplementation(libs.cucumber.java)
     testImplementation(libs.cucumber.junit.platform.engine)
     testImplementation(libs.cucumber.picocontainer)

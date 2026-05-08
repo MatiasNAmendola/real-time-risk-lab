@@ -11,7 +11,7 @@ dependencies {
     implementation(libs.jackson.databind)
 
     // Risk-engine sources (replaces the legacy extra source-set wiring)
-    implementation(project(":poc:java-risk-engine"))
+    implementation(project(":poc:no-vertx-clean-engine"))
     implementation(project(":pkg:risk-domain"))
 }
 

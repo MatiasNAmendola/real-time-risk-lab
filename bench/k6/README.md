@@ -24,29 +24,28 @@ bench/k6/
 
 ## Targets
 
-`./nx bench k6 <scenario> --target <bare|monolith|vertx-platform|distributed>`
+`./nx bench k6 <scenario> --target <no-vertx-clean-engine|vertx-monolith-inprocess|vertx-layer-as-pod-http|vertx-layer-as-pod-eventbus>`
 
 | Target | Default URL | Profile |
 |---|---|---|
-| `bare`            | `http://localhost:8081` | `profiles/bare-javac.json`      |
-| `monolith`        | `http://localhost:8090` | `profiles/monolith.json`        |
-| `vertx-platform`  | `http://localhost:8180` | `profiles/vertx-platform.json`  |
-| `distributed`     | `http://localhost:8080` | `profiles/distributed.json`     |
+| `no-vertx-clean-engine`            | `http://localhost:8081` | `profiles/no-vertx-clean-engine.json`      |
+| `vertx-monolith-inprocess`        | `http://localhost:8090` | `profiles/vertx-monolith-inprocess.json`        |
+| `vertx-layer-as-pod-http`  | `http://localhost:8180` | `profiles/vertx-layer-as-pod-http.json`  |
+| `vertx-layer-as-pod-eventbus`     | `http://localhost:8080` | `profiles/vertx-layer-as-pod-eventbus.json`     |
 
-Override via env: `BARE_URL`, `MONO_URL`, `VRP_URL`, `DIST_URL`, or
-`BASE_URL` (wins over `TARGET`).
+Override via env: `NO_VERTX_CLEAN_ENGINE_URL`, `VERTX_MONOLITH_INPROCESS_URL`, `VERTX_LAYER_AS_POD_HTTP_URL`, `VERTX_LAYER_AS_POD_EVENTBUS_URL`, or `BASE_URL` (wins over `TARGET`).
 
 ## Run individually (no nx wrapper)
 
 ```bash
-# Smoke against bare-javac
-TARGET=bare k6 run bench/k6/scenarios/smoke.js
+# Smoke against no-vertx-clean-engine
+TARGET=no-vertx-clean-engine k6 run bench/k6/scenarios/smoke.js
 
 # Load with overrides
-TARGET=distributed k6 run -e VUS=64 -e DURATION=3m bench/k6/scenarios/load.js
+TARGET=vertx-layer-as-pod-eventbus k6 run -e VUS=64 -e DURATION=3m bench/k6/scenarios/load.js
 
 # Stress
-TARGET=vertx-platform k6 run bench/k6/scenarios/stress.js
+TARGET=vertx-layer-as-pod-http k6 run bench/k6/scenarios/stress.js
 ```
 
 Output to JSON for post-analysis:
@@ -59,11 +58,11 @@ k6 run --out json=out/k6/$(date +%Y%m%dT%H%M%S)/load.json \
 ## Run via ./nx (recommended)
 
 ```bash
-./nx bench k6 smoke                                # default --target distributed
-./nx bench k6 load --target bare --duration 60s
-./nx bench k6 stress --target vertx-platform
-./nx bench k6 spike --target distributed
-./nx bench k6 soak --target distributed --vus 8 --duration 5m
+./nx bench k6 smoke                                # default --target vertx-layer-as-pod-eventbus
+./nx bench k6 load --target no-vertx-clean-engine --duration 60s
+./nx bench k6 stress --target vertx-layer-as-pod-http
+./nx bench k6 spike --target vertx-layer-as-pod-eventbus
+./nx bench k6 soak --target vertx-layer-as-pod-eventbus --vus 8 --duration 5m
 
 # 4-way comparison: same scenario against all four services
 ./nx bench k6 competition load
@@ -80,7 +79,7 @@ for it. Set the env vars and add `-o experimental-prometheus-rw`:
 ```bash
 export K6_PROMETHEUS_RW_SERVER_URL=http://localhost:5080/api/prom/push
 export K6_PROMETHEUS_RW_USERNAME=admin@example.com
-export K6_PROMETHEUS_RW_PASSWORD='Complexpass#'
+export K6_PROMETHEUS_RW_PASSWORD='${OPENOBSERVE_PASSWORD:-change-me-openobserve-local}'
 export K6_PROMETHEUS_RW_TREND_STATS='p(95),p(99),min,max,avg'
 
 k6 run -o experimental-prometheus-rw bench/k6/scenarios/load.js
@@ -110,7 +109,7 @@ The wrapper auto-enables this output if `K6_PROMETHEUS_RW_SERVER_URL` is set.
 ## Example: smoke run output
 
 ```
-$ TARGET=bare k6 run bench/k6/scenarios/smoke.js
+$ TARGET=no-vertx-clean-engine k6 run bench/k6/scenarios/smoke.js
    ✓ status is 2xx
    ✓ has decision
 

@@ -3,5 +3,5 @@
   "target": "k8s",
   "baseUrl": "http://risk-engine.localhost",
   "expectedSlo": { "p99Ms": 400, "errorRate": 0.01 },
-  "notes": "k3d (or OrbStack k8s) cluster behind Traefik ingress. p99 budget bumped to 400ms to absorb local cluster overhead vs. the bare distributed profile."
+  "notes": "k3d (or OrbStack k8s) cluster behind Traefik ingress. p99 budget bumped to 400ms to absorb local cluster overhead vs. the local no-Vert.x and EventBus profiles."
 }

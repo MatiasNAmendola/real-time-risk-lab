@@ -30,7 +30,7 @@ func main() {
 	)
 
 	flag.Usage = func() {
-		fmt.Fprintf(os.Stderr, `risk-smoke — Risk Decision Platform Risk Engine smoke runner
+		fmt.Fprintf(os.Stderr, `risk-smoke — Real-Time Risk Lab Risk Engine smoke runner
 
 USAGE
   risk-smoke [flags]
@@ -49,7 +49,7 @@ CHECK IDs (for --only)
   webhook         Register local listener, fire DECLINE tx, wait callback
   kafka           Consume topic risk-decisions (Redpanda)
   otel            POST /risk → traceresponse → OpenObserve trace lookup
-  cucumber-bare   Run Gradle Cucumber ATDD for java-risk-engine (opt-in, slow)
+  cucumber-bare   Run Gradle Cucumber ATDD for no-vertx-clean-engine (opt-in, slow)
 
 EXAMPLES
   risk-smoke                                        # interactive TUI

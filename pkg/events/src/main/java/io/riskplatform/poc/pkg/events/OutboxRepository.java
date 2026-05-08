@@ -4,7 +4,7 @@ import java.util.List;
 
 /**
  * Outbound port for the transactional outbox pattern.
- * Copied from poc/java-risk-engine, re-packaged and decoupled from ExecutionContext.
+ * Copied from poc/no-vertx-clean-engine, re-packaged and decoupled from ExecutionContext.
  * Original: io.riskplatform.engine.domain.repository.OutboxRepository
  */
 public interface OutboxRepository {

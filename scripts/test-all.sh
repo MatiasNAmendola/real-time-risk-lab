@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# test-all.sh — Unified test orchestrator for the riskplatform/risk-platform-practice monorepo.
+# test-all.sh — Unified test orchestrator for the riskplatform/real-time-risk-lab monorepo.
 # Runs all test suites and produces a unified report under out/test-all/<timestamp>/.
 #
 # Usage:
@@ -54,7 +54,7 @@ suite_needs_infra_k8s_smoke=2
 suite_needs_infra_coverage_audit=0
 
 suite_label_arch="ArchUnit"
-suite_label_cucumber="Cucumber bare"
+suite_label_cucumber="Cucumber no-vertx-clean-engine"
 suite_label_integration="Testcontainers"
 suite_label_smoke="Go smoke"
 suite_label_karate="Karate ATDD"
@@ -124,7 +124,7 @@ USAGE
   ./scripts/test-all.sh [flags]
 
 FLAGS
-  --with-infra-compose         docker compose up (java-vertx-distributed), then run all infra-dependent suites
+  --with-infra-compose         docker compose up (vertx-layer-as-pod-eventbus), then run all infra-dependent suites
   --with-infra-k8s             spin up k3d/OrbStack cluster with Helm addons + AWS mocks, then run all suites
   --provider <orbstack|k3d>    override k8s provider (auto-detected when not set)
   --cleanup-k8s                teardown the k8s cluster after the run (default: leave it running)
@@ -137,9 +137,9 @@ FLAGS
 
 SUITE IDs
   arch          ArchUnit static architecture checks (no infra)
-  cucumber      Cucumber-JVM ATDD for bare-javac engine (no infra)
+  cucumber      Cucumber-JVM ATDD for no-vertx-clean-engine (no infra)
   integration   Testcontainers integration tests — needs Docker running (no compose/k8s)
-  smoke         Go smoke checks for java-vertx-distributed (needs infra)
+  smoke         Go smoke checks for vertx-layer-as-pod-eventbus (needs infra)
   karate        Karate ATDD integration tests (needs infra)
   bench-inproc  JMH in-process benchmarks (no infra)
   bench-dist    HTTP distributed load benchmarks (needs infra)
@@ -278,9 +278,9 @@ bootstrap_compose() {
     echo "ERROR: docker is not installed or not in PATH." >&2
     exit 1
   fi
-  info "starting java-vertx-distributed stack"
+  info "starting vertx-layer-as-pod-eventbus stack"
   (
-    cd "$PROJECT_ROOT/poc/java-vertx-distributed"
+    cd "$PROJECT_ROOT/poc/vertx-layer-as-pod-eventbus"
     bash scripts/up.sh
   ) >> "$INFRA_LOG" 2>&1
   INFRA_UP=1
@@ -441,7 +441,7 @@ infra_cleanup() {
     if [[ $WITH_INFRA_COMPOSE -eq 1 ]]; then
       log "  Stopping compose stack..."
       (
-        cd "$PROJECT_ROOT/poc/java-vertx-distributed"
+        cd "$PROJECT_ROOT/poc/vertx-layer-as-pod-eventbus"
         bash scripts/down.sh || true
       ) >> "$INFRA_LOG" 2>&1
     elif [[ $WITH_INFRA_K8S -eq 1 && $CLEANUP_K8S -eq 1 ]]; then
@@ -562,14 +562,14 @@ run_suite() {
       fi
       ;;
     karate)
-      if [[ ! -f "$PROJECT_ROOT/poc/java-vertx-distributed/scripts/atdd.sh" ]]; then
-        echo "SKIP — poc/java-vertx-distributed/scripts/atdd.sh not found" > "$suite_out/stdout.log"
+      if [[ ! -f "$PROJECT_ROOT/poc/vertx-layer-as-pod-eventbus/scripts/atdd.sh" ]]; then
+        echo "SKIP — poc/vertx-layer-as-pod-eventbus/scripts/atdd.sh not found" > "$suite_out/stdout.log"
         touch "$suite_out/stderr.log"
         echo "0" > "$suite_out/exit-code"
         echo "SKIP"
         return
       fi
-      timeout 600 bash "$PROJECT_ROOT/poc/java-vertx-distributed/scripts/atdd.sh" \
+      timeout 600 bash "$PROJECT_ROOT/poc/vertx-layer-as-pod-eventbus/scripts/atdd.sh" \
         > "$suite_out/stdout.log" 2> "$suite_out/stderr.log" || exit_code=$?
       ;;
     bench-inproc)

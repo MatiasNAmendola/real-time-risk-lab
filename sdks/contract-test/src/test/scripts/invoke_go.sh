@@ -39,9 +39,13 @@ import (
 )
 
 func main() {
+  apiKey := os.Getenv("RISK_CLIENT_API_KEY")
+  if apiKey == "" {
+    apiKey = "change-me-client-api-key"
+  }
   cfg := riskclient.Config{
     Environment: riskclient.Local,
-    APIKey:      "test",
+    APIKey:      apiKey,
     Timeout:     10 * time.Second,
     Retry:       riskclient.ExponentialBackoff(),
   }

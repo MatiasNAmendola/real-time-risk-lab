@@ -33,6 +33,6 @@ spec:
           jsonPath: "{$.hits[0].result}"
           headers:
             - key: Authorization
-              # base64("root@example.com:Complexpass#123") — default OpenObserve creds.
+              # base64("root@example.com:${OPENOBSERVE_PASSWORD:-change-me-openobserve-local}") — default OpenObserve creds.
               # Override via ExternalSecret or Rollout arg in production.
               value: "Basic cm9vdEBleGFtcGxlLmNvbTpDb21wbGV4cGFzcyMxMjM="

@@ -1,0 +1,10 @@
+{
+  "service": "vertx-layer-as-pod-http",
+  "target": "vertx-layer-as-pod-http",
+  "baseUrl": "http://localhost:8180",
+  "expectedSlo": {
+    "p99Ms": 280,
+    "errorRate": 0.01
+  },
+  "notes": "Vert.x layer-as-pod over HTTP + token-based permissions."
+}

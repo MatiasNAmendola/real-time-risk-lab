@@ -27,7 +27,7 @@ const { RiskClient } = require('${SDK_DIR}/dist/index.js');
 
 const client = new RiskClient({
   environment: 'LOCAL',
-  apiKey: 'test',
+  apiKey: process.env.RISK_CLIENT_API_KEY || 'change-me-client-api-key',
   timeoutMs: 10000,
 });
 

@@ -38,7 +38,7 @@ Total: 15 ArchUnit rules across 2 test classes.
 cd tests/architecture && ./gradlew test -Dtest=BareJavacArchitectureTest
 
 # Vert.x tests (requires compiled Vert.x modules)
-cd poc/java-vertx-distributed && ./gradlew shadowJar
+cd poc/vertx-layer-as-pod-eventbus && ./gradlew shadowJar
 cd ../../tests/architecture && ./gradlew test -Dtest=VertxDistributedArchitectureTest
 
 # All tests

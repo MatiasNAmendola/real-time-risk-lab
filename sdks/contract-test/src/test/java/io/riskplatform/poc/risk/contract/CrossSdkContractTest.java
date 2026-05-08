@@ -46,7 +46,7 @@ class CrossSdkContractTest {
     private static final String CONTROLLER_SERVICE = "controller-app";
     private static final int    CONTROLLER_PORT    = 8080;
     private static final String COMPOSE_FILE =
-            "../../poc/java-vertx-distributed/docker-compose.yml";
+            "../../poc/vertx-layer-as-pod-eventbus/docker-compose.yml";
 
     @Container
     @SuppressWarnings({"resource", "unchecked"})

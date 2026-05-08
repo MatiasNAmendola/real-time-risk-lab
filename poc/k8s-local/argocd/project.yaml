@@ -6,7 +6,7 @@ metadata:
   finalizers:
     - resources-finalizer.argocd.argoproj.io
 spec:
-  description: Risk Decision Platform PoC — local k8s replica of platform patterns
+  description: Real-Time Risk Lab PoC — local k8s replica of platform patterns
 
   # Allow any local/git source
   sourceRepos:

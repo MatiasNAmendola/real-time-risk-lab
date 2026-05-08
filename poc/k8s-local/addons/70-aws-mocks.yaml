@@ -29,9 +29,9 @@ spec:
             - ":9001"
           env:
             - name: MINIO_ROOT_USER
-              value: minioadmin
+              value: "${MINIO_ROOT_USER:-change-me-minio-user}"
             - name: MINIO_ROOT_PASSWORD
-              value: minioadmin
+              value: "${MINIO_ROOT_PASSWORD:-change-me-minio-password}"
           ports:
             - name: api
               containerPort: 9000
@@ -240,11 +240,11 @@ spec:
           args:
             - server
             - -dev
-            - -dev-root-token-id=root
+            - -dev-root-token-id=${OPENBAO_DEV_ROOT_TOKEN:-change-me-openbao-root-token}
             - -dev-listen-address=0.0.0.0:8200
           env:
             - name: BAO_DEV_ROOT_TOKEN_ID
-              value: root
+              value: "${OPENBAO_DEV_ROOT_TOKEN:-change-me-openbao-root-token}"
             - name: BAO_ADDR
               value: http://0.0.0.0:8200
           ports:

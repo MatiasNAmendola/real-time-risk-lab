@@ -33,7 +33,7 @@ spec:
 
               # ─── MinIO (S3) ──────────────────────────────────────────────────
               echo "=== Configuring MinIO ==="
-              mc alias set local http://minio.aws-mocks.svc:9000 minioadmin minioadmin
+              mc alias set local http://minio.aws-mocks.svc:9000 ${MINIO_ROOT_USER:-change-me-minio-user} ${MINIO_ROOT_PASSWORD:-change-me-minio-password}
               mc mb local/risk-events --ignore-existing
               mc mb local/risk-models --ignore-existing
               echo "MinIO buckets: risk-events, risk-models"
@@ -72,13 +72,13 @@ spec:
 
               aws --endpoint-url http://moto.aws-mocks.svc:5000 secretsmanager create-secret \
                 --name risk-engine/db-password \
-                --secret-string "{\"password\":\"${POC_DB_PASSWORD:-local-dev-password}\"}" \
+                --secret-string "{\"password\":\"${POC_DB_PASSWORD:-change-me-db-password}\"}" \
                 --region us-east-1 \
                 2>/dev/null || true
 
               aws --endpoint-url http://moto.aws-mocks.svc:5000 secretsmanager create-secret \
                 --name risk-engine/api-key \
-                --secret-string "test-api-key-poc" \
+                --secret-string "${POC_API_KEY:-change-me-api-key}" \
                 --region us-east-1 \
                 2>/dev/null || true
 
@@ -94,14 +94,14 @@ spec:
                 -o /tmp/vault.zip
               unzip -q /tmp/vault.zip -d /usr/local/bin/
 
-              POC_DB_PASSWORD="${POC_DB_PASSWORD:-local-dev-password}"
+              POC_DB_PASSWORD="${POC_DB_PASSWORD:-change-me-db-password}"
               vault kv put secret/risk-engine/db \
                 password=${POC_DB_PASSWORD} \
                 username=risk_user \
                 host=postgres.risk.svc
 
               vault kv put secret/risk-engine/keys \
-                signing_key=poc-signing-key-dev
+                signing_key=${POC_SIGNING_KEY:-change-me-signing-key}
 
               echo "OpenBao: secrets written at secret/risk-engine/db and secret/risk-engine/keys"
 

@@ -8,7 +8,8 @@ public final class OpenBaoContainer extends GenericContainer<OpenBaoContainer> {
 
     private static final String IMAGE = "openbao/openbao:2.1.0";
     public static final int BAO_PORT = 8200;
-    public static final String ROOT_TOKEN = "root-test-token";
+    public static final String ROOT_TOKEN =
+            System.getenv().getOrDefault("OPENBAO_DEV_ROOT_TOKEN", "change-me-openbao-root-token");
 
     public OpenBaoContainer(DockerImageName image) {
         super(image);

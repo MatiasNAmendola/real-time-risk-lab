@@ -1,7 +1,0 @@
-{
-  "service": "bare-javac",
-  "target": "bare",
-  "baseUrl": "http://localhost:8081",
-  "expectedSlo": { "p99Ms": 250, "errorRate": 0.005 },
-  "notes": "Pure Clean Architecture, virtual-thread HttpServer, no framework overhead."
-}

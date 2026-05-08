@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# nx — master CLI for the Risk Decision Platform project
+# nx — master CLI for the Real-Time Risk Lab project
 #
 # Compatible with bash 3.2 (macOS default). Auto-reexecs under brew bash when available.
 # Usage: ./nx <command> [subcommand] [args...]
@@ -36,7 +36,7 @@ _die()     { _err "$*"; exit 1; }
 # ---------------------------------------------------------------------------
 usage() {
   cat <<'EOF'
-nx -- orchestrator for the Risk Decision Platform project
+nx -- orchestrator for the Real-Time Risk Lab project
 
 USAGE:
   ./nx <command> [subcommand] [args...]
@@ -45,15 +45,16 @@ COMMANDS:
   setup [--verify|--upgrade|--only X|--skip Y|--dry-run]
       Install or verify the full toolchain (Java, Go, k3d, helm, kubectl, etc.)
 
-  up [infra|vertx|monolith|all|k8s] [--orbstack|--k3d]
+  up [infra|vertx-layer-as-pod-eventbus|vertx-monolith-inprocess|vertx-layer-as-pod-http|all|k8s] [--orbstack|--k3d]
       Bring up infrastructure (docker compose or k8s cluster + services)
       infra    : shared infra only (no app services)
-      vertx    : infra + java-vertx-distributed (default)
-      monolith : infra + java-monolith
-      all      : infra + vertx + monolith side-by-side
+      vertx-layer-as-pod-eventbus : infra + clustered EventBus layer-as-pod
+      vertx-monolith-inprocess    : infra + single-JVM Vert.x monolith
+      vertx-layer-as-pod-http     : infra + HTTP/token layer-as-pod
+      all                         : infra + all Vert.x app variants side-by-side
       k8s      : k3d cluster + helm install
 
-  down [infra|vertx|monolith|all|k8s] [--cleanup-k8s]
+  down [infra|vertx-layer-as-pod-eventbus|vertx-monolith-inprocess|vertx-layer-as-pod-http|all|k8s] [--cleanup-k8s]
       Tear down infrastructure (same targets as up)
 
   status
@@ -64,17 +65,17 @@ COMMANDS:
 
   build [target] [--rebuild]
       Smart incremental build. Default is fast (skips if jars are fresh).
-      Targets: monolith | vertx | vrp | bare-javac | bench-distributed |
-               bench-inprocess | all (default: all-incremental)
+      Targets: no-vertx-clean-engine | vertx-monolith-inprocess | vertx-layer-as-pod-eventbus | vertx-layer-as-pod-http | bench-distributed |
+               bench-inprocess | all
       Flags:
         --rebuild       Force clean rebuild (or set NX_REBUILD=1)
         --legacy-clean  Run legacy ./gradlew clean build (slow, full pipeline)
 
-  run risk-engine [--port N]
-      Start the bare-javac HTTP risk engine
+  run no-vertx-clean-engine [--port N]
+      Start the no-Vert.x Clean Architecture HTTP risk engine
 
-  run vertx
-      Start the Vert.x distributed stack via docker compose
+  run vertx-layer-as-pod-eventbus
+      Start the Vert.x layer-as-pod EventBus stack via docker compose
 
   run k8s
       Bring up k8s cluster and deploy via helm
@@ -92,7 +93,7 @@ COMMANDS:
       Run Karate ATDD tests against the Vert.x stack
 
   test atdd-cucumber
-      Run Cucumber ATDD tests (bare-javac HTTP server)
+      Run Cucumber ATDD tests (no-Vert.x Clean Architecture HTTP server)
 
   test integration
       Run Testcontainers integration tests via Gradle
@@ -106,7 +107,7 @@ COMMANDS:
   bench inproc
       JMH in-process benchmark
 
-  bench distributed
+  bench vertx-layer-as-pod-eventbus
       HTTP load generation benchmark
 
   bench competition
@@ -167,7 +168,7 @@ COMMANDS:
 EXAMPLES:
   ./nx setup
   ./nx setup --verify
-  ./nx up vertx
+  ./nx up vertx-layer-as-pod-eventbus
   ./nx up infra
   ./nx test all --with-infra-compose
   ./nx test --diagnose-on-fail
@@ -213,7 +214,7 @@ SUBCOMMANDS / FLAGS:
   --json                      JSON output for CI
   --out-dir PATH              Custom output directory
 
-BACKWARD-COMPATIBLE SUBCOMMANDS (proxied to --group):
+SHORTCUT SUBCOMMANDS (proxied to --group):
   all                         composite 'all'
   smoke, atdd-karate, atdd-cucumber, integration, architecture, unit
 
@@ -236,19 +237,20 @@ nx bench -- run performance benchmarks
 
 SUBCOMMANDS:
   inproc        JMH in-process benchmark (no network overhead)
-  distributed   HTTP load generation against live server (legacy Java bench)
+  vertx-layer-as-pod-eventbus
+                HTTP load generation against live server (legacy Java bench)
   competition   Both Java benchmarks side-by-side for comparison
   k6 <scenario> [--target SVC] [--vus N] [--duration T]
                 Industry-standard k6 (Grafana) load test
                 scenario: smoke|load|stress|spike|soak
-                --target: bare|monolith|vertx-platform|distributed (def: distributed)
+                --target: no-vertx-clean-engine|vertx-monolith-inprocess|vertx-layer-as-pod-http|vertx-layer-as-pod-eventbus (def: vertx-layer-as-pod-eventbus)
   k6 competition <scenario>
                 Run scenario against all 4 services, generate comparison
 
 EXAMPLES:
   ./nx bench inproc
-  ./nx bench k6 smoke --target bare
-  ./nx bench k6 load --target distributed --vus 64 --duration 3m
+  ./nx bench k6 smoke --target no-vertx-clean-engine
+  ./nx bench k6 load --target vertx-layer-as-pod-eventbus --vus 64 --duration 3m
   ./nx bench k6 competition load
 EOF
 }
@@ -295,55 +297,50 @@ nx_setup() {
 }
 
 nx_up() {
-  local mode="${1:-vertx}"
+  local mode="${1:-vertx-layer-as-pod-eventbus}"
   shift || true
   case "$mode" in
     infra)
       _info "Bringing up shared infra (no apps)..."
       exec docker compose -f "$REPO_ROOT/compose/docker-compose.yml" up -d "$@"
       ;;
-    vertx)
-      local script="$REPO_ROOT/poc/java-vertx-distributed/scripts/up.sh"
+    vertx-layer-as-pod-eventbus)
+      local script="$REPO_ROOT/poc/vertx-layer-as-pod-eventbus/scripts/up.sh"
       if [ -f "$script" ]; then
         _require_script "$script"
-        _info "Bringing up infra + java-vertx-distributed..."
+        _info "Bringing up infra + vertx-layer-as-pod-eventbus..."
         exec "$script" "$@"
       else
         _info "Running docker compose up (fallback)..."
         REPO_ROOT="$REPO_ROOT" exec docker compose \
           -f "$REPO_ROOT/compose/docker-compose.yml" \
-          -f "$REPO_ROOT/poc/java-vertx-distributed/compose.override.yml" \
+          -f "$REPO_ROOT/poc/vertx-layer-as-pod-eventbus/compose.override.yml" \
           up -d "$@"
       fi
       ;;
-    monolith)
-      _info "Bringing up infra + java-monolith..."
+    vertx-monolith-inprocess)
+      _info "Bringing up infra + vertx-monolith-inprocess..."
       REPO_ROOT="$REPO_ROOT" exec docker compose \
         -f "$REPO_ROOT/compose/docker-compose.yml" \
-        -f "$REPO_ROOT/poc/java-monolith/compose.override.yml" \
+        -f "$REPO_ROOT/poc/vertx-monolith-inprocess/compose.override.yml" \
         up -d "$@"
       ;;
-    vertx-platform)
-      # vertx-risk-platform: 3-pod HTTP+tokens PoC (ports 8180/8181/8182, no data-net)
-      _info "Bringing up infra + vertx-risk-platform..."
+    vertx-layer-as-pod-http)
+      # vertx-layer-as-pod-http: 3-pod HTTP+tokens PoC (ports 8180/8181/8182, no data-net)
+      _info "Bringing up infra + vertx-layer-as-pod-http..."
       REPO_ROOT="$REPO_ROOT" exec docker compose \
         -f "$REPO_ROOT/compose/docker-compose.yml" \
-        -f "$REPO_ROOT/poc/vertx-risk-platform/compose.override.yml" \
+        -f "$REPO_ROOT/poc/vertx-layer-as-pod-http/compose.override.yml" \
         up -d "$@"
       ;;
     all)
-      _info "Bringing up infra + vertx + monolith + vertx-platform..."
+      _info "Bringing up infra + all Vert.x app variants..."
       REPO_ROOT="$REPO_ROOT" exec docker compose \
         -f "$REPO_ROOT/compose/docker-compose.yml" \
-        -f "$REPO_ROOT/poc/java-vertx-distributed/compose.override.yml" \
-        -f "$REPO_ROOT/poc/java-monolith/compose.override.yml" \
-        -f "$REPO_ROOT/poc/vertx-risk-platform/compose.override.yml" \
+        -f "$REPO_ROOT/poc/vertx-layer-as-pod-eventbus/compose.override.yml" \
+        -f "$REPO_ROOT/poc/vertx-monolith-inprocess/compose.override.yml" \
+        -f "$REPO_ROOT/poc/vertx-layer-as-pod-http/compose.override.yml" \
         up -d "$@"
-      ;;
-    compose)
-      # backward compat alias
-      _info "Redirecting 'compose' -> 'vertx' (see: ./nx help)"
-      nx_up vertx "$@"
       ;;
     k8s)
       local script="$REPO_ROOT/poc/k8s-local/scripts/up.sh"
@@ -352,51 +349,54 @@ nx_up() {
       exec "$script" "$@"
       ;;
     --help|-h)
-      printf 'Usage: ./nx up [infra|vertx|vertx-platform|monolith|all|k8s] [--orbstack|--k3d]\n'
+      printf 'Usage: ./nx up [infra|vertx-layer-as-pod-eventbus|vertx-monolith-inprocess|vertx-layer-as-pod-http|all|k8s] [--orbstack|--k3d]\n'
       exit 0
       ;;
     *)
-      _die "Unknown target: $mode. Use: infra, vertx, vertx-platform, monolith, all, k8s"
+      _die "Unknown target: $mode. Use: infra, vertx-layer-as-pod-eventbus, vertx-monolith-inprocess, vertx-layer-as-pod-http, all, k8s"
       ;;
   esac
 }
 
 nx_down() {
-  local mode="${1:-vertx}"
+  local mode="${1:-vertx-layer-as-pod-eventbus}"
   shift || true
   case "$mode" in
     infra)
       _info "Tearing down shared infra..."
       exec docker compose -f "$REPO_ROOT/compose/docker-compose.yml" down "$@"
       ;;
-    vertx)
-      local script="$REPO_ROOT/poc/java-vertx-distributed/scripts/down.sh"
+    vertx-layer-as-pod-eventbus)
+      local script="$REPO_ROOT/poc/vertx-layer-as-pod-eventbus/scripts/down.sh"
       if [ -f "$script" ]; then
         _require_script "$script"
         exec "$script" "$@"
       else
         REPO_ROOT="$REPO_ROOT" exec docker compose \
           -f "$REPO_ROOT/compose/docker-compose.yml" \
-          -f "$REPO_ROOT/poc/java-vertx-distributed/compose.override.yml" \
+          -f "$REPO_ROOT/poc/vertx-layer-as-pod-eventbus/compose.override.yml" \
           down "$@"
       fi
       ;;
-    monolith)
+    vertx-monolith-inprocess)
       REPO_ROOT="$REPO_ROOT" exec docker compose \
         -f "$REPO_ROOT/compose/docker-compose.yml" \
-        -f "$REPO_ROOT/poc/java-monolith/compose.override.yml" \
+        -f "$REPO_ROOT/poc/vertx-monolith-inprocess/compose.override.yml" \
+        down "$@"
+      ;;
+    vertx-layer-as-pod-http)
+      REPO_ROOT="$REPO_ROOT" exec docker compose \
+        -f "$REPO_ROOT/compose/docker-compose.yml" \
+        -f "$REPO_ROOT/poc/vertx-layer-as-pod-http/compose.override.yml" \
         down "$@"
       ;;
     all)
       REPO_ROOT="$REPO_ROOT" exec docker compose \
         -f "$REPO_ROOT/compose/docker-compose.yml" \
-        -f "$REPO_ROOT/poc/java-vertx-distributed/compose.override.yml" \
-        -f "$REPO_ROOT/poc/java-monolith/compose.override.yml" \
+        -f "$REPO_ROOT/poc/vertx-layer-as-pod-eventbus/compose.override.yml" \
+        -f "$REPO_ROOT/poc/vertx-monolith-inprocess/compose.override.yml" \
+        -f "$REPO_ROOT/poc/vertx-layer-as-pod-http/compose.override.yml" \
         down "$@"
-      ;;
-    compose)
-      # backward compat alias
-      nx_down vertx "$@"
       ;;
     k8s)
       local script="$REPO_ROOT/poc/k8s-local/scripts/down.sh"
@@ -404,11 +404,11 @@ nx_down() {
       exec "$script" "$@"
       ;;
     --help|-h)
-      printf 'Usage: ./nx down [infra|vertx|monolith|all|k8s] [--cleanup-k8s]\n'
+      printf 'Usage: ./nx down [infra|vertx-layer-as-pod-eventbus|vertx-monolith-inprocess|vertx-layer-as-pod-http|all|k8s] [--cleanup-k8s]\n'
       exit 0
       ;;
     *)
-      _die "Unknown target: $mode. Use: infra, vertx, monolith, all, k8s"
+      _die "Unknown target: $mode. Use: infra, vertx-layer-as-pod-eventbus, vertx-monolith-inprocess, vertx-layer-as-pod-http, all, k8s"
       ;;
   esac
 }
@@ -485,26 +485,26 @@ _build_lock_release() {
 # Each field uses ; as separator inside.
 _target_spec() {
   case "$1" in
-    monolith)
-      echo ":poc:java-monolith:shadowJar"
+    vertx-monolith-inprocess)
+      echo ":poc:vertx-monolith-inprocess:shadowJar"
       # ;-separated: REQUIRED artifacts. |-separated within: ALTERNATIVES.
-      echo "$REPO_ROOT/poc/java-monolith/build/libs/java-monolith.jar|$REPO_ROOT/poc/java-monolith/build/libs/java-monolith-*-all.jar|$REPO_ROOT/poc/java-monolith/build/libs/java-monolith-*-SNAPSHOT.jar"
-      echo "$REPO_ROOT/poc/java-monolith/src;$REPO_ROOT/poc/java-monolith/build.gradle.kts"
+      echo "$REPO_ROOT/poc/vertx-monolith-inprocess/build/libs/vertx-monolith-inprocess.jar|$REPO_ROOT/poc/vertx-monolith-inprocess/build/libs/vertx-monolith-inprocess-*-all.jar|$REPO_ROOT/poc/vertx-monolith-inprocess/build/libs/vertx-monolith-inprocess-*-SNAPSHOT.jar"
+      echo "$REPO_ROOT/poc/vertx-monolith-inprocess/src;$REPO_ROOT/poc/vertx-monolith-inprocess/build.gradle.kts"
       ;;
-    vertx)
-      echo ":poc:java-vertx-distributed:controller-app:shadowJar :poc:java-vertx-distributed:usecase-app:shadowJar :poc:java-vertx-distributed:repository-app:shadowJar :poc:java-vertx-distributed:consumer-app:shadowJar"
-      echo "$REPO_ROOT/poc/java-vertx-distributed/controller-app/build/libs/controller-app-*-all.jar|$REPO_ROOT/poc/java-vertx-distributed/controller-app/build/libs/controller-app-*-SNAPSHOT.jar;$REPO_ROOT/poc/java-vertx-distributed/usecase-app/build/libs/usecase-app-*-all.jar|$REPO_ROOT/poc/java-vertx-distributed/usecase-app/build/libs/usecase-app-*-SNAPSHOT.jar;$REPO_ROOT/poc/java-vertx-distributed/repository-app/build/libs/repository-app-*-all.jar|$REPO_ROOT/poc/java-vertx-distributed/repository-app/build/libs/repository-app-*-SNAPSHOT.jar;$REPO_ROOT/poc/java-vertx-distributed/consumer-app/build/libs/consumer-app-*-all.jar|$REPO_ROOT/poc/java-vertx-distributed/consumer-app/build/libs/consumer-app-*-SNAPSHOT.jar"
-      echo "$REPO_ROOT/poc/java-vertx-distributed"
+    vertx-layer-as-pod-eventbus)
+      echo ":poc:vertx-layer-as-pod-eventbus:controller-app:shadowJar :poc:vertx-layer-as-pod-eventbus:usecase-app:shadowJar :poc:vertx-layer-as-pod-eventbus:repository-app:shadowJar :poc:vertx-layer-as-pod-eventbus:consumer-app:shadowJar"
+      echo "$REPO_ROOT/poc/vertx-layer-as-pod-eventbus/controller-app/build/libs/controller-app-*-all.jar|$REPO_ROOT/poc/vertx-layer-as-pod-eventbus/controller-app/build/libs/controller-app-*-SNAPSHOT.jar;$REPO_ROOT/poc/vertx-layer-as-pod-eventbus/usecase-app/build/libs/usecase-app-*-all.jar|$REPO_ROOT/poc/vertx-layer-as-pod-eventbus/usecase-app/build/libs/usecase-app-*-SNAPSHOT.jar;$REPO_ROOT/poc/vertx-layer-as-pod-eventbus/repository-app/build/libs/repository-app-*-all.jar|$REPO_ROOT/poc/vertx-layer-as-pod-eventbus/repository-app/build/libs/repository-app-*-SNAPSHOT.jar;$REPO_ROOT/poc/vertx-layer-as-pod-eventbus/consumer-app/build/libs/consumer-app-*-all.jar|$REPO_ROOT/poc/vertx-layer-as-pod-eventbus/consumer-app/build/libs/consumer-app-*-SNAPSHOT.jar"
+      echo "$REPO_ROOT/poc/vertx-layer-as-pod-eventbus"
       ;;
-    vrp|vertx-platform)
-      echo ":poc:vertx-risk-platform:shadowJar"
-      echo "$REPO_ROOT/poc/vertx-risk-platform/build/libs/vertx-risk-platform.jar|$REPO_ROOT/poc/vertx-risk-platform/build/libs/vertx-risk-platform-*-all.jar|$REPO_ROOT/poc/vertx-risk-platform/build/libs/vertx-risk-platform-*-SNAPSHOT.jar"
-      echo "$REPO_ROOT/poc/vertx-risk-platform/src;$REPO_ROOT/poc/vertx-risk-platform/build.gradle.kts"
+    vertx-layer-as-pod-http)
+      echo ":poc:vertx-layer-as-pod-http:shadowJar"
+      echo "$REPO_ROOT/poc/vertx-layer-as-pod-http/build/libs/vertx-layer-as-pod-http.jar|$REPO_ROOT/poc/vertx-layer-as-pod-http/build/libs/vertx-layer-as-pod-http-*-all.jar|$REPO_ROOT/poc/vertx-layer-as-pod-http/build/libs/vertx-layer-as-pod-http-*-SNAPSHOT.jar"
+      echo "$REPO_ROOT/poc/vertx-layer-as-pod-http/src;$REPO_ROOT/poc/vertx-layer-as-pod-http/build.gradle.kts"
       ;;
-    bare-javac|risk-engine)
-      echo ":poc:java-risk-engine:assemble"
-      echo "$REPO_ROOT/poc/java-risk-engine/build/classes"
-      echo "$REPO_ROOT/poc/java-risk-engine/src;$REPO_ROOT/poc/java-risk-engine/build.gradle.kts"
+    no-vertx-clean-engine)
+      echo ":poc:no-vertx-clean-engine:assemble"
+      echo "$REPO_ROOT/poc/no-vertx-clean-engine/build/classes"
+      echo "$REPO_ROOT/poc/no-vertx-clean-engine/src;$REPO_ROOT/poc/no-vertx-clean-engine/build.gradle.kts"
       ;;
     bench-distributed)
       echo ":bench:distributed-bench:shadowJar"
@@ -616,7 +616,7 @@ nx_build_target() {
 
   local spec
   if ! spec="$(_target_spec "$target")"; then
-    _die "Unknown build target: $target. Use: monolith | vertx | vrp | bare-javac | bench-distributed | bench-inprocess"
+    _die "Unknown build target: $target. Use: no-vertx-clean-engine | vertx-monolith-inprocess | vertx-layer-as-pod-eventbus | vertx-layer-as-pod-http | bench-distributed | bench-inprocess"
   fi
   local modules; modules="$(echo "$spec" | sed -n '1p')"
 
@@ -637,8 +637,13 @@ nx_build_target() {
   fi
 
   # configuration-cache is opt-in (NX_CONFIG_CACHE=1) — some subprojects don't
-  # support it cleanly yet. build-cache + parallel are always safe.
+  # support it cleanly yet. Most targets can use parallel safely, but the
+  # layer-as-pod Vert.x stack builds four fat jars and otherwise spawns enough
+  # Gradle/Kotlin/Shadow workers to saturate Docker Desktop during bring-up.
   local extra_flags="--build-cache --parallel"
+  if [[ "$target" == "vertx-layer-as-pod-eventbus" ]]; then
+    extra_flags="--build-cache --max-workers=2"
+  fi
   [[ "${NX_CONFIG_CACHE:-0}" == "1" ]] && extra_flags="$extra_flags --configuration-cache"
   _info "[build:$target] gradlew $modules $extra_flags"
   # shellcheck disable=SC2086
@@ -650,7 +655,7 @@ nx_build_target() {
 }
 
 nx_build() {
-  # Backward compat:
+  # Build modes:
   #   ./nx build                  → incremental assemble of all known targets
   #   ./nx build <target>         → smart per-target build
   #   ./nx build --legacy-clean   → original `./gradlew clean build`
@@ -662,31 +667,29 @@ nx_build() {
       _info "Running legacy ./gradlew clean build (slow path)..."
       exec "$REPO_ROOT/gradlew" -p "$REPO_ROOT" clean build "$@"
       ;;
-    monolith|vertx|vrp|vertx-platform|bare-javac|risk-engine|bench-distributed|bench-inprocess)
+    no-vertx-clean-engine|vertx-monolith-inprocess|vertx-layer-as-pod-eventbus|vertx-layer-as-pod-http|bench-distributed|bench-inprocess)
       nx_build_target "$@"
       ;;
     ""|--rebuild|--force-rebuild|all)
       [[ "$first" == "--rebuild" || "$first" == "--force-rebuild" ]] && export NX_REBUILD=1
       _info "[build] incremental build of all targets (set --rebuild for clean)"
       local rc=0
-      for t in monolith vertx vrp bench-distributed bench-inprocess; do
+      for t in no-vertx-clean-engine vertx-monolith-inprocess vertx-layer-as-pod-eventbus vertx-layer-as-pod-http bench-distributed bench-inprocess; do
         nx_build_target "$t" || rc=$?
       done
       return $rc
       ;;
     -h|--help)
       printf 'Usage: ./nx build [target] [--rebuild|--legacy-clean]\n'
-      printf 'Targets: monolith | vertx | vrp | bare-javac | bench-distributed | bench-inprocess | all\n'
+      printf 'Targets: no-vertx-clean-engine | vertx-monolith-inprocess | vertx-layer-as-pod-eventbus | vertx-layer-as-pod-http | bench-distributed | bench-inprocess | all\n'
       printf 'Env: NX_REBUILD=1 forces clean. NX_BUILD_NOWAIT=1 fails fast on lock contention.\n'
       ;;
     *)
-      # Treat unknown first arg as gradle args for backward compat:
-      # if it looks like a gradle task (contains ':'), exec assemble + args
+      # Allow explicit Gradle task passthrough only when the first arg is a fully qualified Gradle task.
       if [[ "$first" == :* ]]; then
         exec "$REPO_ROOT/gradlew" -p "$REPO_ROOT" "$@"
       fi
-      _info "Running incremental ./gradlew assemble (passing extra args)..."
-      exec "$REPO_ROOT/gradlew" -p "$REPO_ROOT" assemble --build-cache --configuration-cache --parallel "$@"
+      _die "Unknown build target: $first. Use: no-vertx-clean-engine | vertx-monolith-inprocess | vertx-layer-as-pod-eventbus | vertx-layer-as-pod-http | bench-distributed | bench-inprocess | all"
       ;;
   esac
 }
@@ -695,41 +698,41 @@ nx_run() {
   local target="${1:-}"
   shift || true
   case "$target" in
-    risk-engine)
-      local script="$REPO_ROOT/poc/java-risk-engine/scripts/run-http.sh"
+    no-vertx-clean-engine)
+      local script="$REPO_ROOT/poc/no-vertx-clean-engine/scripts/run-http.sh"
       _require_script "$script"
-      _info "Starting risk-engine HTTP server..."
+      _info "Starting no-vertx-clean-engine HTTP server..."
       exec "$script" "$@"
       ;;
-    java-monolith)
-      local script="$REPO_ROOT/poc/java-monolith/scripts/run.sh"
+    vertx-monolith-inprocess)
+      local script="$REPO_ROOT/poc/vertx-monolith-inprocess/scripts/run.sh"
       _require_script "$script"
-      _info "Starting java-monolith on port 8090..."
+      _info "Starting vertx-monolith-inprocess on port 8090..."
       exec "$script" "$@"
       ;;
-    vertx)
-      local script="$REPO_ROOT/poc/java-vertx-distributed/scripts/up.sh"
+    vertx-layer-as-pod-eventbus)
+      local script="$REPO_ROOT/poc/vertx-layer-as-pod-eventbus/scripts/up.sh"
       if [ -f "$script" ]; then
         _require_script "$script"
-        _info "Starting Vert.x distributed stack..."
+        _info "Starting vertx-layer-as-pod-eventbus stack..."
         exec "$script" "$@"
       else
         REPO_ROOT="$REPO_ROOT" exec docker compose \
           -f "$REPO_ROOT/compose/docker-compose.yml" \
-          -f "$REPO_ROOT/poc/java-vertx-distributed/compose.override.yml" \
+          -f "$REPO_ROOT/poc/vertx-layer-as-pod-eventbus/compose.override.yml" \
           up "$@"
       fi
       ;;
-    vertx-platform)
-      # vertx-risk-platform: 3-pod HTTP + token-based permissions PoC
-      local vrp_jar="$REPO_ROOT/poc/vertx-risk-platform/build/libs/vertx-risk-platform.jar"
+    vertx-layer-as-pod-http)
+      # vertx-layer-as-pod-http: 3-pod HTTP + token-based permissions PoC
+      local vrp_jar="$REPO_ROOT/poc/vertx-layer-as-pod-http/build/libs/vertx-layer-as-pod-http.jar"
       if [ ! -f "$vrp_jar" ]; then
-        _info "Building vertx-risk-platform fat-jar..."
-        "$REPO_ROOT/gradlew" -p "$REPO_ROOT" :poc:vertx-risk-platform:shadowJar \
-          || _die "Build failed. Run: ./gradlew :poc:vertx-risk-platform:shadowJar"
+        _info "Building vertx-layer-as-pod-http fat-jar..."
+        "$REPO_ROOT/gradlew" -p "$REPO_ROOT" :poc:vertx-layer-as-pod-http:shadowJar \
+          || _die "Build failed. Run: ./gradlew :poc:vertx-layer-as-pod-http:shadowJar"
       fi
-      _info "Starting vertx-risk-platform pods (controller=8080, usecase=8081, repository=8082)..."
-      "$REPO_ROOT/poc/vertx-risk-platform/scripts/run-local-pods.sh" "$@"
+      _info "Starting vertx-layer-as-pod-http pods (controller=8080, usecase=8081, repository=8082)..."
+      "$REPO_ROOT/poc/vertx-layer-as-pod-http/scripts/run-local-pods.sh" "$@"
       ;;
     k8s)
       local up_script="$REPO_ROOT/poc/k8s-local/scripts/up.sh"
@@ -738,14 +741,14 @@ nx_run() {
       exec "$up_script" "$@"
       ;;
     --help|-h)
-      printf 'Usage: ./nx run <risk-engine|vertx|vertx-platform|java-monolith|k8s> [args...]\n'
+      printf 'Usage: ./nx run <no-vertx-clean-engine|vertx-monolith-inprocess|vertx-layer-as-pod-eventbus|vertx-layer-as-pod-http|k8s> [args...]\n'
       exit 0
       ;;
     "")
-      _die "Usage: ./nx run <risk-engine|vertx|vertx-platform|java-monolith|k8s>"
+      _die "Usage: ./nx run <no-vertx-clean-engine|vertx-monolith-inprocess|vertx-layer-as-pod-eventbus|vertx-layer-as-pod-http|k8s>"
       ;;
     *)
-      _die "Unknown run target: $target. Use: risk-engine, vertx, vertx-platform, java-monolith, k8s"
+      _die "Unknown run target: $target. Use: no-vertx-clean-engine, vertx-monolith-inprocess, vertx-layer-as-pod-eventbus, vertx-layer-as-pod-http, k8s"
       ;;
   esac
 }
@@ -764,7 +767,7 @@ nx_test() {
       --apply)           auto_fix_mode="--apply" ;;
       --dry-run)         auto_fix_mode="--dry-run"; args+=("$arg") ;;
       --apply-only)      :  ;;
-      # Convenience aliases that map to test-runner.py flags
+      # Convenience shortcuts that map to test-runner.py flags
       --with-infra-compose|--with-testcontainers|--with-infra)
         # Both flags translate to --auto-infra: the runner already knows
         # which groups need compose vs docker (testcontainers) from
@@ -881,7 +884,7 @@ nx_bench_k6() {
     local out_dir="$REPO_ROOT/out/k6-competition/$ts"
     mkdir -p "$out_dir"
     _info "k6 competition: scenario=$scenario  out=$out_dir"
-    local targets=(bare monolith vertx-platform distributed)
+    local targets=(no-vertx-clean-engine vertx-monolith-inprocess vertx-layer-as-pod-http vertx-layer-as-pod-eventbus)
     local fail=0
     for t in "${targets[@]}"; do
       _info "→ target=$t"
@@ -931,7 +934,7 @@ nx_bench_k6() {
     *) _die "Unknown k6 scenario: $scenario (valid: smoke|load|stress|spike|soak)" ;;
   esac
 
-  local target="distributed"
+  local target="vertx-layer-as-pod-eventbus"
   local vus="" duration=""
   while [ $# -gt 0 ]; do
     case "$1" in
@@ -972,7 +975,7 @@ nx_bench() {
       _info "Running JMH in-process benchmark..."
       exec "$script" "$@"
       ;;
-    distributed)
+    vertx-layer-as-pod-eventbus)
       local script="$REPO_ROOT/bench/scripts/run-distributed.sh"
       if [ ! -f "$script" ]; then
         _die "Distributed bench script not found: $script"
@@ -1002,7 +1005,7 @@ nx_bench() {
       exit 0
       ;;
     *)
-      _die "Unknown bench target: $sub. Use: inproc, distributed, competition, k6"
+      _die "Unknown bench target: $sub. Use: inproc, vertx-layer-as-pod-eventbus, competition, k6"
       ;;
   esac
 }
@@ -1059,9 +1062,9 @@ nx_demo() {
           ${passthrough[@]:+"${passthrough[@]}"}
       fi
 
-      local script="$REPO_ROOT/poc/java-vertx-distributed/scripts/demo.sh"
+      local script="$REPO_ROOT/poc/vertx-layer-as-pod-eventbus/scripts/demo.sh"
       if [ ! -f "$script" ]; then
-        script="$REPO_ROOT/poc/java-risk-engine/scripts/test.sh"
+        script="$REPO_ROOT/poc/no-vertx-clean-engine/scripts/test.sh"
       fi
       _require_script "$script"
       _info "Running REST demo (BASE_URL=$base_url)..."
@@ -1077,7 +1080,7 @@ nx_demo() {
       exec curl -N -H "Accept: text/event-stream" "http://localhost:8080/risk/events" "$@"
       ;;
     webhook)
-      local script="$REPO_ROOT/poc/java-vertx-distributed/scripts/demo.sh"
+      local script="$REPO_ROOT/poc/vertx-layer-as-pod-eventbus/scripts/demo.sh"
       if [ -f "$script" ]; then
         _require_script "$script"
         exec "$script" webhook "$@"

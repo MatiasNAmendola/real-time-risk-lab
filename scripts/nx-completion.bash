@@ -25,10 +25,10 @@ _nx_complete() {
   local cmd="${words[1]}"
   case "$cmd" in
     up|down)
-      COMPREPLY=( $(compgen -W "compose k8s" -- "$cur") )
+      COMPREPLY=( $(compgen -W "infra vertx-layer-as-pod-eventbus vertx-monolith-inprocess vertx-layer-as-pod-http all k8s" -- "$cur") )
       ;;
     run)
-      COMPREPLY=( $(compgen -W "risk-engine vertx k8s" -- "$cur") )
+      COMPREPLY=( $(compgen -W "no-vertx-clean-engine vertx-monolith-inprocess vertx-layer-as-pod-eventbus vertx-layer-as-pod-http k8s" -- "$cur") )
       ;;
     test)
       COMPREPLY=( $(compgen -W "all smoke atdd-karate atdd-cucumber integration architecture unit --help" -- "$cur") )
@@ -37,7 +37,7 @@ _nx_complete() {
       fi
       ;;
     bench)
-      COMPREPLY=( $(compgen -W "inproc distributed competition --help" -- "$cur") )
+      COMPREPLY=( $(compgen -W "inproc vertx-layer-as-pod-eventbus competition k6 --help" -- "$cur") )
       ;;
     demo)
       COMPREPLY=( $(compgen -W "rest websocket sse webhook kafka --help" -- "$cur") )

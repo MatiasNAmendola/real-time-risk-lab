@@ -23,7 +23,7 @@ cd bench && ./gradlew shadowJar
 ./scripts/run-inprocess.sh -wi 1 -i 3
 
 # Run distributed (Vert.x must be up)
-cd ../poc/java-vertx-distributed && docker compose up -d
+cd ../poc/vertx-layer-as-pod-eventbus && docker compose up -d
 cd ../../bench && ./scripts/run-distributed.sh
 
 # Full comparison
@@ -95,7 +95,7 @@ The gap between the two runners: JMH is single-threaded and measures pure method
 Distributed numbers are not yet measured. Run when Docker Desktop is available:
 
 ```bash
-cd poc/java-vertx-distributed
+cd poc/vertx-layer-as-pod-eventbus
 docker compose up -d
 # wait for all 5 pods to be healthy
 docker compose ps
@@ -117,8 +117,8 @@ Run both PoCs under identical HTTP workload and compare:
 Output: `out/competition/<ts>/summary.md` + CSV + PNG (if matplotlib or gnuplot available).
 
 Requires:
-- Vert.x stack up: `cd poc/java-vertx-distributed && ./scripts/up.sh`.
-- Bare-javac compiled: `cd poc/java-risk-engine && ./scripts/test.sh` (which compiles).
+- Vert.x stack up: `cd poc/vertx-layer-as-pod-eventbus && ./scripts/up.sh`.
+- Bare-javac compiled: `cd poc/no-vertx-clean-engine && ./scripts/test.sh` (which compiles).
   The competition script will compile bare-javac automatically if needed.
 
 ```

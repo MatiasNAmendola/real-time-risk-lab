@@ -538,7 +538,7 @@ func TestEvaluateLowAmountReturnsApprove(t *testing.T) {
     ctx := context.Background()
     client, err := riskclient.New(ctx, riskclient.Config{
         Environment: riskclient.Local,
-        APIKey:      "test-key",
+        APIKey:      System.getenv("RISK_CLIENT_API_KEY"),
         Timeout:     500 * time.Millisecond,
     })
     require.NoError(t, err)

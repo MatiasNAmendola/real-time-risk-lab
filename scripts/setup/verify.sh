@@ -237,7 +237,7 @@ verify_tool() {
 # ── Main ───────────────────────────────────────────────────────────────────────
 
 main() {
-  section_header "Risk Decision Platform — Verify"
+  section_header "Real-Time Risk Lab — Verify"
 
   printf '  Running verification (no installs)...\n\n'
 

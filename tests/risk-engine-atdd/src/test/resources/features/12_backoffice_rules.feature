@@ -1,5 +1,5 @@
 # Feature: Backoffice rules administration (bare-javac PoC)
-# Analog scenarios for the poc/java-risk-engine HTTP server.
+# Analog scenarios for the poc/no-vertx-clean-engine HTTP server.
 # These scenarios run against the HttpController on port 8081.
 # @karate-only: these scenarios use Karate DSL syntax (url/method/status)
 # and require live HTTP infrastructure; excluded from the Cucumber/JUnit suite.
@@ -9,7 +9,7 @@ Feature: Backoffice rules administration - bare-javac engine
 
   Background:
     * url baseUrl
-    * def adminToken = karate.properties['admin.token'] || 'admin-secret'
+    * def adminToken = karate.properties['admin.token'] || java.lang.System.getenv('ADMIN_TOKEN') || 'change-me-admin-token'
     * def adminHeaders = { 'X-Admin-Token': '#(adminToken)', 'Content-Type': 'application/json' }
 
   # Scenario 1: Admin lowers threshold and decision changes

@@ -6,7 +6,7 @@
 
 auth:
   ZO_ROOT_USER_EMAIL: "root@example.com"
-  ZO_ROOT_USER_PASSWORD: "Complexpass#123"
+  ZO_ROOT_USER_PASSWORD: "${OPENOBSERVE_PASSWORD:-change-me-openobserve-local}"
 
 config:
   ZO_TELEMETRY: "false"

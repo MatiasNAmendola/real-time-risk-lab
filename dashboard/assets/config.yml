@@ -1,5 +1,5 @@
-title: "Risk Decision Platform — Practica Entrevista"
-subtitle: "Risk decision platform — local services dashboard"
+title: "Real-Time Risk Lab — Local Dashboard"
+subtitle: "Local risk decision lab services"
 logo: "assets/logo.svg"
 header: true
 footer: '<p>Local dev dashboard. Updated 2026-05-07.</p>'
@@ -24,7 +24,7 @@ services:
         target: "_blank"
 
       - name: "Risk Engine — bare-javac (local only)"
-        subtitle: "Run with poc/java-risk-engine/scripts/run-http.sh. No k8s deployment."
+        subtitle: "Run with poc/no-vertx-clean-engine/scripts/run-http.sh. No k8s deployment."
         tag: "local"
         url: "http://localhost:8081"
         target: "_blank"
@@ -60,7 +60,7 @@ services:
     icon: "fas fa-chart-line"
     items:
       - name: "OpenObserve"
-        subtitle: "Single source of truth: logs + metrics + traces + alerting. root@example.com / Complexpass#123"
+        subtitle: "Single source of truth: logs + metrics + traces + alerting. root@example.com / ${OPENOBSERVE_PASSWORD:-change-me-openobserve-local}"
         tag: "otel"
         url: "http://localhost:5080"
         target: "_blank"

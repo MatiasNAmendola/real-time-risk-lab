@@ -4,7 +4,7 @@ import java.time.Duration;
 
 /**
  * SDK record representing the outcome of a risk evaluation.
- * Re-packaged from poc/java-risk-engine RiskDecision domain entity.
+ * Re-packaged from poc/no-vertx-clean-engine RiskDecision domain entity.
  * Uses String for decision to avoid coupling external consumers to internal enums.
  */
 public record RiskDecision(

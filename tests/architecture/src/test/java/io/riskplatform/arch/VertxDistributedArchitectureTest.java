@@ -60,7 +60,7 @@ class VertxDistributedArchitectureTest {
             if (path == null || path.isBlank()) {
                 // Fallback: compute relative path from CWD
                 String module = prop.replace("vertx.", "").replace(".classes", "");
-                path = "../../poc/java-vertx-distributed/" + toModuleDirName(module) + "/build/classes/java/main";
+                path = "../../poc/vertx-layer-as-pod-eventbus/" + toModuleDirName(module) + "/build/classes/java/main";
             }
             File dir = new File(path);
             if (dir.exists() && dir.isDirectory()) {
@@ -77,7 +77,7 @@ class VertxDistributedArchitectureTest {
                 Missing class directories:
                 """ + String.join("\n  ", missingDirs) + """
 
-                Fix: ./gradlew :poc:java-vertx-distributed:controller-app:classes :poc:java-vertx-distributed:usecase-app:classes :poc:java-vertx-distributed:repository-app:classes :poc:java-vertx-distributed:consumer-app:classes
+                Fix: ./gradlew :poc:vertx-layer-as-pod-eventbus:controller-app:classes :poc:vertx-layer-as-pod-eventbus:usecase-app:classes :poc:vertx-layer-as-pod-eventbus:repository-app:classes :poc:vertx-layer-as-pod-eventbus:consumer-app:classes
                 ========================================================
                 """);
         }

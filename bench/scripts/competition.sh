@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 # competition.sh — 4-way HTTP performance competition:
-#   - bare-javac            (java-risk-engine)          port 8081
-#   - java-monolith         (java-monolith controller)  port 8090
-#   - vertx-risk-platform   (vrp-controller-pod)        port 8180
-#   - java-vertx-distributed (controller-app)           port 8080
+#   - no-vertx-clean-engine            (no-vertx-clean-engine)          port 8081
+#   - vertx-monolith-inprocess         (vertx-monolith-inprocess controller)  port 8090
+#   - vertx-layer-as-pod-http   (vertx-layer-as-pod-http controller-pod)        port 8180
+#   - vertx-layer-as-pod-eventbus (controller-app)           port 8080
 #
 # All four receive the SAME workload via the shared distributed-bench JAR.
 # Produces: out/competition/<ts>/{summary.md, summary.txt, comparison.json, comparison.csv}
@@ -12,10 +12,10 @@
 #   ./scripts/competition.sh                        # 5000 req, 32 concurrency
 #   ./scripts/competition.sh --requests 10000 --concurrency 64
 #   ./scripts/competition.sh --quick                # 500 req, 8 concurrency (smoke)
-#   ./scripts/competition.sh --skip-bare            # skip bare-javac
-#   ./scripts/competition.sh --skip-monolith        # skip java-monolith
-#   ./scripts/competition.sh --skip-vrp             # skip vertx-risk-platform
-#   ./scripts/competition.sh --skip-distributed     # skip java-vertx-distributed
+#   ./scripts/competition.sh --skip-no-vertx-clean-engine            # skip no-vertx-clean-engine
+#   ./scripts/competition.sh --skip-vertx-monolith-inprocess        # skip vertx-monolith-inprocess
+#   ./scripts/competition.sh --skip-vertx-layer-as-pod-http             # skip vertx-layer-as-pod-http
+#   ./scripts/competition.sh --skip-vertx-layer-as-pod-eventbus     # skip vertx-layer-as-pod-eventbus
 
 set -euo pipefail
 
@@ -24,7 +24,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 BENCH_DIR="$(cd "${SCRIPT_DIR}/.." && pwd)"
 REPO_ROOT="$(cd "${BENCH_DIR}/.." && pwd)"
 
-BARE_ENGINE_DIR="${REPO_ROOT}/poc/java-risk-engine"
+NO_VERTX_CLEAN_ENGINE_DIR="${REPO_ROOT}/poc/no-vertx-clean-engine"
 DISTRIBUTED_JAR_DIR="${BENCH_DIR}/distributed-bench/build/libs"
 DISTRIBUTED_JAR=""
 
@@ -41,14 +41,14 @@ fi
 REQUESTS=5000
 CONCURRENCY=32
 WARMUP=500
-SKIP_BARE=false
-SKIP_MONOLITH=false
-SKIP_VRP=false
-SKIP_DISTRIBUTED=false
-BARE_PORT=8081
-MONOLITH_PORT=8090
-VRP_PORT=8180
-VERTX_PORT=8080
+SKIP_NO_VERTX_CLEAN_ENGINE=false
+SKIP_VERTX_MONOLITH_INPROCESS=false
+SKIP_VERTX_LAYER_AS_POD_HTTP=false
+SKIP_VERTX_LAYER_AS_POD_EVENTBUS=false
+NO_VERTX_CLEAN_ENGINE_PORT=8081
+VERTX_MONOLITH_INPROCESS_PORT=8090
+VERTX_LAYER_AS_POD_HTTP_PORT=8180
+VERTX_LAYER_AS_POD_EVENTBUS_PORT=8080
 
 # ── Arg parsing ──────────────────────────────────────────────────────────────
 while [[ $# -gt 0 ]]; do
@@ -57,10 +57,10 @@ while [[ $# -gt 0 ]]; do
     --concurrency)   CONCURRENCY="$2";   shift 2 ;;
     --warmup)        WARMUP="$2";        shift 2 ;;
     --quick)         REQUESTS=500; CONCURRENCY=8; WARMUP=100; shift ;;
-    --skip-bare)        SKIP_BARE=true;        shift ;;
-    --skip-monolith)    SKIP_MONOLITH=true;    shift ;;
-    --skip-vrp)         SKIP_VRP=true;         shift ;;
-    --skip-distributed) SKIP_DISTRIBUTED=true; shift ;;
+    --skip-no-vertx-clean-engine)        SKIP_NO_VERTX_CLEAN_ENGINE=true;        shift ;;
+    --skip-vertx-monolith-inprocess)    SKIP_VERTX_MONOLITH_INPROCESS=true;    shift ;;
+    --skip-vertx-layer-as-pod-http)         SKIP_VERTX_LAYER_AS_POD_HTTP=true;         shift ;;
+    --skip-vertx-layer-as-pod-eventbus) SKIP_VERTX_LAYER_AS_POD_EVENTBUS=true; shift ;;
     *) echo "Unknown arg: $1" >&2; exit 1 ;;
   esac
 done
@@ -103,86 +103,86 @@ wait_for_http() {
   return 1
 }
 
-# ── Step 1: Build bare-javac shadowJar (Gradle, includes all dep classes) ─────
-BARE_JAR_DIR="${BARE_ENGINE_DIR}/build/libs"
-BARE_JAR=""
-if [[ "${SKIP_BARE}" == "false" ]]; then
-  BARE_JAR="$(ls "${BARE_JAR_DIR}"/java-risk-engine.jar 2>/dev/null | head -1 || true)"
-  if [[ -z "${BARE_JAR}" || ! -f "${BARE_JAR}" ]]; then
-    log "bare-javac shadowJar not found. Building via Gradle..."
-    (cd "${REPO_ROOT}" && ./gradlew :poc:java-risk-engine:shadowJar -q) \
-      || die "Failed to build java-risk-engine shadowJar."
-    BARE_JAR="${BARE_JAR_DIR}/java-risk-engine.jar"
-    [[ -f "${BARE_JAR}" ]] || die "shadowJar build succeeded but jar not found at ${BARE_JAR}"
+# ── Step 1: Build no-vertx-clean-engine shadowJar (Gradle, includes all dep classes) ─────
+NO_VERTX_CLEAN_ENGINE_JAR_DIR="${NO_VERTX_CLEAN_ENGINE_DIR}/build/libs"
+NO_VERTX_CLEAN_ENGINE_JAR=""
+if [[ "${SKIP_NO_VERTX_CLEAN_ENGINE}" == "false" ]]; then
+  NO_VERTX_CLEAN_ENGINE_JAR="$(ls "${NO_VERTX_CLEAN_ENGINE_JAR_DIR}"/no-vertx-clean-engine.jar 2>/dev/null | head -1 || true)"
+  if [[ -z "${NO_VERTX_CLEAN_ENGINE_JAR}" || ! -f "${NO_VERTX_CLEAN_ENGINE_JAR}" ]]; then
+    log "no-vertx-clean-engine shadowJar not found. Building via Gradle..."
+    (cd "${REPO_ROOT}" && ./gradlew :poc:no-vertx-clean-engine:shadowJar -q) \
+      || die "Failed to build no-vertx-clean-engine shadowJar."
+    NO_VERTX_CLEAN_ENGINE_JAR="${NO_VERTX_CLEAN_ENGINE_JAR_DIR}/no-vertx-clean-engine.jar"
+    [[ -f "${NO_VERTX_CLEAN_ENGINE_JAR}" ]] || die "shadowJar build succeeded but jar not found at ${NO_VERTX_CLEAN_ENGINE_JAR}"
   fi
-  log "bare-javac jar: ${BARE_JAR}"
+  log "no-vertx-clean-engine jar: ${NO_VERTX_CLEAN_ENGINE_JAR}"
 fi
 
 # ── Step 2: Check pre-started services ───────────────────────────────────────
-if [[ "${SKIP_MONOLITH}" == "false" ]]; then
-  log "Checking java-monolith at localhost:${MONOLITH_PORT}/healthz ..."
-  if ! curl -sf --max-time 8 "http://localhost:${MONOLITH_PORT}/healthz" > /dev/null 2>&1; then
+if [[ "${SKIP_VERTX_MONOLITH_INPROCESS}" == "false" ]]; then
+  log "Checking vertx-monolith-inprocess at localhost:${VERTX_MONOLITH_INPROCESS_PORT}/healthz ..."
+  if ! curl -sf --max-time 8 "http://localhost:${VERTX_MONOLITH_INPROCESS_PORT}/healthz" > /dev/null 2>&1; then
     echo "" >&2
-    echo "[competition] ERROR: java-monolith is not running." >&2
-    echo "              Start it first: ./nx run java-monolith" >&2
-    echo "              Or skip with: --skip-monolith" >&2
-    echo "" >&2
-    exit 1
-  fi
-  log "java-monolith is up."
-fi
-
-if [[ "${SKIP_VRP}" == "false" ]]; then
-  log "Checking vertx-risk-platform at localhost:${VRP_PORT}/health ..."
-  if ! curl -sf --max-time 8 "http://localhost:${VRP_PORT}/health" > /dev/null 2>&1; then
-    echo "" >&2
-    echo "[competition] ERROR: vertx-risk-platform controller-pod is not running." >&2
-    echo "              Start it first: ./nx up vertx-platform" >&2
-    echo "              Or skip with: --skip-vrp" >&2
+    echo "[competition] ERROR: vertx-monolith-inprocess is not running." >&2
+    echo "              Start it first: ./nx run vertx-monolith-inprocess" >&2
+    echo "              Or skip with: --skip-vertx-monolith-inprocess" >&2
     echo "" >&2
     exit 1
   fi
-  log "vertx-risk-platform is up."
+  log "vertx-monolith-inprocess is up."
 fi
 
-if [[ "${SKIP_DISTRIBUTED}" == "false" ]]; then
-  log "Checking java-vertx-distributed at localhost:${VERTX_PORT}/health ..."
-  if ! curl -sf --max-time 8 "http://localhost:${VERTX_PORT}/health" > /dev/null 2>&1; then
+if [[ "${SKIP_VERTX_LAYER_AS_POD_HTTP}" == "false" ]]; then
+  log "Checking vertx-layer-as-pod-http at localhost:${VERTX_LAYER_AS_POD_HTTP_PORT}/health ..."
+  if ! curl -sf --max-time 8 "http://localhost:${VERTX_LAYER_AS_POD_HTTP_PORT}/health" > /dev/null 2>&1; then
     echo "" >&2
-    echo "[competition] ERROR: java-vertx-distributed stack is not running." >&2
-    echo "              Start it first: ./nx up vertx" >&2
-    echo "              Or skip with: --skip-distributed" >&2
+    echo "[competition] ERROR: vertx-layer-as-pod-http controller-pod is not running." >&2
+    echo "              Start it first: ./nx up vertx-layer-as-pod-http" >&2
+    echo "              Or skip with: --skip-vertx-layer-as-pod-http" >&2
     echo "" >&2
     exit 1
   fi
-  log "java-vertx-distributed is up."
+  log "vertx-layer-as-pod-http is up."
 fi
 
-# ── Step 3: Start bare-javac HTTP server in background ───────────────────────
-BARE_PID=""
-if [[ "${SKIP_BARE}" == "false" ]]; then
-  log "Starting bare-javac HTTP server on port ${BARE_PORT}..."
-  RISK_HTTP_PORT="${BARE_PORT}" \
-  "${JAVA}" -jar "${BARE_JAR}" \
-    --port "${BARE_PORT}" \
-    > "${OUT}/bare.log" 2>&1 &
-  BARE_PID=$!
-  log "bare-javac PID=${BARE_PID}"
-
-  log "Waiting for bare-javac to start (up to 30 s)..."
-  if ! wait_for_http "http://localhost:${BARE_PORT}/healthz" 30; then
-    kill "${BARE_PID}" 2>/dev/null || true
-    die "bare-javac did not start within 30 s. Check ${OUT}/bare.log"
+if [[ "${SKIP_VERTX_LAYER_AS_POD_EVENTBUS}" == "false" ]]; then
+  log "Checking vertx-layer-as-pod-eventbus at localhost:${VERTX_LAYER_AS_POD_EVENTBUS_PORT}/health ..."
+  if ! curl -sf --max-time 8 "http://localhost:${VERTX_LAYER_AS_POD_EVENTBUS_PORT}/health" > /dev/null 2>&1; then
+    echo "" >&2
+    echo "[competition] ERROR: vertx-layer-as-pod-eventbus stack is not running." >&2
+    echo "              Start it first: ./nx up vertx-layer-as-pod-eventbus" >&2
+    echo "              Or skip with: --skip-vertx-layer-as-pod-eventbus" >&2
+    echo "" >&2
+    exit 1
   fi
-  log "bare-javac is up."
+  log "vertx-layer-as-pod-eventbus is up."
+fi
+
+# ── Step 3: Start no-vertx-clean-engine HTTP server in background ───────────────────────
+NO_VERTX_CLEAN_ENGINE_PID=""
+if [[ "${SKIP_NO_VERTX_CLEAN_ENGINE}" == "false" ]]; then
+  log "Starting no-vertx-clean-engine HTTP server on port ${NO_VERTX_CLEAN_ENGINE_PORT}..."
+  RISK_HTTP_PORT="${NO_VERTX_CLEAN_ENGINE_PORT}" \
+  "${JAVA}" -jar "${NO_VERTX_CLEAN_ENGINE_JAR}" \
+    --port "${NO_VERTX_CLEAN_ENGINE_PORT}" \
+    > "${OUT}/no-vertx-clean-engine.log" 2>&1 &
+  NO_VERTX_CLEAN_ENGINE_PID=$!
+  log "no-vertx-clean-engine PID=${NO_VERTX_CLEAN_ENGINE_PID}"
+
+  log "Waiting for no-vertx-clean-engine to start (up to 30 s)..."
+  if ! wait_for_http "http://localhost:${NO_VERTX_CLEAN_ENGINE_PORT}/healthz" 30; then
+    kill "${NO_VERTX_CLEAN_ENGINE_PID}" 2>/dev/null || true
+    die "no-vertx-clean-engine did not start within 30 s. Check ${OUT}/no-vertx-clean-engine.log"
+  fi
+  log "no-vertx-clean-engine is up."
 fi
 
 # ── Cleanup trap ─────────────────────────────────────────────────────────────
 cleanup() {
-  if [[ -n "${BARE_PID}" ]]; then
-    log "Stopping bare-javac (PID ${BARE_PID})..."
-    kill "${BARE_PID}" 2>/dev/null || true
-    wait "${BARE_PID}" 2>/dev/null || true
+  if [[ -n "${NO_VERTX_CLEAN_ENGINE_PID}" ]]; then
+    log "Stopping no-vertx-clean-engine (PID ${NO_VERTX_CLEAN_ENGINE_PID})..."
+    kill "${NO_VERTX_CLEAN_ENGINE_PID}" 2>/dev/null || true
+    wait "${NO_VERTX_CLEAN_ENGINE_PID}" 2>/dev/null || true
   fi
 }
 trap cleanup EXIT
@@ -203,47 +203,47 @@ run_phase() {
 WARMUP_DIR="${OUT}/warmup"
 mkdir -p "${WARMUP_DIR}"
 log "--- Warmup phase (${WARMUP} reqs each, not measured) ---"
-[[ "${SKIP_BARE}" == "false" ]]     && run_phase "warmup-bare"     "${WARMUP}" "http://localhost:${BARE_PORT}"    "${WARMUP_DIR}" || true
-[[ "${SKIP_MONOLITH}" == "false" ]] && run_phase "warmup-monolith" "${WARMUP}" "http://localhost:${MONOLITH_PORT}" "${WARMUP_DIR}" || true
-[[ "${SKIP_VRP}" == "false" ]]      && run_phase "warmup-vrp"      "${WARMUP}" "http://localhost:${VRP_PORT}"     "${WARMUP_DIR}" "/risk/evaluate" || true
-[[ "${SKIP_DISTRIBUTED}" == "false" ]] && run_phase "warmup-vertx" "${WARMUP}" "http://localhost:${VERTX_PORT}"  "${WARMUP_DIR}" || true
+[[ "${SKIP_NO_VERTX_CLEAN_ENGINE}" == "false" ]]     && run_phase "warmup-no-vertx-clean-engine"     "${WARMUP}" "http://localhost:${NO_VERTX_CLEAN_ENGINE_PORT}"    "${WARMUP_DIR}" || true
+[[ "${SKIP_VERTX_MONOLITH_INPROCESS}" == "false" ]] && run_phase "warmup-vertx-monolith-inprocess" "${WARMUP}" "http://localhost:${VERTX_MONOLITH_INPROCESS_PORT}" "${WARMUP_DIR}" || true
+[[ "${SKIP_VERTX_LAYER_AS_POD_HTTP}" == "false" ]]      && run_phase "warmup-vertx-layer-as-pod-eventbus-layer-as-pod-http"      "${WARMUP}" "http://localhost:${VERTX_LAYER_AS_POD_HTTP_PORT}"     "${WARMUP_DIR}" "/risk/evaluate" || true
+[[ "${SKIP_VERTX_LAYER_AS_POD_EVENTBUS}" == "false" ]] && run_phase "warmup-vertx-layer-as-pod-eventbus" "${WARMUP}" "http://localhost:${VERTX_LAYER_AS_POD_EVENTBUS_PORT}"  "${WARMUP_DIR}" || true
 
 # ── Step 5: Measured run ──────────────────────────────────────────────────────
-BARE_OUT="${OUT}/bare-results"
-MONOLITH_OUT="${OUT}/monolith-results"
-VRP_OUT="${OUT}/vrp-results"
-VERTX_OUT="${OUT}/vertx-results"
-mkdir -p "${BARE_OUT}" "${MONOLITH_OUT}" "${VRP_OUT}" "${VERTX_OUT}"
+NO_VERTX_CLEAN_ENGINE_OUT="${OUT}/no-vertx-clean-engine-results"
+VERTX_MONOLITH_INPROCESS_OUT="${OUT}/vertx-monolith-inprocess-results"
+VERTX_LAYER_AS_POD_HTTP_OUT="${OUT}/vertx-layer-as-pod-http-results"
+VERTX_LAYER_AS_POD_EVENTBUS_OUT="${OUT}/vertx-layer-as-pod-eventbus-results"
+mkdir -p "${NO_VERTX_CLEAN_ENGINE_OUT}" "${VERTX_MONOLITH_INPROCESS_OUT}" "${VERTX_LAYER_AS_POD_HTTP_OUT}" "${VERTX_LAYER_AS_POD_EVENTBUS_OUT}"
 
 log "--- Measured run: ${REQUESTS} reqs, ${CONCURRENCY} concurrency ---"
 
-BARE_JSON=""
-MONOLITH_JSON=""
-VRP_JSON=""
-VERTX_JSON=""
+NO_VERTX_CLEAN_ENGINE_JSON=""
+VERTX_MONOLITH_INPROCESS_JSON=""
+VERTX_LAYER_AS_POD_HTTP_JSON=""
+VERTX_LAYER_AS_POD_EVENTBUS_JSON=""
 
-if [[ "${SKIP_BARE}" == "false" ]]; then
-  run_phase "bare" "${REQUESTS}" "http://localhost:${BARE_PORT}" "${BARE_OUT}"
-  BARE_JSON="$(find "${BARE_OUT}" -maxdepth 1 -name '*.json' -print0 2>/dev/null | xargs -0 ls -t 2>/dev/null | head -1)"
-  log "bare-javac result: ${BARE_JSON}"
+if [[ "${SKIP_NO_VERTX_CLEAN_ENGINE}" == "false" ]]; then
+  run_phase "no-vertx-clean-engine" "${REQUESTS}" "http://localhost:${NO_VERTX_CLEAN_ENGINE_PORT}" "${NO_VERTX_CLEAN_ENGINE_OUT}"
+  NO_VERTX_CLEAN_ENGINE_JSON="$(find "${NO_VERTX_CLEAN_ENGINE_OUT}" -maxdepth 1 -name '*.json' -print0 2>/dev/null | xargs -0 ls -t 2>/dev/null | head -1)"
+  log "no-vertx-clean-engine result: ${NO_VERTX_CLEAN_ENGINE_JSON}"
 fi
 
-if [[ "${SKIP_MONOLITH}" == "false" ]]; then
-  run_phase "monolith" "${REQUESTS}" "http://localhost:${MONOLITH_PORT}" "${MONOLITH_OUT}"
-  MONOLITH_JSON="$(find "${MONOLITH_OUT}" -maxdepth 1 -name '*.json' -print0 2>/dev/null | xargs -0 ls -t 2>/dev/null | head -1)"
-  log "java-monolith result: ${MONOLITH_JSON}"
+if [[ "${SKIP_VERTX_MONOLITH_INPROCESS}" == "false" ]]; then
+  run_phase "vertx-monolith-inprocess" "${REQUESTS}" "http://localhost:${VERTX_MONOLITH_INPROCESS_PORT}" "${VERTX_MONOLITH_INPROCESS_OUT}"
+  VERTX_MONOLITH_INPROCESS_JSON="$(find "${VERTX_MONOLITH_INPROCESS_OUT}" -maxdepth 1 -name '*.json' -print0 2>/dev/null | xargs -0 ls -t 2>/dev/null | head -1)"
+  log "vertx-monolith-inprocess result: ${VERTX_MONOLITH_INPROCESS_JSON}"
 fi
 
-if [[ "${SKIP_VRP}" == "false" ]]; then
-  run_phase "vrp" "${REQUESTS}" "http://localhost:${VRP_PORT}" "${VRP_OUT}" "/risk/evaluate"
-  VRP_JSON="$(find "${VRP_OUT}" -maxdepth 1 -name '*.json' -print0 2>/dev/null | xargs -0 ls -t 2>/dev/null | head -1)"
-  log "vertx-risk-platform result: ${VRP_JSON}"
+if [[ "${SKIP_VERTX_LAYER_AS_POD_HTTP}" == "false" ]]; then
+  run_phase "vertx-layer-as-pod-http" "${REQUESTS}" "http://localhost:${VERTX_LAYER_AS_POD_HTTP_PORT}" "${VERTX_LAYER_AS_POD_HTTP_OUT}" "/risk/evaluate"
+  VERTX_LAYER_AS_POD_HTTP_JSON="$(find "${VERTX_LAYER_AS_POD_HTTP_OUT}" -maxdepth 1 -name '*.json' -print0 2>/dev/null | xargs -0 ls -t 2>/dev/null | head -1)"
+  log "vertx-layer-as-pod-http result: ${VERTX_LAYER_AS_POD_HTTP_JSON}"
 fi
 
-if [[ "${SKIP_DISTRIBUTED}" == "false" ]]; then
-  run_phase "vertx" "${REQUESTS}" "http://localhost:${VERTX_PORT}" "${VERTX_OUT}"
-  VERTX_JSON="$(find "${VERTX_OUT}" -maxdepth 1 -name '*.json' -print0 2>/dev/null | xargs -0 ls -t 2>/dev/null | head -1)"
-  log "java-vertx-distributed result: ${VERTX_JSON}"
+if [[ "${SKIP_VERTX_LAYER_AS_POD_EVENTBUS}" == "false" ]]; then
+  run_phase "vertx-layer-as-pod-eventbus" "${REQUESTS}" "http://localhost:${VERTX_LAYER_AS_POD_EVENTBUS_PORT}" "${VERTX_LAYER_AS_POD_EVENTBUS_OUT}"
+  VERTX_LAYER_AS_POD_EVENTBUS_JSON="$(find "${VERTX_LAYER_AS_POD_EVENTBUS_OUT}" -maxdepth 1 -name '*.json' -print0 2>/dev/null | xargs -0 ls -t 2>/dev/null | head -1)"
+  log "vertx-layer-as-pod-eventbus result: ${VERTX_LAYER_AS_POD_EVENTBUS_JSON}"
 fi
 
 # ── Step 6: Parse results and build report ───────────────────────────────────
@@ -267,35 +267,35 @@ print(f'{val:.4f}' if isinstance(val, float) else val)
 " 2>/dev/null || echo "${default}"
 }
 
-BARE_P50="$(extract "${BARE_JSON}" "p50Ms")"
-BARE_P95="$(extract "${BARE_JSON}" "p95Ms")"
-BARE_P99="$(extract "${BARE_JSON}" "p99Ms")"
-BARE_P999="$(extract "${BARE_JSON}" "p999Ms")"
-BARE_MAX="$(extract "${BARE_JSON}" "maxMs")"
-BARE_RPS="$(extract "${BARE_JSON}" "throughputRps")"
+NO_VERTX_CLEAN_ENGINE_P50="$(extract "${NO_VERTX_CLEAN_ENGINE_JSON}" "p50Ms")"
+NO_VERTX_CLEAN_ENGINE_P95="$(extract "${NO_VERTX_CLEAN_ENGINE_JSON}" "p95Ms")"
+NO_VERTX_CLEAN_ENGINE_P99="$(extract "${NO_VERTX_CLEAN_ENGINE_JSON}" "p99Ms")"
+NO_VERTX_CLEAN_ENGINE_P999="$(extract "${NO_VERTX_CLEAN_ENGINE_JSON}" "p999Ms")"
+NO_VERTX_CLEAN_ENGINE_MAX="$(extract "${NO_VERTX_CLEAN_ENGINE_JSON}" "maxMs")"
+NO_VERTX_CLEAN_ENGINE_RPS="$(extract "${NO_VERTX_CLEAN_ENGINE_JSON}" "throughputRps")"
 
-MONOLITH_P50="$(extract "${MONOLITH_JSON}" "p50Ms")"
-MONOLITH_P95="$(extract "${MONOLITH_JSON}" "p95Ms")"
-MONOLITH_P99="$(extract "${MONOLITH_JSON}" "p99Ms")"
-MONOLITH_P999="$(extract "${MONOLITH_JSON}" "p999Ms")"
-MONOLITH_MAX="$(extract "${MONOLITH_JSON}" "maxMs")"
-MONOLITH_RPS="$(extract "${MONOLITH_JSON}" "throughputRps")"
+VERTX_MONOLITH_INPROCESS_P50="$(extract "${VERTX_MONOLITH_INPROCESS_JSON}" "p50Ms")"
+VERTX_MONOLITH_INPROCESS_P95="$(extract "${VERTX_MONOLITH_INPROCESS_JSON}" "p95Ms")"
+VERTX_MONOLITH_INPROCESS_P99="$(extract "${VERTX_MONOLITH_INPROCESS_JSON}" "p99Ms")"
+VERTX_MONOLITH_INPROCESS_P999="$(extract "${VERTX_MONOLITH_INPROCESS_JSON}" "p999Ms")"
+VERTX_MONOLITH_INPROCESS_MAX="$(extract "${VERTX_MONOLITH_INPROCESS_JSON}" "maxMs")"
+VERTX_MONOLITH_INPROCESS_RPS="$(extract "${VERTX_MONOLITH_INPROCESS_JSON}" "throughputRps")"
 
-VRP_P50="$(extract "${VRP_JSON}" "p50Ms")"
-VRP_P95="$(extract "${VRP_JSON}" "p95Ms")"
-VRP_P99="$(extract "${VRP_JSON}" "p99Ms")"
-VRP_P999="$(extract "${VRP_JSON}" "p999Ms")"
-VRP_MAX="$(extract "${VRP_JSON}" "maxMs")"
-VRP_RPS="$(extract "${VRP_JSON}" "throughputRps")"
+VERTX_LAYER_AS_POD_HTTP_P50="$(extract "${VERTX_LAYER_AS_POD_HTTP_JSON}" "p50Ms")"
+VERTX_LAYER_AS_POD_HTTP_P95="$(extract "${VERTX_LAYER_AS_POD_HTTP_JSON}" "p95Ms")"
+VERTX_LAYER_AS_POD_HTTP_P99="$(extract "${VERTX_LAYER_AS_POD_HTTP_JSON}" "p99Ms")"
+VERTX_LAYER_AS_POD_HTTP_P999="$(extract "${VERTX_LAYER_AS_POD_HTTP_JSON}" "p999Ms")"
+VERTX_LAYER_AS_POD_HTTP_MAX="$(extract "${VERTX_LAYER_AS_POD_HTTP_JSON}" "maxMs")"
+VERTX_LAYER_AS_POD_HTTP_RPS="$(extract "${VERTX_LAYER_AS_POD_HTTP_JSON}" "throughputRps")"
 
-VERTX_P50="$(extract "${VERTX_JSON}" "p50Ms")"
-VERTX_P95="$(extract "${VERTX_JSON}" "p95Ms")"
-VERTX_P99="$(extract "${VERTX_JSON}" "p99Ms")"
-VERTX_P999="$(extract "${VERTX_JSON}" "p999Ms")"
-VERTX_MAX="$(extract "${VERTX_JSON}" "maxMs")"
-VERTX_RPS="$(extract "${VERTX_JSON}" "throughputRps")"
+VERTX_LAYER_AS_POD_EVENTBUS_P50="$(extract "${VERTX_LAYER_AS_POD_EVENTBUS_JSON}" "p50Ms")"
+VERTX_LAYER_AS_POD_EVENTBUS_P95="$(extract "${VERTX_LAYER_AS_POD_EVENTBUS_JSON}" "p95Ms")"
+VERTX_LAYER_AS_POD_EVENTBUS_P99="$(extract "${VERTX_LAYER_AS_POD_EVENTBUS_JSON}" "p99Ms")"
+VERTX_LAYER_AS_POD_EVENTBUS_P999="$(extract "${VERTX_LAYER_AS_POD_EVENTBUS_JSON}" "p999Ms")"
+VERTX_LAYER_AS_POD_EVENTBUS_MAX="$(extract "${VERTX_LAYER_AS_POD_EVENTBUS_JSON}" "maxMs")"
+VERTX_LAYER_AS_POD_EVENTBUS_RPS="$(extract "${VERTX_LAYER_AS_POD_EVENTBUS_JSON}" "throughputRps")"
 
-# Compute ratio (vertx / bare), default N/A if either is -1
+# Compute ratio (vertx-layer-as-pod-eventbus / no-vertx-clean-engine), default N/A if either is -1
 ratio() {
   local a="$1"
   local b="$2"
@@ -337,21 +337,21 @@ else:
 
 fmt_rps() { python3 -c "v=${1}; print('N/A' if v<0 else f'{v:,.0f} req/s')" 2>/dev/null || echo "N/A"; }
 
-B_P50_F="$(fmt_ms "${BARE_P50}")";    B_P95_F="$(fmt_ms "${BARE_P95}")"
-B_P99_F="$(fmt_ms "${BARE_P99}")";    B_P999_F="$(fmt_ms "${BARE_P999}")"
-B_MAX_F="$(fmt_ms "${BARE_MAX}")";    B_RPS_F="$(fmt_rps "${BARE_RPS}")"
+N_P50_F="$(fmt_ms "${NO_VERTX_CLEAN_ENGINE_P50}")";    N_P95_F="$(fmt_ms "${NO_VERTX_CLEAN_ENGINE_P95}")"
+N_P99_F="$(fmt_ms "${NO_VERTX_CLEAN_ENGINE_P99}")";    N_P999_F="$(fmt_ms "${NO_VERTX_CLEAN_ENGINE_P999}")"
+N_MAX_F="$(fmt_ms "${NO_VERTX_CLEAN_ENGINE_MAX}")";    N_RPS_F="$(fmt_rps "${NO_VERTX_CLEAN_ENGINE_RPS}")"
 
-M_P50_F="$(fmt_ms "${MONOLITH_P50}")"; M_P95_F="$(fmt_ms "${MONOLITH_P95}")"
-M_P99_F="$(fmt_ms "${MONOLITH_P99}")"; M_P999_F="$(fmt_ms "${MONOLITH_P999}")"
-M_MAX_F="$(fmt_ms "${MONOLITH_MAX}")"; M_RPS_F="$(fmt_rps "${MONOLITH_RPS}")"
+MIP_P50_F="$(fmt_ms "${VERTX_MONOLITH_INPROCESS_P50}")"; MIP_P95_F="$(fmt_ms "${VERTX_MONOLITH_INPROCESS_P95}")"
+MIP_P99_F="$(fmt_ms "${VERTX_MONOLITH_INPROCESS_P99}")"; MIP_P999_F="$(fmt_ms "${VERTX_MONOLITH_INPROCESS_P999}")"
+MIP_MAX_F="$(fmt_ms "${VERTX_MONOLITH_INPROCESS_MAX}")"; MIP_RPS_F="$(fmt_rps "${VERTX_MONOLITH_INPROCESS_RPS}")"
 
-P_P50_F="$(fmt_ms "${VRP_P50}")";    P_P95_F="$(fmt_ms "${VRP_P95}")"
-P_P99_F="$(fmt_ms "${VRP_P99}")";    P_P999_F="$(fmt_ms "${VRP_P999}")"
-P_MAX_F="$(fmt_ms "${VRP_MAX}")";    P_RPS_F="$(fmt_rps "${VRP_RPS}")"
+H_P50_F="$(fmt_ms "${VERTX_LAYER_AS_POD_HTTP_P50}")";    H_P95_F="$(fmt_ms "${VERTX_LAYER_AS_POD_HTTP_P95}")"
+H_P99_F="$(fmt_ms "${VERTX_LAYER_AS_POD_HTTP_P99}")";    H_P999_F="$(fmt_ms "${VERTX_LAYER_AS_POD_HTTP_P999}")"
+H_MAX_F="$(fmt_ms "${VERTX_LAYER_AS_POD_HTTP_MAX}")";    H_RPS_F="$(fmt_rps "${VERTX_LAYER_AS_POD_HTTP_RPS}")"
 
-V_P50_F="$(fmt_ms "${VERTX_P50}")";   V_P95_F="$(fmt_ms "${VERTX_P95}")"
-V_P99_F="$(fmt_ms "${VERTX_P99}")";   V_P999_F="$(fmt_ms "${VERTX_P999}")"
-V_MAX_F="$(fmt_ms "${VERTX_MAX}")";   V_RPS_F="$(fmt_rps "${VERTX_RPS}")"
+E_P50_F="$(fmt_ms "${VERTX_LAYER_AS_POD_EVENTBUS_P50}")";   E_P95_F="$(fmt_ms "${VERTX_LAYER_AS_POD_EVENTBUS_P95}")"
+E_P99_F="$(fmt_ms "${VERTX_LAYER_AS_POD_EVENTBUS_P99}")";   E_P999_F="$(fmt_ms "${VERTX_LAYER_AS_POD_EVENTBUS_P999}")"
+E_MAX_F="$(fmt_ms "${VERTX_LAYER_AS_POD_EVENTBUS_MAX}")";   E_RPS_F="$(fmt_rps "${VERTX_LAYER_AS_POD_EVENTBUS_RPS}")"
 
 ISO_TS="$(date -u +%Y-%m-%dT%H:%M:%SZ 2>/dev/null || date +%Y-%m-%dT%H:%M:%SZ)"
 HW_INFO="$(sysctl -n machdep.cpu.brand_string 2>/dev/null || echo "unknown CPU"), $(sysctl -n hw.memsize 2>/dev/null | python3 -c 'import sys; v=int(sys.stdin.read()); print(f"{v//1073741824} GB")' 2>/dev/null || echo "unknown RAM")"
@@ -368,44 +368,44 @@ cat > "${OUT}/summary.md" <<MDEOF
 
 ## Latency side-by-side
 
-| Metric | bare-javac | java-monolith | vrp (HTTP+tokens) | vertx-distributed |
+| Metric | no-vertx-clean-engine | vertx-monolith-inprocess | vertx-layer-as-pod-http | vertx-layer-as-pod-eventbus |
 |---|---:|---:|---:|---:|
-| p50       | ${B_P50_F}  | ${M_P50_F}  | ${P_P50_F}  | ${V_P50_F}  |
-| p95       | ${B_P95_F}  | ${M_P95_F}  | ${P_P95_F}  | ${V_P95_F}  |
-| p99       | ${B_P99_F}  | ${M_P99_F}  | ${P_P99_F}  | ${V_P99_F}  |
-| p99.9     | ${B_P999_F} | ${M_P999_F} | ${P_P999_F} | ${V_P999_F} |
-| max       | ${B_MAX_F}  | ${M_MAX_F}  | ${P_MAX_F}  | ${V_MAX_F}  |
-| throughput| ${B_RPS_F}  | ${M_RPS_F}  | ${P_RPS_F}  | ${V_RPS_F}  |
+| p50       | ${N_P50_F}  | ${MIP_P50_F}  | ${H_P50_F}  | ${E_P50_F}  |
+| p95       | ${N_P95_F}  | ${MIP_P95_F}  | ${H_P95_F}  | ${E_P95_F}  |
+| p99       | ${N_P99_F}  | ${MIP_P99_F}  | ${H_P99_F}  | ${E_P99_F}  |
+| p99.9     | ${N_P999_F} | ${MIP_P999_F} | ${H_P999_F} | ${E_P999_F} |
+| max       | ${N_MAX_F}  | ${MIP_MAX_F}  | ${H_MAX_F}  | ${E_MAX_F}  |
+| throughput| ${N_RPS_F}  | ${MIP_RPS_F}  | ${H_RPS_F}  | ${E_RPS_F}  |
 
 ## Lectura arquitectonica
 
-- bare-javac: 1 JVM, metodos directos + HTTP server minimal. Latencia base de referencia.
-- java-monolith: mismo dominio, Vert.x in-process + Postgres + Valkey. Stack moderno, un proceso.
-- vertx-risk-platform: 3 pods HTTP. Cada hop suma RTT. tokens en headers (simples, auditables).
-- vertx-distributed: 4 pods event bus binario TCP (Hazelcast). Mas overhead de coordinacion, mas isolation.
+- no-vertx-clean-engine: 1 JVM, metodos directos + HTTP server minimal. Latencia base de referencia.
+- vertx-monolith-inprocess: mismo dominio, Vert.x in-process + Postgres + Valkey. Stack moderno, un proceso.
+- vertx-layer-as-pod-http: 3 pods HTTP. Cada hop suma RTT. tokens en headers (simples, auditables).
+- vertx-layer-as-pod-eventbus: 4 pods event bus binario TCP (Hazelcast). Mas overhead de coordinacion, mas isolation.
 
-## Frase de entrevista
+## Frase de discusión técnica
 
-> "Cuatro arquitecturas, mismo problema. El delta de latencia entre bare y distributed es el
-> costo de separar capas en pods. vrp muestra que HTTP+tokens es comprensible para cualquier
-> equipo; distributed muestra que el event bus binario te da isolation real pero a mayor complejidad."
+> "Cuatro arquitecturas, mismo problema. El delta de latencia entre no-vertx-clean-engine y vertx-layer-as-pod-eventbus es el
+> costo de separar capas en pods. vertx-layer-as-pod-http muestra que HTTP+tokens es comprensible para cualquier
+> equipo; vertx-layer-as-pod-eventbus muestra que el EventBus binario te da isolation real pero a mayor complejidad."
 
 ## Archivos de evidencia
 
-- bare-results/, monolith-results/, vrp-results/, vertx-results/ — metricas crudas
+- no-vertx-clean-engine-results/, vertx-monolith-inprocess-results/, vertx-layer-as-pod-http-results/, vertx-layer-as-pod-eventbus-results/ — metricas crudas
 - comparison.json — metricas unificadas
 - comparison.csv  — tabuladas
 MDEOF
 
 # ── comparison.csv ────────────────────────────────────────────────────────────
 cat > "${OUT}/comparison.csv" <<CSVEOF
-metric,bare_javac_ms,java_monolith_ms,vrp_ms,vertx_distributed_ms
-p50,${BARE_P50},${MONOLITH_P50},${VRP_P50},${VERTX_P50}
-p95,${BARE_P95},${MONOLITH_P95},${VRP_P95},${VERTX_P95}
-p99,${BARE_P99},${MONOLITH_P99},${VRP_P99},${VERTX_P99}
-p999,${BARE_P999},${MONOLITH_P999},${VRP_P999},${VERTX_P999}
-max,${BARE_MAX},${MONOLITH_MAX},${VRP_MAX},${VERTX_MAX}
-throughput_rps,${BARE_RPS},${MONOLITH_RPS},${VRP_RPS},${VERTX_RPS}
+metric,no_vertx_clean_engine_ms,vertx_monolith_inprocess_ms,vertx_layer_as_pod_http_ms,vertx_layer_as_pod_eventbus_ms
+p50,${NO_VERTX_CLEAN_ENGINE_P50},${VERTX_MONOLITH_INPROCESS_P50},${VERTX_LAYER_AS_POD_HTTP_P50},${VERTX_LAYER_AS_POD_EVENTBUS_P50}
+p95,${NO_VERTX_CLEAN_ENGINE_P95},${VERTX_MONOLITH_INPROCESS_P95},${VERTX_LAYER_AS_POD_HTTP_P95},${VERTX_LAYER_AS_POD_EVENTBUS_P95}
+p99,${NO_VERTX_CLEAN_ENGINE_P99},${VERTX_MONOLITH_INPROCESS_P99},${VERTX_LAYER_AS_POD_HTTP_P99},${VERTX_LAYER_AS_POD_EVENTBUS_P99}
+p999,${NO_VERTX_CLEAN_ENGINE_P999},${VERTX_MONOLITH_INPROCESS_P999},${VERTX_LAYER_AS_POD_HTTP_P999},${VERTX_LAYER_AS_POD_EVENTBUS_P999}
+max,${NO_VERTX_CLEAN_ENGINE_MAX},${VERTX_MONOLITH_INPROCESS_MAX},${VERTX_LAYER_AS_POD_HTTP_MAX},${VERTX_LAYER_AS_POD_EVENTBUS_MAX}
+throughput_rps,${NO_VERTX_CLEAN_ENGINE_RPS},${VERTX_MONOLITH_INPROCESS_RPS},${VERTX_LAYER_AS_POD_HTTP_RPS},${VERTX_LAYER_AS_POD_EVENTBUS_RPS}
 CSVEOF
 
 # ── comparison.json ──────────────────────────────────────────────────────────
@@ -418,21 +418,21 @@ data = {
         "concurrency": ${CONCURRENCY},
         "warmup": ${WARMUP}
     },
-    "bare_javac": {
-        "p50Ms":  ${BARE_P50}, "p95Ms":  ${BARE_P95}, "p99Ms":  ${BARE_P99},
-        "p999Ms": ${BARE_P999}, "maxMs": ${BARE_MAX}, "throughputRps": ${BARE_RPS}
+    "no_vertx_clean_engine": {
+        "p50Ms":  ${NO_VERTX_CLEAN_ENGINE_P50}, "p95Ms":  ${NO_VERTX_CLEAN_ENGINE_P95}, "p99Ms":  ${NO_VERTX_CLEAN_ENGINE_P99},
+        "p999Ms": ${NO_VERTX_CLEAN_ENGINE_P999}, "maxMs": ${NO_VERTX_CLEAN_ENGINE_MAX}, "throughputRps": ${NO_VERTX_CLEAN_ENGINE_RPS}
     },
-    "java_monolith": {
-        "p50Ms":  ${MONOLITH_P50}, "p95Ms":  ${MONOLITH_P95}, "p99Ms":  ${MONOLITH_P99},
-        "p999Ms": ${MONOLITH_P999}, "maxMs": ${MONOLITH_MAX}, "throughputRps": ${MONOLITH_RPS}
+    "vertx_monolith_inprocess": {
+        "p50Ms":  ${VERTX_MONOLITH_INPROCESS_P50}, "p95Ms":  ${VERTX_MONOLITH_INPROCESS_P95}, "p99Ms":  ${VERTX_MONOLITH_INPROCESS_P99},
+        "p999Ms": ${VERTX_MONOLITH_INPROCESS_P999}, "maxMs": ${VERTX_MONOLITH_INPROCESS_MAX}, "throughputRps": ${VERTX_MONOLITH_INPROCESS_RPS}
     },
-    "vertx_risk_platform": {
-        "p50Ms":  ${VRP_P50}, "p95Ms":  ${VRP_P95}, "p99Ms":  ${VRP_P99},
-        "p999Ms": ${VRP_P999}, "maxMs": ${VRP_MAX}, "throughputRps": ${VRP_RPS}
+    "vertx_layer_as_pod_http": {
+        "p50Ms":  ${VERTX_LAYER_AS_POD_HTTP_P50}, "p95Ms":  ${VERTX_LAYER_AS_POD_HTTP_P95}, "p99Ms":  ${VERTX_LAYER_AS_POD_HTTP_P99},
+        "p999Ms": ${VERTX_LAYER_AS_POD_HTTP_P999}, "maxMs": ${VERTX_LAYER_AS_POD_HTTP_MAX}, "throughputRps": ${VERTX_LAYER_AS_POD_HTTP_RPS}
     },
-    "vertx_distributed": {
-        "p50Ms":  ${VERTX_P50}, "p95Ms":  ${VERTX_P95}, "p99Ms":  ${VERTX_P99},
-        "p999Ms": ${VERTX_P999}, "maxMs": ${VERTX_MAX}, "throughputRps": ${VERTX_RPS}
+    "vertx_layer_as_pod_eventbus": {
+        "p50Ms":  ${VERTX_LAYER_AS_POD_EVENTBUS_P50}, "p95Ms":  ${VERTX_LAYER_AS_POD_EVENTBUS_P95}, "p99Ms":  ${VERTX_LAYER_AS_POD_EVENTBUS_P99},
+        "p999Ms": ${VERTX_LAYER_AS_POD_EVENTBUS_P999}, "maxMs": ${VERTX_LAYER_AS_POD_EVENTBUS_MAX}, "throughputRps": ${VERTX_LAYER_AS_POD_EVENTBUS_RPS}
     }
 }
 print(json.dumps(data, indent=2))
@@ -446,14 +446,14 @@ PYEOF
   echo "Hardware: ${HW_INFO}"
   echo "JDK: ${JDK_VER}  OS: ${OS_VER}"
   echo "========================================================================"
-  printf "%-10s  %-14s  %-14s  %-18s  %-18s\n" "Metric" "bare-javac" "java-monolith" "vrp (HTTP+tokens)" "vertx-distributed"
+  printf "%-10s  %-14s  %-14s  %-18s  %-18s\n" "Metric" "no-vertx-clean-engine" "vertx-monolith-inprocess" "vertx-layer-as-pod-http" "vertx-layer-as-pod-eventbus"
   echo "------------------------------------------------------------------------"
-  printf "%-10s  %-14s  %-14s  %-18s  %-18s\n" "p50"        "${B_P50_F}"  "${M_P50_F}"  "${P_P50_F}"  "${V_P50_F}"
-  printf "%-10s  %-14s  %-14s  %-18s  %-18s\n" "p95"        "${B_P95_F}"  "${M_P95_F}"  "${P_P95_F}"  "${V_P95_F}"
-  printf "%-10s  %-14s  %-14s  %-18s  %-18s\n" "p99"        "${B_P99_F}"  "${M_P99_F}"  "${P_P99_F}"  "${V_P99_F}"
-  printf "%-10s  %-14s  %-14s  %-18s  %-18s\n" "p99.9"      "${B_P999_F}" "${M_P999_F}" "${P_P999_F}" "${V_P999_F}"
-  printf "%-10s  %-14s  %-14s  %-18s  %-18s\n" "max"        "${B_MAX_F}"  "${M_MAX_F}"  "${P_MAX_F}"  "${V_MAX_F}"
-  printf "%-10s  %-14s  %-14s  %-18s  %-18s\n" "throughput" "${B_RPS_F}"  "${M_RPS_F}"  "${P_RPS_F}"  "${V_RPS_F}"
+  printf "%-10s  %-14s  %-14s  %-18s  %-18s\n" "p50"        "${N_P50_F}"  "${MIP_P50_F}"  "${H_P50_F}"  "${E_P50_F}"
+  printf "%-10s  %-14s  %-14s  %-18s  %-18s\n" "p95"        "${N_P95_F}"  "${MIP_P95_F}"  "${H_P95_F}"  "${E_P95_F}"
+  printf "%-10s  %-14s  %-14s  %-18s  %-18s\n" "p99"        "${N_P99_F}"  "${MIP_P99_F}"  "${H_P99_F}"  "${E_P99_F}"
+  printf "%-10s  %-14s  %-14s  %-18s  %-18s\n" "p99.9"      "${N_P999_F}" "${MIP_P999_F}" "${H_P999_F}" "${E_P999_F}"
+  printf "%-10s  %-14s  %-14s  %-18s  %-18s\n" "max"        "${N_MAX_F}"  "${MIP_MAX_F}"  "${H_MAX_F}"  "${E_MAX_F}"
+  printf "%-10s  %-14s  %-14s  %-18s  %-18s\n" "throughput" "${N_RPS_F}"  "${MIP_RPS_F}"  "${H_RPS_F}"  "${E_RPS_F}"
   echo "========================================================================"
 } > "${OUT}/summary.txt"
 
@@ -472,22 +472,22 @@ try:
     import numpy as np
 
     metrics = ['p50', 'p95', 'p99', 'p999']
-    bare_vals  = [${BARE_P50},  ${BARE_P95},  ${BARE_P99},  ${BARE_P999}]
-    vertx_vals = [${VERTX_P50}, ${VERTX_P95}, ${VERTX_P99}, ${VERTX_P999}]
+    no_eventbus_vals  = [${NO_VERTX_CLEAN_ENGINE_P50},  ${NO_VERTX_CLEAN_ENGINE_P95},  ${NO_VERTX_CLEAN_ENGINE_P99},  ${NO_VERTX_CLEAN_ENGINE_P999}]
+    eventbus_vals = [${VERTX_LAYER_AS_POD_EVENTBUS_P50}, ${VERTX_LAYER_AS_POD_EVENTBUS_P95}, ${VERTX_LAYER_AS_POD_EVENTBUS_P99}, ${VERTX_LAYER_AS_POD_EVENTBUS_P999}]
 
     # Only plot if we have real values
-    if any(v < 0 for v in bare_vals + vertx_vals):
+    if any(v < 0 for v in no_eventbus_vals + eventbus_vals):
         sys.exit(0)
 
     x = np.arange(len(metrics))
     width = 0.35
 
     fig, ax = plt.subplots(figsize=(9, 5))
-    bars1 = ax.bar(x - width/2, bare_vals,  width, label='Bare-javac (HTTP)', color='#2196F3')
-    bars2 = ax.bar(x + width/2, vertx_vals, width, label='Vert.x distributed', color='#FF5722')
+    bars1 = ax.bar(x - width/2, no_eventbus_vals,  width, label='no-vertx-clean-engine (HTTP)', color='#2196F3')
+    bars2 = ax.bar(x + width/2, eventbus_vals, width, label='vertx-layer-as-pod-eventbus', color='#FF5722')
 
     ax.set_ylabel('Latency (ms)')
-    ax.set_title('Performance Competition: Bare-javac vs Vert.x distributed\n(${REQUESTS} requests, concurrency=${CONCURRENCY})')
+    ax.set_title('Performance Competition: no-vertx-clean-engine vs vertx-layer-as-pod-eventbus\n(${REQUESTS} requests, concurrency=${CONCURRENCY})')
     ax.set_xticks(x)
     ax.set_xticklabels(metrics)
     ax.legend()
@@ -508,7 +508,7 @@ elif command -v gnuplot &>/dev/null; then
 script = """
 set terminal png size 900,500 background '#ffffff'
 set output '${PLOT_FILE}'
-set title 'Performance Competition: Bare-javac vs Vertx distributed'
+set title 'Performance Competition: no-vertx-clean-engine vs vertx-layer-as-pod-eventbus'
 set style data histogram
 set style histogram cluster gap 1
 set style fill solid border -1
@@ -516,16 +516,16 @@ set boxwidth 0.9
 set xtics ('p50' 0, 'p95' 1, 'p99' 2, 'p999' 3)
 set ylabel 'Latency (ms)'
 set logscale y
-plot '-' using 2:xtic(1) title 'bare-javac', '' using 2:xtic(1) title 'vertx'
-p50 ${BARE_P50}
-p95 ${BARE_P95}
-p99 ${BARE_P99}
-p999 ${BARE_P999}
+plot '-' using 2:xtic(1) title 'no-vertx-clean-engine', '' using 2:xtic(1) title 'vertx-layer-as-pod-eventbus'
+p50 ${NO_VERTX_CLEAN_ENGINE_P50}
+p95 ${NO_VERTX_CLEAN_ENGINE_P95}
+p99 ${NO_VERTX_CLEAN_ENGINE_P99}
+p999 ${NO_VERTX_CLEAN_ENGINE_P999}
 e
-p50 ${VERTX_P50}
-p95 ${VERTX_P95}
-p99 ${VERTX_P99}
-p999 ${VERTX_P999}
+p50 ${VERTX_LAYER_AS_POD_EVENTBUS_P50}
+p95 ${VERTX_LAYER_AS_POD_EVENTBUS_P95}
+p99 ${VERTX_LAYER_AS_POD_EVENTBUS_P99}
+p999 ${VERTX_LAYER_AS_POD_EVENTBUS_P999}
 e
 """
 with open('/tmp/competition_plot.gnuplot', 'w') as f:

@@ -41,7 +41,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Run with: ./gradlew :sdks:risk-client-java:integrationTest
  *
  * The compose file is expected at
- * poc/java-vertx-distributed/docker-compose.yml relative to the repo root.
+ * poc/vertx-layer-as-pod-eventbus/docker-compose.yml relative to the repo root.
  * The controller-app service must expose port 8080.
  */
 @Tag("integration")
@@ -59,7 +59,7 @@ class RiskClientIntegrationTest {
     @SuppressWarnings({"resource", "unchecked"})
     static final DockerComposeContainer<?> appStack =
             new DockerComposeContainer<>(
-                    new File("../../poc/java-vertx-distributed/docker-compose.yml"))
+                    new File("../../poc/vertx-layer-as-pod-eventbus/docker-compose.yml"))
             .withExposedService(CONTROLLER_SERVICE, CONTROLLER_PORT,
                     Wait.forHttp("/healthz")
                         .forStatusCode(200)

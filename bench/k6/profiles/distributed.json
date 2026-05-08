@@ -1,7 +1,0 @@
-{
-  "service": "java-vertx-distributed",
-  "target": "distributed",
-  "baseUrl": "http://localhost:8080",
-  "expectedSlo": { "p99Ms": 300, "errorRate": 0.01 },
-  "notes": "Distributed Vert.x EventBus + Hazelcast. Layer-as-pod topology."
-}

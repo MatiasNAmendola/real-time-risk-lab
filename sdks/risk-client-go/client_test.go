@@ -8,6 +8,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"testing"
 	"time"
 
@@ -70,7 +71,7 @@ func overrideClient(ts *httptest.Server, sqsMock riskclient.SQSClientAPI) *riskc
 		sqsMock = &mockSQS{}
 	}
 	cfg := riskclient.Config{
-		APIKey:  "test-key",
+		APIKey:  os.Getenv("RISK_CLIENT_API_KEY"),
 		Timeout: 2 * time.Second,
 		Retry:   riskclient.NoRetry(),
 	}
@@ -196,7 +197,7 @@ func TestWebhooks_Verify_Valid(t *testing.T) {
 	defer ts.Close()
 
 	payload := []byte(`{"decision":"DECLINE"}`)
-	secret := "test-secret"
+	secret := getenvDefault("RISK_WEBHOOK_TEST_SECRET", "change-me-webhook-secret")
 	sig := computeHMAC(secret, payload)
 
 	if !overrideClient(ts, nil).Webhooks.Verify(payload, sig, secret) {
@@ -294,4 +295,11 @@ func TestEnvironment_LocalBuildsWithoutPanic(t *testing.T) {
 	if client == nil {
 		t.Fatal("expected non-nil client")
 	}
+}
+
+func getenvDefault(key, fallback string) string {
+	if value := os.Getenv(key); value != "" {
+		return value
+	}
+	return fallback
 }

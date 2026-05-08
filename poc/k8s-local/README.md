@@ -1,4 +1,4 @@
-# k8s-local — Risk Decision Platform PoC: Replica local de mega-infra
+# k8s-local — Real-Time Risk Lab PoC: Replica local de mega-infra
 
 Replica local de los patrones de infraestructura de mega-infra, adaptada para correr
 en macOS con k3d (k3s en Docker) sin dependencias de AWS. Permite demostrar en una
@@ -101,7 +101,7 @@ ArgoCD       → kubectl -n argocd port-forward svc/argocd-server 8081:80
                  URL: https://localhost:8081  (admin / <password impresa por up.sh>)
 
 OpenObserve  → kubectl -n openobserve port-forward svc/openobserve 5080:5080
-                 URL: http://localhost:5080  (root@example.com / Complexpass#123)
+                 URL: http://localhost:5080  (root@example.com / ${OPENOBSERVE_PASSWORD:-change-me-openobserve-local})
 
 Redpanda     → kubectl -n redpanda port-forward svc/redpanda-console 9000:8080
                  URL: http://localhost:9000
@@ -138,11 +138,11 @@ Risk Engine  → kubectl -n risk port-forward svc/risk-engine 8090:8080
 
 ## Usar la imagen real de la PoC Vert.x
 
-Una vez que `poc/java-vertx-distributed/` tenga un Dockerfile listo:
+Una vez que `poc/vertx-layer-as-pod-eventbus/` tenga un Dockerfile listo:
 
 ```bash
 # 1. Build la imagen
-docker build -t risk-engine:dev ../../poc/java-vertx-distributed/
+docker build -t risk-engine:dev ../../poc/vertx-layer-as-pod-eventbus/
 
 # 2. Importarla al cluster k3d (no necesita registry externo)
 k3d image import risk-engine:dev -c naranja-poc
@@ -197,7 +197,7 @@ aws --endpoint-url http://localhost:9324 sqs list-queues
 
 # Crear secret en Moto Secrets Manager
 aws --endpoint-url http://localhost:5000 secretsmanager create-secret \
-  --name risk-engine/api-key --secret-string "test-key"
+  --name risk-engine/api-key --secret-string System.getenv("RISK_CLIENT_API_KEY")
 
 # Listar secrets Moto
 aws --endpoint-url http://localhost:5000 secretsmanager list-secrets
@@ -284,7 +284,7 @@ poc/k8s-local/
 
 ---
 
-## Talking points para review (staff level)
+## Talking points para review (technical leadership level)
 
 1. **"Como testeas canaries antes de llegar a prod?"**
    Este setup demuestra el mismo ciclo que en mega: Argo Rollouts envia 20% del trafico

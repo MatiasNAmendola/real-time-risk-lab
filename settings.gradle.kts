@@ -1,4 +1,4 @@
-rootProject.name = "risk-decision-platform"
+rootProject.name = "real-time-risk-lab"
 
 pluginManagement {
     includeBuild("build-logic")
@@ -40,22 +40,22 @@ include(
 
 // Phase 2 — application modules
 include(
-    "poc:java-risk-engine",
-    "poc:java-monolith",
-    "poc:java-monolith:atdd-tests",
-    "poc:java-vertx-distributed:shared",
-    "poc:java-vertx-distributed:controller-app",
-    "poc:java-vertx-distributed:usecase-app",
-    "poc:java-vertx-distributed:repository-app",
-    "poc:java-vertx-distributed:consumer-app",
-    "poc:java-vertx-distributed:atdd-tests",
-    "poc:service-mesh-demo:shared",
-    "poc:service-mesh-demo:risk-decision-service",
-    "poc:service-mesh-demo:fraud-rules-service",
-    "poc:service-mesh-demo:ml-scorer-service",
-    "poc:service-mesh-demo:audit-service",
-    "poc:vertx-risk-platform",
-    "poc:vertx-risk-platform:atdd-tests",
+    "poc:no-vertx-clean-engine",
+    "poc:vertx-monolith-inprocess",
+    "poc:vertx-monolith-inprocess:atdd-tests",
+    "poc:vertx-layer-as-pod-eventbus:shared",
+    "poc:vertx-layer-as-pod-eventbus:controller-app",
+    "poc:vertx-layer-as-pod-eventbus:usecase-app",
+    "poc:vertx-layer-as-pod-eventbus:repository-app",
+    "poc:vertx-layer-as-pod-eventbus:consumer-app",
+    "poc:vertx-layer-as-pod-eventbus:atdd-tests",
+    "poc:vertx-service-mesh-bounded-contexts:shared",
+    "poc:vertx-service-mesh-bounded-contexts:risk-decision-service",
+    "poc:vertx-service-mesh-bounded-contexts:fraud-rules-service",
+    "poc:vertx-service-mesh-bounded-contexts:ml-scorer-service",
+    "poc:vertx-service-mesh-bounded-contexts:audit-service",
+    "poc:vertx-layer-as-pod-http",
+    "poc:vertx-layer-as-pod-http:atdd-tests",
     "tests:risk-engine-atdd",
     "tests:architecture",
     "tests:integration",

@@ -1,6 +1,6 @@
 # risk-smoke
 
-End-to-end smoke runner for the Risk Decision Platform.
+End-to-end smoke runner for the Real-Time Risk Lab.
 Built with [Bubble Tea](https://github.com/charmbracelet/bubbletea) (Elm-style TUI),
 [Lip Gloss](https://github.com/charmbracelet/lipgloss) (styles), and
 [Bubbles](https://github.com/charmbracelet/bubbles) (spinner/progress components).
@@ -193,7 +193,7 @@ Examples:
 
 ## Cucumber bare check
 
-Runs the Gradle Cucumber-JVM ATDD suite for the **bare-javac** `java-risk-engine` module
+Runs the Gradle Cucumber-JVM ATDD suite for the **bare-javac** `no-vertx-clean-engine` module
 (no HTTP server needed — pure in-process logic). Invokes:
 
 ```bash

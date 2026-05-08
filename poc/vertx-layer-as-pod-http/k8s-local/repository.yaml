@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: risk-repository-sa
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: risk-repository
+spec:
+  replicas: 1
+  selector:
+    matchLabels: { app: risk-repository }
+  template:
+    metadata:
+      labels: { app: risk-repository, boundary: repository }
+    spec:
+      serviceAccountName: risk-repository-sa
+      containers:
+        - name: repository
+          image: local/vertx-layer-as-pod-http:dev
+          args: ["repository"]
+          ports: [{ containerPort: 8082 }]

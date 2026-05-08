@@ -18,7 +18,7 @@ for arg in "$@"; do
 done
 
 echo "========================================"
-echo "Risk Decision Platform Performance Comparison Runner"
+echo "Real-Time Risk Lab Performance Comparison Runner"
 echo "========================================"
 
 # ── 1. Build ──────────────────────────────────────────────────────────────────

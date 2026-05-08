@@ -1,0 +1,10 @@
+{
+  "service": "vertx-monolith-inprocess",
+  "target": "vertx-monolith-inprocess",
+  "baseUrl": "http://localhost:8090",
+  "expectedSlo": {
+    "p99Ms": 300,
+    "errorRate": 0.01
+  },
+  "notes": "Vert.x single-JVM in-process topology; EventBus local, no inter-layer network hop."
+}

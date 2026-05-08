@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
-# Run the ATDD module (Cucumber-JVM) for the bare-javac risk engine PoC.
+# Run the ATDD module (Cucumber-JVM) for the no-vertx-clean-engine PoC.
 # Usage: ./scripts/atdd-bare.sh
 # Filter by tag: cucumber_filter_tags=@idempotency ./scripts/atdd-bare.sh
 #
 # NOTE: Requires the risk-engine server to be running first:
-#   ./gradlew :poc:java-risk-engine:run &
+#   ./gradlew :poc:no-vertx-clean-engine:run &
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"

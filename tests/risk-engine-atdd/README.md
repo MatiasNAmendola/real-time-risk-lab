@@ -1,7 +1,7 @@
-# Risk Decision Platform — ATDD Module (Cucumber-JVM)
+# Real-Time Risk Lab — ATDD Module (Cucumber-JVM)
 
 Acceptance-test suite for the bare-javac risk engine PoC.
-Standalone Gradle project — does not modify any file under `poc/java-risk-engine/`.
+Standalone Gradle project — does not modify any file under `poc/no-vertx-clean-engine/`.
 
 ---
 

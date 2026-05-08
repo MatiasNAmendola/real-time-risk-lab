@@ -1,4 +1,4 @@
-// Package riskclient provides the Risk Decision Platform client SDK for Go.
+// Package riskclient provides the Real-Time Risk Lab client SDK for Go.
 package riskclient
 
 import (
@@ -47,7 +47,7 @@ var envMap = map[Environment]envCoords{
 
 // RiskRequest is the canonical evaluation request.
 // Field names align with the deployed Vert.x server contract
-// (see poc/java-vertx-distributed/shared RiskRequest and openapi.yaml).
+// (see poc/vertx-layer-as-pod-eventbus/shared RiskRequest and openapi.yaml).
 type RiskRequest struct {
 	TransactionID  string `json:"transactionId"`
 	CustomerID     string `json:"customerId"`

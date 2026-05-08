@@ -20,7 +20,7 @@ import (
 // Suite-level setup / teardown
 // ---------------------------------------------------------------------------
 
-const composeFile = "../../poc/java-vertx-distributed/docker-compose.yml"
+const composeFile = "../../poc/vertx-layer-as-pod-eventbus/docker-compose.yml"
 
 // baseURL is overridable via RISK_BASE_URL for cases where the stack is
 // started externally (e.g. CI pipeline).
@@ -83,13 +83,20 @@ func newClient(t *testing.T) *riskclient.Client {
 	t.Helper()
 	cfg := riskclient.Config{
 		Environment: riskclient.Local,
-		APIKey:      "test",
+		APIKey:      envOrFallback("RISK_CLIENT_API_KEY", "change-me-client-api-key"),
 		Timeout:     10 * time.Second,
 		Retry:       riskclient.ExponentialBackoff(),
 	}
 	client := riskclient.NewWithServerOverride(cfg, baseURL(), nil)
 	require.NotNil(t, client)
 	return client
+}
+
+func envOrFallback(key, fallback string) string {
+	if value := os.Getenv(key); value != "" {
+		return value
+	}
+	return fallback
 }
 
 func sampleReq(txID string, amount float64) riskclient.RiskRequest {

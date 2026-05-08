@@ -1,4 +1,4 @@
-# Dashboard — Risk Decision Platform
+# Dashboard — Real-Time Risk Lab
 
 Static HTML dashboard centralizado con accesos a todos los servicios, APIs y reportes.
 
@@ -10,7 +10,7 @@ cd dashboard
 # Abre: http://localhost:8888
 ```
 
-Asume que los servicios (Vertx app, OpenObserve, Redpanda, AWS mocks) están corriendo en `poc/java-vertx-distributed/` con `./scripts/up.sh`.
+Asume que los servicios (Vertx app, OpenObserve, Redpanda, AWS mocks) están corriendo en `poc/vertx-layer-as-pod-eventbus/` con `./scripts/up.sh`.
 
 ## Modo k8s
 
@@ -38,7 +38,7 @@ El config vive en `assets/config.yml`. Reload: `docker compose restart homer` (o
 
 ## Conflicto de puertos
 
-MinIO Console (9001) y Redpanda Console usan puertos distintos (9001 vs 9000) en esta configuracion — no hay colision directa. Sin embargo, si el docker-compose principal mapea Redpanda Console a 9001 en lugar de 9000, la tile de MinIO quedaria apuntando al servicio incorrecto. Verificar con `docker compose ps` en `poc/java-vertx-distributed/` y ajustar la URL en `assets/config.yml` si corresponde.
+MinIO Console (9001) y Redpanda Console usan puertos distintos (9001 vs 9000) en esta configuracion — no hay colision directa. Sin embargo, si el docker-compose principal mapea Redpanda Console a 9001 en lugar de 9000, la tile de MinIO quedaria apuntando al servicio incorrecto. Verificar con `docker compose ps` en `poc/vertx-layer-as-pod-eventbus/` y ajustar la URL en `assets/config.yml` si corresponde.
 
 ## Archivos
 
