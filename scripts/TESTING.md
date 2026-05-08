@@ -11,7 +11,8 @@
 |---|---|---|
 | Live demo guardrail | `./nx test --composite quick` | Sub-second/seconds check; no Gradle/JUnit. |
 | Pre-push / real fast verification | `./nx test --composite ci-fast` | Unit Java + SDK units + ArchUnit, with `arch` isolated. |
-| Full local non-k8s sweep | `./nx test all --with-infra-compose` | Uses Docker/Compose where required; conservative local parallelism. |
+| Full local non-k8s sweep | `./nx proc status --include-gradle-daemons --truncate 120 && ./nx test all --with-infra-compose --parallel 1 --max-cpu 50 --max-ram 6000` | Single EventBus compose stack; safest laptop mode. |
+| Variant/e2e sweep | `./nx up all && ./nx test --composite all-variants --parallel 1 --max-cpu 50 --max-ram 6000` | Runs monolith/HTTP/SDK variant suites after explicitly starting all variants. |
 | Kubernetes / infra validation | `./nx test --composite k8s --auto-infra` | Requires k8s tooling. |
 | List groups and composites | `./nx test --list` | Reads `.ai/test-groups.yaml`. |
 
@@ -31,7 +32,8 @@ This summary mirrors `docs/27-test-runner.md`; if it drifts, update that doc and
 | Architecture | `arch` | No | ArchUnit; exclusive to avoid Gradle/JUnit XML report races. |
 | Component Vert.x | `component-vertx-layer-as-pod-http` | No | In-process Vert.x component tests. |
 | Integration Testcontainers | `integration-testcontainers` | Docker | Ephemeral container integration tests. |
-| Integration Compose | `integration-compose` | Compose | ATDD/smoke suites against local distributed stack. |
+| Integration Compose | `integration-compose` | Compose | ATDD/smoke suites against the EventBus distributed stack. |
+| Integration Variants | `integration-compose-variants` / `all-variants` | Compose | Variant-specific suites that need `./nx up all` or a specific variant stack. |
 | SDK integration | `sdk-integration` | Compose | SDKs against a real local server. |
 | Contract | `contract` | Compose | Cross-SDK/API contract verification. |
 | Load smoke | `k6` | Compose + k6 | k6 smoke/load guardrail. |
@@ -82,7 +84,7 @@ the source of truth; verify current group names with `./nx test --list`.
 | Docker/Testcontainers suite fails before tests start | Start Docker Desktop/OrbStack and rerun the specific group. |
 | k8s suite cannot find `kubectl`, `helm`, or `k3d` | Run `./nx setup --verify` and install missing optional tooling. |
 | ArchUnit XML/reporting race appears | Ensure `arch` remains `exclusive: true` and runs in its own scheduler level. |
-| Laptop freezes during `all` | Do not use `--auto-parallel` locally. The runner defaults to `--parallel 2` and keeps Gradle single-flight; if needed, lower further with `./nx test all --with-infra-compose --parallel 1 --max-cpu 50 --max-ram 6000`. |
+| Laptop freezes during `all` | Do not use `--auto-parallel` locally. The runner defaults to `--parallel 2` and keeps Gradle single-flight; if needed, lower further with `./nx test all --with-infra-compose --parallel 1 --max-cpu 50 --max-ram 6000`. Keep `all-variants` separate and run it only after `./nx up all`. |
 | Need to inspect or stop stuck `nx`/Gradle test processes | Use `./nx proc status` and `./nx proc stop` instead of ad-hoc `ps | grep`. `stop` is dry-run unless `--yes` is passed. |
 | Need to add a suite | Edit `.ai/test-groups.yaml`, then update `docs/27-test-runner.md`. |
 
@@ -91,4 +93,11 @@ For failed `nx test` jobs:
 ```bash
 cat out/test-runner/latest/job-<group>.log
 cat out/test-runner/latest/results.json
+```
+
+Safe full local command:
+
+```bash
+./nx proc status --include-gradle-daemons --truncate 120 && \
+./nx test all --with-infra-compose --parallel 1 --max-cpu 50 --max-ram 6000
 ```

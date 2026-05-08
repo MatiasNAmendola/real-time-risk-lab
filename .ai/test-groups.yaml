@@ -414,6 +414,11 @@ composites:
   integration-compose:
     - integration-compose-vertx-layer-as-pod-eventbus-atdd
     - integration-compose-smoke
+
+  integration-compose-variants:
+    # These ATDD suites target different app variants/ports. Bring them up
+    # explicitly with `./nx up all` (or the specific variant) before running;
+    # the laptop-safe `--auto-infra` path starts only the EventBus stack.
     - integration-compose-vertx-monolith-inprocess-atdd
     - integration-compose-vertx-layer-as-pod-http-atdd
 
@@ -453,12 +458,6 @@ composites:
     - integration-testcontainers
     - integration-compose-vertx-layer-as-pod-eventbus-atdd
     - integration-compose-smoke
-    - integration-compose-vertx-monolith-inprocess-unit
-    - integration-compose-vertx-monolith-inprocess-atdd
-    - integration-compose-vertx-layer-as-pod-http-atdd
-    - sdk-java-integration
-    - sdk-typescript-integration
-    - sdk-go-integration
     - contract
     - bench-inproc
     - k6
@@ -480,6 +479,10 @@ composites:
     - k8s-eso
 
   all:
+    # Laptop-safe full local gate. It exercises one compose stack
+    # (vertx-layer-as-pod-eventbus) plus no-infra/unit/component checks.
+    # Variant-specific ATDDs live in integration-compose-variants/all-variants
+    # because they require different app ports to be up at the same time.
     - unit-java-fast
     - arch
     - unit-sdk-java
@@ -490,14 +493,16 @@ composites:
     - integration-testcontainers
     - integration-compose-vertx-layer-as-pod-eventbus-atdd
     - integration-compose-smoke
+    - contract
+    - bench-inproc
+    - coverage-audit
+    - k6
+
+  all-variants:
     - integration-compose-vertx-monolith-inprocess-unit
     - integration-compose-vertx-monolith-inprocess-atdd
     - integration-compose-vertx-layer-as-pod-http-atdd
     - sdk-java-integration
     - sdk-typescript-integration
     - sdk-go-integration
-    - contract
-    - bench-inproc
     - bench-distributed
-    - coverage-audit
-    - k6

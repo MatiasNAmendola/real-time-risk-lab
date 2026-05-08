@@ -182,7 +182,8 @@ los 4 corren concurrentemente sin tocar ningún techo.
 | Arquitectura | `arch` | No | ArchUnit; exclusivo para evitar carrera de reportes XML con otra invocación Gradle. |
 | Component Vert.x | `component-vertx-layer-as-pod-http` | No | Tests in-process con puertos dinámicos. |
 | Integration Testcontainers | `integration-testcontainers` | Docker | Corre solo por consumo de Docker/Ryuk. |
-| Integration compose | `integration-compose` | Compose | Suites compose marcadas `exclusive: true`. |
+| Integration compose | `integration-compose` | Compose | ATDD/smoke contra el stack EventBus que `--auto-infra` sabe levantar. |
+| Integration variants | `integration-compose-variants` / `all-variants` | Compose | Monolith/HTTP layer-as-pod/SDK e2e; requieren `./nx up all` o el variant específico porque usan otros puertos. |
 | SDK integration | `sdk-integration` | Compose | SDKs contra stack local, uno por vez. |
 | Contract | `contract` | Compose | Separado de SDK integration para poder gatearlo explícitamente. |
 | Load smoke | `k6` | Compose + k6 | Smoke de k6, exclusivo. |
@@ -195,7 +196,8 @@ Matriz recomendada:
 | Demo live | `./nx test --composite quick` |
 | Pre-push | `./nx test --composite ci-fast` |
 | CI fast | `./nx test --composite ci-fast --json` |
-| Full local no-k8s | `./nx test all --with-infra-compose` |
+| Full local no-k8s | `./nx proc status --include-gradle-daemons --truncate 120 && ./nx test all --with-infra-compose --parallel 1 --max-cpu 50 --max-ram 6000` |
+| Variants/e2e ampliado | `./nx up all && ./nx test --composite all-variants --parallel 1 --max-cpu 50 --max-ram 6000` |
 | CI full | `./nx test --composite ci-full --with-infra-compose --json --auto-parallel` |
 | Infra/k8s/nightly | `./nx test --composite k8s --with-infra-k8s --json` |
 
@@ -209,12 +211,38 @@ Matriz recomendada:
 ./nx test --composite ci-fast              Corre un composite
 ./nx test --composite ci-fast --auto-parallel
 ./nx test --composite ci-fast --dry-run    Imprime solo el plan
-./nx test --composite integration-compose --auto-infra  compose-up automático
+./nx test --composite integration-compose --auto-infra  compose-up automático EventBus
+./nx test --composite all-variants --parallel 1  variants ya levantados con ./nx up all
 ./nx test --composite all --max-cpu 70 --max-ram 6000
 ./nx test --json                            Output JSON para CI
 ./nx test --parallel N                      Forzar N jobs concurrentes (default local: 2)
 ./nx test --out-dir /tmp/run-001           Output dir custom
 ```
+
+## Comando recomendado para corrida completa local
+
+Cuando quieras correr todo junto en una laptop, primero verificá que no haya
+runners/Gradle previos vivos y después ejecutá la suite con límites conservadores:
+
+```bash
+./nx proc status --include-gradle-daemons --truncate 120 && \
+./nx test all --with-infra-compose --parallel 1 --max-cpu 50 --max-ram 6000
+```
+
+Por qué este comando:
+
+- `proc status` evita arrancar una corrida pesada encima de procesos huérfanos.
+- `--include-gradle-daemons` muestra también daemons Gradle globales que pueden
+  estar consumiendo CPU/RAM o reteniendo locks.
+- `--truncate 120` mantiene legible la salida de comandos Java largos.
+- `--parallel 1` prioriza estabilidad/interactividad de la laptop por encima de
+  tiempo total.
+- `--max-cpu 50 --max-ram 6000` evita saturar CPU/RAM durante ATDD, smoke,
+  benchmarks y suites con Docker/Compose.
+- `all` es deliberadamente single-stack para laptop: usa el stack
+  `vertx-layer-as-pod-eventbus`, que es el que `--with-infra-compose` levanta.
+  Los ATDD/e2e de otros variants quedan en `all-variants` para correrlos
+  explícitamente después de `./nx up all`, sin mezclar puertos no levantados.
 
 Aliases backward-compatible (proxy hacia `--group`):
 ```

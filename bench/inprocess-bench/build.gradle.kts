@@ -1,3 +1,6 @@
+import java.nio.channels.FileChannel
+import java.nio.file.StandardOpenOption
+
 plugins {
     id("riskplatform.fatjar-conventions")
 }
@@ -29,4 +32,17 @@ tasks.register<JavaExec>("runBench") {
     classpath = files(tasks.named<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar>("shadowJar").get().archiveFile)
     mainClass.set("org.openjdk.jmh.Main")
     args = listOf(".*InProcessBenchmark.*", "-wi", "3", "-i", "5", "-f", "1")
+    doFirst {
+        val jmhLock = file("${System.getProperty("java.io.tmpdir")}/jmh.lock")
+        if (jmhLock.exists()) {
+            FileChannel.open(jmhLock.toPath(), StandardOpenOption.WRITE).use { channel ->
+                val lock = channel.tryLock()
+                    ?: throw GradleException("JMH lock is held by another benchmark: ${jmhLock.absolutePath}")
+                lock.use {
+                    logger.lifecycle("Removing stale JMH lock: ${jmhLock.absolutePath}")
+                    jmhLock.delete()
+                }
+            }
+        }
+    }
 }
