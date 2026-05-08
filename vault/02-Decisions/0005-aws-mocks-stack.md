@@ -64,7 +64,7 @@ Use a curated per-service mock stack: Moto server (`motoserver/moto`) for SNS, I
 
 ## Validación
 
-- `docker compose up -d` in `poc/java-vertx-distributed/` starts all 5 mock services.
+- `docker compose up -d` in `poc/vertx-layer-as-pod-eventbus/` starts all 5 mock services.
 - `aws --endpoint-url http://localhost:9000 s3 ls` returns empty list from MinIO.
 - `aws --endpoint-url http://localhost:9324 sqs list-queues` returns queue list from ElasticMQ.
 - Integration tests in `tests/integration/` pass against the mock stack.

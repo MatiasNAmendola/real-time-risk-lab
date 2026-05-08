@@ -15,7 +15,7 @@ Aceptado el 2026-05-07.
 
 ## Contexto
 
-The bare-javac PoC (`poc/java-risk-engine/`) calls un ML scoring service (`FakeRiskModelScorer`) que es intentionally unreliable: 15% random failure rate, 20-160ms latency. Without protection, repeated failures cascade: la HTTP thread pool fills con waiting scorer calls, y la engine stops accepting new risk evaluation requests.
+The bare-javac PoC (`poc/no-vertx-clean-engine/`) calls un ML scoring service (`FakeRiskModelScorer`) que es intentionally unreliable: 15% random failure rate, 20-160ms latency. Without protection, repeated failures cascade: la HTTP thread pool fills con waiting scorer calls, y la engine stops accepting new risk evaluation requests.
 
 A circuit breaker es la standard protection pattern: después de `failureThreshold` consecutive failures, la breaker opens y short-circuits calls un la scorer, returning un fallback decision immediately. After `openDuration` elapses, la breaker enters half-open state y allows one probe request.
 
@@ -25,7 +25,7 @@ The bare-javac PoC constraint es zero external dependencies más allá de la JDK
 
 ## Decisión
 
-Implement `CircuitBreaker` como un hand-written, synchronization-based state machine en `poc/java-risk-engine/src/main/java/io/riskplatform/engine/infrastructure/resilience/CircuitBreaker.java`. La implementation has three fields: `failureThreshold` (int), `openDuration` (Duration), y `openUntilNanos` (long). State transitions are: CLOSED → OPEN (on nth failure) → CLOSED (on timeout expiry + next `allowRequest()` call). La `success()` method resets failure count.
+Implement `CircuitBreaker` como un hand-written, synchronization-based state machine en `poc/no-vertx-clean-engine/src/main/java/io/riskplatform/engine/infrastructure/resilience/CircuitBreaker.java`. La implementation has three fields: `failureThreshold` (int), `openDuration` (Duration), y `openUntilNanos` (long). State transitions are: CLOSED → OPEN (on nth failure) → CLOSED (on timeout expiry + next `allowRequest()` call). La `success()` method resets failure count.
 
 A más complete implementation lives en `pkg/resilience/` (Gradle module) con half-open state, health percentage, y event listeners para observability.
 
@@ -64,7 +64,7 @@ A más complete implementation lives en `pkg/resilience/` (Gradle module) con ha
 - Not suitable para multi-JVM deployment (no shared state) — pero este es acceptable para un single-JVM PoC.
 
 ### Mitigaciones
-- La half-open limitation es documented en `poc/java-risk-engine/README.md` bajo "Known Limitations."
+- La half-open limitation es documented en `poc/no-vertx-clean-engine/README.md` bajo "Known Limitations."
 - `pkg/resilience/` provides la full state machine para production-oriented modules.
 - Circuit state can be inferred desde structured logs: `"circuit opened"` y `"circuit closed"` log entries son emitted en state change.
 

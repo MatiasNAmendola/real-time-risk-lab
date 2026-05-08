@@ -434,8 +434,8 @@ Mas dificil: AppConfig tiene coste y dependencia externa. En prod hay que planif
 | BlockingBarrier | `mode/BlockingBarrier.java` | DONE | MODE-01 |
 | ShadowMode (virtual thread) | `mode/ShadowMode.java` | DONE | MODE-02 |
 | CircuitMode (p99 sliding window) | `mode/CircuitMode.java` | DONE | MODE-03 |
-| Admin endpoints (bare-javac PoC) | `poc/java-risk-engine` — `HttpController.java` | DONE | ATDD 12 |
-| Admin endpoints (Vert.x PoC) | `poc/java-vertx-distributed` — `HttpVerticle.java` | DONE | ATDD 12 |
+| Admin endpoints (bare-javac PoC) | `poc/no-vertx-clean-engine` — `HttpController.java` | DONE | ATDD 12 |
+| Admin endpoints (Vert.x PoC) | `poc/vertx-layer-as-pod-eventbus` — `HttpVerticle.java` | DONE | ATDD 12 |
 | JMH Benchmark (1 vs 100 rules, hot reload) | `bench/inprocess-bench` — `RuleEngineBenchmark.java` | DONE | — |
 | v1 rules.yaml example | `examples/rules-config/v1/rules.yaml` | DONE | — |
 | v2 rules.yaml example | `examples/rules-config/v2/rules.yaml` | DONE | — |

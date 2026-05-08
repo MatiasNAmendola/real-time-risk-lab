@@ -1,11 +1,11 @@
 ---
-title: java-vertx-distributed PoC
+title: vertx-layer-as-pod-eventbus PoC
 tags: [poc, java, vertx, distributed]
 created: 2026-05-07
-source: poc/java-vertx-distributed/ (también poc/vertx-risk-platform/)
+source: poc/vertx-layer-as-pod-eventbus/ (también poc/vertx-layer-as-pod-http/)
 ---
 
-# java-vertx-distributed
+# vertx-layer-as-pod-eventbus
 
 Plataforma de riesgo distribuida con [[Layer-as-Pod]] usando Vert.x 5 + Hazelcast. Cada capa arquitectural (controller / usecase / repository) corre como contenedor JVM físicamente separado conectado vía event bus clustered de Vert.x.
 
@@ -32,7 +32,7 @@ Plataforma de riesgo distribuida con [[Layer-as-Pod]] usando Vert.x 5 + Hazelcas
 ## Módulos
 
 ```
-poc/java-vertx-distributed/
+poc/vertx-layer-as-pod-eventbus/
   shared/           DTOs, codecs de eventos, utils de correlation
   controller-app/   ingreso HTTP: REST + SSE + WS + dispatch de Webhook
   usecase-app/      verticle de lógica de negocio: evaluación de riesgo
@@ -43,7 +43,7 @@ poc/java-vertx-distributed/
 ## Cómo correrlo
 
 ```bash
-cd poc/java-vertx-distributed
+cd poc/vertx-layer-as-pod-eventbus
 docker-compose up --build
 # controller: localhost:8080
 # swagger ui: localhost:8080/swagger-ui

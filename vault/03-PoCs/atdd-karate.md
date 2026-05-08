@@ -2,7 +2,7 @@
 title: atdd-karate PoC
 tags: [poc, testing, atdd, karate]
 created: 2026-05-07
-source: poc/java-vertx-distributed/atdd-tests/
+source: poc/vertx-layer-as-pod-eventbus/atdd-tests/
 ---
 
 # atdd-karate
@@ -28,7 +28,7 @@ Suite de tests [[ATDD]] para la plataforma Vert.x distribuida usando Karate DSL.
 ## Cómo correrlo
 
 ```bash
-cd poc/java-vertx-distributed/atdd-tests
+cd poc/vertx-layer-as-pod-eventbus/atdd-tests
 ./gradlew test jacocoTestReport
 # reporte de cobertura: build/reports/jacoco/test-aggregate/index.html
 ```

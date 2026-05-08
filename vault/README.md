@@ -1,10 +1,10 @@
 ---
-title: Risk Decision Platform — Obsidian Vault
+title: Real-Time Risk Lab — Obsidian Vault
 tags: [meta, obsidian, pkm]
 created: 2026-05-07
 ---
 
-# Risk Decision Platform Vault
+# Real-Time Risk Lab Vault
 
 This vault contains all material related to the risk decision platform exploration: architecture decisions, PoC documentation, methodology, concept notes, and build logs. The use case is a production-grade fraud detection system; the implementation is a learning and exploration artifact.
 

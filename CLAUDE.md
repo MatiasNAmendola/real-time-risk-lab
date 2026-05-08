@@ -66,7 +66,7 @@ Una vez instalados los sub-agents, se pueden invocar como:
 Este proyecto tiene Engram MCP configurado. Al iniciar sesion:
 
 1. `mem_current_project()` — detectar proyecto
-2. `mem_context(project: "risk-decision-platform")` — cargar contexto
+2. `mem_context(project: "real-time-risk-lab")` — cargar contexto
 3. `mem_search(query: "risk-platform current state")` — estado actual
 
 Al finalizar: `mem_session_summary(...)` es OBLIGATORIO.

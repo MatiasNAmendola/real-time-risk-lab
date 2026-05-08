@@ -15,13 +15,13 @@ Aceptado el 2026-05-07.
 
 ## Contexto
 
-ATDD coverage spans two Java PoCs with different integration surfaces. The Vert.x distributed PoC (`poc/java-vertx-distributed/`) exposes HTTP, WebSocket, SSE, Webhook, and Kafka — a multi-protocol surface that requires step library support beyond pure HTTP assertions. The bare-javac PoC (`tests/risk-engine-atdd/`) exposes HTTP and event-driven behavior (outbox, idempotency) — a narrower surface where standard HTTP assertions and custom step definitions suffice.
+ATDD coverage spans two Java PoCs with different integration surfaces. The Vert.x distributed PoC (`poc/vertx-layer-as-pod-eventbus/`) exposes HTTP, WebSocket, SSE, Webhook, and Kafka — a multi-protocol surface that requires step library support beyond pure HTTP assertions. The bare-javac PoC (`tests/risk-engine-atdd/`) exposes HTTP and event-driven behavior (outbox, idempotency) — a narrower surface where standard HTTP assertions and custom step definitions suffice.
 
-For staff/architect-level design conversations, demonstrating familiarity with only one ATDD framework is weaker than demonstrating range. Karate and Cucumber-JVM represent the two dominant Java ATDD frameworks with different trade-offs.
+For technical-leadership-level design conversations, demonstrating familiarity with only one ATDD framework is weaker than demonstrating range. Karate and Cucumber-JVM represent the two dominant Java ATDD frameworks with different trade-offs.
 
 ## Decisión
 
-Use Karate DSL (`poc/java-vertx-distributed/atdd-tests/`) for the Vert.x platform and Cucumber-JVM (`tests/risk-engine-atdd/`) for the bare-javac engine. Karate provides built-in step library for HTTP, WebSocket, SSE, and Kafka — no custom step definitions for protocol-level assertions. Cucumber-JVM requires custom step definitions but shows the BDD authoring pattern (defining steps for domain vocabulary).
+Use Karate DSL (`poc/vertx-layer-as-pod-eventbus/atdd-tests/`) for the Vert.x platform and Cucumber-JVM (`tests/risk-engine-atdd/`) for the bare-javac engine. Karate provides built-in step library for HTTP, WebSocket, SSE, and Kafka — no custom step definitions for protocol-level assertions. Cucumber-JVM requires custom step definitions but shows the BDD authoring pattern (defining steps for domain vocabulary).
 
 ## Alternativas consideradas
 
@@ -33,7 +33,7 @@ Use Karate DSL (`poc/java-vertx-distributed/atdd-tests/`) for the Vert.x platfor
 ### Opción B: Karate only for both PoCs
 - **Ventajas**: Single framework; Karate's built-in HTTP client works for the bare-javac HTTP surface; lower maintenance; one test style to learn.
 - **Desventajas**: Does not demonstrate Cucumber-JVM familiarity; Karate's step syntax is less readable to product managers than Cucumber-JVM's natural language steps; the bare-javac ATDD value is partly in showing domain vocabulary in Gherkin — Karate's JS-heavy syntax is less idiomatic for domain stakeholders.
-- **Por qué no**: A staff engineer should be conversant with Cucumber-JVM (the older, more widely known standard) and Karate (the newer, more capable framework). Showing only Karate omits Cucumber-JVM from the portfolio.
+- **Por qué no**: A technical leadership engineer should be conversant with Cucumber-JVM (the older, more widely known standard) and Karate (the newer, more capable framework). Showing only Karate omits Cucumber-JVM from the portfolio.
 
 ### Opción C: Cucumber-JVM only for both PoCs
 - **Ventajas**: Maximum familiarity; Cucumber-JVM is more widely known in enterprise Java shops; explicit step definitions are readable by non-developers.
@@ -57,12 +57,12 @@ Use Karate DSL (`poc/java-vertx-distributed/atdd-tests/`) for the Vert.x platfor
 - Karate's JS step syntax is less natural for product managers than Cucumber-JVM's.
 
 ### Mitigaciones
-- Shared Gherkin vocabulary documented in `poc/java-vertx-distributed/atdd-tests/README.md`.
+- Shared Gherkin vocabulary documented in `poc/vertx-layer-as-pod-eventbus/atdd-tests/README.md`.
 - Both suites test the same domain scenarios (APPROVE, REVIEW, DECLINE) — consistency is enforceable via review.
 
 ## Validación
 
-- `cd poc/java-vertx-distributed && ./gradlew -pl atdd-tests verify` passes all 10 Karate feature files.
+- `cd poc/vertx-layer-as-pod-eventbus && ./gradlew -pl atdd-tests verify` passes all 10 Karate feature files.
 - `cd tests/risk-engine-atdd && ./gradlew test jacocoTestReport` passes all Cucumber-JVM scenarios.
 - Karate coverage report shows cross-module coverage from ATDD scenarios.
 

@@ -19,7 +19,7 @@ Pipelines de scoring batch donde el modelo se pre-computa offline.
 
 ## En este proyecto
 
-`RiskScoringService` en [[java-risk-engine]] llama al modelo ML vía port; [[Circuit-Breaker]] envuelve la llamada. En estado Open, `FallbackRuleEngine` aplica reglas de velocidad y monto de forma determinística. Ver feature 4 de [[atdd-cucumber]].
+`RiskScoringService` en [[no-vertx-clean-engine]] llama al modelo ML vía port; [[Circuit-Breaker]] envuelve la llamada. En estado Open, `FallbackRuleEngine` aplica reglas de velocidad y monto de forma determinística. Ver feature 4 de [[atdd-cucumber]].
 
 ## Principio de diseño
 
@@ -27,4 +27,4 @@ Pipelines de scoring batch donde el modelo se pre-computa offline.
 
 ## Backlinks
 
-[[Circuit-Breaker]] · [[Latency-Budget]] · [[java-risk-engine]]
+[[Circuit-Breaker]] · [[Latency-Budget]] · [[no-vertx-clean-engine]]

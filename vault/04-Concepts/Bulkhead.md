@@ -18,7 +18,7 @@ Servicios single-tenant, single-workload donde el particionamiento agrega comple
 
 ## En este proyecto
 
-Un patrón común en servicios Go enterprise es implementar un bulkhead custom (basado en semáforos) sin librería. El PoC Vert.x usa event loop pools separados por verticle como bulkhead natural. Ver [[java-vertx-distributed]].
+Un patrón común en servicios Go enterprise es implementar un bulkhead custom (basado en semáforos) sin librería. El PoC Vert.x usa event loop pools separados por verticle como bulkhead natural. Ver [[vertx-layer-as-pod-eventbus]].
 
 ## Principio de diseño
 

@@ -4,7 +4,7 @@
 
 Objetivo: practicar camino crítico, timeouts, fallback y traza.
 
-Incluido en `poc/java-risk-engine`.
+Incluido en `poc/no-vertx-clean-engine`.
 
 Conceptos:
 
@@ -28,7 +28,7 @@ Design note:
 
 ## PoC 4 — Benchmark simple
 
-Implementado. `BenchmarkRunner` con virtual threads (disponibles desde Java 21), warmup, histograma p50/p95/p99/p999. Correr con `poc/java-risk-engine/scripts/benchmark.sh`.
+Implementado. `BenchmarkRunner` con virtual threads (disponibles desde Java 21), warmup, histograma p50/p95/p99/p999. Correr con `poc/no-vertx-clean-engine/scripts/benchmark.sh`.
 
 Resultado de referencia (N=5000, 32 virtual threads):
 

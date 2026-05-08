@@ -18,7 +18,7 @@ Tareas CPU-bound — los virtual threads no ayudan ahí; usar platform threads c
 
 ## En este proyecto
 
-El servidor HTTP de [[java-risk-engine]] usa `Executors.newVirtualThreadPerTaskExecutor()`. Cada request recibe un virtual thread — sin ceremonia reactiva. Ver [[0001-java-25-lts]].
+El servidor HTTP de [[no-vertx-clean-engine]] usa `Executors.newVirtualThreadPerTaskExecutor()`. Cada request recibe un virtual thread — sin ceremonia reactiva. Ver [[0001-java-25-lts]].
 
 ## Principio de diseño
 
@@ -26,4 +26,4 @@ El servidor HTTP de [[java-risk-engine]] usa `Executors.newVirtualThreadPerTaskE
 
 ## Backlinks
 
-[[0001-java-25-lts]] · [[java-risk-engine]] · [[Latency-Budget]]
+[[0001-java-25-lts]] · [[no-vertx-clean-engine]] · [[Latency-Budget]]

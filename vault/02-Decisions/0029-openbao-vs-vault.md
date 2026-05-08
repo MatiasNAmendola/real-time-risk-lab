@@ -53,7 +53,7 @@ Use `openbao/openbao:latest` (MPL-2.0) instead de `hashicorp/vault` (BSL-1.1) en
 - OpenBao wire-compatibility means any documentation showing Vault commands works contra OpenBao.
 - MPL-2.0 license eliminates BSL ambiguity para la exploration repository y any derivative tooling.
 - OpenBao es available en Docker Hub (`openbao/openbao`) — same pull pattern como Vault.
-- Demonstrates license awareness un reviewers — un staff engineer es expected un know why license changes matter.
+- Demonstrates license awareness un reviewers — un technical leadership engineer es expected un know why license changes matter.
 
 ### Negativo
 - OpenBao documentation es menos complete than Vault's; algunos edge cases require consulting Vault documentation y verifying OpenBao compatibility.

@@ -20,27 +20,27 @@ The shared helper lives at `scripts/lib/output.sh` (`init_output <name>` + `fina
 | `scripts/atdd-bare.sh` | `out/atdd-cucumber/<ts>/` (via `tests/risk-engine-atdd/scripts/report.sh`) | yes | yes | yes | OK (unchanged) |
 | `scripts/atdd-bare-coverage.sh` | `out/atdd-cucumber/<ts>/` (delegates to report.sh) | yes | yes | yes | OK (unchanged) |
 | `scripts/integration-tests.sh` | `out/integration-tests/<ts>/` | yes | yes | yes | FIXED |
-| `poc/java-vertx-distributed/scripts/atdd.sh` | `out/atdd-karate/<ts>/` (via atdd-report.sh) | yes | yes | yes | OK (unchanged) |
-| `poc/java-vertx-distributed/scripts/atdd-coverage.sh` | delegates to atdd.sh + jacoco | yes | yes | yes | OK (unchanged) |
-| `poc/java-vertx-distributed/scripts/atdd-report.sh` | `out/atdd-karate/<ts>/` | yes | yes | yes | OK (unchanged) |
-| `poc/java-vertx-distributed/scripts/build.sh` | `out/vertx-build/<ts>/` | yes | yes | yes | FIXED |
-| `poc/java-vertx-distributed/scripts/up.sh` | `out/vertx-up/<ts>/` | yes | yes | yes | FIXED |
-| `poc/java-vertx-distributed/scripts/down.sh` | `out/vertx-down/<ts>/` | yes | yes | yes | FIXED |
-| `poc/java-vertx-distributed/scripts/demo.sh` | `out/vertx-demo/<ts>/` | yes | yes | yes | FIXED |
-| `poc/java-vertx-distributed/scripts/fetch-jacoco-agent.sh` | no output dir (idempotent downloader, no run state) | n/a | n/a | n/a | OK (TODO: add if needed) |
-| `poc/java-risk-engine/scripts/run.sh` | `out/risk-engine-run/<ts>/` | yes | yes | yes | FIXED |
-| `poc/java-risk-engine/scripts/test.sh` | `out/risk-engine-test/<ts>/` | yes | yes | yes | FIXED |
-| `poc/java-risk-engine/scripts/benchmark.sh` | `out/risk-engine-benchmark/<ts>/` | yes | yes | yes | FIXED |
-| `poc/java-risk-engine/scripts/run-http.sh` | `out/risk-engine-http/<ts>/` | yes | yes | yes | FIXED |
+| `poc/vertx-layer-as-pod-eventbus/scripts/atdd.sh` | `out/atdd-karate/<ts>/` (via atdd-report.sh) | yes | yes | yes | OK (unchanged) |
+| `poc/vertx-layer-as-pod-eventbus/scripts/atdd-coverage.sh` | delegates to atdd.sh + jacoco | yes | yes | yes | OK (unchanged) |
+| `poc/vertx-layer-as-pod-eventbus/scripts/atdd-report.sh` | `out/atdd-karate/<ts>/` | yes | yes | yes | OK (unchanged) |
+| `poc/vertx-layer-as-pod-eventbus/scripts/build.sh` | `out/vertx-build/<ts>/` | yes | yes | yes | FIXED |
+| `poc/vertx-layer-as-pod-eventbus/scripts/up.sh` | `out/vertx-up/<ts>/` | yes | yes | yes | FIXED |
+| `poc/vertx-layer-as-pod-eventbus/scripts/down.sh` | `out/vertx-down/<ts>/` | yes | yes | yes | FIXED |
+| `poc/vertx-layer-as-pod-eventbus/scripts/demo.sh` | `out/vertx-demo/<ts>/` | yes | yes | yes | FIXED |
+| `poc/vertx-layer-as-pod-eventbus/scripts/fetch-jacoco-agent.sh` | no output dir (idempotent downloader, no run state) | n/a | n/a | n/a | OK (TODO: add if needed) |
+| `poc/no-vertx-clean-engine/scripts/run.sh` | `out/risk-engine-run/<ts>/` | yes | yes | yes | FIXED |
+| `poc/no-vertx-clean-engine/scripts/test.sh` | `out/risk-engine-test/<ts>/` | yes | yes | yes | FIXED |
+| `poc/no-vertx-clean-engine/scripts/benchmark.sh` | `out/risk-engine-benchmark/<ts>/` | yes | yes | yes | FIXED |
+| `poc/no-vertx-clean-engine/scripts/run-http.sh` | `out/risk-engine-http/<ts>/` | yes | yes | yes | FIXED |
 | `poc/k8s-local/scripts/up.sh` | `out/k8s-up/<ts>/` + `cluster-state.txt` | yes | yes | yes | FIXED |
 | `poc/k8s-local/scripts/down.sh` | `out/k8s-down/<ts>/` | yes | yes | yes | FIXED |
 | `poc/k8s-local/scripts/status.sh` | `out/k8s-status/<ts>/` + `cluster-state.txt` | yes | yes | yes | FIXED |
 | `poc/k8s-local/scripts/demo.sh` | `out/k8s-demo/<ts>/` | yes | yes | yes | FIXED |
-| `poc/vertx-risk-platform/scripts/run-local-pods.sh` | stdout only (./gradlew wrapper call) | no | no | no | TODO: add output.sh if this PoC is used actively |
-| `poc/vertx-risk-platform/scripts/run-local-pods.sh` | passthrough to ./gradlew — not a run script | n/a | n/a | n/a | OK (not a standalone run) |
-| `poc/vertx-risk-platform/scripts/run-local-pods.sh` | `out/vertx-platform-run/<ts>/` + per-pod `.log` | yes | yes | yes | FIXED |
-| `poc/vertx-risk-platform/scripts/smoke.sh` | `out/vertx-platform-smoke/<ts>/` | yes | yes | yes | FIXED |
-| `poc/vertx-risk-platform/scripts/stop-local-pods.sh` | `out/vertx-platform-stop/<ts>/` | yes | yes | yes | FIXED |
+| `poc/vertx-layer-as-pod-http/scripts/run-local-pods.sh` | stdout only (./gradlew wrapper call) | no | no | no | TODO: add output.sh if this PoC is used actively |
+| `poc/vertx-layer-as-pod-http/scripts/run-local-pods.sh` | passthrough to ./gradlew — not a run script | n/a | n/a | n/a | OK (not a standalone run) |
+| `poc/vertx-layer-as-pod-http/scripts/run-local-pods.sh` | `out/vertx-platform-run/<ts>/` + per-pod `.log` | yes | yes | yes | FIXED |
+| `poc/vertx-layer-as-pod-http/scripts/smoke.sh` | `out/vertx-platform-smoke/<ts>/` | yes | yes | yes | FIXED |
+| `poc/vertx-layer-as-pod-http/scripts/stop-local-pods.sh` | `out/vertx-platform-stop/<ts>/` | yes | yes | yes | FIXED |
 | `bench/scripts/run-inprocess.sh` | `out/bench-inprocess/<ts>/` + `results.json` + `summary.md` | yes | yes | yes | FIXED (was PARTIAL) |
 | `bench/scripts/run-distributed.sh` | `out/bench-distributed/<ts>/` | yes | yes | yes | FIXED |
 | `bench/scripts/run-comparison.sh` | `out/bench-comparison/<ts>/` | yes | yes | yes | FIXED |
@@ -65,6 +65,6 @@ finalize_output "$exit_code"   # writes meta.json; prints "Output: ..." line
 
 ## TODOs left
 
-- `poc/vertx-risk-platform/scripts/run-local-pods.sh` — passes through to `gradle-local.sh`; if this PoC becomes active add `output.sh` integration.
-- `poc/java-vertx-distributed/scripts/fetch-jacoco-agent.sh` — single-purpose idempotent downloader; a run log would be noise. Add only if there's a CI need to audit agent downloads.
-- Existing scripts that already produced output (`cd cli/risk-smoke && go run .`, `scripts/test-all.sh`, `scripts/atdd-bare.sh`, `poc/java-vertx-distributed/scripts/atdd.sh`, `tests/risk-engine-atdd/scripts/report.sh`) were not refactored to use `output.sh` to avoid regressions — their existing logic is equivalent. Migrate opportunistically.
+- `poc/vertx-layer-as-pod-http/scripts/run-local-pods.sh` — passes through to `gradle-local.sh`; if this PoC becomes active add `output.sh` integration.
+- `poc/vertx-layer-as-pod-eventbus/scripts/fetch-jacoco-agent.sh` — single-purpose idempotent downloader; a run log would be noise. Add only if there's a CI need to audit agent downloads.
+- Existing scripts that already produced output (`cd cli/risk-smoke && go run .`, `scripts/test-all.sh`, `scripts/atdd-bare.sh`, `poc/vertx-layer-as-pod-eventbus/scripts/atdd.sh`, `tests/risk-engine-atdd/scripts/report.sh`) were not refactored to use `output.sh` to avoid regressions — their existing logic is equivalent. Migrate opportunistically.

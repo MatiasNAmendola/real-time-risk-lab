@@ -21,7 +21,7 @@ La pregunta es qué convención de layout de packages adoptar para el PoC Java. 
 
 ## Decisión
 
-Refactorizar `poc/java-risk-engine/` para espejar el layout canónico enterprise de Go: `domain/{entity,repository,usecase,service,rule}`, `application/usecase/risk/`, `application/mapper/`, `cmd/`, `config/`, `infrastructure/{controller,consumer,repository,resilience,time}`. El package `domain/repository` contiene interfaces (ports out); `infrastructure/repository` contiene implementaciones (adapters).
+Refactorizar `poc/no-vertx-clean-engine/` para espejar el layout canónico enterprise de Go: `domain/{entity,repository,usecase,service,rule}`, `application/usecase/risk/`, `application/mapper/`, `cmd/`, `config/`, `infrastructure/{controller,consumer,repository,resilience,time}`. El package `domain/repository` contiene interfaces (ports out); `infrastructure/repository` contiene implementaciones (adapters).
 
 ## Alternativas consideradas
 
@@ -49,7 +49,7 @@ Refactorizar `poc/java-risk-engine/` para espejar el layout canónico enterprise
 
 ### Positivo
 - La regla ArchUnit `noClasses().that().resideInAPackage("..domain..")` enforce-a la regla de dependencias mecánicamente.
-- Los ingenieros Go leyendo `poc/java-risk-engine/` reconocen el layout inmediatamente.
+- Los ingenieros Go leyendo `poc/no-vertx-clean-engine/` reconocen el layout inmediatamente.
 - Las interfaces de `domain/repository/` son los puntos de inversión de dependencias — claramente visibles, no enterradas en `service/`.
 - El package `cmd/` establece la convención del entry point (análogo a `cmd/main.go`).
 
@@ -59,14 +59,14 @@ Refactorizar `poc/java-risk-engine/` para espejar el layout canónico enterprise
 - El layout requiere disciplina: el primer reflejo Spring Boot es poner cosas en `service/`.
 
 ### Mitigaciones
-- El `poc/java-risk-engine/README.md` explica el layout y la analogía con Go.
+- El `poc/no-vertx-clean-engine/README.md` explica el layout y la analogía con Go.
 - Doc 04 documenta el mapping del layout Go al layout Java en detalle.
 - Tests ArchUnit imponen el layout mecánicamente.
 
 ## Validación
 
 - El test ArchUnit `BareJavacArchitectureTest` pasa con la regla de domain-no-importa-infrastructure.
-- La estructura de packages es visible en el output de `find poc/java-risk-engine/src -type d`.
+- La estructura de packages es visible en el output de `find poc/no-vertx-clean-engine/src -type d`.
 - Doc 04 (`docs/04-clean-architecture-java.md`) documenta el mapping del layout Go-a-Java.
 
 ## Relacionado

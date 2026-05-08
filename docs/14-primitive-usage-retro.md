@@ -62,24 +62,24 @@ scope: post-mortem
 
 Fuente: artefactos en `poc/`, `tests/`, `docs/`, `cli/`, `bench/`, `.ai/`.
 
-1. Analyze production-grade fraud detection use case requirements (Transactional Risk, 150 TPS, p99 < 300ms)
+1. Analyze production-inspired fraud detection use case requirements (Transactional Risk, 150 TPS, p99 < 300ms)
 2. Producir docs 00-04 (mapa tecnico, design framework, discovery questions, roadmap, clean arch)
-3. Construir PoC bare-javac `poc/java-risk-engine/` con Clean Architecture sin framework
-4. Agregar HTTP controller adapter a `java-risk-engine`
-5. Agregar Circuit Breaker manual a `java-risk-engine`
-6. Agregar Idempotency guard a `java-risk-engine`
-7. Agregar Outbox Pattern stub a `java-risk-engine`
-8. Refactorizar `java-risk-engine` al layout enterprise Go
+3. Construir PoC bare-javac `poc/no-vertx-clean-engine/` con Clean Architecture sin framework
+4. Agregar HTTP controller adapter a `no-vertx-clean-engine`
+5. Agregar Circuit Breaker manual a `no-vertx-clean-engine`
+6. Agregar Idempotency guard a `no-vertx-clean-engine`
+7. Agregar Outbox Pattern stub a `no-vertx-clean-engine`
+8. Refactorizar `no-vertx-clean-engine` al layout enterprise Go
 9. Producir docs 05-09 (latency budget, eventos versionados, lambda vs EKS, ML online, architecture question bank)
 10. Investigacion profunda de patrones enterprise Go
-11. Construir PoC Vert.x distribuida `poc/java-vertx-distributed/` (4 modulos Gradle, Hazelcast, 4 redes Docker)
+11. Construir PoC Vert.x distribuida `poc/vertx-layer-as-pod-eventbus/` (4 modulos Gradle, Hazelcast, 4 redes Docker)
 12. Sumar todos los patrones de comunicacion a Vert.x: REST, SSE, WebSocket, Webhooks, Kafka publisher
 13. Sumar OTEL completo a Vert.x (MDC correlationId, custom spans, Micrometer metrics, OpenObserve)
 14. Construir `poc/k8s-local/` con k3d + ArgoCD + Argo Rollouts + kube-prom-stack + Redpanda + OpenObserve
 15. Agregar OrbStack/k3d autodetect switch a `k8s-local`
 16. Agregar AWS mocks addon a `k8s-local` (Moto, MinIO, ElasticMQ, OpenBao)
 17. Construir Go TUI smoke runner `cli/risk-smoke/` con Bubble Tea (9 E2E checks)
-18. Construir ATDD Karate `poc/java-vertx-distributed/atdd-tests/` (10 features Gherkin, JaCoCo cross-module)
+18. Construir ATDD Karate `poc/vertx-layer-as-pod-eventbus/atdd-tests/` (10 features Gherkin, JaCoCo cross-module)
 19. Construir ATDD Cucumber-JVM `tests/risk-engine-atdd/` (7 features Gherkin)
 20. Producir doc 10 AWS mocks locales
 21. Producir doc 11 ATDD

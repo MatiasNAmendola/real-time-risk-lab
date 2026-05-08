@@ -1,4 +1,4 @@
-# Demo Script — Risk Decision Platform
+# Demo Script — Real-Time Risk Lab
 
 Objetivo: mostrar criterio arquitectónico sin depender de una demo frágil.
 
@@ -61,8 +61,8 @@ Qué mostrar:
 ## 4. Demo local pods/permisos
 
 ```bash
-poc/vertx-risk-platform/scripts/run-local-pods.sh
-poc/vertx-risk-platform/scripts/smoke.sh
+poc/vertx-layer-as-pod-http/scripts/run-local-pods.sh
+poc/vertx-layer-as-pod-http/scripts/smoke.sh
 ```
 
 Qué valida:
@@ -75,7 +75,7 @@ Qué valida:
 Cierre:
 
 ```bash
-poc/vertx-risk-platform/scripts/stop-local-pods.sh
+poc/vertx-layer-as-pod-http/scripts/stop-local-pods.sh
 ```
 
 ## 5. Benchmark principal
@@ -98,4 +98,4 @@ Qué mostrar:
 ./nx down vertx
 ```
 
-Usarlo solo si hay tiempo o si se quiere discutir migración runtime, healthchecks, EventBus/Hazelcast, OTEL e infra local. No es el demo principal: el demo principal es `risk-engine` + `vertx-risk-platform` local pods + smoke + benchmark.
+Usarlo solo si hay tiempo o si se quiere discutir migración runtime, healthchecks, EventBus/Hazelcast, OTEL e infra local. No es el demo principal: el demo principal es `risk-engine` + `vertx-layer-as-pod-http` local pods + smoke + benchmark.

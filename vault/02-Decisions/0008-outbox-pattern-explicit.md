@@ -23,7 +23,7 @@ La pregunta es: ¿la PoC debe replicar el enfoque de publicación directa para r
 
 ## Decisión
 
-Se agrega el Outbox Pattern en `poc/java-risk-engine/` como `InMemoryOutboxRepository` + `OutboxRelay`. El relay corre en un executor dedicado de virtual threads que poolea el outbox store, publica los eventos pendientes y los marca como publicados. Este es el enfoque arquitectónicamente correcto para un motor de riesgo transaccional.
+Se agrega el Outbox Pattern en `poc/no-vertx-clean-engine/` como `InMemoryOutboxRepository` + `OutboxRelay`. El relay corre en un executor dedicado de virtual threads que poolea el outbox store, publica los eventos pendientes y los marca como publicados. Este es el enfoque arquitectónicamente correcto para un motor de riesgo transaccional.
 
 La PoC de Vert.x publica directo a Kafka (sin outbox), de manera intencional, para evidenciar el contraste entre ambas PoCs.
 
@@ -63,7 +63,7 @@ La PoC de Vert.x publica directo a Kafka (sin outbox), de manera intencional, pa
 - Suma un thread de fondo `OutboxRelay` al lifecycle gestionado por `RiskApplicationFactory`.
 
 ### Mitigaciones
-- La limitación in-memory está documentada en `poc/java-risk-engine/README.md`.
+- La limitación in-memory está documentada en `poc/no-vertx-clean-engine/README.md`.
 - La interfaz `OutboxRepository` permite reemplazo drop-in: `PostgresOutboxRepository` usaría `INSERT INTO outbox ... ON CONFLICT DO NOTHING` + `UPDATE outbox SET status = 'published' WHERE id = ?`.
 
 ## Validación

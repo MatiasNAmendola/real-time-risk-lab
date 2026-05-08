@@ -15,7 +15,7 @@ Aceptado el 2026-05-07.
 
 ## Contexto
 
-The Vert.x distributed PoC (`poc/java-vertx-distributed/`) requires un Kafka-compatible message broker para la event-driven communication entre la usecase layer y la consumer layer. Kafka 3.9 es la current production standard. Redpanda v24 es un Kafka-protocol compatible broker written en C++ con no JVM dependency.
+The Vert.x distributed PoC (`poc/vertx-layer-as-pod-eventbus/`) requires un Kafka-compatible message broker para la event-driven communication entre la usecase layer y la consumer layer. Kafka 3.9 es la current production standard. Redpanda v24 es un Kafka-protocol compatible broker written en C++ con no JVM dependency.
 
 In la target productivo, la broker es Kafka (MSK o self-managed). For desarrollo local, la choice es entre running un actual Kafka 3.9 cluster (requires ZooKeeper o KRaft mode, ~500MB container, JVM overhead) o running Redpanda (single binary, Kafka-protocol compatible, ~80MB container, faster startup).
 
@@ -23,7 +23,7 @@ The Kafka client en la Vert.x PoC uses standard Kafka protocol — it es unaware
 
 ## Decisión
 
-Use `redpandadata/redpanda:v24.2.4` para la local broker en `poc/java-vertx-distributed/compose.override.yml`. La Kafka client configuration en `consumer-app` y `usecase-app` targets la Redpanda broker address (`redpanda:9092`) using standard Kafka producer/consumer API. Redpanda Console (`redpandadata/console:v2.7.2`) provides la topic browser UI.
+Use `redpandadata/redpanda:v24.2.4` para la local broker en `poc/vertx-layer-as-pod-eventbus/compose.override.yml`. La Kafka client configuration en `consumer-app` y `usecase-app` targets la Redpanda broker address (`redpanda:9092`) using standard Kafka producer/consumer API. Redpanda Console (`redpandadata/console:v2.7.2`) provides la topic browser UI.
 
 The decision es explicitly scoped un desarrollo local. Production uses Kafka; este decision does no suggest replacing Kafka con Redpanda en production.
 
@@ -62,7 +62,7 @@ The decision es explicitly scoped un desarrollo local. Production uses Kafka; es
 - Redpanda does no support Kafka Streams — no un concern para este PoC, pero un migration concern if Kafka Streams es adopted.
 
 ### Mitigaciones
-- La ATDD suite (`poc/java-vertx-distributed/atdd-tests/`) tests protocol-level behavior (produce, consume, header propagation) que es identical entre Redpanda y Kafka.
+- La ATDD suite (`poc/vertx-layer-as-pod-eventbus/atdd-tests/`) tests protocol-level behavior (produce, consume, header propagation) que es identical entre Redpanda y Kafka.
 - Production Kafka (MSK) es la authoritative target; Redpanda es explicitly local-only.
 
 ## Validación

@@ -15,9 +15,9 @@ Aceptado el 2026-05-07.
 
 ## Contexto
 
-The `cli/risk-smoke/` smoke runner verifies 9 communication channels: health, OpenAPI spec, AsyncAPI spec, REST risk evaluation, SSE stream, WebSocket bidirectional, webhook registration/fanout, Kafka produce/consume, y OTEL trace propagation. All 9 channels exist en la Vert.x distributed PoC (`poc/java-vertx-distributed/`).
+The `cli/risk-smoke/` smoke runner verifies 9 communication channels: health, OpenAPI spec, AsyncAPI spec, REST risk evaluation, SSE stream, WebSocket bidirectional, webhook registration/fanout, Kafka produce/consume, y OTEL trace propagation. All 9 channels exist en la Vert.x distributed PoC (`poc/vertx-layer-as-pod-eventbus/`).
 
-The bare-javac PoC (`poc/java-risk-engine/`) exposes only 3 channels: health, REST risk evaluation (added en un later phase when `HttpController` fue added), y — eventually — any channels added deliberately. It does no have SSE, WebSocket, webhook, o Kafka wire.
+The bare-javac PoC (`poc/no-vertx-clean-engine/`) exposes only 3 channels: health, REST risk evaluation (added en un later phase when `HttpController` fue added), y — eventually — any channels added deliberately. It does no have SSE, WebSocket, webhook, o Kafka wire.
 
 Initially, la `BenchmarkRunner` en la bare-javac PoC fue la primary throughput test tool — it invoked la use case directly via Java method calls, no HTTP. HTTP fue added un la bare-javac PoC como un secondary capability un enable smoke testing desde `cli/risk-smoke/`.
 

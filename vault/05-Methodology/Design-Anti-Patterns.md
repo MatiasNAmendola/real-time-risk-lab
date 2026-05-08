@@ -33,7 +33,7 @@ Qué NO hacer. Cada ítem tiene un reemplazo "en su lugar".
 
 ## Anti-patterns de mentoring
 
-- No presentarte como el héroe solitario que reescribió todo. El trabajo a nivel staff requiere historias en "nosotros".
+- No presentarte como el héroe solitario que reescribió todo. El trabajo a nivel technical leadership requiere historias en "nosotros".
 - No saltearse la parte de "qué aprendió el equipo". Los reviewers senior se fijan en el multiplicador de impacto, no en el output individual.
 
 ## Backlinks

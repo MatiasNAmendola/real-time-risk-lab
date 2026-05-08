@@ -30,17 +30,17 @@ Usar **Java 21 LTS como compiler target operativo** (`--release 21`) para todos 
 ### Opción A: Java 21 LTS baseline operativo + Java 25 LTS objetivo (elegida)
 - **Ventajas**: LTS actual — defendible como target productivo en cualquier conversación 2026; Virtual Threads, Structured Concurrency y Scoped Values todos finalizados; Gradle 8.11.1 y Vert.x 5 lo soportan; disponible en Apple M1 vía Homebrew; demuestra currency sin perseguir un feature release.
 - **Desventajas**: No todos los equipos productivos migraron de 17 o 21; la JVM del benchmark resolvió a Temurin 21 en runtime (discrepancia entre compile target y runtime — documentada en doc 12); algunas imágenes Docker de CI son anteriores a Java 25.
-- **Por qué se eligió**: La señal de diseño es conocimiento actualizado. "Targeteo Java 25 en greenfield; la migración desde 17 se hace en stages vía `--enable-preview`" es la respuesta correcta para un staff engineer en 2026.
+- **Por qué se eligió**: La señal de diseño es conocimiento actualizado. "Targeteo Java 25 en greenfield; la migración desde 17 se hace en stages vía `--enable-preview`" es la respuesta correcta para un technical leadership engineer en 2026.
 
 ### Opción B: Java 21 LTS (LTS anterior)
 - **Ventajas**: El LTS más desplegado en 2024-2025; máxima compatibilidad con Spring Boot 3.x; Virtual Threads estables; máximo soporte de tooling del ecosistema.
 - **Desventajas**: Falta Structured Concurrency (finalizada en 25) y Scoped Values (finalizado en 25); señala "elección segura" en lugar de "conocimiento actualizado"; sin diferenciación respecto del Java developer promedio.
-- **Por qué no**: Para conversaciones de diseño a nivel staff en 2026, elegir el LTS anterior señala aversión al riesgo por sobre currency. Las features de Java 25 son los talking points.
+- **Por qué no**: Para conversaciones de diseño a nivel technical leadership en 2026, elegir el LTS anterior señala aversión al riesgo por sobre currency. Las features de Java 25 son los talking points.
 
 ### Opción C: Java 26 (feature release actual)
 - **Ventajas**: Features más nuevas; máxima expresividad de lenguaje.
 - **Desventajas**: No es LTS — los equipos productivos no adoptan feature releases para servicios; discutir Java 26 como target productivo es indefendible; compatibilidad del BOM de Vert.x 5 sin probar.
-- **Por qué no**: Un staff engineer distingue entre "feature release más reciente" y "LTS actual". Java 26 es apropiado para experimentación, no para un argumento de target productivo.
+- **Por qué no**: Un technical leadership engineer distingue entre "feature release más reciente" y "LTS actual". Java 26 es apropiado para experimentación, no para un argumento de target productivo.
 
 ### Opción D: Java 17 LTS (estándar enterprise 2022-2024)
 - **Ventajas**: El más usado en enterprise 2022-2025; máxima compatibilidad de ecosistema; soporte maduro de Spring Boot 3.x.

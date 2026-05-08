@@ -10,7 +10,7 @@ tags: [decision/accepted, architecture, java, packaging]
 
 ## Context
 
-El repo se está reformulando narrativamente como **"Risk Decision Platform — Three-Architecture Exploration"**: una exploración técnica genérica sobre patrones de fraude en tiempo real, desacoplada del sponsor original. La narrativa pública (READMEs, docs, agent configs, vault) se está neutralizando.
+El repo se está reformulando narrativamente como **"Real-Time Risk Lab — Architecture Exploration"**: una exploración técnica genérica sobre patrones de fraude en tiempo real, desacoplada del sponsor original. La narrativa pública (READMEs, docs, agent configs, vault) se está neutralizando.
 
 Sin embargo, los identificadores técnicos del código siguen usando el namespace heredado:
 
@@ -20,7 +20,7 @@ Sin embargo, los identificadores técnicos del código siguen usando el namespac
 - Secrets Manager keys / config paths: `riskplatform/db-password`, `riskplatform/kafka-creds`.
 - Filesystem paths: `src/main/java/io/riskplatform/poc/...`.
 
-Recuento aproximado: ~120 ocurrencias distribuidas en 4 PoCs (`java-risk-engine`, `java-vertx-distributed`, `vertx-risk-platform`, `k8s-local`) + 3 SDKs publicables (`risk-client-java`, `risk-client-go`, `risk-client-typescript`) + tests Karate/Cucumber + manifests Helm/k8s.
+Recuento aproximado: ~120 ocurrencias distribuidas en the PoC portfolio (`no-vertx-clean-engine`, Vert.x variants, service-mesh demo, `k8s-local`) + 3 SDKs publicables (`risk-client-java`, `risk-client-go`, `risk-client-typescript`) + tests Karate/Cucumber + manifests Helm/k8s.
 
 Renombrar requiere refactor masivo, version-bump de SDKs publicados, re-cableado de imports, regeneración de schemas, y actualización de smoke tests / ATDD steps.
 

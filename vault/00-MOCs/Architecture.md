@@ -92,8 +92,8 @@ Ver [[_index]] para la tabla completa de ADRs ordenada por número.
 
 ## Implementaciones de PoC
 
-- [[java-risk-engine]] — Clean Architecture, bare-javac, virtual threads
-- [[java-vertx-distributed]] — Layer-as-Pod con Vert.x 5 + Hazelcast
+- [[no-vertx-clean-engine]] — Clean Architecture, bare-javac, virtual threads
+- [[vertx-layer-as-pod-eventbus]] — Layer-as-Pod con Vert.x 5 + Hazelcast
 - [[k8s-local]] — infraestructura de canary + rollout
 
 ## Backlinks

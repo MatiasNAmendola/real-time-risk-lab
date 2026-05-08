@@ -182,7 +182,7 @@ healthcheck:
 
 ## 9. Cucumber-JVM no entiende escenarios escritos en sintaxis Karate
 
-**Síntoma**: `./gradlew :poc:java-vertx-distributed:atdd-tests:test -Patdd` falla con `UndefinedStepException` en 10 escenarios. Los step definitions parecen estar registrados correctamente.
+**Síntoma**: `./gradlew :poc:vertx-layer-as-pod-eventbus:atdd-tests:test -Patdd` falla con `UndefinedStepException` en 10 escenarios. Los step definitions parecen estar registrados correctamente.
 
 **Cómo se detectó**: `./gradlew test` log muestra steps undefined con cuerpos como `* url 'http://localhost:8080'`, `* path '/risk'`, `And match response.decision == 'REVIEW'`.
 
@@ -190,10 +190,10 @@ healthcheck:
 
 **Fix aplicado**: separación clara por suite.
 - `tests/risk-engine-atdd/` (Cucumber-JVM 7): `.feature` reescritos a Gherkin idiomático con steps custom (`Given un cliente con score X`, `When envío POST a /risk`, `Then la decisión es REVIEW`). Step defs en `RiskSteps.java`.
-- `poc/vertx-risk-platform/atdd-tests/`: `.feature` Karate-native, corren con runner de Karate.
+- `poc/vertx-layer-as-pod-http/atdd-tests/`: `.feature` Karate-native, corren con runner de Karate.
 - README de cada suite explica qué dialecto usar y por qué.
 
-**Verificación**: `./gradlew :poc:java-vertx-distributed:atdd-tests:test -Patdd` → 0 undefined, todos los escenarios pasan o fallan con asserts reales.
+**Verificación**: `./gradlew :poc:vertx-layer-as-pod-eventbus:atdd-tests:test -Patdd` → 0 undefined, todos los escenarios pasan o fallan con asserts reales.
 
 **Por qué es interesante**: Karate y Cucumber comparten extensión `.feature` y ambos parsean Gherkin de boca, pero el espacio de steps es disjunto. Mezclar dialectos en el mismo runner es el error. La regla R3 del repo (ATDD primero) elige una herramienta por contexto: Karate cuando hay HTTP / GraphQL externo, Cucumber cuando los step definitions encapsulan lógica de dominio. La separación por carpeta + dialecto es la fix estructural.
 
@@ -226,9 +226,9 @@ Compilamos con `--release 21`, ejecutamos en cualquier JDK 21+ (incluyendo 25). 
 
 ## 11. Custom Java load bench mentía en el p99 — k6 (Grafana) lo destapó
 
-**Síntoma**: `bench/distributed-bench` reportaba consistentemente p99 ~ 180ms para `java-vertx-distributed` bajo 32 concurrency. Las gráficas de OpenObserve sobre tracing OTEL del mismo período mostraban p99 ~ 290ms. Diferencia de 110ms entre dos mediciones del mismo intervalo, mismo workload.
+**Síntoma**: `bench/distributed-bench` reportaba consistentemente p99 ~ 180ms para `vertx-layer-as-pod-eventbus` bajo 32 concurrency. Las gráficas de OpenObserve sobre tracing OTEL del mismo período mostraban p99 ~ 290ms. Diferencia de 110ms entre dos mediciones del mismo intervalo, mismo workload.
 
-**Cómo se detectó**: corrida de comparación `./nx bench k6 load --target distributed --duration 2m` con `K6_PROMETHEUS_RW_SERVER_URL` apuntando a OpenObserve. El p99 que reportó k6 (286ms) era casi idéntico al p99 que ya mostraba OpenObserve sobre los spans del controller. El custom bench reportaba ~180ms para la misma corrida.
+**Cómo se detectó**: corrida de comparación `./nx bench k6 load --target vertx-layer-as-pod-eventbus --duration 2m` con `K6_PROMETHEUS_RW_SERVER_URL` apuntando a OpenObserve. El p99 que reportó k6 (286ms) era casi idéntico al p99 que ya mostraba OpenObserve sobre los spans del controller. El custom bench reportaba ~180ms para la misma corrida.
 
 **Root cause**: el percentile calculator del custom bench mantenía un array bounded de las últimas N samples (N=1000) y computaba percentiles sobre eso. Bajo carga sostenida con cola de respuestas en el servidor, las muestras de long-tail (las pocas requests que pegaban con un GC pause o un partition rebalancing de Hazelcast) se evictaban del array antes del cálculo final. Resultado: p99 sub-reportado por ~ 40%. Adicionalmente, el bench usaba `System.nanoTime()` antes de `socket.connect()` y después de `read()`, pero no separaba TLS handshake, lo que ya de por sí inflaba la varianza.
 
@@ -267,12 +267,12 @@ JMH (`bench/inprocess-bench`) se mantiene para microbench in-process (sin red, s
 
 **Verificación**:
 ```bash
-./gradlew :poc:java-monolith:clean :poc:java-monolith:shadowJar
-time ./nx build monolith               # primer build, ~3-5 min
-time ./nx build monolith               # warm, < 2s (skip)
-touch poc/java-monolith/src/main/java/io/riskplatform/monolith/Application.java
-time ./nx build monolith               # incremental, ~15-30s
-time NX_REBUILD=1 ./nx build monolith  # forced, ~3-5 min
+./gradlew :poc:vertx-monolith-inprocess:clean :poc:vertx-monolith-inprocess:shadowJar
+time ./nx build vertx-monolith-inprocess               # primer build, ~3-5 min
+time ./nx build vertx-monolith-inprocess               # warm, < 2s (skip)
+touch poc/vertx-monolith-inprocess/src/main/java/io/riskplatform/monolith/Application.java
+time ./nx build vertx-monolith-inprocess               # incremental, ~15-30s
+time NX_REBUILD=1 ./nx build vertx-monolith-inprocess  # forced, ~3-5 min
 ```
 
 **Por qué es interesante**: anti-pattern común en monorepos: scripts heredan un default conservador (`clean build`) "para evitar problemas de cache" que dobla cada feedback loop. El cache de Gradle es robusto — su breakage es la excepción, no la regla. Cuando el cache se rompe (rarísimo), `--rebuild` lo arregla en 30s. Cuando se rompe `clean build` por default, lo pagás en cada iteración. Topic engram: `build-perf-smart-cli`.

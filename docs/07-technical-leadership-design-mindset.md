@@ -1,4 +1,4 @@
-# 07 — Mindset de diseño staff: defender decisiones arquitectónicas
+# 07 — Mindset de diseño technical leadership: defender decisiones arquitectónicas
 
 Este documento captura cómo articular y defender un diseño cuando los reviewers presionan. Es un banco de preguntas para conversaciones de diseño, no un script de evaluación.
 

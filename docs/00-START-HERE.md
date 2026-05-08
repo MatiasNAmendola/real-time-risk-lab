@@ -6,7 +6,7 @@ Si llegaste desde el README raíz, ya tenés el pitch. Esta es la guía detallad
 
 Una exploración técnica de un use case de detección de fraude productivo, que demuestra:
 
-- 3 PoCs en Java con la misma funcionalidad pero arquitecturas distintas (para argumentar trade-offs reales con números).
+- varias PoCs en Java con funcionalidad comparable pero arquitecturas distintas (para argumentar trade-offs con números).
 - Stack 2026: Java 21, Gradle Kotlin DSL multi-módulo, Vert.x 5, cluster Hazelcast.
 - Observabilidad completa vía OTel + OpenObserve.
 - AWS encapsulado localmente (MinIO, ElasticMQ, Moto, OpenBao) — sin LocalStack.
@@ -57,7 +57,7 @@ Una exploración técnica de un use case de detección de fraude productivo, que
 ./nx setup
 
 # 2. Levantar infra + apps Vert.x (postgres, valkey, redpanda, openobserve, AWS mocks, 4 apps Java)
-./nx up vertx
+./nx up vertx-layer-as-pod-eventbus
 
 # 3. Demo: request de prueba POST /risk
 ./nx demo rest --amount 150000
@@ -74,23 +74,36 @@ Output esperado: tabla de tests + `http://localhost:8888` (dashboard Homer) con 
 
 ---
 
-## Las tres PoCs explicadas
+## PoCs explicadas por eje Vert.x
 
-```
-poc/java-risk-engine/         # Bare-javac, in-memory, sin frameworks externos
-poc/java-monolith/            # Single JVM Vert.x, infra real (Postgres+Kafka+S3+...)
-poc/java-vertx-distributed/   # 4 JVMs Vert.x separadas, cluster Hazelcast TCP
+```text
+SIN VERT.X
+  poc/no-vertx-clean-engine/
+    -> ¿cuánto cuesta la lógica pura?
+
+CON VERT.X
+  poc/vertx-monolith-inprocess/
+    -> ¿qué aporta Vert.x sin distribuir?
+
+  poc/vertx-layer-as-pod-eventbus/
+    -> ¿qué pasa si separo layers por pods usando EventBus clustered?
+
+  poc/vertx-layer-as-pod-http/
+    -> ¿qué pasa si separo layers por pods usando HTTP + tokens?
+
+  poc/vertx-service-mesh-bounded-contexts/
+    -> ¿qué pasa si separo por servicios/bounded contexts reales?
 ```
 
-| Característica | bare-javac | java-monolith | java-vertx-distributed |
+| Característica | no-vertx-clean-engine | vertx-monolith-inprocess | vertx-layer-as-pod-eventbus |
 |---|---|---|---|
 | HTTP API | puerto 8081, stdlib | puerto 8090, Vert.x | puerto 8080, Vert.x |
 | Persistencia real | in-memory | Postgres + Valkey | Postgres + Valkey (vía repo-app) |
 | Publicación Kafka | outbox in-memory | Real (Redpanda) | Real (Redpanda) |
 | S3/SQS/Secrets | adapters NoOp | Real (MinIO/ElasticMQ/Moto) | Real (mismo) |
 | Frameworks externos | ninguno | Vert.x + AWS SDK + JDBC + Lettuce | igual + cluster Hazelcast |
-| Layering físico | métodos in-process | verticles in-process | 4 JVMs + event bus distribuido |
-| Latencia esperada | la más baja | la más baja (igual a bare) | mayor (overhead de red/serialización) |
+| Layering físico | métodos in-process | verticles in-process | 3 JVMs en path síncrono vía EventBus + consumer async Kafka |
+| Latencia esperada | la más baja | la más baja (igual a no-vertx-clean-engine) | mayor (overhead de red/serialización) |
 | Aislamiento | mínimo (todo falla junto) | mínimo | máximo (blast radius por capa) |
 | Escalado | 1 JVM x N réplicas | 1 JVM x N réplicas | independiente por capa |
 
@@ -102,7 +115,7 @@ poc/java-vertx-distributed/   # 4 JVMs Vert.x separadas, cluster Hazelcast TCP
 
 | Componente | Estado |
 |---|---|
-| Cucumber ATDD bare-javac | Verificado, pasa — 10 escenarios, cobertura 51.8% líneas |
+| Cucumber ATDD no-vertx-clean-engine | Verificado, pasa — 10 escenarios, cobertura 51.8% líneas |
 | JMH bench in-process | Verificado — p50=125ns, p99=459ns |
 | BenchmarkRunner virtual threads | Verificado — 1528 req/s |
 | Builds Gradle | `BUILD SUCCESSFUL` reportado por agente — pendiente verificación humana |
@@ -131,16 +144,17 @@ Honestidad: el repo está en estado *reportado-OK por agentes pero verificación
 ## Estructura del repo (alto nivel)
 
 ```
-risk-decision-platform/
+real-time-risk-lab/
 ├── README.md                  # pitch + tour por tiempo disponible
 ├── docs/                      # 36 docs numerados (00-31+)
 ├── vault/                     # vault Obsidian — 37 ADRs + conceptos + build logs
 ├── poc/
-│   ├── java-risk-engine/      # bare-javac
-│   ├── java-monolith/         # single JVM Vert.x
-│   ├── java-vertx-distributed/# 4 JVMs Vert.x
+│   ├── no-vertx-clean-engine/      # no-vertx-clean-engine
+│   ├── vertx-monolith-inprocess/         # single JVM Vert.x
+│   ├── vertx-layer-as-pod-eventbus/# 3 JVMs EventBus + consumer async Kafka
 │   ├── k8s-local/             # k3d + helm + addons
-│   └── (vertx-risk-platform — legacy, no consumir)
+│   ├── vertx-layer-as-pod-http/ # 3 pods HTTP + tokens
+│   └── vertx-service-mesh-bounded-contexts/ # service-to-service Vert.x
 ├── pkg/                       # librerías compartidas (errors, resilience, events, kafka, observability, repositories, etc)
 ├── sdks/
 │   ├── risk-events/           # contratos de eventos compartidos
@@ -172,10 +186,10 @@ Ver `docs/QUICK-REFERENCE.md` para la tabla completa. Resumen:
 | Categoría | Comando |
 |---|---|
 | Setup | `./nx setup [--verify\|--upgrade\|--dry-run]` |
-| Infra | `./nx up {infra\|vertx\|monolith\|all\|k8s}` / `./nx down ...` |
-| Apps | `./nx run {risk-engine\|java-monolith\|vertx}` |
+| Infra | `./nx up {infra\|vertx-layer-as-pod-eventbus\|vertx-monolith-inprocess\|vertx-layer-as-pod-http\|all\|k8s}` / `./nx down ...` |
+| Apps | `./nx run {no-vertx-clean-engine\|vertx-monolith-inprocess\|vertx-layer-as-pod-eventbus\|vertx-layer-as-pod-http}` |
 | Tests | `./nx test --list\|--group X\|--composite Y\|--coverage\|--auto-fix` |
-| Bench | `./nx bench {inproc\|distributed\|competition}` |
+| Bench | `./nx bench {inproc\|vertx-layer-as-pod-eventbus\|competition\|k6}` |
 | Demo | `./nx demo {rest\|websocket\|sse\|webhook\|kafka}` |
 | Dashboard | `./nx dashboard {up\|down}` |
 | Admin | `./nx admin rules {list\|reload\|test}` |
@@ -189,7 +203,6 @@ Ver `docs/QUICK-REFERENCE.md` para la tabla completa. Resumen:
 Si querés compartir esto con un reviewer externo:
 
 1. Primero, corré `./nx test --composite ci-full --with-infra-compose` y verificá que todo pasa. Hoy hay reportes de agente pero no verificación humana.
-2. Considerá si `vertx-risk-platform` debería borrarse o archivarse — es legacy.
 3. Si el reviewer tiene menos de 30 minutos, dirigilo al tour de 5 minutos del README raíz.
 4. Para reviewers técnicos serios: `vault/02-Decisions/_index.md` + `docs/12-rendimiento-y-separacion.md` son los entry points fuertes.
 
@@ -207,21 +220,21 @@ Esta sección existe para que el auditor documental tenga referencias explícita
 
 ### Módulos Gradle inventariados
 
-- `poc:java-risk-engine`
-- `poc:java-monolith`
-- `poc:java-monolith:atdd-tests`
-- `poc:java-vertx-distributed:shared`
-- `poc:java-vertx-distributed:controller-app`
-- `poc:java-vertx-distributed:usecase-app`
-- `poc:java-vertx-distributed:repository-app`
-- `poc:java-vertx-distributed:consumer-app`
-- `poc:service-mesh-demo:shared`
-- `poc:service-mesh-demo:risk-decision-service`
-- `poc:service-mesh-demo:fraud-rules-service`
-- `poc:service-mesh-demo:ml-scorer-service`
-- `poc:service-mesh-demo:audit-service`
-- `poc:vertx-risk-platform`
-- `poc:vertx-risk-platform:atdd-tests`
+- `poc:no-vertx-clean-engine`
+- `poc:vertx-monolith-inprocess`
+- `poc:vertx-monolith-inprocess:atdd-tests`
+- `poc:vertx-layer-as-pod-eventbus:shared`
+- `poc:vertx-layer-as-pod-eventbus:controller-app`
+- `poc:vertx-layer-as-pod-eventbus:usecase-app`
+- `poc:vertx-layer-as-pod-eventbus:repository-app`
+- `poc:vertx-layer-as-pod-eventbus:consumer-app`
+- `poc:vertx-service-mesh-bounded-contexts:shared`
+- `poc:vertx-service-mesh-bounded-contexts:risk-decision-service`
+- `poc:vertx-service-mesh-bounded-contexts:fraud-rules-service`
+- `poc:vertx-service-mesh-bounded-contexts:ml-scorer-service`
+- `poc:vertx-service-mesh-bounded-contexts:audit-service`
+- `poc:vertx-layer-as-pod-http`
+- `poc:vertx-layer-as-pod-http:atdd-tests`
 - `tests:risk-engine-atdd`
 - `tests:architecture`
 - `bench:distributed-bench`
@@ -230,7 +243,7 @@ Esta sección existe para que el auditor documental tenga referencias explícita
 ### Documentos secundarios incluidos en el mapa público
 
 - `docs/06-vertx-pods-locales.md`
-- `docs/07-staff-design-mindset.md`
+- `docs/07-technical-leadership-design-mindset.md`
 - `docs/08-technical-discussion-simulation.md`
 - `docs/14-primitive-usage-retro.md`
 - `docs/15-script-output-audit.md`

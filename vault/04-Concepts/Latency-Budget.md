@@ -19,7 +19,7 @@ Jobs de background, procesamiento batch — el latency budget es para paths sín
 
 ## En este proyecto
 
-Documentado en `docs/05-budget-y-bottlenecks.md`. Benchmark de [[java-risk-engine]]: p99=153ms deja ~147ms de headroom para red + DB. El estado open del [[Circuit-Breaker]] es fast-path: <1ms.
+Documentado en `docs/05-budget-y-bottlenecks.md`. Benchmark de [[no-vertx-clean-engine]]: p99=153ms deja ~147ms de headroom para red + DB. El estado open del [[Circuit-Breaker]] es fast-path: <1ms.
 
 ## Asignación de budget (ejemplo)
 
@@ -40,4 +40,4 @@ Documentado en `docs/05-budget-y-bottlenecks.md`. Benchmark de [[java-risk-engin
 
 ## Backlinks
 
-[[Circuit-Breaker]] · [[Bulkhead]] · [[SLI-SLO-Error-Budget]] · [[java-risk-engine]]
+[[Circuit-Breaker]] · [[Bulkhead]] · [[SLI-SLO-Error-Budget]] · [[no-vertx-clean-engine]]

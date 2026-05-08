@@ -1,11 +1,11 @@
 ---
-title: java-risk-engine PoC
+title: no-vertx-clean-engine PoC
 tags: [poc, java, clean-architecture]
 created: 2026-05-07
-source: poc/java-risk-engine/
+source: poc/no-vertx-clean-engine/
 ---
 
-# java-risk-engine
+# no-vertx-clean-engine
 
 Implementación bare-javac de [[Clean-Architecture]] para un motor de riesgo transaccional. Sin framework — compila con `javac` y corre con `java`. Refactorizado al layout enterprise Go (ver [[0002-enterprise-go-layout-in-java]]).
 
@@ -31,9 +31,9 @@ Implementación bare-javac de [[Clean-Architecture]] para un motor de riesgo tra
 ## Cómo correrlo
 
 ```bash
-cd poc/java-risk-engine
-poc/java-risk-engine/scripts/build.sh
-poc/java-risk-engine/scripts/run.sh
+cd poc/no-vertx-clean-engine
+poc/no-vertx-clean-engine/scripts/build.sh
+poc/no-vertx-clean-engine/scripts/run.sh
 # o con Gradle si está presente:
 ./gradlew clean verify
 ```
@@ -41,7 +41,7 @@ poc/java-risk-engine/scripts/run.sh
 ## Estructura de directorios
 
 ```
-poc/java-risk-engine/
+poc/no-vertx-clean-engine/
   domain/
     entity/       RiskScore, Transaction, RiskDecision
     repository/   TransactionRepository (port)

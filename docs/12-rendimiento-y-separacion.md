@@ -21,7 +21,7 @@ Dos PoCs implementan la misma logica de riesgo (APPROVE / REVIEW / DECLINE) con 
 
 **Nota importante sobre los numeros JMH**: El JMH corre single-threaded por defecto (1 thread, Throughput+AverageTime+SampleTime). Los 25 ops/s reflejan ciclos de medicion JMH con overhead de instrumentacion y GC pauses. Las latencias microscopicas (p50=125ns, p99=459ns) miden el costo puro de `EvaluateRiskUseCase.evaluate()` sin scheduler ML activo en ese slot — el scorer ML duerme 0-150ms de manera aleatoria, lo que explica el p100=160ms. El benchmark con 32 virtual threads (BenchmarkRunner) muestra el throughput real bajo carga concurrente: ~1528 req/s.
 
-Nota: los valores del distributed estan pendientes hasta que `bench/scripts/run-distributed.sh` se ejecute con el docker compose levantado. Comando: `./poc/java-vertx-distributed/scripts/up.sh && bench/scripts/run-distributed.sh`.
+Nota: los valores del distributed estan pendientes hasta que `bench/scripts/run-distributed.sh` se ejecute con el docker compose levantado. Comando: `./poc/vertx-layer-as-pod-eventbus/scripts/up.sh && bench/scripts/run-distributed.sh`.
 
 ---
 
@@ -83,7 +83,7 @@ Valores exactos del JSON:
 
 ### Benchmark BenchmarkRunner (medicion real previa, virtual threads)
 
-Medicion anterior con `poc/java-risk-engine/scripts/benchmark.sh` (virtual threads, 5000 reqs, 32 concurrent):
+Medicion anterior con `poc/no-vertx-clean-engine/scripts/benchmark.sh` (virtual threads, 5000 reqs, 32 concurrent):
 
 - p50: ~50 µs
 - p95: ~127-131 ms
@@ -100,7 +100,7 @@ Estos numeros incluyen el scheduler HTTP del BenchmarkRunner y la concurrencia r
 
 ```bash
 # Prerequisito: Java 21+ en PATH, Gradle 3.9+
-cd /path/to/risk-platform-practice/bench
+cd /path/to/real-time-risk-lab/bench
 
 # Build (solo la primera vez o tras cambios)
 ./gradlew -pl inprocess-bench -am clean package -q
@@ -118,8 +118,8 @@ bench/scripts/run-inprocess.sh
 
 ```bash
 # Prerequisito: JDK 21+ en PATH (o JAVA=<path>); Java 25 es opcional
-cd /path/to/risk-platform-practice
-poc/java-risk-engine/scripts/benchmark.sh 5000 32 500
+cd /path/to/real-time-risk-lab
+poc/no-vertx-clean-engine/scripts/benchmark.sh 5000 32 500
 # Argumentos: <N mediciones> <M concurrencia> <warmup>
 ```
 
@@ -127,7 +127,7 @@ poc/java-risk-engine/scripts/benchmark.sh 5000 32 500
 
 ```bash
 # Prerequisito: Docker Desktop corriendo
-cd /path/to/risk-platform-practice/poc/java-vertx-distributed
+cd /path/to/real-time-risk-lab/poc/vertx-layer-as-pod-eventbus
 docker compose up -d
 
 # Verificar que todos los pods estan healthy
@@ -328,8 +328,8 @@ Si algun test falla, el mensaje incluye la clase ofensora, la linea de dependenc
 - `bench/scripts/run-comparison.sh` — ejecutar ambos benchmarks y generar reporte
 - `bench/scripts/competition.sh` — competition HTTP-vs-HTTP (ver seccion abajo)
 - `tests/architecture/` — 15 reglas ArchUnit con mensajes de error accionables
-- `poc/java-risk-engine/src/main/java/io/riskplatform/engine/cmd/BenchmarkRunner.java` — benchmark original (virtual threads, sin JMH)
-- `poc/java-vertx-distributed/compose.override.yml` — stack de 5 pods con redes separadas
+- `poc/no-vertx-clean-engine/src/main/java/io/riskplatform/engine/cmd/BenchmarkRunner.java` — benchmark original (virtual threads, sin JMH)
+- `poc/vertx-layer-as-pod-eventbus/compose.override.yml` — stack de 5 pods con redes separadas
 
 ---
 
@@ -339,7 +339,7 @@ Para una comparacion HONESTA, ambos PoCs exponen `POST /risk` por HTTP. El scrip
 
 ```bash
 # Prerrequisito: Vert.x stack levantado
-./poc/java-vertx-distributed/scripts/up.sh
+./poc/vertx-layer-as-pod-eventbus/scripts/up.sh
 
 # Competencia con defaults (5000 req, 32 concurrency)
 bench/scripts/competition.sh
@@ -357,4 +357,4 @@ Output en `out/bench/competition/<ts>/`:
 - `comparison.json` — metricas unificadas legibles por maquina.
 - `latency-comparison.png` — grafico de barras (si matplotlib esta disponible).
 
-[Resultados pendientes — capturar con `poc/java-vertx-distributed/scripts/up.sh` + `bench/scripts/competition.sh`]
+[Resultados pendientes — capturar con `poc/vertx-layer-as-pod-eventbus/scripts/up.sh` + `bench/scripts/competition.sh`]

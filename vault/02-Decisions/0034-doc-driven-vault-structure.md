@@ -15,7 +15,7 @@ Aceptado el 2026-05-07.
 
 ## Contexto
 
-A staff/architect-level technical exploration repository must communicate two things simultaneously: (1) competence en la technical domain (code, tests, benchmarks), y (2) architectural judgment y systems thinking (documented decisions, domain models, trade-off analysis). Code alone communicates la first; documentation structure communicates la second.
+A technical-leadership-level technical exploration repository must communicate two things simultaneously: (1) competence en la technical domain (code, tests, benchmarks), y (2) architectural judgment y systems thinking (documented decisions, domain models, trade-off analysis). Code alone communicates la first; documentation structure communicates la second.
 
 The repository serves multiple audiences con different reading modes:
 - A reviewer skimming la repository: needs un quickly navigate un evidence de architectural thinking.

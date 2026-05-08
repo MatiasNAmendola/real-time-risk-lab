@@ -1,10 +1,10 @@
-# 08 — Staff-Level Architecture Design Practice
+# 08 — Technical-Leadership-Level Architecture Design Practice
 
-Use this document to practice articulating design decisions at staff/architect level.
+Use this document to practice articulating design decisions at technical leadership level.
 
 ## Ronda 1 — System design
 
-### Staff
+### Reviewer
 
 Diseñá un sistema que evalúe fraude en tiempo real. Tenemos 150 TPS y queremos responder en 300ms.
 
@@ -22,7 +22,7 @@ Diseñá un sistema que evalúe fraude en tiempo real. Tenemos 150 TPS y queremo
 
 ## Ronda 2 — Latencia
 
-### Staff
+### Reviewer
 
 El sistema está tardando 700ms p95. ¿Qué hacés?
 
@@ -38,7 +38,7 @@ El sistema está tardando 700ms p95. ¿Qué hacés?
 
 ## Ronda 3 — Lambda vs EKS
 
-### Staff
+### Reviewer
 
 ¿Por qué te parece que deberíamos migrar de Lambda a EKS?
 
@@ -54,7 +54,7 @@ El sistema está tardando 700ms p95. ¿Qué hacés?
 
 ## Ronda 4 — Seguridad y pods
 
-### Staff
+### Reviewer
 
 ¿Separarías controller, usecase y repository en pods distintos?
 
@@ -71,7 +71,7 @@ El sistema está tardando 700ms p95. ¿Qué hacés?
 
 ## Ronda 5 — Eventos
 
-### Staff
+### Reviewer
 
 ¿Cómo diseñás eventos versionados y cómo evitás duplicados?
 
@@ -88,7 +88,7 @@ El sistema está tardando 700ms p95. ¿Qué hacés?
 
 ## Ronda 6 — ML
 
-### Staff
+### Reviewer
 
 El modelo ML a veces tarda 500ms. ¿Qué hacés?
 
@@ -105,7 +105,7 @@ El modelo ML a veces tarda 500ms. ¿Qué hacés?
 
 ## Ronda 7 — Auditoría
 
-### Staff
+### Reviewer
 
 Un cliente reclama una decisión de fraude de hace tres meses. ¿Qué necesitás tener?
 
@@ -123,7 +123,7 @@ Un cliente reclama una decisión de fraude de hace tres meses. ¿Qué necesitás
 
 ## Ronda 8 — Leadership
 
-### Staff
+### Reviewer
 
 ¿Cómo harías para que el equipo mejore técnicamente?
 

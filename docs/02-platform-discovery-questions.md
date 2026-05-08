@@ -89,7 +89,7 @@ Principio clave: "El modelo enriquece la decisión cuando está disponible; no l
 
 ## Rol y contexto de liderazgo
 
-Qué evaluar en el nivel staff/architect: no solo ejecución, sino definir estándares, proponer mejoras con evidencia y escuchar primero.
+Qué evaluar en el nivel technical leadership: no solo ejecución, sino definir estándares, proponer mejoras con evidencia y escuchar primero.
 
 Cómo encararlo:
 - En discusiones de "primeros 30 días": mapear antes de proponer. No entrar a cambiar sin entender.

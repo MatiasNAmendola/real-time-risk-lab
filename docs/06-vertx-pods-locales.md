@@ -3,7 +3,7 @@
 Se creó una app aparte en:
 
 ```text
-${REPO_ROOT}/poc/vertx-risk-platform
+${REPO_ROOT}/poc/vertx-layer-as-pod-http
 ```
 
 ## Qué modela
@@ -41,10 +41,10 @@ Frase útil:
 ## Ejecutar
 
 ```bash
-cd ${REPO_ROOT}/poc/vertx-risk-platform
-poc/vertx-risk-platform/scripts/run-local-pods.sh
-poc/vertx-risk-platform/scripts/smoke.sh
-poc/vertx-risk-platform/scripts/stop-local-pods.sh
+cd ${REPO_ROOT}/poc/vertx-layer-as-pod-http
+poc/vertx-layer-as-pod-http/scripts/run-local-pods.sh
+poc/vertx-layer-as-pod-http/scripts/smoke.sh
+poc/vertx-layer-as-pod-http/scripts/stop-local-pods.sh
 ```
 
 ## Manifiestos EKS locales
@@ -52,7 +52,7 @@ poc/vertx-risk-platform/scripts/stop-local-pods.sh
 Hay ejemplos en:
 
 ```text
-poc/vertx-risk-platform/k8s-local
+poc/vertx-layer-as-pod-http/k8s-local
 ```
 
 Incluyen:

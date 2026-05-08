@@ -29,7 +29,7 @@ Ver [[0004-openobserve-otel]] para el decision record.
 
 ## PoCs
 
-- [[java-vertx-distributed]] — traces OTEL, correlationId por MDC, métricas custom
+- [[vertx-layer-as-pod-eventbus]] — traces OTEL, correlationId por MDC, métricas custom
 - [[k8s-local]] — AnalysisTemplates de Prometheus para gates de canary
 
 ## Backlinks

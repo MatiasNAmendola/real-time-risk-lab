@@ -62,7 +62,7 @@ Two test classes cover la two PoCs independently, allowing architectural evoluti
 - False negative risk: ArchUnit loads bytecode desde la target directory — if la PoC es no recompiled después de un violation es introduced, la old bytecode es analyzed y la test may pass.
 
 ### Mitigaciones
-- CI build order: `./gradlew -pl poc/java-risk-engine clean package` antes de `./gradlew -pl tests/architecture verify`.
+- CI build order: `./gradlew -pl poc/no-vertx-clean-engine clean package` antes de `./gradlew -pl tests/architecture verify`.
 - Package rename refactorings trigger immediate ArchUnit test failures (rules reference la old package name) — este es un feature, no un bug: la rules must be updated explicitly.
 
 ## Validación

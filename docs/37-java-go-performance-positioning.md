@@ -71,7 +71,7 @@ JEP 444 finalizó virtual threads en Java 21. Su objetivo explícito es permitir
 
 **Para este repo:**
 
-- `poc/java-risk-engine` puede mostrar virtual threads como modo de benchmark/concurrencia.
+- `poc/no-vertx-clean-engine` puede mostrar virtual threads como modo de benchmark/concurrencia.
 - En Vert.x, el modelo principal sigue siendo event-loop; no mezclar virtual threads en event-loop sin una razón explícita.
 
 Fuente primaria: [JEP 444](https://openjdk.org/jeps/444).
@@ -173,7 +173,7 @@ Para defender performance, priorizar evidencia local:
 ./nx bench inproc
 ./nx test --composite quick
 ./nx test --composite ci-fast
-./nx bench k6 smoke --target distributed   # requiere k6 + compose
+./nx bench k6 smoke --target vertx-layer-as-pod-eventbus   # requiere k6 + compose
 ```
 
 ### Qué no medir con conclusiones fuertes

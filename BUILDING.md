@@ -33,7 +33,7 @@ se hereda:
 | Plugin | Para qué |
 |---|---|
 | `riskplatform.library-conventions` | librerías compartidas `pkg/*` y `sdks/*` |
-| `riskplatform.app-conventions` | aplicaciones ejecutables (`poc/java-risk-engine`) |
+| `riskplatform.app-conventions` | aplicaciones ejecutables (`poc/no-vertx-clean-engine`) |
 | `riskplatform.fatjar-conventions` | apps Vert.x que requieren fat-jars Shadow |
 | `riskplatform.testing-conventions` | módulos de test standalone |
 
@@ -48,20 +48,20 @@ se hereda:
 ./gradlew :pkg:resilience:test
 
 # Correr la CLI risk-engine
-./gradlew :poc:java-risk-engine:run
+./gradlew :poc:no-vertx-clean-engine:run
 
 # Correr el risk-engine HTTP en un puerto custom
-./gradlew :poc:java-risk-engine:run --args="--port 8082"
+./gradlew :poc:no-vertx-clean-engine:run --args="--port 8082"
 
 # Construir un fat-jar Vert.x
-./gradlew :poc:java-vertx-distributed:controller-app:shadowJar
+./gradlew :poc:vertx-layer-as-pod-eventbus:controller-app:shadowJar
 
 # Correr los tests estructurales de boundaries de ArchUnit (15 reglas, 0 fallos esperados)
 ./gradlew :tests:architecture:test
 
 # Correr tests ATDD (requiere server corriendo; flag -Patdd habilita la task)
 ./gradlew :tests:risk-engine-atdd:test -Patdd
-./gradlew :poc:java-vertx-distributed:atdd-tests:test -Patdd
+./gradlew :poc:vertx-layer-as-pod-eventbus:atdd-tests:test -Patdd
 
 # Correr tests de integracion (requiere Docker; flag -Pintegration)
 ./gradlew :tests:integration:test -Pintegration
@@ -115,13 +115,13 @@ La fase 2 agregó todos los módulos de aplicación y tests al reactor Gradle:
 
 | Módulo | Convention | Descripción |
 |---|---|---|
-| `poc:java-risk-engine` | `riskplatform.app-conventions` | Risk engine bare-javac, Clean/Hexagonal Architecture |
-| `poc:java-vertx-distributed:shared` | `riskplatform.library-conventions` | DTOs / puertos compartidos |
-| `poc:java-vertx-distributed:controller-app` | `riskplatform.fatjar-conventions` | Vert.x HTTP + WS + SSE |
-| `poc:java-vertx-distributed:usecase-app` | `riskplatform.fatjar-conventions` | Verticle de evaluación de riesgo |
-| `poc:java-vertx-distributed:repository-app` | `riskplatform.fatjar-conventions` | Persistencia / Hazelcast |
-| `poc:java-vertx-distributed:consumer-app` | `riskplatform.fatjar-conventions` | Consumer Kafka |
-| `poc:java-vertx-distributed:atdd-tests` | `riskplatform.testing-conventions` | Suite Karate ATDD (requiere `-Patdd`) |
+| `poc:no-vertx-clean-engine` | `riskplatform.app-conventions` | Risk engine bare-javac, Clean/Hexagonal Architecture |
+| `poc:vertx-layer-as-pod-eventbus:shared` | `riskplatform.library-conventions` | DTOs / puertos compartidos |
+| `poc:vertx-layer-as-pod-eventbus:controller-app` | `riskplatform.fatjar-conventions` | Vert.x HTTP + WS + SSE |
+| `poc:vertx-layer-as-pod-eventbus:usecase-app` | `riskplatform.fatjar-conventions` | Verticle de evaluación de riesgo |
+| `poc:vertx-layer-as-pod-eventbus:repository-app` | `riskplatform.fatjar-conventions` | Persistencia / Hazelcast |
+| `poc:vertx-layer-as-pod-eventbus:consumer-app` | `riskplatform.fatjar-conventions` | Consumer Kafka |
+| `poc:vertx-layer-as-pod-eventbus:atdd-tests` | `riskplatform.testing-conventions` | Suite Karate ATDD (requiere `-Patdd`) |
 | `tests:risk-engine-atdd` | `riskplatform.testing-conventions` | Suite Cucumber ATDD (requiere `-Patdd`) |
 | `tests:architecture` | `riskplatform.testing-conventions` | Tests ArchUnit de 15 reglas de boundaries |
 | `tests:integration` | `riskplatform.testing-conventions` | Tests de integración Testcontainers (requiere `-Pintegration`) |

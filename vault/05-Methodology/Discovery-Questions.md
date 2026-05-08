@@ -25,7 +25,7 @@ Preguntas para hacer al evaluar una nueva plataforma o sistema. Elegir 3 según 
 
 ## Crecimiento y scope
 
-6. "¿Cómo es el camino de crecimiento de carrera para un staff engineer en este equipo — apunta más a profundidad técnica, liderazgo de equipo o influencia en producto?"
+6. "¿Cómo es el camino de crecimiento de carrera para un technical leadership engineer en este equipo — apunta más a profundidad técnica, liderazgo de equipo o influencia en producto?"
 
 ## Backlinks
 

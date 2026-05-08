@@ -1,7 +1,7 @@
 # Estado del repositorio — share-ready snapshot
 
 Fecha: **2026-05-07**  
-Scope: verificación local para demo técnica de Risk Decision Platform.
+Scope: verificación local para demo técnica de Real-Time Risk Lab.
 
 ## Resumen ejecutivo
 
@@ -49,7 +49,7 @@ Ver [`DEMO_SCRIPT.md`](DEMO_SCRIPT.md). Recomendación:
 
 1. Mostrar primero `README.md`, `docs/09-architecture-question-bank.md` y ADRs.
 2. Correr `./nx setup --verify`, `./nx build`, `./nx test --composite quick`, `./nx audit consistency`.
-3. Mostrar `poc/vertx-risk-platform` local pods porque demuestra separación por capas/permisos de manera determinística.
+3. Mostrar `poc/vertx-layer-as-pod-http` local pods porque demuestra separación por capas/permisos de manera determinística.
 4. Correr `./nx bench inproc` para respaldar performance con medición reproducible.
 5. Dejar `./nx up vertx` como deep dive si hay tiempo, no como primer comando de la demo.
 

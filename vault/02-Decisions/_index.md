@@ -4,7 +4,7 @@ tags: [index, decisions]
 updated: 2026-05-07
 ---
 
-# Índice de ADRs — Risk Decision Platform Architecture Exploration
+# Índice de ADRs — Real-Time Risk Lab Architecture Exploration
 
 Total de ADRs: 39
 
@@ -118,7 +118,7 @@ Cada ADR sigue el formato de Nygard con una sección "Alternativas consideradas"
 
 ## Top 5 para design review
 
-Las cinco decisiones con más probabilidad de ser discutidas en un design review a nivel staff/architect, ranqueadas por densidad de señal de diseño:
+Las cinco decisiones con más probabilidad de ser discutidas en un design review a nivel technical leadership, ranqueadas por densidad de señal de diseño:
 
 1. **[[0013-layer-as-pod]]** — Layer-as-Pod con overhead medido (~19ms). Demuestra análisis de trade-offs de sistemas distribuidos con números reales.
 2. **[[0008-outbox-pattern-explicit]]** — Identificar y arreglar un dual-write gap como mejora arquitectural al PoC. Demuestra conciencia de dominio y patrones de confiabilidad.

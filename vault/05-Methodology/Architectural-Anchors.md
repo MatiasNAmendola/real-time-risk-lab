@@ -43,7 +43,7 @@ Principios de diseño con peso. Internalizar 3-5 antes de entrar a cualquier dis
 - "ATDD cierra el loop entre los requerimientos de negocio y la cobertura de tests. Si el test de aceptación pasa, el requerimiento está cumplido — por definición."
 - "TDD en la capa de dominio es barato — sin contenedores, sin red. Los tests corren en milisegundos y te dicen exactamente qué se rompió."
 
-## Staff y Mentoring
+## Liderazgo técnico y mentoring
 
 - "Construyo sistemas que degradan con elegancia, no que fallan en silencio."
 

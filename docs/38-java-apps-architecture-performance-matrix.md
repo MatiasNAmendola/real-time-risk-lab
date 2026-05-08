@@ -1,7 +1,7 @@
 # 38 — Matriz de apps Java, arquitectura y performance
 
 **Fecha:** 2026-05-08  
-**Scope:** apps Java bajo `poc/`, librerías compartidas `pkg/`/`sdks/`, y narrativa de discusión técnica para Risk Decision Platform.  
+**Scope:** apps Java bajo `poc/`, librerías compartidas `pkg/`/`sdks/`, y narrativa de discusión técnica para Real-Time Risk Lab.  
 **Tesis:** mismo dominio de decisión de riesgo, distintas topologías/stacks para hacer visible el costo de cada decisión arquitectónica.
 
 ---
@@ -29,19 +29,40 @@ Lo que cambia entre PoCs es el **adapter/topología**:
 
 La demo más honesta es: **misma lógica conceptual, distinto overhead, distinto aislamiento, distinta complejidad operativa**.
 
+### Mapa mental de nombres
+
+```text
+SIN VERT.X
+  no-vertx-clean-engine
+    -> ¿cuánto cuesta la lógica pura?
+
+CON VERT.X
+  vertx-monolith-inprocess
+    -> ¿qué aporta Vert.x sin distribuir?
+
+  vertx-layer-as-pod-eventbus
+    -> ¿qué pasa si separo layers por pods usando EventBus clustered?
+
+  vertx-layer-as-pod-http
+    -> ¿qué pasa si separo layers por pods usando HTTP + tokens?
+
+  vertx-service-mesh-bounded-contexts
+    -> ¿qué pasa si separo por servicios/bounded contexts reales?
+```
+
 ---
 
 ## 2. Inventario real de apps Java
 
 | App | Path | Tipo | Comunicación interna | Puerto demo | Propósito |
 |---|---|---|---|---:|---|
-| `java-risk-engine` | `poc/java-risk-engine` | Java 21, Clean Architecture, sin framework HTTP externo | Métodos/in-memory; HTTP stdlib opcional | 8081 | Baseline de lógica pura y menor overhead. |
-| `java-monolith` | `poc/java-monolith` | Vert.x single JVM | EventBus local / verticles in-process | 8090 | Mostrar Vert.x sin costo de red entre capas. |
-| `java-vertx-distributed` | `poc/java-vertx-distributed` | Vert.x + Hazelcast, 4 JVMs layer-as-pod | Clustered EventBus TCP | 8080 | Separar controller/usecase/repository/consumer como capas aisladas. |
-| `vertx-risk-platform` | `poc/vertx-risk-platform` | Vert.x, 3 pods HTTP | HTTP inter-pod + `x-pod-token` | 8180 | Contrastar HTTP explícito/debuggable vs EventBus. |
-| `service-mesh-demo` | `poc/service-mesh-demo` | Vert.x + Hazelcast, bounded contexts | EventBus RPC/async entre servicios Vert.x | 8090 | Service-to-service real en Vert.x: bounded contexts comunicados por verticles/EventBus. |
+| `no-vertx-clean-engine` | `poc/no-vertx-clean-engine` | Java 21, Clean Architecture, sin framework HTTP externo | Métodos/in-memory; HTTP stdlib opcional | 8081 | Baseline de lógica pura y menor overhead. |
+| `vertx-monolith-inprocess` | `poc/vertx-monolith-inprocess` | Vert.x single JVM | EventBus local / verticles in-process | 8090 | Mostrar Vert.x sin costo de red entre capas. |
+| `vertx-layer-as-pod-eventbus` | `poc/vertx-layer-as-pod-eventbus` | Vert.x + Hazelcast, 3 JVMs en el camino síncrono + 1 consumer async | Clustered EventBus TCP para controller/usecase/repository; Kafka para consumer | 8080 | Separar controller/usecase/repository como layers aisladas y consumer como downstream async. |
+| `vertx-layer-as-pod-http` | `poc/vertx-layer-as-pod-http` | Vert.x, 3 pods HTTP | HTTP inter-pod + `x-pod-token` | 8180 | Contrastar HTTP explícito/debuggable vs EventBus. |
+| `vertx-service-mesh-bounded-contexts` | `poc/vertx-service-mesh-bounded-contexts` | Vert.x + Hazelcast, bounded contexts | EventBus RPC/async entre servicios Vert.x | 8090 | Service-to-service real en Vert.x: bounded contexts comunicados por verticles/EventBus. |
 
-> Nota de precisión: `java-vertx-distributed` es **layer-as-pod** de un mismo bounded context, no microservicios de negocio. `service-mesh-demo` es el PoC de bounded contexts reales dentro del stack Vert.x. Vert.x aporta verticles/EventBus; la topología de pods es decisión del PoC, no una obligación del framework.
+> Nota de precisión: `vertx-layer-as-pod-eventbus` es **layer-as-pod** de un mismo bounded context, no microservicios de negocio. `vertx-service-mesh-bounded-contexts` es el PoC de bounded contexts reales dentro del stack Vert.x. Vert.x aporta verticles/EventBus; la topología de pods es decisión del PoC, no una obligación del framework.
 
 ---
 
@@ -61,7 +82,7 @@ El `settings.gradle.kts` incluye módulos compartidos que sirven como base comú
 | `pkg:observability` | Logging/tracing/metrics base. |
 | `pkg:repositories` | Adapters o helpers de persistencia. |
 | `sdks:risk-events` | Contratos de eventos compartidos. |
-| `poc:java-vertx-distributed:shared` | DTOs/contratos específicos del PoC distribuido, hoy reutilizados por `java-monolith`. |
+| `poc:vertx-layer-as-pod-eventbus:shared` | DTOs/contratos específicos del PoC distribuido, hoy reutilizados por `vertx-monolith-inprocess`. |
 
 ### Estado actual de paridad
 
@@ -69,7 +90,7 @@ El `settings.gradle.kts` incluye módulos compartidos que sirven como base comú
 |---|---|
 | Dominio conceptual | Compartido: decisión de riesgo APPROVE/REVIEW/DECLINE. |
 | Implementación física | Parcialmente compartida; todavía hay duplicación por PoC. |
-| DTOs | Parcialmente compartidos vía `java-vertx-distributed:shared` y SDKs. |
+| DTOs | Parcialmente compartidos vía `vertx-layer-as-pod-eventbus:shared` y SDKs. |
 | Reglas | Hay `pkg:risk-domain`, pero no todo PoC consume exactamente el mismo pipeline. |
 | Observabilidad | El patrón es común, la profundidad varía por PoC. |
 | Benchmarks | Existen bases (`bench/`, k6, JMH), pero falta matriz empírica completa lado a lado. |
@@ -136,7 +157,7 @@ Traducción al caso de fraude:
 | Beneficio Vert.x | Cómo se evidencia en el repo |
 |---|---|
 | Pocos threads para mucha concurrencia I/O | HTTP + EventBus + Kafka/DB async sin thread-per-request clásico. |
-| EventBus local o distribuido | `java-monolith` vs `java-vertx-distributed`. |
+| EventBus local o distribuido | `vertx-monolith-inprocess` vs `vertx-layer-as-pod-eventbus`. |
 | Request-response interno | `controller-app -> usecase-app -> repository-app`. |
 | Pub/sub / async downstream | Audit/eventos que no bloquean decisión. |
 | Multi-reactor | Una JVM puede explotar varios cores sin levantar N procesos tipo Node.js. |
@@ -150,17 +171,17 @@ Traducción al caso de fraude:
 > Cuidado de wording: evitar frases como “Vert.x agrupa todos los controllers/repositories en el mismo pod”. Lo correcto es “el PoC puede desplegar verticles por rol/capa/bounded context; Vert.x habilita la comunicación, pero no impone la agrupación”.
 
 
-No conviene crear un servicio por cada “tipo de configuración”. La separación debe responder a una razón arquitectónica. En particular, `service-mesh-demo` no significa “un servicio por layer”; significa “un servicio por bounded context usando verticles/EventBus. No afirmamos que Vert.x obligue a agrupar controllers/usecases/repositories en pods.”
+No conviene crear un servicio por cada “tipo de configuración”. La separación debe responder a una razón arquitectónica. En particular, `vertx-service-mesh-bounded-contexts` no significa “un servicio por layer”; significa “un servicio por bounded context usando verticles/EventBus. No afirmamos que Vert.x obligue a agrupar controllers/usecases/repositories en pods.”
 
 ### A. Layer-as-pod
 
-En `java-vertx-distributed` usamos Vert.x para demostrar una topología **layer-as-pod**. Es decir: los verticles/adapters de controller, usecase, repository y consumer se despliegan en procesos/pods separados y se comunican por Vert.x clustered EventBus.
+En `vertx-layer-as-pod-eventbus` usamos Vert.x para demostrar una topología **layer-as-pod**. Es decir: los verticles/adapters de controller, usecase y repository se despliegan en procesos/pods separados y se comunican por Vert.x clustered EventBus. `consumer-app` también corre en un proceso/pod separado, pero es downstream async por Kafka y no participa del cluster Hazelcast/EventBus.
 
 ```text
 controller-app    -> verticles/adapters HTTP inbound
 usecase-app       -> verticles de aplicación / casos de uso
 repository-app    -> verticles/adapters de persistencia y feature store
-consumer-app      -> verticles consumers async
+consumer-app      -> worker downstream Kafka/S3 async; no Hazelcast/EventBus cluster
 ```
 
 Esta topología es una decisión del PoC, no una recomendación obligatoria de Vert.x. La usamos para evidenciar:
@@ -176,7 +197,7 @@ No debe describirse como microservicios de negocio. Es una PoC de separación t�
 
 ### B. Bounded contexts reales en Vert.x
 
-`service-mesh-demo` separa por capacidad de negocio, no por layer:
+`vertx-service-mesh-bounded-contexts` separa por capacidad de negocio, no por layer:
 
 ```text
 risk-decision-service  -> controller + usecases + repositories del contexto decisión
@@ -194,11 +215,11 @@ Esto sirve para demostrar:
 - audit async que no bloquea;
 - fallos parciales y fallback;
 - service-to-service real entre servicios Vert.x;
-- contraste contra `java-vertx-distributed`, donde la separación era por layer, no por bounded context.
+- contraste contra `vertx-layer-as-pod-eventbus`, donde la separación era por layer, no por bounded context.
 
 ### C. Monolith/modular baseline
 
-`java-risk-engine` y `java-monolith` muestran que Clean Architecture no exige distribución física:
+`no-vertx-clean-engine` y `vertx-monolith-inprocess` muestran que Clean Architecture no exige distribución física:
 
 ```text
 domain/application/infrastructure/config/cmd
@@ -237,7 +258,7 @@ La documentación de Vert.x **no dice** que controllers, usecases y repositories
 Por lo tanto, en este repo la lectura correcta es:
 
 ```text
-service-mesh-demo
+vertx-service-mesh-bounded-contexts
   = experimento Vert.x-to-Vert.x service-to-service
   = separación por bounded context
   = verticles/EventBus como mecanismo técnico de comunicación
@@ -245,14 +266,14 @@ service-mesh-demo
 
 Eso no es una regla de Vert.x; es una decisión del PoC para evitar mezclar dos demostraciones:
 
-1. **`java-vertx-distributed`**: separar layers técnicas en pods usando Vert.x clustered EventBus.
-2. **`service-mesh-demo`**: separar bounded contexts dentro del stack Vert.x usando verticles/EventBus, sin afirmar que Vert.x obligue a una distribución específica de layers en pods.
+1. **`vertx-layer-as-pod-eventbus`**: separar layers técnicas en pods usando Vert.x clustered EventBus.
+2. **`vertx-service-mesh-bounded-contexts`**: separar bounded contexts dentro del stack Vert.x usando verticles/EventBus, sin afirmar que Vert.x obligue a una distribución específica de layers en pods.
 
-Un `service-mesh-demo2` para `java-monolith` o `java-risk-engine` sería otra comparación, porque ya no estaría probando servicios/componentes Vert.x comunicándose por EventBus/proxies/cluster; estaría midiendo otro mecanismo inter-service, probablemente HTTP/gRPC/stdlib.
+Un `vertx-service-mesh-bounded-contexts2` para `vertx-monolith-inprocess` o `no-vertx-clean-engine` sería otra comparación, porque ya no estaría probando servicios/componentes Vert.x comunicándose por EventBus/proxies/cluster; estaría midiendo otro mecanismo inter-service, probablemente HTTP/gRPC/stdlib.
 
-### D. Qué sería `service-mesh-demo2`
+### D. Qué sería `vertx-service-mesh-bounded-contexts2`
 
-Un hipotético `service-mesh-demo2` para `java-monolith` o `java-risk-engine` sería otro experimento: comparar service-to-service con servicios que no comparten el stack Vert.x/EventBus. Eso podría servir para medir HTTP/gRPC/stdlib entre procesos, pero **no es el objetivo de `service-mesh-demo` actual**.
+Un hipotético `vertx-service-mesh-bounded-contexts2` para `vertx-monolith-inprocess` o `no-vertx-clean-engine` sería otro experimento: comparar service-to-service con servicios que no comparten el stack Vert.x/EventBus. Eso podría servir para medir HTTP/gRPC/stdlib entre procesos, pero **no es el objetivo de `vertx-service-mesh-bounded-contexts` actual**.
 
 El objetivo actual es más específico:
 
@@ -272,11 +293,11 @@ La comunicación no debe ser un servicio aparte. Es una propiedad del stack eleg
 
 | PoC | Comunicación |
 |---|---|
-| `java-risk-engine` | In-process / stdlib HTTP adapter. |
-| `java-monolith` | EventBus local dentro de una JVM. |
-| `java-vertx-distributed` | Vert.x clustered EventBus. |
-| `vertx-risk-platform` | HTTP entre pods con tokens. |
-| `service-mesh-demo` | EventBus RPC/async entre servicios/componentes Vert.x; empaquetado por bounded context definido por el PoC. |
+| `no-vertx-clean-engine` | In-process / stdlib HTTP adapter. |
+| `vertx-monolith-inprocess` | EventBus local dentro de una JVM. |
+| `vertx-layer-as-pod-eventbus` | Vert.x clustered EventBus. |
+| `vertx-layer-as-pod-http` | HTTP entre pods con tokens. |
+| `vertx-service-mesh-bounded-contexts` | EventBus RPC/async entre servicios/componentes Vert.x; empaquetado por bounded context definido por el PoC. |
 
 Un “communication-service” agregaría un hop, un SPOF lógico y una abstracción artificial. Para esta exploración es mejor que cada PoC exponga el costo real de su mecanismo.
 
@@ -286,11 +307,11 @@ Un “communication-service” agregaría un hop, un SPOF lógico y una abstracc
 
 | Gap | Acción recomendada | Resultado |
 |---|---|---|
-| Benchmark comparable | Ejecutar `./nx bench k6 competition load` contra targets `bare`, `monolith`, `vertx-platform`, `distributed`. | Tabla p50/p95/p99/throughput/error-rate. |
+| Benchmark comparable | Ejecutar `./nx bench k6 competition load` contra targets `no-vertx-clean-engine`, `vertx-monolith-inprocess`, `vertx-layer-as-pod-http`, `vertx-layer-as-pod-eventbus`. | Tabla p50/p95/p99/throughput/error-rate. |
 | Contrato de request único | Alinear payload mínimo entre PoCs: transactionId, customerId, amount, newDevice, idempotencyKey, correlationId. | Misma carga funcional. |
 | Misma lógica hot path | Extraer/usar `pkg:risk-domain` de forma consistente. | Comparación más justa. |
 | Separar ML dominante | Bench con ML disabled/fixed latency y bench con ML simulated. | Ver overhead de arquitectura vs dependency externo. |
-| Docs inconsistentes | Corregir referencias viejas a Java 25 como build real y “3 PoCs” donde ahora hay más variantes. | Narrativa confiable. |
+| Docs inconsistentes | Corregir referencias viejas a Java 25 como build real y recuentos de PoCs desactualizados. | Narrativa confiable. |
 | Vert.x benefits | Mantener esta matriz enlazada desde START-HERE/Quick Reference. | Reviewer entiende por qué Vert.x está en la exploración. |
 
 ---
@@ -299,7 +320,7 @@ Un “communication-service” agregaría un hop, un SPOF lógico y una abstracc
 
 Respuesta corta:
 
-> “No hice cinco apps porque sí. Mantengo el mismo problema de decisión de riesgo y cambio la topología: bare Java para latencia base, Vert.x monolith para event loop sin red, Vert.x EventBus clustered para layer-as-pod, HTTP pods para permisos/debuggability, y service-mesh-demo para bounded contexts reales dentro del stack Vert.x. Así puedo mostrar cuánto cuesta cada separación y cuándo vale la pena, sin afirmar que Vert.x imponga una topología de pods.”
+> “No hice cinco apps porque sí. Mantengo el mismo problema de decisión de riesgo y cambio la topología: no-Vert.x Java para latencia base, `vertx-monolith-inprocess` para event loop sin red, `vertx-layer-as-pod-eventbus` para layer-as-pod con EventBus clustered, `vertx-layer-as-pod-http` para HTTP+tokens entre pods, y vertx-service-mesh-bounded-contexts para bounded contexts reales dentro del stack Vert.x. Así puedo mostrar cuánto cuesta cada separación y cuándo vale la pena, sin afirmar que Vert.x imponga una topología de pods.”
 
 Si preguntan por Vert.x:
 

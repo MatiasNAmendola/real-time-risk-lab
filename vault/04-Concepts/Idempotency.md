@@ -18,7 +18,7 @@ Lecturas puras. Pipelines de agregación donde la deduplicación se maneja upstr
 
 ## En este proyecto
 
-`EvaluateRiskUseCase` chequea un `IdempotencyStore` in-memory key-eado por `transactionId`. Si la key existe, devuelve el resultado cacheado. Ver [[java-risk-engine]] y [[atdd-cucumber]] (feature 3: duplicate transaction).
+`EvaluateRiskUseCase` chequea un `IdempotencyStore` in-memory key-eado por `transactionId`. Si la key existe, devuelve el resultado cacheado. Ver [[no-vertx-clean-engine]] y [[atdd-cucumber]] (feature 3: duplicate transaction).
 
 ## Principio de diseño
 
@@ -26,4 +26,4 @@ Lecturas puras. Pipelines de agregación donde la deduplicación se maneja upstr
 
 ## Backlinks
 
-[[Circuit-Breaker]] · [[Outbox-Pattern]] · [[java-risk-engine]] · [[atdd-karate]] · [[atdd-cucumber]]
+[[Circuit-Breaker]] · [[Outbox-Pattern]] · [[no-vertx-clean-engine]] · [[atdd-karate]] · [[atdd-cucumber]]

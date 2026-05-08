@@ -20,12 +20,12 @@
 
 Verificá compose:
 ```bash
-docker compose -f compose/docker-compose.yml -f poc/java-vertx-distributed/compose.override.yml ps
+docker compose -f compose/docker-compose.yml -f poc/vertx-layer-as-pod-eventbus/compose.override.yml ps
 ```
 
 - **Container "Created" o "Exited"** → init container falló. Ver §1.1.
 - **Container "Up (unhealthy)"** → healthcheck mismatch. Ver §1.2.
-- **No containers** → `./nx up vertx` no se ejecutó o falló. Re-corré.
+- **No containers** → `./nx up vertx-layer-as-pod-eventbus` no se ejecutó o falló. Re-corré.
 
 ### 1.1 Init containers
 
@@ -100,7 +100,7 @@ docker exec compose-openbao-1 sh -c 'BAO_ADDR=http://127.0.0.1:8200 BAO_TOKEN=ro
 
 ## 4. HTTP 4xx — payload validation
 
-DTO autoritativo: `poc/java-vertx-distributed/shared/src/main/java/io/riskplatform/distributed/shared/RiskRequest.java` (ADR-… verás referencia en docs/34-lessons-learned.md).
+DTO autoritativo: `poc/vertx-layer-as-pod-eventbus/shared/src/main/java/io/riskplatform/distributed/shared/RiskRequest.java` (ADR-… verás referencia en docs/34-lessons-learned.md).
 
 Campos requeridos: `transactionId`, `customerId`, `amountCents`, `correlationId`, `idempotencyKey`. Cualquier extra es ignorado.
 
@@ -159,9 +159,9 @@ Si alguno falla → ese servicio es la raíz.
 
 ```bash
 ./nx down vertx
-./gradlew clean :poc:java-vertx-distributed:build -x test
-docker compose -f compose/docker-compose.yml -f poc/java-vertx-distributed/compose.override.yml build
-./nx up vertx
+./gradlew clean :poc:vertx-layer-as-pod-eventbus:build -x test
+docker compose -f compose/docker-compose.yml -f poc/vertx-layer-as-pod-eventbus/compose.override.yml build
+./nx up vertx-layer-as-pod-eventbus
 # esperar 60s
 ./nx demo rest --amount 150000 --customer cust-001
 ```

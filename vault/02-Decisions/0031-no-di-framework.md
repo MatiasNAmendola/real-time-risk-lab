@@ -15,7 +15,7 @@ Aceptado el 2026-05-07.
 
 ## Contexto
 
-Both Java PoCs (`poc/java-risk-engine/`, `poc/java-vertx-distributed/`) require dependency wiring: la HTTP controller needs un use case instance; la use case needs un repository y un circuit breaker; la circuit breaker needs configuration values. In production Spring Boot applications, este wiring es handled por la Spring IoC container via `@Autowired`, `@Component`, y `@Configuration` annotations.
+Both Java PoCs (`poc/no-vertx-clean-engine/`, `poc/vertx-layer-as-pod-eventbus/`) require dependency wiring: la HTTP controller needs un use case instance; la use case needs un repository y un circuit breaker; la circuit breaker needs configuration values. In production Spring Boot applications, este wiring es handled por la Spring IoC container via `@Autowired`, `@Component`, y `@Configuration` annotations.
 
 The PoCs deliberately avoid Spring Boot un demonstrate framework-independent clean architecture. But clean architecture still requires wiring — if no un DI container, then explicit constructor injection assembled somewhere.
 

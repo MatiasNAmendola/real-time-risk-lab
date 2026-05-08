@@ -1,4 +1,4 @@
-# GEMINI.md — Risk Decision Platform (Google Antigravity)
+# GEMINI.md — Real-Time Risk Lab (Google Antigravity)
 
 ## Proyecto
 

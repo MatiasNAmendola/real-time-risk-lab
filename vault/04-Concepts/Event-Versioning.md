@@ -19,7 +19,7 @@ Event bus interno (single producer, single consumer bajo el mismo deployment).
 
 ## En este proyecto
 
-Documentado en `docs/06-eventos-versionados.md`. Los eventos llevan campo `schemaVersion`. [[Schema-Registry]] impone compatibilidad. Ver [[java-vertx-distributed]] para el contrato AsyncAPI 3.0.
+Documentado en `docs/06-eventos-versionados.md`. Los eventos llevan campo `schemaVersion`. [[Schema-Registry]] impone compatibilidad. Ver [[vertx-layer-as-pod-eventbus]] para el contrato AsyncAPI 3.0.
 
 ## Principio de diseño
 

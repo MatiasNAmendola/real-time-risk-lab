@@ -118,7 +118,7 @@ Una trampa frecuente al leer JaCoCo: tomar el % de UNA suite como si fuera el co
 | Integration (Testcontainers) | adapters contra DB/Kafka/MinIO/Moto reales | use case puro, rules sin DB |
 | Karate ATDD (Vertx) | full stack via HTTP, event bus, Kafka publish | bare-javac path |
 
-Si miras solo Cucumber sobre `poc/java-risk-engine/` vas a ver 44% — enganoso. El package `infrastructure.controller` aparece al 0% no porque este sin testear, sino porque Cucumber no entra por HTTP — el HTTP controller se cubre con `HttpControllerSmokeTest` (JUnit), `infrastructure.repository.feature` con Integration (Testcontainers), y asi.
+Si miras solo Cucumber sobre `poc/no-vertx-clean-engine/` vas a ver 44% — enganoso. El package `infrastructure.controller` aparece al 0% no porque este sin testear, sino porque Cucumber no entra por HTTP — el HTTP controller se cubre con `HttpControllerSmokeTest` (JUnit), `infrastructure.repository.feature` con Integration (Testcontainers), y asi.
 
 ### El numero que importa: aggregated cross-suite
 
@@ -130,7 +130,7 @@ JaCoCo soporta merge de `.exec` files. Una vez que hayas corrido todas las suite
 
 Para ver el reporte directamente: `./nx audit coverage`.
 
-El numero agregado refleja la realidad. Tipicamente sube de 44% a ~80% en `poc/java-risk-engine/` cuando las tres suites corren.
+El numero agregado refleja la realidad. Tipicamente sube de 44% a ~80% en `poc/no-vertx-clean-engine/` cuando las tres suites corren.
 
 ### How to explain the coverage split
 

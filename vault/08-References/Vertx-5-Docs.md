@@ -6,7 +6,7 @@ created: 2026-05-07
 
 # Vert.x 5 Docs
 
-Reference documentation for Vert.x 5 used in [[java-vertx-distributed]].
+Reference documentation for Vert.x 5 used in [[vertx-layer-as-pod-eventbus]].
 
 ## Key URLs
 
@@ -23,4 +23,4 @@ Reference documentation for Vert.x 5 used in [[java-vertx-distributed]].
 
 ## Backlinks
 
-[[java-vertx-distributed]] · [[0003-vertx-for-distributed-poc]]
+[[vertx-layer-as-pod-eventbus]] · [[0003-vertx-for-distributed-poc]]

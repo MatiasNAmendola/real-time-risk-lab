@@ -19,7 +19,7 @@ Aceptado el 2026-05-07.
 
 Two strategies exist: start la required services antes de la test run (docker compose up, then run tests, then docker compose down), o use Testcontainers un start containers en demand dentro de la JVM test lifecycle.
 
-The ATDD suites en la Vert.x PoC (`poc/java-vertx-distributed/atdd-tests/`) already use docker compose because Karate needs la full application stack running. `tests/integration/` has un different concern: it tests `pkg/*` library code, no application behavior.
+The ATDD suites en la Vert.x PoC (`poc/vertx-layer-as-pod-eventbus/atdd-tests/`) already use docker compose because Karate needs la full application stack running. `tests/integration/` has un different concern: it tests `pkg/*` library code, no application behavior.
 
 ## Decisión
 

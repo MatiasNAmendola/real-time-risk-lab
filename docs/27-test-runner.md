@@ -166,7 +166,7 @@ los 4 corren concurrentemente sin tocar ningún techo.
 | Unit Java rápido | `unit-java-fast` | No | Lista explícita de tareas Gradle; nunca `./gradlew test`. |
 | Unit SDK | `unit-sdk` | No | Composite de Java/TypeScript/Go SDK unit. |
 | Arquitectura | `arch` | No | ArchUnit; exclusivo para evitar carrera de reportes XML con otra invocación Gradle. |
-| Component Vert.x | `component-vertx` | No | Tests in-process con puertos dinámicos. |
+| Component Vert.x | `component-vertx-layer-as-pod-http` | No | Tests in-process con puertos dinámicos. |
 | Integration Testcontainers | `integration-testcontainers` | Docker | Corre solo por consumo de Docker/Ryuk. |
 | Integration compose | `integration-compose` | Compose | Suites compose marcadas `exclusive: true`. |
 | SDK integration | `sdk-integration` | Compose | SDKs contra stack local, uno por vez. |

@@ -50,7 +50,7 @@ source: docs/09-architecture-question-bank.md
 22. Walk-through definiendo un [[SLI-SLO-Error-Budget]] para este servicio.
 23. ¿Cómo implementás un gate de [[Canary-Deployment]] usando Prometheus?
 
-## Bloque 7 — Staff y Mentoring
+## Bloque 7 — Liderazgo técnico y mentoring
 
 24. ¿Cómo introducís [[ATDD]] a un equipo que solo hace unit tests?
 25. Describí un momento en que cambiaste el enfoque de diseño de sistema de un equipo. ¿Qué resistencia enfrentaste?

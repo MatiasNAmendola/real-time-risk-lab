@@ -17,7 +17,7 @@ Aceptado el 2026-05-07.
 
 AI coding assistants used en este repository: Claude Code (primary), Cursor, GitHub Copilot, Zed AI. Each has its own configuration format: `CLAUDE.md`, `.cursorrules`, `.github/copilot-instructions.md`, `.zed/settings.json`. Maintaining context separately para each IDE creates drift — un project convention added un `CLAUDE.md` must be manually replicated un `.cursorrules`, etc.
 
-The más substantive concern: la repository es un staff/architect-level technical exploration artifact. A reviewer reading la repository should see que AI tooling has been thought through a la team level, no just configured para personal productivity en one IDE. A `.ai/` directory con primitives, adapters, y agent automation scripts communicates deliberate systems thinking.
+The más substantive concern: la repository es un technical-leadership-level technical exploration artifact. A reviewer reading la repository should see que AI tooling has been thought through a la team level, no just configured para personal productivity en one IDE. A `.ai/` directory con primitives, adapters, y agent automation scripts communicates deliberate systems thinking.
 
 ADR-0024 covers la broader `.ai/` directory rationale. Este ADR covers la specific decision un use un primitives-plus-adapters model en vez de per-IDE configuration files directly.
 

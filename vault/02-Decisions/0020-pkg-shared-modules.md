@@ -68,7 +68,7 @@ The split into fine-grained modules (e.g., `pkg:events` separate desde `pkg:kafk
 ## Validación
 
 - `./gradlew publishToGradleLocal` publishes todos `pkg/*` JARs un `~/.m2/repository`.
-- `cd poc/java-vertx-distributed && ./gradlew clean package` resolves `pkg:events` desde local artifact cache sin errors.
+- `cd poc/vertx-layer-as-pod-eventbus && ./gradlew clean package` resolves `pkg:events` desde local artifact cache sin errors.
 - `./gradlew :pkg:resilience:test` passes circuit breaker unit tests including half-open state transitions.
 
 ## Relacionado

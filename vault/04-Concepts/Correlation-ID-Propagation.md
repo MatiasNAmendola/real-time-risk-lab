@@ -18,7 +18,7 @@ Monolitos single-process donde el call stack ya es el trace.
 
 ## En este proyecto
 
-En [[java-vertx-distributed]]: el HTTP controller inyecta `X-Correlation-Id` en MDC y en el span OTel. Los mensajes del event bus lo llevan como header. Los records Kafka lo llevan como record header. Todos los logs lo incluyen vía MDC. El check 9 de [[risk-smoke-tui]] verifica propagación end-to-end.
+En [[vertx-layer-as-pod-eventbus]]: el HTTP controller inyecta `X-Correlation-Id` en MDC y en el span OTel. Los mensajes del event bus lo llevan como header. Los records Kafka lo llevan como record header. Todos los logs lo incluyen vía MDC. El check 9 de [[risk-smoke-tui]] verifica propagación end-to-end.
 
 ## Principio de diseño
 
@@ -26,4 +26,4 @@ En [[java-vertx-distributed]]: el HTTP controller inyecta `X-Correlation-Id` en 
 
 ## Backlinks
 
-[[Observability]] · [[SLI-SLO-Error-Budget]] · [[java-vertx-distributed]] · [[risk-smoke-tui]] · [[0004-openobserve-otel]]
+[[Observability]] · [[SLI-SLO-Error-Budget]] · [[vertx-layer-as-pod-eventbus]] · [[risk-smoke-tui]] · [[0004-openobserve-otel]]

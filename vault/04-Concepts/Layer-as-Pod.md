@@ -18,7 +18,7 @@ Servicios de bajo tráfico donde el overhead operacional de 3+ deployments separ
 
 ## En este proyecto
 
-[[java-vertx-distributed]]: `controller-app`, `usecase-app`, `repository-app` son 3 imágenes Docker separadas. El Helm chart de [[k8s-local]] los despliega como 3 Deployments separados. La segmentación de red espeja el diseño de namespaces del EKS productivo.
+[[vertx-layer-as-pod-eventbus]]: `controller-app`, `usecase-app`, `repository-app` son 3 imágenes Docker separadas. El Helm chart de [[k8s-local]] los despliega como 3 Deployments separados. La segmentación de red espeja el diseño de namespaces del EKS productivo.
 
 ## Principio de diseño
 
@@ -26,4 +26,4 @@ Servicios de bajo tráfico donde el overhead operacional de 3+ deployments separ
 
 ## Backlinks
 
-[[Clean-Architecture]] · [[Hexagonal-Architecture]] · [[java-vertx-distributed]] · [[k8s-local]] · [[0003-vertx-for-distributed-poc]]
+[[Clean-Architecture]] · [[Hexagonal-Architecture]] · [[vertx-layer-as-pod-eventbus]] · [[k8s-local]] · [[0003-vertx-for-distributed-poc]]

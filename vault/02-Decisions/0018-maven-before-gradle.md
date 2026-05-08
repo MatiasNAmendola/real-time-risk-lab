@@ -15,7 +15,7 @@ Aceptado el 2026-05-07.
 
 ## Contexto
 
-The bare-javac PoC (`poc/java-risk-engine/`) needed external dependencies (JUnit 5, ArchUnit) después de la domain model fue complete. A build tool fue required. La Vert.x distributed PoC (`poc/java-vertx-distributed/`) needed multi-module coordination (5 Gradle modules en un reactor) desde la start because Vert.x requires specific BOM import y fat JAR packaging.
+The bare-javac PoC (`poc/no-vertx-clean-engine/`) needed external dependencies (JUnit 5, ArchUnit) después de la domain model fue complete. A build tool fue required. La Vert.x distributed PoC (`poc/vertx-layer-as-pod-eventbus/`) needed multi-module coordination (5 Gradle modules en un reactor) desde la start because Vert.x requires specific BOM import y fat JAR packaging.
 
 At la time these PoCs fueron created, la root Gradle reactor (`build-logic/`, `settings.gradle.kts`) did no yet exist. La `build-logic/` convention plugins fueron designed y built después de la PoCs demonstrated la domain model. Introducing Gradle into la PoCs antes de la convention plugins existed would have meant writing Gradle Kotlin DSL desde scratch para each module — más friction than Gradle para un reactive, Vert.x-specific build.
 
@@ -23,7 +23,7 @@ Gradle es also la build tool used en `tests/architecture/` (ArchUnit standalone 
 
 ## Decisión
 
-Use Gradle para ambos PoCs y para la `tests/` layer. La Vert.x PoC uses un Gradle multi-module reactor con BOM import para Vert.x 5 y Hazelcast. `poc/java-risk-engine/` migrates desde bare-javac un Gradle when ArchUnit tests son added. `tests/architecture/` y `tests/integration/` use Gradle because they test la PoC JARs, no la Gradle `pkg/*` modules.
+Use Gradle para ambos PoCs y para la `tests/` layer. La Vert.x PoC uses un Gradle multi-module reactor con BOM import para Vert.x 5 y Hazelcast. `poc/no-vertx-clean-engine/` migrates desde bare-javac un Gradle when ArchUnit tests son added. `tests/architecture/` y `tests/integration/` use Gradle because they test la PoC JARs, no la Gradle `pkg/*` modules.
 
 Root-level `pkg/*` y `sdks/*` modules use Gradle 8 con Kotlin DSL (ADR-0019), establishing un deliberate split: experimental PoC code lives bajo Gradle, production-quality shared libraries live bajo Gradle.
 
@@ -58,7 +58,7 @@ Root-level `pkg/*` y `sdks/*` modules use Gradle 8 con Kotlin DSL (ADR-0019), es
 
 ### Negativo
 - Repository requires ambos `./gradlew` y `./gradlew` commands en BUILDING.md.
-- `poc/java-vertx-distributed/build.gradle.kts` y `poc/java-risk-engine/build.gradle.kts` son no included en la root Gradle reactor — they son parallel build graphs.
+- `poc/vertx-layer-as-pod-eventbus/build.gradle.kts` y `poc/no-vertx-clean-engine/build.gradle.kts` son no included en la root Gradle reactor — they son parallel build graphs.
 - IDE configuration es más complex (two project models).
 
 ### Mitigaciones
@@ -67,8 +67,8 @@ Root-level `pkg/*` y `sdks/*` modules use Gradle 8 con Kotlin DSL (ADR-0019), es
 
 ## Validación
 
-- `cd poc/java-vertx-distributed && ./gradlew clean package` produces todos 5 fat JARs.
-- `cd poc/java-risk-engine && ./gradlew test` runs ArchUnit y smoke tests.
+- `cd poc/vertx-layer-as-pod-eventbus && ./gradlew clean package` produces todos 5 fat JARs.
+- `cd poc/no-vertx-clean-engine && ./gradlew test` runs ArchUnit y smoke tests.
 - `./gradlew build` builds todos `pkg/*` y `sdks/*` modules sin touching PoC directories.
 
 ## Relacionado

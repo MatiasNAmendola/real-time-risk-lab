@@ -12,7 +12,7 @@
 | Falla típica | Test rojo → escribir código → verde | Feature roja → entender requerimiento → implementar → verde |
 | Audiencia del test | Otros devs | Stakeholders no técnicos también |
 
-ATDD no reemplaza TDD: lo envuelve. La feature en Gherkin describe el QUÉ; los tests unitarios TDD describen el CÓMO. Para el rol de staff/architect que evalúa procesos, ATDD demuestra madurez de práctica más allá de "sé escribir tests".
+ATDD no reemplaza TDD: lo envuelve. La feature en Gherkin describe el QUÉ; los tests unitarios TDD describen el CÓMO. Para el rol de technical leadership que evalúa procesos, ATDD demuestra madurez de práctica más allá de "sé escribir tests".
 
 ## El ciclo ATDD
 
@@ -47,13 +47,13 @@ Para Transactional Risk, ATDD es especialmente valioso porque:
 1. **Las decisiones de fraude son auditables**. Una feature como "el sistema declina toda transacción mayor a 200000 si el cliente tiene menos de 30 días" es un contrato regulatorio, no una preferencia técnica.
 2. **El riesgo regulatorio no admite ambigüedad**. Si Compliance puede leer y firmar el feature file, el contrato queda explícito antes del código.
 3. **Cambia más el negocio que la tecnología**. Las reglas de fraude cambian semanalmente; los adapters cambian rara vez. ATDD ataca el eje de cambio real.
-4. **Los modelos ML necesitan policy testing**. Una feature como "si el modelo no responde en 80ms, el sistema cae a reglas determinísticas" es exactamente lo que un staff engineer querría que esté verificado en CI.
+4. **Los modelos ML necesitan policy testing**. Una feature como "si el modelo no responde en 80ms, el sistema cae a reglas determinísticas" es exactamente lo que un technical leadership engineer querría que esté verificado en CI.
 
 ## Cómo organizamos las pruebas en estos PoC
 
 Dos suites paralelas, una por PoC:
 
-### `poc/java-vertx-distributed/atdd-tests/` — Karate
+### `poc/vertx-layer-as-pod-eventbus/atdd-tests/` — Karate
 - Para la PoC distribuida con todos los patrones de comunicación (REST, SSE, WS, Webhook, Kafka).
 - Karate es ideal porque cada feature levanta llamadas HTTP/WS reales contra los servicios corriendo en docker compose.
 - Los features cubren end-to-end, no piezas internas.

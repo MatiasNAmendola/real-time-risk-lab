@@ -1,10 +1,10 @@
 ---
-title: Project Pitch — Risk Decision Platform
+title: Project Pitch — Real-Time Risk Lab
 tags: [moc, project-pitch]
 created: 2026-05-07
 ---
 
-# Project Pitch — Risk Decision Platform
+# Project Pitch — Real-Time Risk Lab
 
 Un sistema de decisión de fraude en tiempo real explorado a través de tres arquitecturas Java, diseñado para validar trade-offs entre latencia in-process, aislamiento distribuido y simplicidad operacional.
 
@@ -18,9 +18,9 @@ Un sistema de decisión de fraude en tiempo real explorado a través de tres arq
 
 ## Arquitecturas exploradas
 
-1. **Bare-javac** (`poc/java-risk-engine/`) — Clean Architecture sin frameworks. Dominio, ports y use cases implementados con `javac` puro. Sin Spring, sin Vert.x. Valida que la arquitectura hexagonal es una disciplina de código, no un feature de framework.
-2. **Single-JVM monolith** (`poc/java-monolith/`) — Vert.x con infraestructura completa: Postgres, Valkey, Redpanda, MinIO, ElasticMQ. Baseline de latencia realista para producción.
-3. **Layer-as-pod distribuido** (`poc/java-vertx-distributed/`) — 4 JVMs con event bus de Hazelcast. Controller, usecase, repository y consumer como procesos independientes. Valida los límites de aislamiento bajo presión de deployment.
+1. **Bare-javac** (`poc/no-vertx-clean-engine/`) — Clean Architecture sin frameworks. Dominio, ports y use cases implementados con `javac` puro. Sin Spring, sin Vert.x. Valida que la arquitectura hexagonal es una disciplina de código, no un feature de framework.
+2. **Single-JVM monolith** (`poc/vertx-monolith-inprocess/`) — Vert.x con infraestructura completa: Postgres, Valkey, Redpanda, MinIO, ElasticMQ. Baseline de latencia realista para producción.
+3. **Layer-as-pod distribuido** (`poc/vertx-layer-as-pod-eventbus/`) — 4 JVMs con event bus de Hazelcast. Controller, usecase, repository y consumer como procesos independientes. Valida los límites de aislamiento bajo presión de deployment.
 
 ## Qué valida esto
 

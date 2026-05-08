@@ -19,7 +19,7 @@ APIs CRUD sin complejidad de dominio. El costo de ceremonia supera al beneficio.
 
 ## En este proyecto
 
-`poc/java-risk-engine/` lo impone vía package naming: `domain/` tiene cero `import` referenciando a `infrastructure/`. Ver [[java-risk-engine]] y [[0002-enterprise-go-layout-in-java]].
+`poc/no-vertx-clean-engine/` lo impone vía package naming: `domain/` tiene cero `import` referenciando a `infrastructure/`. Ver [[no-vertx-clean-engine]] y [[0002-enterprise-go-layout-in-java]].
 
 ## Principio de diseño
 
@@ -27,4 +27,4 @@ APIs CRUD sin complejidad de dominio. El costo de ceremonia supera al beneficio.
 
 ## Backlinks
 
-[[Architecture]] · [[Hexagonal-Architecture]] · [[java-risk-engine]] · [[0002-enterprise-go-layout-in-java]]
+[[Architecture]] · [[Hexagonal-Architecture]] · [[no-vertx-clean-engine]] · [[0002-enterprise-go-layout-in-java]]

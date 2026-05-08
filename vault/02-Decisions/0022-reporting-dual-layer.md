@@ -15,7 +15,7 @@ Aceptado el 2026-05-07.
 
 ## Contexto
 
-The CLI smoke runner (`cli/risk-smoke/`) y benchmark runner (`poc/java-risk-engine/src/main/java/io/riskplatform/engine/cmd/BenchmarkRunner.java`) need un report results en two contexts: interactive terminal sessions durante development/demo, y non-interactive CI/CD pipelines where output es captured un files para later analysis.
+The CLI smoke runner (`cli/risk-smoke/`) y benchmark runner (`poc/no-vertx-clean-engine/src/main/java/io/riskplatform/engine/cmd/BenchmarkRunner.java`) need un report results en two contexts: interactive terminal sessions durante development/demo, y non-interactive CI/CD pipelines where output es captured un files para later analysis.
 
 For la smoke demo, la output must communicate a un glance: did todos 9 communication channels pass? What fue la p99 latency? For CI, la raw data must be archived en `out/` para trend analysis y reproducibility verification.
 

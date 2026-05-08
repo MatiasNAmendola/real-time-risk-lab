@@ -18,7 +18,7 @@ Llamadas internas en proceso. Async fire-and-forget donde la falla es aceptable.
 
 ## En este proyecto
 
-Implementación manual de 40 líneas en `infrastructure/resilience/CircuitBreaker.java`. Envuelve las llamadas al modelo ML y a servicios de riesgo downstream. [[ML-Online-Fallback]] se dispara cuando el circuito está Open. Ver [[java-risk-engine]] y feature 4 de [[atdd-karate]].
+Implementación manual de 40 líneas en `infrastructure/resilience/CircuitBreaker.java`. Envuelve las llamadas al modelo ML y a servicios de riesgo downstream. [[ML-Online-Fallback]] se dispara cuando el circuito está Open. Ver [[no-vertx-clean-engine]] y feature 4 de [[atdd-karate]].
 
 ## Principio de diseño
 
@@ -26,4 +26,4 @@ Implementación manual de 40 líneas en `infrastructure/resilience/CircuitBreake
 
 ## Backlinks
 
-[[Bulkhead]] · [[ML-Online-Fallback]] · [[Latency-Budget]] · [[java-risk-engine]] · [[java-vertx-distributed]]
+[[Bulkhead]] · [[ML-Online-Fallback]] · [[Latency-Budget]] · [[no-vertx-clean-engine]] · [[vertx-layer-as-pod-eventbus]]

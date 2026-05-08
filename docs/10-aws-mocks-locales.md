@@ -77,7 +77,7 @@ poc/k8s-local/addons/
 ```
 
 `poc/k8s-local/scripts/demo.sh` expone:
-- MinIO console: `http://localhost:9001` (minioadmin / minioadmin)
+- MinIO console: `http://localhost:9001` (${MINIO_ROOT_USER} / ${MINIO_ROOT_PASSWORD})
 - ElasticMQ UI: `http://localhost:9325`
 - Moto API: `http://localhost:5000` (sin UI, solo REST)
 - OpenBao UI: `http://localhost:8200/ui` (token: root en dev mode)
@@ -130,12 +130,12 @@ Los mocks están efectivamente wired a las dos PoCs Java:
 
 | PoC | App | Servicio AWS | Mock | Adapter |
 |---|---|---|---|---|
-| java-vertx-distributed | usecase-app | S3 audit log | MinIO :9000 | `S3AuditPublisher` — publica cada decisión |
-| java-vertx-distributed | usecase-app | SQS output alternativo | ElasticMQ :9324 | `SqsDecisionPublisher` — dual output con Kafka |
-| java-vertx-distributed | repository-app | Secrets Manager (DB password) | Moto :5000 + OpenBao :8200 | `SecretsBootstrap.resolveDbPassword()` |
-| java-vertx-distributed | consumer-app | S3 audit DECLINE/REVIEW | MinIO :9000 | `ConsumerS3AuditPublisher` |
-| java-risk-engine | (todos) | S3 audit | MinIO (Phase 2) | Port `AuditEventPublisher` creado; NoOp activo |
-| java-risk-engine | (todos) | Secrets Manager | Moto (Phase 2) | Port `SecretsProvider` creado; EnvSecretsProvider activo |
+| vertx-layer-as-pod-eventbus | usecase-app | S3 audit log | MinIO :9000 | `S3AuditPublisher` — publica cada decisión |
+| vertx-layer-as-pod-eventbus | usecase-app | SQS output alternativo | ElasticMQ :9324 | `SqsDecisionPublisher` — dual output con Kafka |
+| vertx-layer-as-pod-eventbus | repository-app | Secrets Manager (DB password) | Moto :5000 + OpenBao :8200 | `SecretsBootstrap.resolveDbPassword()` |
+| vertx-layer-as-pod-eventbus | consumer-app | S3 audit DECLINE/REVIEW | MinIO :9000 | `ConsumerS3AuditPublisher` |
+| no-vertx-clean-engine | (todos) | S3 audit | MinIO (Phase 2) | Port `AuditEventPublisher` creado; NoOp activo |
+| no-vertx-clean-engine | (todos) | Secrets Manager | Moto (Phase 2) | Port `SecretsProvider` creado; EnvSecretsProvider activo |
 
 ### Degradación graceful
 
@@ -143,13 +143,13 @@ Todos los adapters están diseñados para no fallar si el mock no está disponib
 - `S3AuditPublisher` / `ConsumerS3AuditPublisher`: si `AWS_ENDPOINT_URL_S3` no está seteado, no publican nada.
 - `SqsDecisionPublisher`: si `AWS_ENDPOINT_URL_SQS` no está seteado, no publica nada.
 - `SecretsBootstrap`: si Moto falla, intenta OpenBao; si OpenBao falla, usa `PG_PASSWORD` env var.
-- `java-risk-engine`: usa `NoOpAuditEventPublisher` y `EnvSecretsProvider` hasta Phase 2 (Gradle).
+- `no-vertx-clean-engine`: usa `NoOpAuditEventPublisher` y `EnvSecretsProvider` hasta Phase 2 (Gradle).
 
 ### E2E — hacer una decisión y verificar audit log
 
 ```bash
 # Levantar el stack completo (incluye MinIO, Moto, ElasticMQ, OpenBao)
-./poc/java-vertx-distributed/scripts/up.sh
+./poc/vertx-layer-as-pod-eventbus/scripts/up.sh
 
 # Hacer una decisión de alto riesgo
 curl -s -X POST http://localhost:8080/risk \

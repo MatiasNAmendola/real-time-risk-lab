@@ -325,7 +325,7 @@ Cada entrada tiene:
 
 ### G4. TRAMPA: "¿Qué harías en tus primeros 30 días si entrás al equipo?"
 
-**Qué mide:** humildad y juicio de un staff engineer; no entrar a cambiar cosas sin entender primero.
+**Qué mide:** humildad y juicio de un technical leadership engineer; no entrar a cambiar cosas sin entender primero.
 
 **Análisis modelo:**
 > Los primeros 30 días son para escuchar y mapear, no para proponer. Quiero entender: el p99 real end-to-end con traces reales, dónde está el cuello de botella medido actualmente, cómo están estructurados los eventos y si hay un schema registry, cuánto del código está desacoplado del runtime actual, cómo es el proceso de deploy de reglas, y qué cobertura de observabilidad existe hoy. Con ese mapa, en el día 30 puedo proponer un plan concreto basado en evidencia, con prioridades, no asunciones. Las primeras semanas no son para destacar; son para no romper lo que funciona y entender por qué se tomaron las decisiones actuales.
@@ -362,12 +362,12 @@ Cada entrada tiene:
 
 ---
 
-### H2. "¿Qué agrega vertx-risk-platform sobre java-vertx-distributed? ¿No es duplicación?"
+### H2. "¿Qué agrega vertx-layer-as-pod-http sobre vertx-layer-as-pod-eventbus? ¿No es duplicación?"
 
 **Qué mide:** capacidad de articular cuándo dos PoCs con scope solapado tienen justificación arquitectónica vs deuda técnica.
 
 **Análisis modelo:**
-> java-vertx-distributed valida la separación de capas como pods con comunicación HTTP entre servicios: controller, usecase, repository, consumer como procesos independientes. vertx-risk-platform escala esa idea a una plataforma completa con gestión de reglas, soporte multi-tenant y orquestación de decisiones complejas. No es duplicación: la primera valida la topología distribuida, la segunda valida que la topología puede manejar use cases productivos con lógica de negocio más rica. Si la segunda PoC rompe la separación de concerns que la primera estableció, es señal de que el diseño tiene problemas antes de llegar a producción.
+> vertx-layer-as-pod-eventbus valida la separación de capas como pods con comunicación HTTP entre servicios: controller, usecase, repository, consumer como procesos independientes. vertx-layer-as-pod-http escala esa idea a una plataforma completa con gestión de reglas, soporte multi-tenant y orquestación de decisiones complejas. No es duplicación: la primera valida la topología distribuida, la segunda valida que la topología puede manejar use cases productivos con lógica de negocio más rica. Si la segunda PoC rompe la separación de concerns que la primera estableció, es señal de que el diseño tiene problemas antes de llegar a producción.
 
 **Modo de falla común:** no poder explicar la diferencia de scope y responder "son variantes de la misma PoC". Eso señala que no hay decisión arquitectónica clara detrás de cada una.
 
@@ -395,12 +395,12 @@ Cada entrada tiene:
 
 ---
 
-### H5. "¿Por qué java-risk-engine no usa framework? ¿No es reinventar la rueda?"
+### H5. "¿Por qué no-vertx-clean-engine no usa framework? ¿No es reinventar la rueda?"
 
 **Qué mide:** capacidad de articular trade-offs entre simplicidad y conveniencia, y de distinguir una PoC pedagógica de una decisión de producción.
 
 **Análisis modelo:**
-> El objetivo de java-risk-engine (bare-javac) es pedagógico: demostrar que la arquitectura hexagonal es independiente del framework, no consecuencia de él. Si la primera PoC usa Spring, hay riesgo de que la arquitectura hexagonal quede enmascarada por convenciones del framework: `@Component`, `@Service`, inyección automática. Construirla sin framework fuerza las preguntas: "¿Dónde vive el Composition Root?", "¿Cómo cruza el request el borde del port?", "¿El domain sabe algo del adapter HTTP?". La decisión de producción es distinta: en un servicio real usaría Vert.x o Spring con los mismos bordes. La PoC sin framework no es una recomendación de arquitectura productiva; es una herramienta pedagógica para que el equipo entienda la separación antes de que el framework la oscurezca.
+> El objetivo de no-vertx-clean-engine (bare-javac) es pedagógico: demostrar que la arquitectura hexagonal es independiente del framework, no consecuencia de él. Si la primera PoC usa Spring, hay riesgo de que la arquitectura hexagonal quede enmascarada por convenciones del framework: `@Component`, `@Service`, inyección automática. Construirla sin framework fuerza las preguntas: "¿Dónde vive el Composition Root?", "¿Cómo cruza el request el borde del port?", "¿El domain sabe algo del adapter HTTP?". La decisión de producción es distinta: en un servicio real usaría Vert.x o Spring con los mismos bordes. La PoC sin framework no es una recomendación de arquitectura productiva; es una herramienta pedagógica para que el equipo entienda la separación antes de que el framework la oscurezca.
 
 **Modo de falla común:** defender el approach sin framework como decisión productiva, o descartarlo como "purismo excesivo sin valor práctico". El valor es pedagógico y de validación de bordes, no operacional.
 

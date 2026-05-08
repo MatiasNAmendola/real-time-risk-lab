@@ -18,7 +18,7 @@ Código de glue, wiring de infraestructura, configuración. El costo del feedbac
 
 ## En este proyecto
 
-Los tests de entidades de dominio y de use cases en [[java-risk-engine]] siguen TDD. No se necesita contexto Spring — los unit tests Java puros corren en <10ms cada uno.
+Los tests de entidades de dominio y de use cases en [[no-vertx-clean-engine]] siguen TDD. No se necesita contexto Spring — los unit tests Java puros corren en <10ms cada uno.
 
 ## Principio de diseño
 
@@ -26,4 +26,4 @@ Los tests de entidades de dominio y de use cases en [[java-risk-engine]] siguen 
 
 ## Backlinks
 
-[[ATDD]] · [[BDD]] · [[Testing-Strategy]] · [[java-risk-engine]]
+[[ATDD]] · [[BDD]] · [[Testing-Strategy]] · [[no-vertx-clean-engine]]

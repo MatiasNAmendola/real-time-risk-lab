@@ -19,7 +19,7 @@ Pipelines pure-append de alto throughput donde la tabla outbox se vuelve cuello 
 
 ## En este proyecto
 
-Agregado explícitamente a [[java-risk-engine]] como mejora arquitectural sobre el patrón direct-publish (ver [[0008-outbox-pattern-explicit]]). `OutboxRepository` es secondary port; `OutboxPoller` en infrastructure poll-ea y publica.
+Agregado explícitamente a [[no-vertx-clean-engine]] como mejora arquitectural sobre el patrón direct-publish (ver [[0008-outbox-pattern-explicit]]). `OutboxRepository` es secondary port; `OutboxPoller` en infrastructure poll-ea y publica.
 
 ## Principio de diseño
 
@@ -27,4 +27,4 @@ Agregado explícitamente a [[java-risk-engine]] como mejora arquitectural sobre 
 
 ## Backlinks
 
-[[Architecture]] · [[Event-Versioning]] · [[DLQ]] · [[java-risk-engine]] · [[0008-outbox-pattern-explicit]]
+[[Architecture]] · [[Event-Versioning]] · [[DLQ]] · [[no-vertx-clean-engine]] · [[0008-outbox-pattern-explicit]]

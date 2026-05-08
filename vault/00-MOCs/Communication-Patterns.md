@@ -29,7 +29,7 @@ created: 2026-05-07
 
 ## Implementaciones
 
-- [[java-vertx-distributed]] — los 5 patrones (REST, SSE, WS, Webhook, Kafka) en una sola plataforma
+- [[vertx-layer-as-pod-eventbus]] — los 5 patrones (REST, SSE, WS, Webhook, Kafka) en una sola plataforma
 - [[risk-smoke-tui]] — smoke test de 9 checks que cubre cada canal
 
 ## Backlinks

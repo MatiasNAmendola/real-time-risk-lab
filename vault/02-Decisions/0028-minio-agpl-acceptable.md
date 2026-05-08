@@ -67,7 +67,7 @@ For any production-adjacent use o SaaS embedding, la MinIO Commercial License o 
 ## Validación
 
 - `doc 10/aws-mocks-locales.md` documents la MinIO AGPL note explicitly.
-- MinIO container en `poc/k8s-local/` y `poc/java-vertx-distributed/compose.override.yml` has un comment referencing este ADR.
+- MinIO container en `poc/k8s-local/` y `poc/vertx-layer-as-pod-eventbus/compose.override.yml` has un comment referencing este ADR.
 
 ## Relacionado
 

@@ -1,4 +1,4 @@
-# Risk Decision Platform — exploración técnica
+# Real-Time Risk Lab — exploración técnica
 
 Plataforma de práctica para discutir decisiones de riesgo/fraude en tiempo real: 150 TPS sostenidos, presupuesto p99 < 300ms, camino crítico sincrónico para la decisión y flujo asíncrono para auditoría, eventos, ML/downstream y observabilidad.
 
@@ -22,14 +22,14 @@ Plataforma de práctica para discutir decisiones de riesgo/fraude en tiempo real
 | Consistency audit `./nx audit consistency` | OK: 91.9% con `--strict`, threshold 80% |
 | Confidentiality `./nx audit confidentiality` | OK: blocklist no vacía, scan real |
 | Scrub `./nx scrub` | OK: sin patrones obvios de secretos/PII |
-| Vert.x local pods | OK vía `poc/vertx-risk-platform/scripts/run-local-pods.sh` + `smoke.sh` |
+| Vert.x local pods | OK vía `poc/vertx-layer-as-pod-http/scripts/run-local-pods.sh` + `smoke.sh` |
 | Benchmark in-process `./nx bench inproc` | OK; usar como evidencia de latencia base del core |
 | Compose distribuido Vert.x | Modo avanzado; no es el demo principal |
 
 ## Qué demuestra
 
 - **Clean Architecture / Hexagonal**: dominio desacoplado de runtime/framework/infra.
-- **Tres estilos de ejecución**: engine bare-javac, monolito Vert.x e implementación distribuida layer-as-pod.
+- **Estilos de ejecución comparables**: engine sin framework, monolito Vert.x, layer-as-pod HTTP/EventBus, service-to-service y k8s local.
 - **Camino crítico vs async**: decisión online separada de auditoría/eventos/consumers.
 - **Trazabilidad**: correlationId, idempotencyKey, eventos versionados y decision trace.
 - **Resiliencia**: timeouts, circuit breakers, fallbacks e idempotencia.
@@ -51,7 +51,7 @@ Plataforma de práctica para discutir decisiones de riesgo/fraude en tiempo real
 Demo rápida del engine HTTP:
 
 ```bash
-./nx run risk-engine
+./nx run no-vertx-clean-engine
 # En otra terminal:
 curl -s -X POST http://localhost:8080/risk \
   -H 'content-type: application/json' \
@@ -87,21 +87,43 @@ Antes de publicar, revisar manualmente cualquier hit del último comando: muchas
 Demo local de separación por pods/permisos:
 
 ```bash
-poc/vertx-risk-platform/scripts/run-local-pods.sh
-poc/vertx-risk-platform/scripts/smoke.sh
-poc/vertx-risk-platform/scripts/stop-local-pods.sh
+poc/vertx-layer-as-pod-http/scripts/run-local-pods.sh
+poc/vertx-layer-as-pod-http/scripts/smoke.sh
+poc/vertx-layer-as-pod-http/scripts/stop-local-pods.sh
 ```
 
 Ver guía paso a paso en [`DEMO_SCRIPT.md`](DEMO_SCRIPT.md).
 
 ## Arquitecturas incluidas
 
+La nomenclatura del repo está pensada para distinguir rápido **sin Vert.x vs con Vert.x** y qué topología demuestra cada PoC:
+
+```text
+SIN VERT.X
+  no-vertx-clean-engine
+    -> ¿cuánto cuesta la lógica pura?
+
+CON VERT.X
+  vertx-monolith-inprocess
+    -> ¿qué aporta Vert.x sin distribuir?
+
+  vertx-layer-as-pod-eventbus
+    -> ¿qué pasa si separo layers por pods usando EventBus clustered?
+
+  vertx-layer-as-pod-http
+    -> ¿qué pasa si separo layers por pods usando HTTP + tokens?
+
+  vertx-service-mesh-bounded-contexts
+    -> ¿qué pasa si separo por servicios/bounded contexts reales?
+```
+
 | PoC | Propósito | Comando principal |
 |---|---|---|
-| `poc/java-risk-engine` | Core sin frameworks; latencia base y Clean Architecture pura | `./nx run risk-engine` |
-| `poc/java-monolith` | Una JVM Vert.x con infraestructura real | `./nx run java-monolith` |
-| `poc/java-vertx-distributed` | 4 JVMs: controller/usecase/repository/consumer | `./nx up vertx` |
-| `poc/vertx-risk-platform` | Pods locales con scopes/tokens entre capas | `poc/vertx-risk-platform/scripts/run-local-pods.sh` |
+| `poc/no-vertx-clean-engine` | Sin Vert.x: core sin frameworks; latencia base y Clean Architecture pura | `./nx run no-vertx-clean-engine` |
+| `poc/vertx-monolith-inprocess` | Con Vert.x: una JVM, EventBus local, sin hops de red entre capas | `./nx run vertx-monolith-inprocess` |
+| `poc/vertx-layer-as-pod-eventbus` | Con Vert.x: controller/usecase/repository como JVMs separadas vía clustered EventBus; consumer async por Kafka | `./nx up vertx-layer-as-pod-eventbus` |
+| `poc/vertx-layer-as-pod-http` | Con Vert.x: pods/capas comunicados por HTTP explícito + tokens | `./nx up vertx-layer-as-pod-http` |
+| `poc/vertx-service-mesh-bounded-contexts` | Con Vert.x: bounded contexts reales vía EventBus RPC/async | `poc/vertx-service-mesh-bounded-contexts/scripts/up.sh` |
 | `poc/k8s-local` | Manifiestos y addons para discusión EKS/K8s local | `poc/k8s-local/scripts/up.sh` |
 
 ## Stack Java

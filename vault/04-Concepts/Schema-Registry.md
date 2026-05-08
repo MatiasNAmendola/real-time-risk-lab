@@ -18,7 +18,7 @@ Topics single-team, single-consumer donde el overhead de coordinación supera al
 
 ## En este proyecto
 
-Redpanda (usado en [[k8s-local]]) incluye un schema registry compatible con Confluent en el puerto 8081. Los eventos en [[java-vertx-distributed]] están documentados vía AsyncAPI 3.0 (formato de contrato complementario).
+Redpanda (usado en [[k8s-local]]) incluye un schema registry compatible con Confluent en el puerto 8081. Los eventos en [[vertx-layer-as-pod-eventbus]] están documentados vía AsyncAPI 3.0 (formato de contrato complementario).
 
 ## Principio de diseño
 
@@ -26,4 +26,4 @@ Redpanda (usado en [[k8s-local]]) incluye un schema registry compatible con Conf
 
 ## Backlinks
 
-[[Event-Versioning]] · [[DLQ]] · [[java-vertx-distributed]] · [[k8s-local]]
+[[Event-Versioning]] · [[DLQ]] · [[vertx-layer-as-pod-eventbus]] · [[k8s-local]]

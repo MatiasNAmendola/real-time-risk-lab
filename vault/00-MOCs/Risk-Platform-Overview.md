@@ -72,8 +72,8 @@ Entry: [[Tooling-Stack]]
 
 ## PoCs
 
-- [[java-risk-engine]] — Clean Architecture bare-javac
-- [[java-vertx-distributed]] — Vert.x 4-módulos + cluster Hazelcast
+- [[no-vertx-clean-engine]] — Clean Architecture bare-javac
+- [[vertx-layer-as-pod-eventbus]] — Vert.x 4-módulos + cluster Hazelcast
 - [[k8s-local]] — k3d + ArgoCD + canary rollouts
 - [[risk-smoke-tui]] — smoke runner E2E con Go + Bubble Tea
 - [[atdd-karate]] — ATDD con Karate para la plataforma Vert.x
@@ -106,5 +106,5 @@ Entry: [[Tooling-Stack]]
 
 1. Repasar [[Architectural-Anchors]] — internalizar 3-5 principios
 2. Releer bloque 1 (arquitectura) y bloque 4 (resiliencia) de [[Architecture-Question-Bank]]
-3. Correr `poc/java-vertx-distributed` localmente, confirmar verde
+3. Correr `poc/vertx-layer-as-pod-eventbus` localmente, confirmar verde
 4. Repasar [[Discovery-Questions]] — entender qué revelan las preguntas sobre el sistema

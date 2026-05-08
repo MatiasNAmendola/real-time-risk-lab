@@ -19,7 +19,7 @@ Apps two-tier simples donde el costo de abstracción no se justifica.
 
 ## En este proyecto
 
-`EvaluateRiskUseCase` es un port. `HttpRiskController` y `SqsEventConsumer` son primary adapters. `InMemoryTransactionRepository` es secondary adapter (test). Ver [[java-risk-engine]].
+`EvaluateRiskUseCase` es un port. `HttpRiskController` y `SqsEventConsumer` son primary adapters. `InMemoryTransactionRepository` es secondary adapter (test). Ver [[no-vertx-clean-engine]].
 
 ## Principio de diseño
 
@@ -27,4 +27,4 @@ Apps two-tier simples donde el costo de abstracción no se justifica.
 
 ## Backlinks
 
-[[Clean-Architecture]] · [[Architecture]] · [[java-risk-engine]]
+[[Clean-Architecture]] · [[Architecture]] · [[no-vertx-clean-engine]]

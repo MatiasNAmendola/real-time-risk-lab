@@ -2,7 +2,7 @@
 
 ## Por qué este doc existe
 
-Hay dos servicios (`java-risk-engine` + `java-vertx-distributed`) que exponen los mismos contratos a través de 7 canales de comunicación distintos. Hay equipos que consumen desde Java, TypeScript y Go. La pregunta no es "cómo construyo un cliente HTTP" — es "cómo evito que cada equipo reinvente retry, auth, tracing, retry-on-broker-down, schema versioning, y ack semantics, cada uno con sus propios bugs".
+Hay dos servicios (`no-vertx-clean-engine` + `vertx-layer-as-pod-eventbus`) que exponen los mismos contratos a través de 7 canales de comunicación distintos. Hay equipos que consumen desde Java, TypeScript y Go. La pregunta no es "cómo construyo un cliente HTTP" — es "cómo evito que cada equipo reinvente retry, auth, tracing, retry-on-broker-down, schema versioning, y ack semantics, cada uno con sus propios bugs".
 
 La respuesta es **SDKs por lenguaje que encapsulan la infraestructura y exponen sólo el contrato**.
 
@@ -338,7 +338,7 @@ Cuando el implementer del SDK arranque (post Phase 2 + scrub), va a producir:
 ## Integration tests
 
 Integration tests exercise each SDK against a real server started via Docker Compose
-(`poc/java-vertx-distributed/compose.override.yml`).  All HTTP, webhook, and admin surfaces
+(`poc/vertx-layer-as-pod-eventbus/compose.override.yml`).  All HTTP, webhook, and admin surfaces
 are covered.  Unit tests (mocked) remain separate and run without infrastructure.
 
 ### Test counts

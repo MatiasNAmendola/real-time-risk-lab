@@ -69,7 +69,7 @@ Keys son scoped un la operation: la same key para two different operations (e.g.
 ## Validación
 
 - `tests/risk-engine-atdd/` includes idempotency scenario: same key twice returns identical response sin duplicate `DecisionEvaluated` event en outbox.
-- `poc/java-vertx-distributed/atdd-tests/src/test/resources/features/07_idempotency.feature` defines la Karate contract.
+- `poc/vertx-layer-as-pod-eventbus/atdd-tests/src/test/resources/features/07_idempotency.feature` defines la Karate contract.
 - `InMemoryDecisionIdempotencyStore` uses `ConcurrentHashMap.putIfAbsent` — semantically correct para single-JVM scenarios.
 
 ## Relacionado

@@ -15,7 +15,7 @@ Aceptado el 2026-05-07.
 
 ## Contexto
 
-The ATDD tests en `poc/java-vertx-distributed/atdd-tests/` run como un separate Gradle module (or standalone JVM process) y exercise la Vert.x application running en Docker containers. Standard JaCoCo file-based coverage only works when la test JVM y la application JVM son la same process — un `exec` file es written a JVM shutdown.
+The ATDD tests en `poc/vertx-layer-as-pod-eventbus/atdd-tests/` run como un separate Gradle module (or standalone JVM process) y exercise la Vert.x application running en Docker containers. Standard JaCoCo file-based coverage only works when la test JVM y la application JVM son la same process — un `exec` file es written a JVM shutdown.
 
 For la ATDD scenario: la application JVMs (`controller-app`, `usecase-app`, `repository-app`) run en Docker containers; la Karate test runner runs en la host JVM (or un separate container). Standard JaCoCo `destFile` cannot capture coverage desde la Docker-hosted application JVMs.
 
@@ -64,7 +64,7 @@ Configure each Vert.x application module un start con la JaCoCo agent en TCP ser
 
 ## Validación
 
-- `cd poc/java-vertx-distributed && ./gradlew -pl atdd-tests verify` produces JaCoCo XML reports showing coverage desde Karate scenarios.
+- `cd poc/vertx-layer-as-pod-eventbus && ./gradlew -pl atdd-tests verify` produces JaCoCo XML reports showing coverage desde Karate scenarios.
 - Coverage report includes lines desde `EvaluateRiskVerticle.java` marked como covered por ATDD scenarios.
 - `jacoco-agent/` module exists con agent JAR bundling y report generation configuration.
 
@@ -77,4 +77,4 @@ Configure each Vert.x application module un start con la JaCoCo agent en TCP ser
 ## Referencias
 
 - JaCoCo TCP server mode: https://www.jacoco.org/jacoco/trunk/doc/agent.html
-- `poc/java-vertx-distributed/jacoco-agent/`
+- `poc/vertx-layer-as-pod-eventbus/jacoco-agent/`

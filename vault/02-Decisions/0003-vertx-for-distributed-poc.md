@@ -15,7 +15,7 @@ Aceptado el 2026-05-07.
 
 ## Contexto
 
-La PoC distribuida (`poc/java-vertx-distributed/`) debe demostrar que un layering de clean architecture puede ejecutarse como unidades desplegables físicamente separadas, comunicándose sobre un bus de mensajes tipado: el patrón Layer-as-Pod (ADR-0013). El requerimiento técnico es claro: cuatro capas (controller, usecase, repository, consumer) deben correr como procesos JVM independientes, comunicarse de forma asíncrona, soportar routing cluster-aware e integrarse con OTEL tracing end-to-end.
+La PoC distribuida (`poc/vertx-layer-as-pod-eventbus/`) debe demostrar que un layering de clean architecture puede ejecutarse como unidades desplegables físicamente separadas, comunicándose sobre un bus de mensajes tipado: el patrón Layer-as-Pod (ADR-0013). El requerimiento técnico es claro: cuatro capas (controller, usecase, repository, consumer) deben correr como procesos JVM independientes, comunicarse de forma asíncrona, soportar routing cluster-aware e integrarse con OTEL tracing end-to-end.
 
 Spring Boot puede correr como microservicios separados, pero la comunicación entre servicios requiere REST o infraestructura de messaging (Kafka, RabbitMQ, Spring Cloud Bus). El modelo de event bus —donde cualquier verticle puede dirigirse a otro por nombre sin conocer la dirección de red— mapea más directamente al modelo conceptual de layer-as-pod.
 

@@ -1,4 +1,4 @@
-# AGENTS.md — Risk Decision Platform
+# AGENTS.md — Real-Time Risk Lab
 
 Entrypoint universal para agentes IA. Este archivo es leido automaticamente por: Codex CLI, opencode, Cursor, Kiro, y cualquier agente que siga la convencion AGENTS.md.
 
@@ -10,18 +10,20 @@ Este repo es una exploración técnica de un caso de uso de detección de fraude
 
 - Tema: 150 TPS sostenidos, p99 < 300ms, arquitectura híbrida sync (decisión) + async (audit, ML, downstream).
 - Contexto de negocio: cada decisión de riesgo aprueba o rechaza una transacción de pago en < 300ms.
-- Inspirado en un caso de uso productivo de fraud detection (Lambda monolítico → EKS microservicios).
+- Inspirado en patrones productivos de fraud detection (Lambda monolítico → EKS microservicios), pero no representa un sistema real ni código productivo.
 
 ---
 
 ## 2. Layout del repo
 
 ```
-risk-platform-practice/
+real-time-risk-lab/
 ├── poc/
-│   ├── java-risk-engine/        # Clean Architecture sin frameworks (bare-javac)
-│   ├── java-vertx-distributed/  # Vert.x 5, 4 modulos Gradle, layer-as-pod
-│   ├── vertx-risk-platform/     # Plataforma Vert.x completa (todos los patrones)
+│   ├── no-vertx-clean-engine/              # Sin Vert.x: Clean Architecture baseline
+│   ├── vertx-monolith-inprocess/           # Con Vert.x: single JVM/in-process
+│   ├── vertx-layer-as-pod-eventbus/        # Con Vert.x: layer-as-pod + clustered EventBus
+│   ├── vertx-layer-as-pod-http/            # Con Vert.x: layer-as-pod + HTTP/tokens
+│   ├── vertx-service-mesh-bounded-contexts/# Con Vert.x: bounded contexts service-to-service
 │   └── k8s-local/               # k3d/OrbStack + ArgoCD + addons completos
 ├── tests/
 │   └── risk-engine-atdd/        # Cucumber-JVM 7 ATDD
@@ -41,9 +43,11 @@ Arquitectura completa: [.ai/context/architecture.md](.ai/context/architecture.md
 
 | PoC | Que demuestra | Como correr |
 |---|---|---|
-| `java-risk-engine` | Clean Architecture pura, benchmarks | `./scripts/run.sh` |
-| `java-vertx-distributed` | Arquitectura distribuida Vert.x | `./nx up vertx && ./gradlew :poc:java-vertx-distributed:atdd-tests:test -Patdd` |
-| `vertx-risk-platform` | REST+SSE+WS+Webhook+Kafka+OTEL | `./gradlew shadowJar && ./scripts/run.sh` |
+| `no-vertx-clean-engine` | Sin Vert.x: Clean Architecture pura, benchmarks | `./scripts/run.sh` |
+| `vertx-monolith-inprocess` | Con Vert.x: single JVM/in-process, EventBus local | `./nx run vertx-monolith-inprocess` |
+| `vertx-layer-as-pod-eventbus` | Con Vert.x: layer-as-pod vía clustered EventBus/Hazelcast | `./nx up vertx-layer-as-pod-eventbus && ./gradlew :poc:vertx-layer-as-pod-eventbus:atdd-tests:test -Patdd` |
+| `vertx-layer-as-pod-http` | Con Vert.x: layer-as-pod vía HTTP + tokens | `./nx up vertx-layer-as-pod-http` |
+| `vertx-service-mesh-bounded-contexts` | Con Vert.x: bounded contexts reales via EventBus RPC/async | `./scripts/up.sh && ./scripts/demo.sh` |
 | `k8s-local` | ArgoCD, canary, SLO, AWS mocks | `./scripts/up.sh` |
 
 Inventario completo: [.ai/context/poc-inventory.md](.ai/context/poc-inventory.md)
@@ -104,8 +108,8 @@ Para tareas multi-paso, usa un workflow:
 
 Este proyecto usa Engram MCP para memoria entre sesiones.
 
-- Project key: `risk-decision-platform`
-- Al iniciar: `mem_context(project: "risk-decision-platform")`
+- Project key: `real-time-risk-lab`
+- Al iniciar: `mem_context(project: "real-time-risk-lab")`
 - Al finalizar: `mem_session_summary(...)` (OBLIGATORIO)
 - Guia completa: [.ai/context/engram.md](.ai/context/engram.md)
 
