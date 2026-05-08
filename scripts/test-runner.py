@@ -661,7 +661,20 @@ class TestRunner:
             if not self.dry_run:
                 ok = _compose_up(dry_run=False)
                 if not ok:
-                    self._print_status("WARN: docker-compose up failed, continuing anyway")
+                    self._print_status("FAIL: docker-compose stack did not start; aborting dependent tests")
+                    fail = JobResult(
+                        name=INFRA_COMPOSE_JOB,
+                        status="FAIL",
+                        returncode=1,
+                        duration_sec=0.0,
+                        error="auto-infra compose up failed",
+                    )
+                    levels = _topological_levels(runnable_jobs)
+                    all_results = skip_results + [fail]
+                    total_duration = time.monotonic() - start_total
+                    self._save_outputs(jobs, levels, all_results, total_duration)
+                    self._monitor.stop()
+                    return all_results
             else:
                 self._print_status("DRY: docker-compose up (skipped)")
 

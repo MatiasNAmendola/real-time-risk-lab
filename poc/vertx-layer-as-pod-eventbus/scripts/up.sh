@@ -15,7 +15,8 @@ init_output "vertx-up"
 # Result: hot-fixes baked into source disappear at every bring-up.
 #
 # Strategy:
-#   1. Always run `./nx build vertx` (incremental — fast if jars are fresh).
+#   1. Always run `./nx build vertx-layer-as-pod-eventbus` (incremental —
+#      fast if jars are fresh).
 #   2. Compare each fat-jar mtime against image creation time. If the jar is
 #      newer (or image missing) → `docker compose build` for that service
 #      BEFORE `up -d`.
@@ -49,7 +50,7 @@ _container_created_epoch() {
 }
 
 echo "==> [up] Ensuring jars are fresh (incremental Gradle build)..."
-"$REPO_ROOT/nx" build vertx >> "$OUT_DIR/stdout.log" 2>> "$OUT_DIR/stderr.log" || {
+"$REPO_ROOT/nx" build vertx-layer-as-pod-eventbus >> "$OUT_DIR/stdout.log" 2>> "$OUT_DIR/stderr.log" || {
   echo "ERROR: gradle build failed; see $OUT_DIR/stderr.log" >&2
   finalize_output 1
   exit 1
