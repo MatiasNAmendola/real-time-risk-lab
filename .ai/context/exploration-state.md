@@ -1,6 +1,6 @@
-# Project State — Risk Decision Platform
+# Project State — Real-Time Risk Lab
 
-**Project**: Risk Decision Platform — three-architecture exploration
+**Project**: Real-Time Risk Lab — multi-architecture exploration
 **Domain**: Production-grade fraud detection use case
 **Last updated**: 2026-05-07
 
@@ -11,10 +11,10 @@
 | Area | Status | Notes |
 |---|---|---|
 | Technical docs (docs/00-11) | Complete | 12 documents ready |
-| PoC java-risk-engine | Complete | Clean Arch, benchmarks, idempotency |
-| PoC java-vertx-distributed | Stable | 4 modules, partial ATDD |
+| PoC no-vertx-clean-engine | Complete | Clean Arch, benchmarks, idempotency |
+| PoC vertx-layer-as-pod-eventbus | Stable | 4 modules, partial ATDD |
 | PoC k8s-local | Stable | ArgoCD, canary, SLO, AWS mocks |
-| PoC vertx-risk-platform | In progress | REST working, extension in progress |
+| PoC vertx-layer-as-pod-http | In progress | REST working, extension in progress |
 | CLI risk-smoke (Go TUI) | In progress | 9 checks, partially functional |
 | ATDD Karate (in PoC) | In progress | Some scenarios, needs completion |
 | ATDD Cucumber (tests/) | In progress | Structure ready, scenarios in development |
@@ -36,8 +36,8 @@
 - [x] docs/09-architecture-question-bank.md
 - [x] docs/10-aws-mocks-locales.md
 - [x] docs/11-atdd.md
-- [x] poc/java-risk-engine: Clean Architecture, functional engine, benchmarks
-- [x] poc/java-vertx-distributed: 4 Gradle modules, docker-compose, Hazelcast
+- [x] poc/no-vertx-clean-engine: Clean Architecture, functional engine, benchmarks
+- [x] poc/vertx-layer-as-pod-eventbus: 4 Gradle modules, docker-compose, Hazelcast
 - [x] poc/k8s-local: ArgoCD, Argo Rollouts canary, kube-prom, ESO, Redpanda, OpenObserve, AWS mocks
 - [x] .ai/ system with IDE-agnostic primitives
 
@@ -45,11 +45,11 @@
 
 ## In Progress
 
-- [ ] poc/vertx-risk-platform: extend with SSE, WebSocket, Webhook, Kafka consumer, AsyncAPI
+- [ ] poc/vertx-layer-as-pod-http: extend with SSE, WebSocket, Webhook, Kafka consumer, AsyncAPI
 - [ ] cli/risk-smoke: complete the 9 checks (some may be failing)
 - [ ] ATDD Karate: complete happy path + error case scenarios
 - [ ] ATDD Cucumber: add more scenarios to tests/risk-engine-atdd/
-- [ ] Benchmarks in vertx-risk-platform: p50/p95/p99 documented
+- [ ] Benchmarks in vertx-layer-as-pod-http: p50/p95/p99 documented
 
 ---
 
@@ -76,10 +76,10 @@
 
 ```bash
 # PoC 1
-cd poc/java-risk-engine && ./scripts/run.sh
+cd poc/no-vertx-clean-engine && ./scripts/run.sh
 
 # PoC 2
-./nx up vertx && ./gradlew :poc:java-vertx-distributed:atdd-tests:test -Patdd
+./nx up vertx-layer-as-pod-eventbus && ./gradlew :poc:vertx-layer-as-pod-eventbus:atdd-tests:test -Patdd
 
 # PoC 3
 cd poc/k8s-local && ./scripts/up.sh && ./scripts/status.sh
@@ -117,8 +117,8 @@ cd cli/risk-smoke && go run .
 ## 2026-05-08 — Java apps architecture/performance matrix
 
 - [x] Added `docs/38-java-apps-architecture-performance-matrix.md` to consolidate the Java PoC portfolio narrative: same risk decision domain, different stacks/topologies.
-- [x] Documented `java-vertx-distributed` as layer-as-pod and `service-mesh-demo` as true service-to-service bounded contexts.
+- [x] Documented `vertx-layer-as-pod-eventbus` as layer-as-pod and `vertx-service-mesh-bounded-contexts` as true service-to-service bounded contexts.
 - [x] Linked the new matrix from `docs/00-START-HERE.md` and `docs/QUICK-REFERENCE.md`.
 - Next step: run comparable k6/JMH benchmarks with and without simulated ML latency to turn expected performance ordering into measured data.
 - [x] Clarified wording after web research: do not claim Vert.x requires grouping controllers/usecases/repositories in pods; say Vert.x provides verticles/EventBus and the PoC chooses its deployment topology.
-- [x] Added final layer-as-pod wording: `java-vertx-distributed` uses Vert.x verticles/adapters per layer in separate processes/pods to evidence permissions isolation, boundary enforcement, blast radius, scaling profiles and network/serialization cost; this is a PoC topology, not a Vert.x prescription or business microservices claim.
+- [x] Added final layer-as-pod wording: `vertx-layer-as-pod-eventbus` uses Vert.x verticles/adapters per layer in separate processes/pods to evidence permissions isolation, boundary enforcement, blast radius, scaling profiles and network/serialization cost; this is a PoC topology, not a Vert.x prescription or business microservices claim.

@@ -18,10 +18,10 @@ mkdir -p "$RULES_DIR"
 cat > "$RULES_DIR/00-project.md" <<'EOF'
 ---
 trigger: always_on
-description: Risk Decision Platform project context and non-negotiable rules
+description: Real-Time Risk Lab project context and non-negotiable rules
 ---
 
-# Proyecto: Risk Decision Platform — Architecture Exploration
+# Proyecto: Real-Time Risk Lab — Architecture Exploration
 
 Exploración técnica de arquitectura de riesgo transaccional.
 Sistema de fraude tiempo real: 150 TPS, p99 < 300ms.
@@ -115,7 +115,7 @@ echo "  created: $RULES_DIR/20-testing.md"
 
 # --- Legacy compat: .windsurfrules para versiones pre-Wave 8 ---
 cat > "$REPO_ROOT/.windsurfrules" <<'EOF'
-# Risk Decision Platform — Windsurf Rules (legacy compat, pre-Wave 8)
+# Real-Time Risk Lab — Windsurf Rules (legacy compat, pre-Wave 8)
 # Para Windsurf Wave 8+, las rules estan en .windsurf/rules/*.md
 
 ## Proyecto

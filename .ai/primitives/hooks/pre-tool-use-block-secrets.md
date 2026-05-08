@@ -30,8 +30,8 @@ Si el payload de Edit o Write contiene alguno de estos patrones, el hook debe al
 - "test", "test-password", "changeme" — credenciales de desarrollo conocidas
 - getenv("..."), System.getenv — lectura de variable de entorno
 - ${...}, {{ ... }} — referencias a templates/variables
-- minioadmin — credencial conocida de MinIO dev
-- root — token de OpenBao dev mode
+- `${MINIO_ROOT_USER}` / `${MINIO_ROOT_PASSWORD}` — credenciales de MinIO dev inyectadas por entorno
+- `${OPENBAO_DEV_ROOT_TOKEN}` — token de OpenBao dev mode inyectado por entorno
 ```
 
 ## Implementacion en Claude Code (.claude/settings.json)
@@ -64,7 +64,7 @@ PATTERNS = [
     r'secret\s*=\s*["\'][^"\']{8,}["\']',
     r'api_key\s*=\s*["\'][^"\']{8,}["\']',
 ]
-SAFE = ['getenv', 'System.getenv', '${', '{{', 'test', 'changeme', 'minioadmin', 'root']
+SAFE = ['getenv', 'System.getenv', '${', '{{', 'test', 'changeme', 'change-me']
 
 input_data = json.loads(sys.stdin.read())
 content = str(input_data.get('new_string', '') or input_data.get('content', ''))

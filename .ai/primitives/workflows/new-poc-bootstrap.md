@@ -28,7 +28,7 @@ mkdir -p poc/<poc-name>/{src/main/java/io/riskplatform/practice/<domain>,src/tes
 
 ### 3. build.gradle.kts con Java 21 y Vert.x 5.0.12
 
-Copiar de `poc/java-vertx-distributed/build.gradle.kts` como base. Ajustar `artifactId`.
+Copiar de `poc/vertx-layer-as-pod-eventbus/build.gradle.kts` como base. Ajustar `artifactId`.
 
 ### 4. Layout canonico
 

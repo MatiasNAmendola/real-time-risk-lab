@@ -48,7 +48,7 @@ related_rules: []
      title: "ADR-<N>: <titulo>",
      type: "decision",
      topic_key: "riskplatform/adr/<N>",
-     project: "riskplatform/risk-platform-practice",
+     project: "riskplatform/real-time-risk-lab",
      content: <contenido completo del ADR>
    )
    ```

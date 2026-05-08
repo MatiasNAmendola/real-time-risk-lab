@@ -4,7 +4,7 @@ intent: Cargar y guardar contexto del proyecto en Engram MCP al inicio y fin de 
 inputs: [project_key, session_goal]
 preconditions:
   - Engram MCP disponible en el harness (Claude Code con MCP configurado)
-  - Project key: riskplatform/risk-platform-practice
+  - Project key: riskplatform/real-time-risk-lab
 postconditions:
   - Contexto previo cargado antes de comenzar trabajo
   - Decisiones y descubrimientos guardados al finalizar
@@ -33,7 +33,7 @@ Formato:
 title: "Fix: <verbo> + <que>"
 type: bugfix|decision|architecture|discovery|pattern|config|preference
 scope: project
-project: riskplatform/risk-platform-practice
+project: riskplatform/real-time-risk-lab
 topic_key: riskplatform/<subtema>/<especifico>
 content: |
   What: <que se hizo>
@@ -55,10 +55,10 @@ Llamar `mem_session_summary` con:
 ## Topic keys de este proyecto
 
 - `risk-platform/exploration-state` — estado general de la prep
-- `riskplatform/poc/java-risk-engine` — decisiones del PoC bare-javac
-- `riskplatform/poc/java-vertx-distributed` — decisiones del PoC Vert.x distribuido
+- `riskplatform/poc/no-vertx-clean-engine` — decisiones del PoC bare-javac
+- `riskplatform/poc/vertx-layer-as-pod-eventbus` — decisiones del PoC Vert.x distribuido
 - `riskplatform/poc/k8s-local` — configuracion k8s
-- `riskplatform/poc/vertx-risk-platform` — plataforma Vert.x completa
+- `riskplatform/poc/vertx-layer-as-pod-http` — plataforma Vert.x completa
 - `riskplatform/primitives/system` — el sistema .ai/ que estamos construyendo
 
 ## Notas

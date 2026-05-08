@@ -39,7 +39,7 @@ groups:
     # Fast, no-infra Java unit slice. Do NOT use `./gradlew test` here:
     # that traverses every Gradle test task (architecture, integration, k8s,
     # ATDD placeholders, component tests) and makes `quick` slow/flaky.
-    cmd: "./gradlew :pkg:errors:test :pkg:config:test :pkg:resilience:test :pkg:events:test :pkg:kafka:test :pkg:observability:test :pkg:repositories:test :pkg:integration-audit:test :pkg:testing:test :pkg:risk-domain:test :poc:java-risk-engine:test --parallel"
+    cmd: "./gradlew :pkg:errors:test :pkg:config:test :pkg:resilience:test :pkg:events:test :pkg:kafka:test :pkg:observability:test :pkg:repositories:test :pkg:integration-audit:test :pkg:testing:test :pkg:risk-domain:test :poc:no-vertx-clean-engine:test --parallel"
     needs_infra: false
     cost_cpu: medium
     cost_ram_mb: 800
@@ -91,8 +91,8 @@ groups:
     duration_estimate_sec: 30
     exclusive: false
 
-  component-vertx:
-    cmd: "./gradlew :poc:vertx-risk-platform:test"
+  component-vertx-layer-as-pod-http:
+    cmd: "./gradlew :poc:vertx-layer-as-pod-http:test"
     needs_infra: false
     cost_cpu: medium
     cost_ram_mb: 800
@@ -108,8 +108,8 @@ groups:
     exclusive: true
     requires: [docker]
 
-  integration-compose-vertx-atdd:
-    cmd: "./gradlew :poc:java-vertx-distributed:atdd-tests:test"
+  integration-compose-vertx-layer-as-pod-eventbus-atdd:
+    cmd: "./gradlew :poc:vertx-layer-as-pod-eventbus:atdd-tests:test"
     needs_infra: compose
     cost_cpu: medium
     cost_ram_mb: 800
@@ -126,8 +126,8 @@ groups:
     exclusive: true
     requires: [docker]
 
-  integration-compose-monolith-unit:
-    cmd: "./gradlew :poc:java-monolith:test"
+  integration-compose-vertx-monolith-inprocess-unit:
+    cmd: "./gradlew :poc:vertx-monolith-inprocess:test"
     needs_infra: docker
     cost_cpu: medium
     cost_ram_mb: 1200
@@ -135,8 +135,8 @@ groups:
     exclusive: true
     requires: [docker]
 
-  integration-compose-monolith-atdd:
-    cmd: "./gradlew :poc:java-monolith:atdd-tests:test -Patdd"
+  integration-compose-vertx-monolith-inprocess-atdd:
+    cmd: "./gradlew :poc:vertx-monolith-inprocess:atdd-tests:test -Patdd"
     needs_infra: compose
     cost_cpu: medium
     cost_ram_mb: 800
@@ -144,8 +144,8 @@ groups:
     exclusive: true
     requires: [docker]
 
-  integration-compose-vertx-platform-atdd:
-    cmd: "./gradlew :poc:vertx-risk-platform:atdd-tests:test -Patdd"
+  integration-compose-vertx-layer-as-pod-http-atdd:
+    cmd: "./gradlew :poc:vertx-layer-as-pod-http:atdd-tests:test -Patdd"
     needs_infra: compose
     cost_cpu: medium
     cost_ram_mb: 800
@@ -215,7 +215,7 @@ groups:
     exclusive: false
 
   k6:
-    cmd: "./nx bench k6 smoke --target distributed"
+    cmd: "./nx bench k6 smoke --target vertx-layer-as-pod-eventbus"
     needs_infra: compose
     cost_cpu: medium
     cost_ram_mb: 400
@@ -288,7 +288,7 @@ groups:
 
   # Backward-compatible aliases for existing docs/scripts.
   unit:
-    cmd: "./gradlew :pkg:errors:test :pkg:config:test :pkg:resilience:test :pkg:events:test :pkg:kafka:test :pkg:observability:test :pkg:repositories:test :pkg:integration-audit:test :pkg:testing:test :pkg:risk-domain:test :poc:java-risk-engine:test --parallel"
+    cmd: "./gradlew :pkg:errors:test :pkg:config:test :pkg:resilience:test :pkg:events:test :pkg:kafka:test :pkg:observability:test :pkg:repositories:test :pkg:integration-audit:test :pkg:testing:test :pkg:risk-domain:test :poc:no-vertx-clean-engine:test --parallel"
     needs_infra: false
     cost_cpu: medium
     cost_ram_mb: 800
@@ -339,8 +339,8 @@ groups:
     exclusive: true
     requires: [docker]
 
-  monolith:
-    cmd: "./gradlew :poc:java-monolith:test"
+  vertx-monolith-inprocess-unit:
+    cmd: "./gradlew :poc:vertx-monolith-inprocess:test"
     needs_infra: docker
     cost_cpu: medium
     cost_ram_mb: 1200
@@ -348,8 +348,8 @@ groups:
     exclusive: true
     requires: [docker]
 
-  vertx-platform:
-    cmd: "./gradlew :poc:vertx-risk-platform:test"
+  vertx-layer-as-pod-http-unit:
+    cmd: "./gradlew :poc:vertx-layer-as-pod-http:test"
     needs_infra: false
     cost_cpu: medium
     cost_ram_mb: 800
@@ -358,7 +358,7 @@ groups:
 
 
   atdd-karate:
-    cmd: "./gradlew :poc:java-vertx-distributed:atdd-tests:test"
+    cmd: "./gradlew :poc:vertx-layer-as-pod-eventbus:atdd-tests:test"
     needs_infra: compose
     cost_cpu: medium
     cost_ram_mb: 800
@@ -366,8 +366,8 @@ groups:
     exclusive: true
     requires: [docker]
 
-  atdd-monolith:
-    cmd: "./gradlew :poc:java-monolith:atdd-tests:test -Patdd"
+  atdd-vertx-monolith-inprocess:
+    cmd: "./gradlew :poc:vertx-monolith-inprocess:atdd-tests:test -Patdd"
     needs_infra: compose
     cost_cpu: medium
     cost_ram_mb: 800
@@ -375,8 +375,8 @@ groups:
     exclusive: true
     requires: [docker]
 
-  atdd-vertx-platform:
-    cmd: "./gradlew :poc:vertx-risk-platform:atdd-tests:test -Patdd"
+  atdd-vertx-layer-as-pod-http:
+    cmd: "./gradlew :poc:vertx-layer-as-pod-http:atdd-tests:test -Patdd"
     needs_infra: compose
     cost_cpu: medium
     cost_ram_mb: 800
@@ -385,7 +385,7 @@ groups:
     requires: [docker]
 
   k6-smoke:
-    cmd: "./nx bench k6 smoke --target distributed"
+    cmd: "./nx bench k6 smoke --target vertx-layer-as-pod-eventbus"
     needs_infra: compose
     cost_cpu: medium
     cost_ram_mb: 400
@@ -412,28 +412,28 @@ composites:
     - unit-sdk-go
 
   integration-compose:
-    - integration-compose-vertx-atdd
+    - integration-compose-vertx-layer-as-pod-eventbus-atdd
     - integration-compose-smoke
-    - integration-compose-monolith-atdd
-    - integration-compose-vertx-platform-atdd
+    - integration-compose-vertx-monolith-inprocess-atdd
+    - integration-compose-vertx-layer-as-pod-http-atdd
 
   sdk-integration:
     - sdk-java-integration
     - sdk-typescript-integration
     - sdk-go-integration
 
-  service-bare:
+  no-vertx-clean-engine-suite:
     - unit-java-fast
     - atdd-cucumber
     - integration-compose-smoke
 
-  service-vertx:
-    - integration-compose-vertx-atdd
+  vertx-layer-as-pod-eventbus-suite:
+    - integration-compose-vertx-layer-as-pod-eventbus-atdd
     - integration-compose-smoke
 
-  service-monolith:
-    - integration-compose-monolith-unit
-    - integration-compose-monolith-atdd
+  vertx-monolith-inprocess-suite:
+    - integration-compose-vertx-monolith-inprocess-unit
+    - integration-compose-vertx-monolith-inprocess-atdd
 
   ci-fast:
     - unit-java-fast
@@ -449,13 +449,13 @@ composites:
     - unit-sdk-typescript
     - unit-sdk-go
     - atdd-cucumber
-    - component-vertx
+    - component-vertx-layer-as-pod-http
     - integration-testcontainers
-    - integration-compose-vertx-atdd
+    - integration-compose-vertx-layer-as-pod-eventbus-atdd
     - integration-compose-smoke
-    - integration-compose-monolith-unit
-    - integration-compose-monolith-atdd
-    - integration-compose-vertx-platform-atdd
+    - integration-compose-vertx-monolith-inprocess-unit
+    - integration-compose-vertx-monolith-inprocess-atdd
+    - integration-compose-vertx-layer-as-pod-http-atdd
     - sdk-java-integration
     - sdk-typescript-integration
     - sdk-go-integration
@@ -486,13 +486,13 @@ composites:
     - unit-sdk-typescript
     - unit-sdk-go
     - atdd-cucumber
-    - component-vertx
+    - component-vertx-layer-as-pod-http
     - integration-testcontainers
-    - integration-compose-vertx-atdd
+    - integration-compose-vertx-layer-as-pod-eventbus-atdd
     - integration-compose-smoke
-    - integration-compose-monolith-unit
-    - integration-compose-monolith-atdd
-    - integration-compose-vertx-platform-atdd
+    - integration-compose-vertx-monolith-inprocess-unit
+    - integration-compose-vertx-monolith-inprocess-atdd
+    - integration-compose-vertx-layer-as-pod-http-atdd
     - sdk-java-integration
     - sdk-typescript-integration
     - sdk-go-integration

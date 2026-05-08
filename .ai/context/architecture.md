@@ -1,14 +1,14 @@
-# Arquitectura del repo — riskplatform/risk-platform-practice
+# Arquitectura del repo — real-time-risk-lab
 
 ## Diagrama general
 
 ```mermaid
 graph TB
-    subgraph repo["risk-platform-practice/"]
+    subgraph repo["real-time-risk-lab/"]
         subgraph poc["poc/ — Proofs of Concept"]
-            jre["java-risk-engine<br/>bare-javac, Clean Arch<br/>sin frameworks"]
-            jvd["java-vertx-distributed<br/>4 modulos Gradle<br/>layer-as-pod"]
-            vrp["vertx-risk-platform<br/>Vert.x 5 completo<br/>REST+SSE+WS+Webhook+Kafka"]
+            jre["no-vertx-clean-engine<br/>bare-javac, Clean Arch<br/>sin frameworks"]
+            jvd["vertx-layer-as-pod-eventbus<br/>4 modulos Gradle<br/>layer-as-pod"]
+            vrp["vertx-layer-as-pod-http<br/>Vert.x 5 completo<br/>REST+SSE+WS+Webhook+Kafka"]
             k8s["k8s-local<br/>k3d/OrbStack<br/>ArgoCD + addons"]
         end
 
@@ -39,12 +39,12 @@ graph TB
     k8s -->|deploys| vrp
 ```
 
-## PoC: java-risk-engine
+## PoC: no-vertx-clean-engine
 
 **Proposito**: demostrar Clean Architecture pura sin frameworks.
 
 ```
-poc/java-risk-engine/
+poc/no-vertx-clean-engine/
 ├── src/main/java/io/riskplatform/<package>/risk/
 │   ├── domain/{entity,repository,usecase,service,rule}
 │   ├── application/{usecase,mapper,dto,common}
@@ -58,12 +58,12 @@ poc/java-risk-engine/
 
 **Como correr**: `./scripts/run.sh` (bare javac, sin Gradle).
 
-## PoC: java-vertx-distributed
+## PoC: vertx-layer-as-pod-eventbus
 
 **Proposito**: demostrar arquitectura distribuida con cada capa como pod separado.
 
 ```
-poc/java-vertx-distributed/
+poc/vertx-layer-as-pod-eventbus/
 ├── shared/          # DTOs y contratos compartidos
 ├── controller-app/  # HTTP layer (Vert.x Router)
 ├── usecase-app/     # Business logic (Vert.x EventBus)
@@ -75,7 +75,7 @@ poc/java-vertx-distributed/
 **Redes Docker**: cada modulo en su propia red Docker con UID distinto.
 **Cluster manager**: Hazelcast TCP.
 
-## PoC: vertx-risk-platform
+## PoC: vertx-layer-as-pod-http
 
 **Proposito**: plataforma Vert.x 5 completa con todos los patrones de comunicacion.
 
@@ -123,9 +123,9 @@ Cliente
 
 ## Dependencias entre PoCs
 
-- `java-risk-engine`: independiente. Cero dependencias externas en runtime.
-- `java-vertx-distributed`: requiere docker-compose (Postgres, Valkey, Redpanda, OTEL collector).
-- `vertx-risk-platform`: requiere docker-compose similar.
+- `no-vertx-clean-engine`: independiente. Cero dependencias externas en runtime.
+- `vertx-layer-as-pod-eventbus`: requiere docker-compose (Postgres, Valkey, Redpanda, OTEL collector).
+- `vertx-layer-as-pod-http`: requiere docker-compose similar.
 - `k8s-local`: requiere Docker + k3d o OrbStack.
 - `tests/risk-engine-atdd`: requiere la app corriendo en `localhost:8080`.
 - `cli/risk-smoke`: requiere la app corriendo en `localhost:8080` (o URL configurable).

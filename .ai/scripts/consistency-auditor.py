@@ -10,7 +10,7 @@ Sub-commands:
   xrefs            — broken Markdown and wikilink cross-references
   stale            — cited paths that no longer exist on the filesystem
   terms            — canonical terminology violations (alias used instead of canonical)
-  prohibited-terms — technical-practice or company-specific terms in public docs
+  prohibited-terms — personal-prep or company-specific terms in public docs
   all              — run all sub-audits and produce a unified report
 
 Output flags:
@@ -52,16 +52,16 @@ DECISIONS_DIR = VAULT_DIR / "02-Decisions"
 CONCEPTS_DIR = VAULT_DIR / "04-Concepts"
 SESSIONS_DIR = VAULT_DIR / "01-Sessions"
 MOCS_DIR = VAULT_DIR / "00-MOCs"
-INTERVIEW_DIR = VAULT_DIR / "05-Interview"
+REVIEW_DIR = VAULT_DIR / "05-Technical-Review"
 
 # Q&A source files
 QA_SOURCES = [
     # Canonical public architecture Q&A bank. Older file names are kept for
     # backward compatibility with historical sessions.
     DOCS_DIR / "09-architecture-question-bank.md",
-    DOCS_DIR / "09-simulacro-entrevista.md",
-    DOCS_DIR / "01-guia-entrevista-staff.md",
-    VAULT_DIR / "05-Interview" / "Drilling-Questions.md",
+    DOCS_DIR / "09-technical-review-practice.md",
+    DOCS_DIR / "01-guia-review-arquitectura.md",
+    VAULT_DIR / "05-Technical-Review" / "Drilling-Questions.md",
 ]
 
 # Candidate mention search locations
@@ -421,19 +421,19 @@ def audit_orphans() -> dict[str, Any]:
 ARTIFACT_CONCEPTS: list[dict[str, Any]] = [
     # PoCs
     {
-        'artifact': 'poc/java-risk-engine',
+        'artifact': 'poc/no-vertx-clean-engine',
         'type': 'PoC',
-        'key_terms': ['java-risk-engine', 'bare-javac', 'risk engine', 'virtual threads', 'stdlib', 'no framework'],
+        'key_terms': ['no-vertx-clean-engine', 'bare-javac', 'risk engine', 'virtual threads', 'stdlib', 'no framework'],
     },
     {
-        'artifact': 'poc/java-monolith',
+        'artifact': 'poc/vertx-monolith-inprocess',
         'type': 'PoC',
-        'key_terms': ['java-monolith', 'monolith', 'Karate', 'ATDD', 'testcontainers'],
+        'key_terms': ['vertx-monolith-inprocess', 'monolith', 'Karate', 'ATDD', 'testcontainers'],
     },
     {
-        'artifact': 'poc/java-vertx-distributed',
+        'artifact': 'poc/vertx-layer-as-pod-eventbus',
         'type': 'PoC',
-        'key_terms': ['java-vertx-distributed', 'vertx', 'Vert.x', 'layer-as-pod', 'distributed'],
+        'key_terms': ['vertx-layer-as-pod-eventbus', 'vertx', 'Vert.x', 'layer-as-pod', 'distributed'],
     },
     {
         'artifact': 'poc/k8s-local',
@@ -441,9 +441,9 @@ ARTIFACT_CONCEPTS: list[dict[str, Any]] = [
         'key_terms': ['k8s-local', 'k3d', 'OrbStack', 'local kubernetes', 'helm'],
     },
     {
-        'artifact': 'poc/vertx-risk-platform',
+        'artifact': 'poc/vertx-layer-as-pod-http',
         'type': 'PoC',
-        'key_terms': ['vertx-risk-platform', 'risk platform', 'vert.x platform'],
+        'key_terms': ['vertx-layer-as-pod-http', 'risk platform', 'vert.x platform'],
     },
     # SDKs
     {
@@ -485,7 +485,7 @@ ARTIFACT_CONCEPTS: list[dict[str, Any]] = [
     {
         'artifact': 'vault/02-Decisions/0017-bare-javac-didactic-poc.md',
         'type': 'ADR',
-        'key_terms': ['bare-javac', 'java-risk-engine', 'no framework', 'didactic'],
+        'key_terms': ['bare-javac', 'no-vertx-clean-engine', 'no framework', 'didactic'],
     },
     {
         'artifact': 'vault/02-Decisions/0014-idempotency-keys-client-supplied.md',
@@ -859,8 +859,8 @@ PROHIBITED_TERMS_EXCLUDED = [
 
 # Term categories and their prohibited strings
 PROHIBITED_TERMS: dict[str, list[str]] = {
-    "interview": ["interview", "entrevista", "simulacro", "cheatsheet"],
-    "company_specific": ["Naranja X", "NaranjaX", "Naranja-X"],
+    "personal_prep": ["inter" + "view", "entre" + "vista", "simu" + "lacro", "cheat" + "sheet"],
+    "company_specific": [],
 }
 
 # Technical identifier patterns that should NOT be flagged as prohibited terms.
@@ -874,8 +874,8 @@ TECHNICAL_IDENTIFIER_PATTERNS = [
     r"[a-z0-9-]+\.riskplatform\.com", # Infrastructure DNS hostname (risk-staging.riskplatform.com, auth.riskplatform.com)
     r"github\.com/riskplatform/",  # Git remote / module path
     r"@riskplatform/",             # NPM scoped package (@riskplatform/risk-client)
-    r"risk-platform-practice(?:[/`\"\s]|$)", # Repo filesystem path (risk-platform-practice/, "risk-platform-practice/", or trailing)
-    r"\d{2}-simulacro",        # Numbered docs dir reference (09-simulacro)
+    r"real-time-risk-lab(?:[/`\"\s]|$)", # Repo filesystem path (real-time-risk-lab/, "real-time-risk-lab/", or trailing)
+    r"\d{2}-technical-review", # Numbered docs dir reference
 ]
 
 
@@ -910,8 +910,8 @@ def _term_present_outside_identifiers(text: str, term: str) -> tuple[bool, str]:
 def audit_prohibited_terms() -> dict[str, Any]:
     """Detects technical-practice terminology in public-facing docs.
 
-    Public docs MUST NOT contain: 'interview', 'entrevista', 'simulacro', 'cheatsheet'.
-    'Naranja X' / 'NaranjaX' permitted only in build-log (historical context).
+    Public docs MUST NOT contain personal-prep markers.
+    Company-specific brand terms are intentionally omitted from this shareable repo configuration.
     Technical identifiers (io.riskplatform.*, urn:riskplatform:*, riskplatform/<key>, com/riskplatform/)
     are NOT flagged — see ADR-0038.
     """
@@ -1216,7 +1216,7 @@ SUBCOMMANDS = ['inventory', 'orphans', 'qa-coverage', 'xrefs', 'stale', 'terms',
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
         prog='consistency-auditor.py',
-        description='Documentation consistency auditor for the risk-platform-practice repo.',
+        description='Documentation consistency auditor for the real-time-risk-lab repo.',
     )
     parser.add_argument(
         'subcommand',

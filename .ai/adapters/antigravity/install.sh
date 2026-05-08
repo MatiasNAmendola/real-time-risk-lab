@@ -17,11 +17,11 @@ if [ -f "$GEMINI_FILE" ]; then
     echo "  already exists: $GEMINI_FILE (skipping)"
 else
 cat > "$GEMINI_FILE" <<'EOF'
-# GEMINI.md — Risk Decision Platform (Google Antigravity)
+# GEMINI.md — Real-Time Risk Lab (Google Antigravity)
 
 ## Project
 
-Technical architecture exploration for Risk Decision Platform.
+Technical architecture exploration for Real-Time Risk Lab.
 Real-time fraud detection: 150 TPS, p99 < 300ms.
 Stack: Java 21 LTS baseline operativo (Java 25 LTS objetivo documentado), Gradle Kotlin DSL, Vert.x 5.0.12, Postgres 16, Valkey 8, Redpanda, k3d/OrbStack.
 

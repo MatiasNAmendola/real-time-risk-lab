@@ -15,12 +15,12 @@ mkdir -p "$RULES_DIR"
 # 00-project.mdc — siempre activo
 cat > "$RULES_DIR/00-project.mdc" <<'EOF'
 ---
-description: Risk Decision Platform project context and non-negotiable rules
+description: Real-Time Risk Lab project context and non-negotiable rules
 globs: []
 alwaysApply: true
 ---
 
-# Proyecto: Risk Decision Platform — Architecture Exploration
+# Proyecto: Real-Time Risk Lab — Architecture Exploration
 
 Este repo es una exploración técnica de arquitectura de riesgo transaccional.
 
@@ -28,7 +28,7 @@ Este repo es una exploración técnica de arquitectura de riesgo transaccional.
 
 - Sistema de fraude tiempo real: 150 TPS, p99 < 300ms
 - Stack: Java 21 LTS baseline operativo (Java 25 LTS objetivo documentado), Gradle Kotlin DSL, Vert.x 5.0.12, Postgres 16, Valkey 8, Redpanda, k3d/OrbStack
-- 4 PoCs en poc/: java-risk-engine, java-vertx-distributed, vertx-risk-platform, k8s-local
+- PoC portfolio en poc/: no-vertx-clean-engine, Vert.x variants, service-mesh demo, k8s-local
 - Full context: @.ai/context/architecture.md
 
 ## Reglas non-negotiable
@@ -53,7 +53,7 @@ echo "  created: $RULES_DIR/00-project.mdc"
 # 10-architecture.mdc — activo en .java
 cat > "$RULES_DIR/10-architecture.mdc" <<'EOF'
 ---
-description: Clean Architecture and Java conventions for Risk Decision Platform risk engine
+description: Clean Architecture and Java conventions for Real-Time Risk Lab risk engine
 globs: ["**/*.java", "**/*.gradle.kts"]
 alwaysApply: false
 ---
@@ -92,7 +92,7 @@ echo "  created: $RULES_DIR/10-architecture.mdc"
 # 20-testing.mdc — activo en tests
 cat > "$RULES_DIR/20-testing.mdc" <<'EOF'
 ---
-description: ATDD-first testing strategy for Risk Decision Platform risk engine
+description: ATDD-first testing strategy for Real-Time Risk Lab risk engine
 globs: ["**/src/test/**/*.java", "**/*.feature"]
 alwaysApply: false
 ---
@@ -110,7 +110,7 @@ See full rule: @.ai/primitives/rules/testing-atdd.md
 
 ## Frameworks
 
-- Karate 1.5+: poc/java-vertx-distributed/atdd-tests/
+- Karate 1.5+: poc/vertx-layer-as-pod-eventbus/atdd-tests/
 - Cucumber-JVM 7+: tests/risk-engine-atdd/
 - JUnit 5: unit tests in each module
 

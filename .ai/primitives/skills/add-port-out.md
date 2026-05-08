@@ -53,6 +53,6 @@ related_rules: [clean-arch-boundaries, architecture-clean, java-version, naming-
 5. **Chequear boundaries**: nada de `infrastructure/` debe importarse desde `domain/`.
 
 ## Notas
-- El puerto vive en `domain/`. El adapter en `infrastructure/`. Esta separacion es la que valida el entrevistador.
+- El puerto vive en `domain/`. El adapter en `infrastructure/`. Esta separacion es la que valida el reviewer.
 - Nunca usar `static` para acceder a adapters. Siempre inyeccion por constructor.
 - Para Valkey/Redis: puerto en `domain/repository/CacheRepository.java`, adapter en `infrastructure/repository/CacheRepositoryValkey.java`.

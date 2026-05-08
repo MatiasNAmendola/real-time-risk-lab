@@ -15,7 +15,7 @@ Al cerrar una sesion, persistir el resumen en Engram para que la proxima sesion 
 1. Guardar resumen con `mem_session_summary`:
    ```
    mem_session_summary(
-     project: "riskplatform/risk-platform-practice",
+     project: "riskplatform/real-time-risk-lab",
      goal: "<objetivo de esta sesion>",
      instructions: "<preferencias del usuario aprendidas>",
      discoveries: "<hallazgos tecnicos importantes>",

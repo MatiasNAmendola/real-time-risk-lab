@@ -6,7 +6,7 @@
 
 set -e
 
-PROJECT="riskplatform/risk-platform-practice"
+PROJECT="riskplatform/real-time-risk-lab"
 CONTEXT_DIR="$(dirname "$0")/../context"
 
 echo "=== Engram Bootstrap: $PROJECT ==="
@@ -34,9 +34,9 @@ echo "  - $CONTEXT_DIR/stack.md             (versiones exactas)"
 echo ""
 echo "Topic keys de Engram para este proyecto:"
 echo "  riskplatform/practice/state"
-echo "  riskplatform/poc/java-risk-engine"
-echo "  riskplatform/poc/java-vertx-distributed"
-echo "  riskplatform/poc/vertx-risk-platform"
+echo "  riskplatform/poc/no-vertx-clean-engine"
+echo "  riskplatform/poc/vertx-layer-as-pod-eventbus"
+echo "  riskplatform/poc/vertx-layer-as-pod-http"
 echo "  riskplatform/poc/k8s-local"
 echo "  riskplatform/primitives/system"
 echo ""

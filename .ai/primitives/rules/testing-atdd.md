@@ -22,7 +22,7 @@ ATDD primero para features de integracion. TDD para internals de dominio.
 
 | Contexto | Framework | Version | Ubicacion |
 |---|---|---|---|
-| ATDD sobre Vert.x HTTP | Karate | 1.5+ | `poc/java-vertx-distributed/atdd-tests/` |
+| ATDD sobre Vert.x HTTP | Karate | 1.5+ | `poc/vertx-layer-as-pod-eventbus/atdd-tests/` |
 | ATDD bare-javac | Cucumber-JVM | 7+ | `tests/risk-engine-atdd/` |
 | Unit tests | JUnit 5 | 5.11+ | modulo correspondiente |
 | Coverage | JaCoCo | 0.8.12+ | todos los modulos Gradle |
@@ -61,7 +61,7 @@ Feature: <nombre del comportamiento>
 ## Verificacion
 
 ```bash
-./gradlew :poc:java-vertx-distributed:atdd-tests:test -Patdd          # Karate
+./gradlew :poc:vertx-layer-as-pod-eventbus:atdd-tests:test -Patdd          # Karate
 ./gradlew :tests:risk-engine-atdd:test  # Cucumber
 ./gradlew :<module-path>:test :<module-path>:jacocoTestReport          # JaCoCo check
 ```

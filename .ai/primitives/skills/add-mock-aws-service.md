@@ -55,8 +55,8 @@ services:
       - "9000:9000"
       - "9001:9001"
     environment:
-      MINIO_ROOT_USER: minioadmin
-      MINIO_ROOT_PASSWORD: minioadmin
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-change-me-minio-user}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_USER:-change-me-minio-user}
     command: server /data --console-address ":9001"
 ```
 
@@ -79,5 +79,5 @@ En la app: apuntar `VAULT_ADDR=http://localhost:8200`, `VAULT_TOKEN=root`.
 
 ## Notas
 - En k8s-local: los mocks ya estan en `poc/k8s-local/addons/70-aws-mocks.yaml`.
-- Nunca hardcodear credenciales reales. Mock credentials: `test/test` o `minioadmin/minioadmin` son seguros para dev.
+- Nunca hardcodear credenciales reales. Mock credentials: `test/test` o `${MINIO_ROOT_USER:-change-me-minio-user}/${MINIO_ROOT_USER:-change-me-minio-user}` son seguros para dev.
 - Para External Secrets Operator en k8s: hay un `SecretStore` de tipo `vault` apuntando a OpenBao.

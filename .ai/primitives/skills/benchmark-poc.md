@@ -47,7 +47,7 @@ k6 run benchmark.js
 ## Opcion 2: Go microbenchmark (en cli/risk-smoke o script local)
 
 ```bash
-cd poc/java-risk-engine
+cd poc/no-vertx-clean-engine
 ./scripts/run.sh &
 sleep 2
 # hey -n 10000 -c 50 http://localhost:8080/risk -m POST -T application/json -d '...'

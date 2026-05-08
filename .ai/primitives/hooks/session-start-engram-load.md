@@ -15,12 +15,12 @@ Al iniciar una sesion de trabajo, cargar el contexto del proyecto desde Engram p
 1. Detectar proyecto actual:
    ```
    mem_current_project()
-   → project: riskplatform/risk-platform-practice
+   → project: riskplatform/real-time-risk-lab
    ```
 
 2. Cargar contexto reciente:
    ```
-   mem_context(project: "riskplatform/risk-platform-practice")
+   mem_context(project: "riskplatform/real-time-risk-lab")
    ```
 
 3. Si el contexto no es suficiente, buscar especificamente:

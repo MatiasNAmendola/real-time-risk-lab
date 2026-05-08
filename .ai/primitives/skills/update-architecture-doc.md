@@ -40,7 +40,7 @@ related_rules: [naming-conventions]
      title: "Risk platform state update: <date>",
      type: "discovery",
      topic_key: "riskplatform/risk-platform/state",
-     project: "riskplatform/risk-platform-practice",
+     project: "riskplatform/real-time-risk-lab",
      content: <summary of changes and current state>
    )
    ```

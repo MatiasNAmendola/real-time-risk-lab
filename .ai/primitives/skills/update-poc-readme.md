@@ -15,7 +15,7 @@ related_rules: [naming-conventions]
 ## Estructura del README
 
 ```markdown
-# <Nombre PoC> — Risk Decision Platform
+# <Nombre PoC> — Real-Time Risk Lab
 
 <Descripcion de 2 lineas: que demuestra esta PoC y por que existe>
 

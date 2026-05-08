@@ -22,11 +22,11 @@ fi
 
 cp "$SCRIPT_DIR/../../adapters/copilot/copilot-instructions.md" "$DEST" 2>/dev/null || \
 cat > "$DEST" <<'INSTRUCTIONS'
-# GitHub Copilot Instructions — Risk Decision Platform
+# GitHub Copilot Instructions — Real-Time Risk Lab
 
 ## Project context
 
-Technical architecture exploration for Risk Decision Platform.
+Technical architecture exploration for Real-Time Risk Lab.
 Real-time fraud detection: 150 TPS, p99 < 300ms latency.
 Stack: Java 21 LTS baseline operativo (Java 25 LTS objetivo documentado), Gradle Kotlin DSL, Vert.x 5.0.12, Postgres 16, Valkey 8, Redpanda, k3d/OrbStack.
 

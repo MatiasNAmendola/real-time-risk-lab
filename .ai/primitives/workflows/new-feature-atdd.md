@@ -17,7 +17,7 @@ Cada vez que se agrega un nuevo comportamiento observable al sistema (endpoint, 
 Antes de escribir una sola linea de codigo de produccion:
 
 ```gherkin
-# poc/java-vertx-distributed/atdd-tests/src/test/resources/features/<feature>.feature
+# poc/vertx-layer-as-pod-eventbus/atdd-tests/src/test/resources/features/<feature>.feature
 Feature: <comportamiento>
 
   Scenario: happy path
@@ -34,7 +34,7 @@ Feature: <comportamiento>
 ### 2. Correr → debe fallar (RED confirmado)
 
 ```bash
-./gradlew :poc:java-vertx-distributed:atdd-tests:test -Patdd -Dtest=KarateRunner
+./gradlew :poc:vertx-layer-as-pod-eventbus:atdd-tests:test -Patdd -Dtest=KarateRunner
 # Expected: BUILD FAILURE con "scenario failed"
 ```
 
@@ -52,7 +52,7 @@ Seguir en orden:
 ### 4. Correr → debe pasar (GREEN)
 
 ```bash
-./gradlew :poc:java-vertx-distributed:atdd-tests:test -Patdd
+./gradlew :poc:vertx-layer-as-pod-eventbus:atdd-tests:test -Patdd
 # Expected: BUILD SUCCESS
 ```
 

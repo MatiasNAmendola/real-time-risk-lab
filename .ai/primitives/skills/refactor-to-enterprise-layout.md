@@ -51,4 +51,4 @@ related_rules: [architecture-clean, clean-arch-boundaries, java-version, naming-
 ## Notas
 - Hacer el refactor en commits atomicos (mover entidades, luego application, luego infrastructure).
 - Si el PoC tiene tests que usan rutas de paquete, actualizarlos tambien.
-- El layout no es solo estetico: el entrevistador va a navegar el arbol de directorios.
+- El layout no es solo estetico: el reviewer va a navegar el arbol de directorios.

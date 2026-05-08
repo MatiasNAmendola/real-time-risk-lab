@@ -56,8 +56,8 @@ def check_artifacts_snapshot() -> list[Violation]:
     """Warn when the last build snapshot is missing/stale without invoking Gradle."""
     checks = [
         (
-            REPO_ROOT / "poc/java-risk-engine/src/main/java",
-            REPO_ROOT / "poc/java-risk-engine/build/classes/java/main",
+            REPO_ROOT / "poc/no-vertx-clean-engine/src/main/java",
+            REPO_ROOT / "poc/no-vertx-clean-engine/build/classes/java/main",
             "risk-engine compiled classes are missing/stale; run ./nx build before runtime demo",
         ),
         (
@@ -89,7 +89,7 @@ def _imports(java_file: Path) -> list[str]:
 
 
 def check_clean_arch_source_boundaries() -> list[Violation]:
-    base = REPO_ROOT / "poc/java-risk-engine/src/main/java/io/riskplatform/engine"
+    base = REPO_ROOT / "poc/no-vertx-clean-engine/src/main/java/io/riskplatform/engine"
     violations: list[Violation] = []
 
     for f in _java_files(base / "domain"):
@@ -116,7 +116,7 @@ def check_clean_arch_source_boundaries() -> list[Violation]:
 
 
 def check_distributed_source_boundaries() -> list[Violation]:
-    root = REPO_ROOT / "poc/java-vertx-distributed"
+    root = REPO_ROOT / "poc/vertx-layer-as-pod-eventbus"
     modules = {
         "controller-app": "io.riskplatform.distributed.controller.",
         "usecase-app": "io.riskplatform.distributed.usecase.",

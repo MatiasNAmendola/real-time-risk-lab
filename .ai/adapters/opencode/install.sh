@@ -22,7 +22,7 @@ fi
 
 cat > "$DEST" <<'EOF'
 {
-  "instructions": "Risk Decision Platform architecture exploration. Stack: Java 21 LTS baseline operativo (Java 25 LTS objetivo documentado), Gradle Kotlin DSL, Vert.x 5.0.12, Postgres 16, Valkey 8, Redpanda. Java 21 baseline operativo; Java 25 objetivo documentado. Clean Architecture: domain/ must NOT import from application/ or infrastructure/. ATDD first: write .feature before production code. Every request must produce trace + log + metric via OpenTelemetry. Check .ai/primitives/skills/ and .ai/primitives/rules/ before implementing. Do not touch: poc/, tests/, cli/, docs/, vault/.",
+  "instructions": "Real-Time Risk Lab architecture exploration. Stack: Java 21 LTS baseline operativo (Java 25 LTS objetivo documentado), Gradle Kotlin DSL, Vert.x 5.0.12, Postgres 16, Valkey 8, Redpanda. Java 21 baseline operativo; Java 25 objetivo documentado. Clean Architecture: domain/ must NOT import from application/ or infrastructure/. ATDD first: write .feature before production code. Every request must produce trace + log + metric via OpenTelemetry. Check .ai/primitives/skills/ and .ai/primitives/rules/ before implementing. Do not touch: poc/, tests/, cli/, docs/, vault/.",
   "provider": "anthropic",
   "model": "claude-sonnet-4-6",
   "mcp": {

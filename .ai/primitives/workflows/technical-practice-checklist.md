@@ -5,7 +5,7 @@ description: What to review before presenting or sharing the risk decision platf
 
 # Workflow: architecture-review-checklist
 
-## Project: Risk Decision Platform — Three-Architecture Exploration
+## Project: Real-Time Risk Lab — Architecture Exploration
 
 Target: 150 TPS, p99 < 300ms, production-grade fraud detection use case
 
@@ -15,14 +15,14 @@ Target: 150 TPS, p99 < 300ms, production-grade fraud detection use case
 
 ```bash
 # PoC 1: bare-javac
-cd poc/java-risk-engine && ./scripts/run.sh &
+cd poc/no-vertx-clean-engine && ./scripts/run.sh &
 ./scripts/test.sh
 # should show: p50/p99 latency, decisions
 
 # PoC 2: Vert.x distributed
-cd poc/java-vertx-distributed && ./gradlew shadowJar -q
+cd poc/vertx-layer-as-pod-eventbus && ./gradlew shadowJar -q
 docker-compose up -d
-./gradlew :poc:java-vertx-distributed:atdd-tests:test -Patdd
+./gradlew :poc:vertx-layer-as-pod-eventbus:atdd-tests:test -Patdd
 # all scenarios green
 
 # PoC 3: k8s-local
@@ -48,7 +48,7 @@ cd cli/risk-smoke && go run .
 | Demo | Command | Time |
 |---|---|---|
 | Real-time decision | `curl -s -X POST localhost:8080/risk -d '{...}'` | 30s |
-| Rules engine | `./poc/java-risk-engine/scripts/test.sh` | 1min |
+| Rules engine | `./poc/no-vertx-clean-engine/scripts/test.sh` | 1min |
 | k8s + ArgoCD | open ArgoCD UI, show sync | 2min |
 | Canary deployment | `kubectl argo rollouts get rollout risk-engine` | 1min |
 | Trace in OpenObserve | browser to localhost:5080 | 1min |

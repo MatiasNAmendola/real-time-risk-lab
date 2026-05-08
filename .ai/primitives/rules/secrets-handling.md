@@ -17,7 +17,7 @@ priority: high
 ## En desarrollo local
 
 - Usar archivos `.env.local` (en `.gitignore`) para valores locales.
-- Credenciales de mocks: `test/test`, `minioadmin/minioadmin`, `root` (OpenBao dev) son seguras para dev.
+- Credenciales de mocks: `test/test`, `${MINIO_ROOT_USER:-change-me-minio-user}/${MINIO_ROOT_USER:-change-me-minio-user}`, `root` (OpenBao dev) son seguras para dev.
 - OpenBao dev mode en `poc/k8s-local`: `VAULT_TOKEN=root` es aceptable solo para demos locales.
 
 ## En k8s-local

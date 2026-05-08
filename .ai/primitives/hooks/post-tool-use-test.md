@@ -21,10 +21,10 @@ Despues de editar un archivo Java o Go, correr automaticamente los tests del mod
 
 | Path del archivo editado | Comando de test |
 |---|---|
-| `poc/java-risk-engine/src/**` | `cd poc/java-risk-engine && ./scripts/test.sh` |
-| `poc/java-vertx-distributed/<module>/src/**` | `./gradlew test -pl poc/java-vertx-distributed/<module>` |
-| `poc/java-vertx-distributed/atdd-tests/**` | `./gradlew test -pl poc/java-vertx-distributed/atdd-tests` |
-| `poc/vertx-risk-platform/src/**` | `./gradlew test -pl poc/vertx-risk-platform` |
+| `poc/no-vertx-clean-engine/src/**` | `cd poc/no-vertx-clean-engine && ./scripts/test.sh` |
+| `poc/vertx-layer-as-pod-eventbus/<module>/src/**` | `./gradlew test -pl poc/vertx-layer-as-pod-eventbus/<module>` |
+| `poc/vertx-layer-as-pod-eventbus/atdd-tests/**` | `./gradlew test -pl poc/vertx-layer-as-pod-eventbus/atdd-tests` |
+| `poc/vertx-layer-as-pod-http/src/**` | `./gradlew test -pl poc/vertx-layer-as-pod-http` |
 | `tests/risk-engine-atdd/**` | `./gradlew :tests:risk-engine-atdd:test` |
 | `cli/risk-smoke/**/*.go` | `cd cli/risk-smoke && go test ./...` |
 
@@ -54,13 +54,13 @@ Despues de editar un archivo Java o Go, correr automaticamente los tests del mod
 #!/usr/bin/env bash
 FILE_PATH=$(echo "$1" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('path',''))" 2>/dev/null || echo "")
 
-if [[ "$FILE_PATH" == poc/java-vertx-distributed/* ]]; then
+if [[ "$FILE_PATH" == poc/vertx-layer-as-pod-eventbus/* ]]; then
     MODULE=$(echo "$FILE_PATH" | cut -d/ -f1-3)
     echo "Running tests for $MODULE..."
     ./gradlew test -pl "$MODULE" -q 2>&1 | tail -5
-elif [[ "$FILE_PATH" == poc/java-risk-engine/* ]]; then
-    echo "Running java-risk-engine tests..."
-    cd poc/java-risk-engine && ./scripts/test.sh 2>&1 | tail -5
+elif [[ "$FILE_PATH" == poc/no-vertx-clean-engine/* ]]; then
+    echo "Running no-vertx-clean-engine tests..."
+    cd poc/no-vertx-clean-engine && ./scripts/test.sh 2>&1 | tail -5
 elif [[ "$FILE_PATH" == cli/risk-smoke/* ]]; then
     echo "Running Go tests..."
     cd cli/risk-smoke && go test ./... 2>&1 | tail -5

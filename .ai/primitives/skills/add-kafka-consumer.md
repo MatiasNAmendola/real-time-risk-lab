@@ -64,4 +64,4 @@ related_rules: [events-versioning, java-version, error-handling, observability-o
 ## Notas
 - `enable.auto.commit=false` siempre. Commit manual despues de procesamiento exitoso.
 - Consumer group ID debe ser unico por instancia logica.
-- En java-vertx-distributed: consumer-app es un pod separado con su propio consumer.
+- En vertx-layer-as-pod-eventbus: consumer-app es un pod separado con su propio consumer.

@@ -1,4 +1,4 @@
-# Canonical terminology for the risk-platform-practice repo.
+# Canonical terminology for the real-time-risk-lab repo.
 # Format:
 #   canonical: the one true form to use in all docs
 #   aliases:   forms that should be replaced by canonical
@@ -34,15 +34,15 @@ terms:
       - "transactional outbox"
     note: "Bare 'outbox' is acceptable shorthand once the full term is established in a doc; not aliased to avoid self-collision. 'Outbox pattern' (Title case) is acceptable in headings and section titles."
 
-  - canonical: "java-risk-engine"
-    note: "Path canonical. 'bare-javac', 'PoC bare', 'PoC bare-javac' are colloquial narrative shorthand acceptable in informal notes and decision narratives — they distinguish the bare-javac PoC from the Vert.x PoC at a glance and are NOT aliased to avoid flagging legitimate prose. Replace with 'java-risk-engine' only when referencing the artifact path."
+  - canonical: "no-vertx-clean-engine"
+    note: "Path canonical. 'bare-javac', 'PoC bare', 'PoC bare-javac' are colloquial narrative shorthand acceptable in informal notes and decision narratives — they distinguish the bare-javac PoC from the Vert.x PoC at a glance and are NOT aliased to avoid flagging legitimate prose. Replace with 'no-vertx-clean-engine' only when referencing the artifact path."
 
-  - canonical: "java-vertx-distributed"
+  - canonical: "vertx-layer-as-pod-eventbus"
     aliases:
       - "Vertx PoC"
-    note: "'vertx-distributed' is NOT aliased: it self-collides with the canonical form 'java-vertx-distributed' under substring matching."
+    note: "'vertx-distributed' is NOT aliased: it self-collides with the canonical form 'vertx-layer-as-pod-eventbus' under substring matching."
 
-  - canonical: "java-monolith"
+  - canonical: "vertx-monolith-inprocess"
     aliases:
       - "monolith PoC"
       - "java monolítico"
@@ -80,11 +80,11 @@ terms:
 # paths listed below.
 # ---------------------------------------------------------------------------
 prohibited_in_public:
-  - terms: ["interview", "entrevista", "simulacro", "cheatsheet"]
-    rationale: "Repo positioned as technical exploration, not personal prep material"
+  - terms: []
+    rationale: "Reserved for personal-prep markers; keep empty in this shareable config so no sensitive literal appears in source."
     excluded_paths: ["vault/01-Build-Log/", "vault/01-Sessions/handoffs/", ".ai/research/"]
-  - terms: ["Naranja X", "NaranjaX", "Naranja-X"]
-    rationale: "Avoid mentioning specific company; use 'production-grade fraud platform' generically"
+  - terms: []
+    rationale: "Reserved for project-specific brand terms; keep empty in the shareable repo so no literal brand appears in source."
     excluded_paths: ["vault/01-Build-Log/", "vault/01-Sessions/handoffs/", ".ai/research/"]
 
 # ---------------------------------------------------------------------------
@@ -106,6 +106,6 @@ technical_identifiers_excluded:
   - pattern: "urn:riskplatform:"
     description: "Schema URN (urn:riskplatform:risk:event:v1, urn:riskplatform:idempotency:v1)"
   - pattern: "riskplatform/[a-z0-9_-]+"
-    description: "Secrets Manager key or repo path (riskplatform/db-password, riskplatform/risk-platform-practice)"
+    description: "Secrets Manager key or repo path (riskplatform/db-password, riskplatform/real-time-risk-lab)"
   - pattern: "com/riskplatform/"
     description: "Filesystem path for Java sources (src/main/java/io/riskplatform/...)"

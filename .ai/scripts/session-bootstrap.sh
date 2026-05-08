@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# session-bootstrap.sh — Session startup script for AI agents working on risk-platform-practice.
+# session-bootstrap.sh — Session startup script for AI agents working on real-time-risk-lab.
 # Displays primitive inventory and recent usage stats.
 #
 # Usage:
@@ -15,9 +15,9 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
 cd "$REPO_ROOT"
 
-echo "=== Risk Decision Platform ==="
+echo "=== Real-Time Risk Lab ==="
 echo
-echo "Project: risk-platform-practice"
+echo "Project: real-time-risk-lab"
 echo "Active session: $(date -u +%Y-%m-%dT%H-%M-%SZ)"
 echo
 echo "PRIMITIVES AVAILABLE:"
