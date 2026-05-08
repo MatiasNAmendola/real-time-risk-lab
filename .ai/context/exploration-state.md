@@ -122,3 +122,9 @@ cd cli/risk-smoke && go run .
 - Next step: run comparable k6/JMH benchmarks with and without simulated ML latency to turn expected performance ordering into measured data.
 - [x] Clarified wording after web research: do not claim Vert.x requires grouping controllers/usecases/repositories in pods; say Vert.x provides verticles/EventBus and the PoC chooses its deployment topology.
 - [x] Added final layer-as-pod wording: `vertx-layer-as-pod-eventbus` uses Vert.x verticles/adapters per layer in separate processes/pods to evidence permissions isolation, boundary enforcement, blast radius, scaling profiles and network/serialization cost; this is a PoC topology, not a Vert.x prescription or business microservices claim.
+## 2026-05-08 — Share-ready v0.1 baseline
+
+- [x] Added `docs/39-share-ready-baseline.md` to mark the public baseline and document that Wave 2 reframing commits are useful but low-auditability.
+- [x] Reviewed `scripts/process-guard.py`; defaults remain conservative and invalid signal handling now returns a friendly CLI error.
+- [x] Reviewed `poc/vertx-layer-as-pod-eventbus/controller-app/src/main/java/io/riskplatform/distributed/controller/HttpVerticle.java`; webhook input handling and 502 trace headers were hardened.
+- [x] Create/push `share/v0.1` and `v0.1-shareable` after validation and commit.

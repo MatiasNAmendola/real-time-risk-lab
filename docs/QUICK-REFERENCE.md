@@ -98,6 +98,7 @@ Cada grupo declara en `.ai/test-groups.yaml` el campo `requires:` con las CLIs n
 
 - [`37-java-go-performance-positioning.md`](37-java-go-performance-positioning.md) — Java moderno vs Go: performance, concurrencia y trade-offs respaldados por fuentes primarias.
 - [`38-java-apps-architecture-performance-matrix.md`](38-java-apps-architecture-performance-matrix.md) — Matriz de apps Java: misma lógica conceptual, distintos stacks/topologías, beneficios de Vert.x y gaps de benchmark.
+- [`39-share-ready-baseline.md`](39-share-ready-baseline.md) — baseline público v0.1, tag/branch recomendados y notas de auditabilidad.
 
 ## Audit
 

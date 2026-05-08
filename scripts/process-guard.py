@@ -173,9 +173,12 @@ def print_table(procs: Iterable[Proc], truncate: int) -> None:
 
 def parse_signal(value: str) -> signal.Signals:
     raw = value.upper().removeprefix("SIG")
-    if raw.isdigit():
-        return signal.Signals(int(raw))
-    return getattr(signal, f"SIG{raw}")
+    try:
+        if raw.isdigit():
+            return signal.Signals(int(raw))
+        return getattr(signal, f"SIG{raw}")
+    except (AttributeError, ValueError) as exc:
+        raise argparse.ArgumentTypeError(f"invalid signal: {value}") from exc
 
 
 def cmd_status(args: argparse.Namespace) -> int:
@@ -193,7 +196,11 @@ def cmd_stop(args: argparse.Namespace) -> int:
     procs = collect(include_global_gradle_daemons=args.include_gradle_daemons)
     # Do not let this helper terminate itself or its direct shell accidentally.
     procs = [p for p in procs if p.pid not in {SELF_PID, os.getppid()}]
-    sig = parse_signal(args.signal)
+    try:
+        sig = parse_signal(args.signal)
+    except argparse.ArgumentTypeError as exc:
+        print(str(exc), file=sys.stderr)
+        return 2
 
     if args.only_kind:
         allowed = set(args.only_kind)

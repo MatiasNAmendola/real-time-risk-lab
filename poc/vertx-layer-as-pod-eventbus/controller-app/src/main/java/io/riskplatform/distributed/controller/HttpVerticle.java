@@ -140,9 +140,11 @@ public class HttpVerticle extends AbstractVerticle {
                 .onFailure(err -> {
                     log.error("[controller-app] usecase error correlationId={}: {}", corrId, err.getMessage());
                     MDC.clear();
-                    ctx.response().setStatusCode(502)
-                        .putHeader("Content-Type", "application/json")
-                        .end(new JsonObject().put("error", err.getMessage()).encode());
+                    var response = ctx.response()
+                        .setStatusCode(502)
+                        .putHeader("Content-Type", "application/json");
+                    putCurrentTraceHeaders(response);
+                    response.end(new JsonObject().put("error", err.getMessage()).encode());
                 });
         });
 
@@ -180,6 +182,12 @@ public class HttpVerticle extends AbstractVerticle {
                 ctx.response().setStatusCode(400).end(new JsonObject().put("error","invalid JSON").encode());
                 return;
             }
+            if (body == null) {
+                ctx.response().setStatusCode(400)
+                    .putHeader("Content-Type", "application/json")
+                    .end(new JsonObject().put("error","body required").encode());
+                return;
+            }
             String url    = body.getString("url");
             String filter = body.getString("filter", "APPROVE,REVIEW,DECLINE");
             if (url == null || url.isBlank()) {
@@ -187,7 +195,10 @@ public class HttpVerticle extends AbstractVerticle {
                 return;
             }
             String id = UUID.randomUUID().toString();
-            List<String> filters = List.of(filter.split(","));
+            List<String> filters = java.util.Arrays.stream(filter.split(","))
+                .map(String::trim)
+                .filter(value -> !value.isBlank())
+                .toList();
             webhooks.put(id, new WebhookSub(id, url, filters));
             log.info("[controller-app] webhook registered id={} filter={}", id, filter);
             ctx.response().setStatusCode(201)

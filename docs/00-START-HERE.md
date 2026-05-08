@@ -23,10 +23,11 @@ Una exploración técnica de un use case de detección de fraude productivo, que
 
 1. **`docs/12-rendimiento-y-separacion.md`** — comparación de las 3 arquitecturas con números reales. La pieza central.
 2. **`docs/38-java-apps-architecture-performance-matrix.md`** — matriz de apps Java: misma lógica, distintas topologías/stacks y beneficios de Vert.x.
-3. **`docs/37-java-go-performance-positioning.md`** — investigación con fuentes primarias: Java moderno vs Go en performance/concurrencia.
-4. **`docs/04-clean-architecture-java.md`** — Clean Architecture aplicada a Java enterprise.
-5. **`docs/13-paridad-logica-poc.md`** — qué cambia y qué NO cambia entre las PoCs.
-6. **`vault/02-Decisions/`** — 37 ADRs con análisis de alternativas Opción A/B/C/D.
+3. **[`docs/39-share-ready-baseline.md`](39-share-ready-baseline.md)** — anchor público, auditabilidad histórica y checks pre-tag.
+4. **`docs/37-java-go-performance-positioning.md`** — investigación con fuentes primarias: Java moderno vs Go en performance/concurrencia.
+5. **`docs/04-clean-architecture-java.md`** — Clean Architecture aplicada a Java enterprise.
+6. **`docs/13-paridad-logica-poc.md`** — qué cambia y qué NO cambia entre las PoCs.
+7. **`vault/02-Decisions/`** — 37 ADRs con análisis de alternativas Opción A/B/C/D.
 
 ### Si tu objetivo es entender el enfoque de testing
 
