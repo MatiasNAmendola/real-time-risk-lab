@@ -24,7 +24,7 @@ See full rule: @.ai/primitives/rules/testing-atdd.md
 ## Coverage targets
 
 - domain/ and application/: >= 80% line, >= 75% branch
-- Run: ./gradlew :<module-path>:test :<module-path>:jacocoTestReport
+- Run: ./gradlew :<module>:test :<module>:jacocoTestReport
 
 ## Never
 

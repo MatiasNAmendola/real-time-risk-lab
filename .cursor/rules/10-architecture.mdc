@@ -19,9 +19,9 @@ See full rules: @.ai/primitives/rules/architecture-clean.md
 
 ## Java baseline
 
-- Executable baseline is Java 21 LTS via Gradle toolchains (`--release 21`).
-- Java 25 LTS is a documented future target only.
-- Use records for Value Objects where they fit.
+- Java 21 LTS (`--release 21`) en el build actual; Java 25 es objetivo documentado
+- Use records for Value Objects
+- Use virtual threads for blocking I/O
 
 ## Naming
 

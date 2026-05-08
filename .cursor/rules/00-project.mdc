@@ -4,20 +4,20 @@ globs: []
 alwaysApply: true
 ---
 
-# Proyecto: Real-Time Risk Lab — Technical Exploration
+# Proyecto: Real-Time Risk Lab — Architecture Exploration
 
-Este repo es exploración técnica de Real-Time Risk Lab technical leadership discussion.
+Este repo es una exploración técnica de arquitectura de riesgo transaccional.
 
 ## Contexto clave
 
 - Sistema de fraude tiempo real: 150 TPS, p99 < 300ms
-- Stack: Java 21 LTS executable baseline, Gradle Kotlin DSL, Vert.x 5.0.12, Postgres 16, Valkey 8, Redpanda, k3d/OrbStack
+- Stack: Java 21 LTS baseline operativo (Java 25 LTS objetivo documentado), Gradle Kotlin DSL, Vert.x 5.0.12, Postgres 16, Valkey 8, Redpanda, k3d/OrbStack
 - PoC portfolio en poc/: no-vertx-clean-engine, Vert.x variants, service-mesh demo, k8s-local
 - Full context: @.ai/context/architecture.md
 
 ## Reglas non-negotiable
 
-1. Java 21 LTS es el baseline ejecutable (`--release 21`). Java 25 LTS es objetivo documentado, no requisito actual. Ver @.ai/primitives/rules/java-version.md
+1. Java 21 LTS baseline operativo. Ver @.ai/primitives/rules/java-version.md
 2. Layout canonico enterprise Go. Ver @.ai/primitives/rules/architecture-clean.md
 3. ATDD primero. Ver @.ai/primitives/rules/testing-atdd.md
 4. OTEL en todo request. Ver @.ai/primitives/rules/observability-otel.md

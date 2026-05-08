@@ -4,7 +4,7 @@ inclusion: always
 
 # Product: Real-Time Risk Lab
 
-Technical exploration for Real-Time Risk Lab real-time transactional risk patterns.
+Technical architecture exploration for Real-Time Risk Lab.
 Real-time fraud detection: 150 TPS, p99 < 300ms.
 
 ## PoCs

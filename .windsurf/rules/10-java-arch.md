@@ -20,9 +20,9 @@ config/ cmd/
 domain/ <- application/ <- infrastructure/ <- config/cmd/
 domain/ must NOT import from application/ or infrastructure/.
 
-## Java 25
+## Java baseline
 
-- --release 21 en todo build.gradle.kts
+- Java 21 LTS (`--release 21`) en el build actual; Java 25 es objetivo documentado
 - Virtual threads para I/O bloqueante
 - Records para Value Objects
 
