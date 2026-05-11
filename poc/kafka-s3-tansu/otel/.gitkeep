@@ -1,0 +1,6 @@
+# Empty on purpose.
+#
+# Tansu is configured with RUST_LOG only; it does not consume an
+# opentelemetry-javaagent.jar like the Java PoCs. OTel wiring (if/when added)
+# would go through the shared otel-collector service in compose/docker-compose.yml
+# and emit via OTLP env vars on a future client app in this PoC.

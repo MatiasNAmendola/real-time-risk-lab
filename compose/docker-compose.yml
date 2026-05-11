@@ -227,7 +227,10 @@ services:
         echo "=== Seeding Floci at $$EP ==="
 
         # ─── S3 buckets ──────────────────────────────────────────────────────
-        for b in risk-events risk-models risk-audit; do
+        # Note: "tansu" is the storage bucket for the poc/kafka-s3-tansu
+        # exploration (Tansu broker uses STORAGE_ENGINE="s3://tansu/").
+        # Idempotent — head-bucket short-circuits when it already exists.
+        for b in risk-events risk-models risk-audit tansu; do
           if aws --endpoint-url=$$EP s3api head-bucket --bucket "$$b" >/dev/null 2>&1; then
             echo "  s3 exists:   $$b"
           else
@@ -267,7 +270,7 @@ services:
         seed_secret risk-engine/api-key      "$$POC_API_KEY"
 
         # ─── Verify (loudly) ──────────────────────────────────────────────────
-        for b in risk-events risk-models risk-audit; do
+        for b in risk-events risk-models risk-audit tansu; do
           aws --endpoint-url=$$EP s3api head-bucket --bucket "$$b" >/dev/null \
             || { echo "FATAL: s3 bucket missing post-create: $$b" >&2; exit 2; }
         done

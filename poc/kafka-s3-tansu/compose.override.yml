@@ -1,0 +1,57 @@
+##############################################################################
+# poc/kafka-s3-tansu — Tansu (Kafka wire) on top of Floci S3
+#
+# Tansu is a Rust, Apache-2.0, Kafka-wire-compatible broker that stores log
+# segments in S3 instead of local disk. Combined with Floci (our AWS emulator)
+# the entire broker is stateless from disk's perspective and the persistence
+# layer is plain object storage. See poc/kafka-s3-tansu/README.md for context.
+#
+# This override is ADDITIVE on top of compose/docker-compose.yml:
+#   docker compose -f compose/docker-compose.yml \
+#                  -f poc/kafka-s3-tansu/compose.override.yml up -d --wait
+#
+# It introduces a single new service (`tansu`). The `tansu` S3 bucket itself
+# is seeded by the shared `floci-init` job (additive append in that command).
+##############################################################################
+
+services:
+
+  # ============================================================================
+  # Tansu broker — Kafka-wire-compatible, S3-backed.
+  # Image: ghcr.io/tansu-io/tansu:0.6.0 (pre-1.0, Apache-2.0).
+  # Env vars below come verbatim from upstream example.env at
+  # https://raw.githubusercontent.com/tansu-io/tansu/main/example.env
+  # ============================================================================
+  tansu:
+    image: ghcr.io/tansu-io/tansu:0.6.0
+    environment:
+      CLUSTER_ID:              "tansu"
+      # Listener that brokers advertise to clients. In-docker callers use the
+      # `tansu` service hostname; host-side clients hit localhost:9092 via the
+      # published port below.
+      ADVERTISED_LISTENER_URL: "tcp://tansu:9092"
+      STORAGE_ENGINE:          "s3://tansu/"
+      AWS_ACCESS_KEY_ID:       "test"
+      AWS_SECRET_ACCESS_KEY:   "test"
+      AWS_DEFAULT_REGION:      "us-east-1"
+      AWS_ENDPOINT:            "http://floci:4566"
+      AWS_ALLOW_HTTP:          "true"
+      RUST_LOG:                "warn,tansu_broker=info,tansu_storage=info"
+    ports:
+      - "9092:9092"
+    networks:
+      - app-net
+      - data-net
+    depends_on:
+      floci:
+        condition: service_healthy
+      floci-init:
+        condition: service_completed_successfully
+    # Tansu 0.6.0 image is distroless-ish (no curl / nc); we cannot run a
+    # CMD-based healthcheck reliably. Readiness is implicit via the listener
+    # binding on :9092. up.sh probes externally via kafkacat handshake.
+    healthcheck:
+      test: ["NONE"]
+    mem_limit: 256m
+    mem_reservation: 96m
+    cpus: "0.50"
