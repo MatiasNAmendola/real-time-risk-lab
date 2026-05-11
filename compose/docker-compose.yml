@@ -4,7 +4,7 @@
 # Network topology — 3 networks (collapsed from 5 for Hazelcast cluster connectivity):
 #
 #   app-net       : the Java app pods + Hazelcast TCP cluster.
-#   data-net      : data services (Postgres, Valkey, Redpanda, Floci AWS emulator)
+#   data-net      : data services (Postgres, Valkey, Tansu, Floci AWS emulator)
 #                   + apps that consume them.
 #   telemetry-net : OTel collector + OpenObserve + all apps that emit telemetry.
 #
@@ -60,64 +60,75 @@ services:
     cpus: "0.25"
 
   # ============================================================================
-  # Infrastructure — Redpanda (Kafka-compatible broker)
+  # Infrastructure — Tansu (Kafka-wire-compatible broker, S3-backed via Floci)
+  # ADR-0043: replaces Redpanda. Tansu is Rust/Apache-2.0, stores log segments
+  # in the `tansu` S3 bucket (seeded by floci-init). Image is distroless-ish
+  # (no curl/nc/sh), so we cannot run a CMD-based healthcheck — readiness is
+  # implicit via the :9092 listener binding. tansu-init (below) acts as the
+  # external readiness gate by creating topics through the wire protocol.
+  # Env vars verbatim from upstream example.env.
   # ============================================================================
-  redpanda:
-    image: redpandadata/redpanda:v24.2.4
-    command:
-      - redpanda
-      - start
-      - --mode
-      - dev-container
-      - --smp
-      - "1"
-      - --memory
-      - 512M
-      - --reserve-memory
-      - 0M
-      - --node-id
-      - "0"
-      - --kafka-addr
-      - PLAINTEXT://0.0.0.0:29092,OUTSIDE://0.0.0.0:9092,HOST://0.0.0.0:19092
-      - --advertise-kafka-addr
-      - PLAINTEXT://redpanda:29092,OUTSIDE://redpanda:9092,HOST://localhost:19092
-      - --pandaproxy-addr
-      - 0.0.0.0:8082
-      - --advertise-pandaproxy-addr
-      - redpanda:8082
-      - --schema-registry-addr
-      - 0.0.0.0:8081
-      - --overprovisioned
-      - --default-log-level
-      - warn
+  tansu:
+    image: ghcr.io/tansu-io/tansu:0.6.0
+    environment:
+      CLUSTER_ID:              "tansu"
+      ADVERTISED_LISTENER_URL: "tcp://tansu:9092"
+      STORAGE_ENGINE:          "s3://tansu/"
+      AWS_ACCESS_KEY_ID:       "test"
+      AWS_SECRET_ACCESS_KEY:   "test"
+      AWS_DEFAULT_REGION:      "us-east-1"
+      AWS_ENDPOINT:            "http://floci:4566"
+      AWS_ALLOW_HTTP:          "true"
+      RUST_LOG:                "warn,tansu_broker=info,tansu_storage=info"
     networks:
       - data-net
     ports:
-      - "19092:19092"
-    healthcheck:
-      test: ["CMD-SHELL", "rpk cluster health 2>&1 | grep -E 'Healthy:.+true' || exit 1"]
-      interval: 15s
-      timeout: 10s
-      retries: 10
-      start_period: 30s
-    volumes:
-      - redpanda-data:/var/lib/redpanda/data
-    mem_limit: 768m
-    mem_reservation: 512m
-    cpus: "0.75"
-
-  # Topic creation (one-shot init container, exits cleanly when topic exists)
-  redpanda-init:
-    image: redpandadata/redpanda:v24.2.4
+      - "9092:9092"
     depends_on:
-      redpanda:
+      floci:
         condition: service_healthy
+      floci-init:
+        condition: service_completed_successfully
+    healthcheck:
+      test: ["NONE"]
+    mem_limit: 256m
+    mem_reservation: 96m
+    cpus: "0.50"
+
+  # Topic seeding via Apache Kafka client (works against Tansu wire protocol).
+  # librdkafka 2.x clients (kcat 1.7.1) hit incompatibilities at handshake;
+  # confluentinc/cp-kafka ships the JVM Apache Kafka client which works.
+  # Idempotent: --if-not-exists swallows AlreadyExistsException.
+  tansu-init:
+    image: confluentinc/cp-kafka:7.0.0
+    depends_on:
+      tansu:
+        condition: service_started
     networks:
       - data-net
-    entrypoint: /bin/sh
+    entrypoint: /bin/bash
     command:
-      - -c
-      - "rpk topic create risk-decisions --brokers redpanda:9092 --partitions 3 --replicas 1 || true && rpk topic create risk-decisions-dlq --brokers redpanda:9092 --partitions 1 --replicas 1 || true && rpk topic create risk-audit --brokers redpanda:9092 --partitions 1 --replicas 1 || true && echo 'Topics ready.'"
+      - -ec
+      - |
+        BROKER="tansu:9092"
+        # Tansu has no CMD-based healthcheck; poll metadata before topic creation.
+        # Apache Kafka client tolerates Tansu's wire protocol; retry until ready.
+        for i in $$(seq 1 30); do
+          if kafka-broker-api-versions --bootstrap-server "$$BROKER" >/dev/null 2>&1; then
+            echo "tansu :9092 ready after $$i attempt(s)"
+            break
+          fi
+          [ "$$i" = "30" ] && { echo "FATAL: tansu :9092 unreachable" >&2; exit 2; }
+          sleep 2
+        done
+        kafka-topics --bootstrap-server "$$BROKER" --create --if-not-exists \
+            --topic risk-decisions     --partitions 3 --replication-factor 1
+        kafka-topics --bootstrap-server "$$BROKER" --create --if-not-exists \
+            --topic risk-decisions-dlq --partitions 1 --replication-factor 1
+        kafka-topics --bootstrap-server "$$BROKER" --create --if-not-exists \
+            --topic risk-audit         --partitions 1 --replication-factor 1
+        kafka-topics --bootstrap-server "$$BROKER" --list
+        echo "Tansu topics ready."
     restart: "no"
 
   # ============================================================================
@@ -337,4 +348,3 @@ networks:
 volumes:
   pg-data:
   openobserve-data:
-  redpanda-data:

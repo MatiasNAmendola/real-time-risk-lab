@@ -14,7 +14,7 @@ services:
       PG_USER:                         riskplatform
       PG_PASSWORD:                     riskplatform
       VALKEY_URL:                      redis://valkey:6379
-      KAFKA_BOOTSTRAP_SERVERS:         redpanda:9092
+      KAFKA_BOOTSTRAP_SERVERS:         tansu:9092
       # AWS mocks via Floci unified emulator (ADR-0042). Single endpoint :4566.
       FLOCI_ENDPOINT:                  http://floci:4566
       AWS_ENDPOINT_URL:                http://floci:4566
@@ -37,7 +37,8 @@ services:
       - telemetry-net
     depends_on:
       postgres: { condition: service_healthy }
-      redpanda: { condition: service_healthy }
+      tansu: { condition: service_started }
+      tansu-init: { condition: service_completed_successfully }
       floci: { condition: service_healthy }
       floci-init: { condition: service_completed_successfully }
       otel-collector: { condition: service_started }

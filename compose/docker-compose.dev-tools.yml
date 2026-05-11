@@ -4,28 +4,15 @@
 # Usage:
 #   docker compose -f compose/docker-compose.yml \
 #                  -f compose/docker-compose.dev-tools.yml up -d
+#
+# NOTE (2026-05-11, ADR-0043): The Redpanda Console tile was removed when the
+# broker was swapped to Tansu. Tansu has no bundled console UI; for Kafka topic
+# inspection use the Apache Kafka CLI inside the `tansu-init` image:
+#
+#   docker run --rm --network compose_data-net confluentinc/cp-kafka:7.0.0 \
+#       kafka-topics --bootstrap-server tansu:9092 --list
+#
+# Reintroduce a console here only if a Tansu-compatible UI lands upstream.
 ##############################################################################
 
-services:
-
-  # ============================================================================
-  # Dev tool — Redpanda Console (Kafka UI on host port 9001)
-  # ============================================================================
-  redpanda-console:
-    image: redpandadata/console:v2.7.2
-    environment:
-      CONFIG_FILEPATH: /etc/redpanda/redpanda-console-config.yaml
-    volumes:
-      - ./redpanda-console-config.yaml:/etc/redpanda/redpanda-console-config.yaml:ro
-    ports:
-      - "9001:8080"
-    networks:
-      - data-net
-    depends_on:
-      redpanda:
-        condition: service_healthy
-    mem_limit: 192m
-
-networks:
-  data-net:
-    external: true
+services: {}
