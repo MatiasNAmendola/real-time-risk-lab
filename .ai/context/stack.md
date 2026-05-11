@@ -42,7 +42,7 @@
 |---|---|---|
 | Postgres | 16-alpine | 5432 |
 | Valkey | 8-alpine | 6379 |
-| Redpanda | v24.2.4 | 9092 (Kafka), 9644 (Admin), 8080 (Console) |
+| Tansu | 0.6.0 | 9092 (Kafka, single listener) — ADR-0043 |
 | OpenObserve | latest | 5080 |
 | otelcol-contrib | 0.141.0 | 4317 (gRPC), 4318 (HTTP) |
 | Moto (AWS mock) | latest | 5000 |
@@ -62,7 +62,7 @@
 | Argo Rollouts | 2.40.5 | `argo/argo-rollouts` |
 | kube-prometheus-stack | 80.11.0 | `prometheus-community/kube-prometheus-stack` |
 | External Secrets Operator | 1.2.1 | `external-secrets/external-secrets` |
-| Redpanda Helm | chart en addons | `redpanda/redpanda` |
+| Tansu raw manifests | `addons/50-tansu.yaml` | `ghcr.io/tansu-io/tansu:0.6.0` |
 | OpenObserve Helm | — | custom o standalone |
 
 ## Observabilidad

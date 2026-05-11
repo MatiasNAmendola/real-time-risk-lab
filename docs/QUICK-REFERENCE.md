@@ -140,7 +140,7 @@ Tráfico sintético contra los servicios vivos.
 | `demo websocket` | Conecta a endpoint WS via `wscat` | `./nx demo websocket` |
 | `demo sse` | Consume el stream SSE via `curl` | `./nx demo sse` |
 | `demo webhook` | Registra webhook y dispara | `./nx demo webhook` |
-| `demo kafka` | Produce y consume mensaje en Kafka/Redpanda | `./nx demo kafka` |
+| `demo kafka` | Produce y consume mensaje en Kafka/ Tansu | `./nx demo kafka` |
 
 ---
 
@@ -178,7 +178,7 @@ Detalle: [bench/k6/README.md](../bench/k6/README.md) y [ADR-0040](../vault/02-De
 
 | Subcomando | Descripción |
 |------------|-------------|
-| `up infra` | Solo infra compartida (Postgres + Valkey + Redpanda + observability) |
+| `up infra` | Solo infra compartida (Postgres + Valkey +  Tansu + observability) |
 | `up vertx-layer-as-pod-eventbus` | Infra + clustered EventBus layer-as-pod app |
 | `up vertx-layer-as-pod-http` | Infra + HTTP/token layer-as-pod app |
 | `up vertx-monolith-inprocess` | Infra + single-JVM Vert.x monolith |

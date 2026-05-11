@@ -29,7 +29,7 @@ Lo que el consumidor **NO** sabe:
 - HTTP endpoint paths, headers de auth, retry policy, timeouts.
 - WebSocket path o protocolo.
 - Schema versioning interno de eventos.
-- Si por debajo se está usando Redpanda o Kafka managed.
+- Si por debajo se está usando  Tansu o Kafka managed.
 - Si el ingress es ALB, Traefik o NGINX.
 - Si el TLS es self-signed o ACM.
 

@@ -44,7 +44,7 @@
                        │  │  Vertx.vertx()   │  no Hazelcast/EventBus cluster       │
                        │  └────────┬─────────┘                                     │
                        │           │ consumes Kafka, writes S3 audit                │
-                       │  redpanda/minio/elasticmq are attached to async-net        │
+                       │  tansu and floci are attached to async-net        │
                        │                                                            │
                        │  JVMs ──► telemetry-net ──► otel-collector ──► openobserve │
                        └────────────────────────────────────────────────────────────┘
@@ -61,7 +61,7 @@ sequenceDiagram
     participant UC as usecase-app<br/>(UID 1002, app-net + async-net)
     participant RP as repository-app<br/>(UID 1003, app-net + data-net)
     participant PG as postgres<br/>(data-net)
-    participant K as redpanda<br/>(async-net)
+    participant K as tansu<br/>(async-net)
     participant CA as consumer-app<br/>(UID 1004, async-net; no EventBus cluster)
 
     C->>CT: POST /risk {transactionId, customerId, amountCents}
@@ -85,7 +85,7 @@ sequenceDiagram
 | Network | Members | Purpose |
 |---------|---------|---------|
 | `app-net` | controller-app, usecase-app, repository-app | Hazelcast TCP discovery + Vert.x clustered EventBus traffic for the synchronous decision path. Only controller-app publishes an application ingress port (`8080`); the `630x` host ports are JaCoCo coverage/debug ports, not business ingress. Ingress is controlled by `ports`, not by a separate ingress network. |
-| `async-net` | usecase-app, consumer-app, redpanda, minio, elasticmq | Async outputs: Kafka publication/consumption, S3 audit writes, SQS publication. This keeps usecase/consumer off `data-net`. |
+| `async-net` | usecase-app, consumer-app, tansu, floci | Async outputs: Kafka publication/consumption, S3 audit writes, SQS publication. This keeps usecase/consumer off `data-net`. |
 | `data-net` | repository-app, postgres, valkey, moto, openbao; plus async infra for init jobs | DB, cache and secrets access. `repository-app` owns Postgres and secrets. `controller-app`, `usecase-app`, and `consumer-app` do not join this network. |
 | `telemetry-net` | all JVMs, otel-collector, openobserve | OpenTelemetry spans, metrics, logs. |
 
@@ -256,7 +256,7 @@ graph TD
     UC -->|eventBus.request| RP[repository-app]
     RP --> PG[(postgres)]
 
-    UC -->|"5. Kafka publish risk-decisions"| RD[(Redpanda)]
+    UC -->|"5. Kafka publish risk-decisions"| RD[(Tansu)]
     RD --> CA[consumer-app]
 
     UC -->|"eventBus.publish risk.decision.broadcast"| CT
@@ -331,7 +331,7 @@ curl -X DELETE http://localhost:8080/webhooks/<id>
 
 ### Flow 5 — Kafka
 ```bash
-# Open Redpanda Console:
+# Inspect Tansu topics (no bundled UI):
 open http://localhost:9001
 # Navigate: Topics → risk-decisions → Messages
 # Each POST /risk produces one message with traceparent header

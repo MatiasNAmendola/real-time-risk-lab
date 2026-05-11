@@ -21,8 +21,8 @@ scope: post-mortem
 | `add-helm-template` | Agregar recurso Kubernetes como template Helm |
 | `add-idempotency-key` | Agregar soporte de idempotencia a use case o endpoint |
 | `add-jacoco-coverage-target` | Agregar/actualizar target JaCoCo en modulo Gradle |
-| `add-kafka-consumer` | Agregar consumidor Kafka/Redpanda para eventos de dominio |
-| `add-kafka-publisher` | Agregar publicacion de eventos de dominio a Redpanda/Kafka |
+| `add-kafka-consumer` | Agregar consumidor Kafka/ Tansu para eventos de dominio |
+| `add-kafka-publisher` | Agregar publicacion de eventos de dominio a Tansu/Kafka |
 | `add-mock-aws-service` | Agregar servicio AWS mockeado localmente |
 | `add-otel-custom-metric` | Agregar metrica custom OpenTelemetry (counter/histogram/gauge) |
 | `add-otel-custom-span` | Agregar span OTEL custom para operacion de negocio |
@@ -75,7 +75,7 @@ Fuente: artefactos en `poc/`, `tests/`, `docs/`, `cli/`, `bench/`, `.ai/`.
 11. Construir PoC Vert.x distribuida `poc/vertx-layer-as-pod-eventbus/` (4 modulos Gradle, Hazelcast, 4 redes Docker)
 12. Sumar todos los patrones de comunicacion a Vert.x: REST, SSE, WebSocket, Webhooks, Kafka publisher
 13. Sumar OTEL completo a Vert.x (MDC correlationId, custom spans, Micrometer metrics, OpenObserve)
-14. Construir `poc/k8s-local/` con k3d + ArgoCD + Argo Rollouts + kube-prom-stack + Redpanda + OpenObserve
+14. Construir `poc/k8s-local/` con k3d + ArgoCD + Argo Rollouts + kube-prom-stack +  Tansu + OpenObserve
 15. Agregar OrbStack/k3d autodetect switch a `k8s-local`
 16. Agregar AWS mocks addon a `k8s-local` (Moto, MinIO, ElasticMQ, OpenBao)
 17. Construir Go TUI smoke runner `cli/risk-smoke/` con Bubble Tea (9 E2E checks)

@@ -33,7 +33,7 @@ docker compose -f compose/docker-compose.yml -f poc/vertx-layer-as-pod-eventbus/
 docker logs compose-moto-init-1
 docker logs compose-elasticmq-init-1
 docker logs compose-postgres-init-1
-docker logs compose-redpanda-init-1
+docker logs compose-tansu-init-1
 docker logs compose-openbao-init-1
 docker logs compose-minio-init-1
 ```
@@ -138,8 +138,9 @@ docker exec compose-postgres-1 psql -U risk_user -d risk_db -c "\dt"
 # Valkey
 docker exec compose-valkey-1 valkey-cli PING
 
-# Redpanda
-docker exec compose-redpanda-1 rpk topic list
+# Tansu (Apache Kafka CLI; rpk + librdkafka kcat clients NOT supported)
+docker run --rm --network compose_data-net confluentinc/cp-kafka:7.0.0 \
+  kafka-topics --bootstrap-server tansu:9092 --list
 
 # Floci — S3 buckets
 aws --endpoint-url http://localhost:4566 s3 ls

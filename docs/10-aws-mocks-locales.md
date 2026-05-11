@@ -117,7 +117,7 @@ Este modelo no cambia con Floci — es la misma separación que tenía la pila p
 - Ejemplo: `FlociSecretsManagerIntegrationTest`, `AuditEventS3IntegrationTest`.
 
 ### Capa 3 — E2E tests (compose stack completo)
-- Levantan compose con Floci + Postgres + Redpanda + OTel Collector + las apps.
+- Levantan compose con Floci + Postgres +  Tansu + OTel Collector + las apps.
 - Ejecutan flujos completos: POST /decision → audit en S3 → mensaje en SQS → trace en OTel.
 - Ubicación: `tests/integration/src/test/java/.../e2e/RiskDecisionE2EIntegrationTest.java`.
 

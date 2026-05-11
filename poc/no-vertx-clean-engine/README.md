@@ -117,7 +117,7 @@ src/main/java/io/riskplatform/engine
     │   ├── CliRunner.java
     │   └── BenchmarkRunner.java
     ├── consumer/                          # internal/infrastructure/consumers/ en mega — inbound async
-    │   └── ConsumerPlaceholder.java       # vacío: aquí irían @KafkaListener cuando usemos Redpanda
+    │   └── ConsumerPlaceholder.java       # vacío: aquí irían @KafkaListener cuando usemos Tansu
     ├── repository/                        # internal/infrastructure/repositories/ en mega — outbound impls
     │   ├── event/                         # outbox + publisher
     │   ├── feature/                       # feature provider in-memory

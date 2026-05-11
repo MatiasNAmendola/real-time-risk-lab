@@ -68,7 +68,7 @@ poc/vertx-layer-as-pod-eventbus/
 ├── controller-app/  # HTTP layer (Vert.x Router)
 ├── usecase-app/     # Business logic (Vert.x EventBus)
 ├── repository-app/  # Persistence (Postgres + Valkey)
-├── consumer-app/    # Kafka consumer (Redpanda)
+├── consumer-app/    # Kafka consumer (Tansu)
 └── atdd-tests/      # Karate ATDD
 ```
 
@@ -98,7 +98,7 @@ poc/k8s-local/
 - Argo Rollouts 2.40.5
 - kube-prometheus-stack 80.11.0
 - External Secrets 1.2.1
-- Redpanda
+- Tansu (ADR-0043)
 - OpenObserve
 - AWS mocks (Moto, MinIO, ElasticMQ, OpenBao)
 
@@ -115,7 +115,7 @@ Cliente
           → ML scoring (circuit breaker, fallback)
         → TransactionRepository.save() (infrastructure/repository → Postgres)
         → IdempotencyStore.put() (infrastructure/repository → Valkey)
-        → EventPublisher.publish() (infrastructure/publisher → Redpanda)
+        → EventPublisher.publish() (infrastructure/publisher → Tansu)
     → RiskDecision response + X-Correlation-Id header
   → OTEL span cerrado
   → Log estructurado con correlationId, traceId
@@ -124,7 +124,7 @@ Cliente
 ## Dependencias entre PoCs
 
 - `no-vertx-clean-engine`: independiente. Cero dependencias externas en runtime.
-- `vertx-layer-as-pod-eventbus`: requiere docker-compose (Postgres, Valkey, Redpanda, OTEL collector).
+- `vertx-layer-as-pod-eventbus`: requiere docker-compose (Postgres, Valkey, Tansu, OTEL collector).
 - `vertx-layer-as-pod-http`: requiere docker-compose similar.
 - `k8s-local`: requiere Docker + k3d o OrbStack.
 - `tests/risk-engine-atdd`: requiere la app corriendo en `localhost:8080`.

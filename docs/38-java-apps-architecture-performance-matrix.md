@@ -78,7 +78,7 @@ El `settings.gradle.kts` incluye módulos compartidos que sirven como base comú
 | `pkg:errors` | Errores comunes. |
 | `pkg:resilience` | Resiliencia reutilizable. |
 | `pkg:events` | Eventos/outbox/event abstractions. |
-| `pkg:kafka` | Utilidades Kafka/Redpanda. |
+| `pkg:kafka` | Utilidades Kafka/Tansu. |
 | `pkg:observability` | Logging/tracing/metrics base. |
 | `pkg:repositories` | Adapters o helpers de persistencia. |
 | `sdks:risk-events` | Contratos de eventos compartidos. |

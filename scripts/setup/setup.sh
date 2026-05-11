@@ -85,7 +85,7 @@ ${BOLD}GROUPS AND TOOLS${RESET}
   containers    docker 24+, OrbStack/Desktop, compose v2       (3 tools)
   kubernetes    kubectl 1.28+, helm 3.13+, k3d 5.6+           (3 required + 2 optional)
   aws           aws CLI v2.15+, mc (MinIO client)             (2 tools)
-  streaming     rpk v24.2+ (Redpanda CLI)                     (1 tool)
+  streaming     rpk v24.2+ (legacy; Tansu broker has no CLI — see ADR-0043) (1 tool, optional)
   observability otel-cli (opt), websocat, wscat               (3 tools)
   optional      obsidian, watch, htop, btop                   (4 tools, all optional)
 

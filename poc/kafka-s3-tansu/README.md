@@ -4,12 +4,29 @@ Exploration PoC: run a **Tansu** broker (Rust, Apache-2.0, Kafka-wire-compatible
 on top of **Floci S3** (our shared AWS emulator, see [ADR-0042](../../vault/02-Decisions/0042-floci-unified-aws-emulator.md))
 and check whether it can replace Redpanda for local dev / lightweight CI.
 
+> **Status update (2026-05-11)** — the answer was *yes*. After validating
+> this PoC end-to-end against the Vert.x monolith, **Tansu is now the
+> mainstream broker for the entire repo**: compose stack, k8s-local PoC,
+> and the Testcontainers integration suite all run against
+> `ghcr.io/tansu-io/tansu:0.6.0`. Redpanda is removed.
+>
+> See the updated **[ADR-0043](../../vault/02-Decisions/0043-kafka-broker-alternatives-eval.md)**
+> for the migration decision, the verified compat caveats (librdkafka 2.x
+> clients fail; the smoke CLI uses `franz-go` to sidestep this), and the
+> documented gaps (EOS/transactions untested).
+>
+> This PoC directory survives as the reference scaffold (compose override,
+> footprint comparison, architecture notes) and as a stable smoke target for
+> validating future Tansu releases.
+
 ## Status
 
-**Exploratory.** Tansu `0.6.0` is **pre-1.0** and explicitly experimental upstream.
-This PoC demonstrates that the binary boots, accepts Kafka wire requests from
-Java clients, and persists records as plain S3 objects in Floci. **It is not a
-production recommendation.**
+**Mainstream.** Tansu `0.6.0` is **pre-1.0** and explicitly experimental upstream,
+yet validated end-to-end here against the Vert.x monolith. This PoC originally
+demonstrated that the binary boots, accepts Kafka wire requests from Java
+clients, and persists records as plain S3 objects in Floci. **It is not yet a
+production recommendation** — EOS/transactions and rebalance under load are
+still untested.
 
 - Image: `ghcr.io/tansu-io/tansu:0.6.0` (pulled, digest pinned in compose).
 - License: Apache-2.0.

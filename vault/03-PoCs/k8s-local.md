@@ -27,7 +27,7 @@ Entorno Kubernetes local que demuestra GitOps + canary deployment + observabilid
 | Argo Rollouts | 1.x |
 | kube-prom-stack | Prometheus + Grafana |
 | ESO | External Secrets Operator |
-| Redpanda | latest |
+|  Tansu | latest |
 | OpenObserve | latest |
 
 ## Cómo correrlo
@@ -49,7 +49,7 @@ poc/k8s-local/
     20-argo-rollouts.yaml
     30-kube-prom-stack.yaml
     40-eso.yaml
-    50-redpanda.yaml
+    50-tansu.yaml
     60-openobserve.yaml
     70-aws-mocks.yaml         Moto + MinIO + ElasticMQ + OpenBao + DynamoDB Local
     71-aws-mocks-init.yaml    init job: seed de datos de test

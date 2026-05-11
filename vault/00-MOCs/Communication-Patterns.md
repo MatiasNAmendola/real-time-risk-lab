@@ -15,7 +15,7 @@ created: 2026-05-07
 ## Asincrónicos
 
 - **Webhook** — callbacks HTTP outbound sobre eventos de riesgo
-- **Kafka** — backbone de eventos; Redpanda como reemplazo para dev local
+- **Kafka** — backbone de eventos; Tansu (ADR-0043) como broker para dev local
 - [[Outbox-Pattern]] — garantiza publish at-least-once desde la transacción de DB
 - [[Event-Versioning]] — evolución de schema, contrato AsyncAPI 3.0
 

@@ -57,7 +57,7 @@ Una exploración técnica de un use case de detección de fraude productivo, que
 # 1. Toolchain (detecta lo que ya tenés, instala lo que falta)
 ./nx setup
 
-# 2. Levantar infra + apps Vert.x (postgres, valkey, redpanda, openobserve, AWS mocks, 4 apps Java)
+# 2. Levantar infra + apps Vert.x (postgres, valkey, tansu, openobserve, AWS mocks, 4 apps Java)
 ./nx up vertx-layer-as-pod-eventbus
 
 # 3. Demo: request de prueba POST /risk
@@ -71,7 +71,7 @@ Una exploración técnica de un use case de detección de fraude productivo, que
 ./nx dashboard up
 ```
 
-Output esperado: tabla de tests + `http://localhost:8888` (dashboard Homer) con links a OpenObserve, Redpanda Console, Floci (`:4566`), etc.
+Output esperado: tabla de tests + `http://localhost:8888` (dashboard Homer) con links a OpenObserve, Tansu broker, Floci (`:4566`), etc.
 
 ---
 
@@ -100,7 +100,7 @@ CON VERT.X
 |---|---|---|---|
 | HTTP API | puerto 8081, stdlib | puerto 8090, Vert.x | puerto 8080, Vert.x |
 | Persistencia real | in-memory | Postgres + Valkey | Postgres + Valkey (vía repo-app) |
-| Publicación Kafka | outbox in-memory | Real (Redpanda) | Real (Redpanda) |
+| Publicación Kafka | outbox in-memory | Real (Tansu) | Real (Tansu) |
 | S3/SQS/Secrets | adapters NoOp | Real (Floci unified emulator) | Real (mismo) |
 | Frameworks externos | ninguno | Vert.x + AWS SDK + JDBC + Lettuce | igual + cluster Hazelcast |
 | Layering físico | métodos in-process | verticles in-process | 3 JVMs en path síncrono vía EventBus + consumer async Kafka |

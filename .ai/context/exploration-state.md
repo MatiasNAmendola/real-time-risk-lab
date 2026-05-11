@@ -38,7 +38,7 @@
 - [x] docs/11-atdd.md
 - [x] poc/no-vertx-clean-engine: Clean Architecture, functional engine, benchmarks
 - [x] poc/vertx-layer-as-pod-eventbus: 4 Gradle modules, docker-compose, Hazelcast
-- [x] poc/k8s-local: ArgoCD, Argo Rollouts canary, kube-prom, ESO, Redpanda, OpenObserve, AWS mocks
+- [x] poc/k8s-local: ArgoCD, Argo Rollouts canary, kube-prom, ESO, Tansu, OpenObserve, AWS mocks
 - [x] .ai/ system with IDE-agnostic primitives
 
 ---

@@ -1,6 +1,6 @@
 # Shared Docker Compose stack
 
-Base infra (Postgres, Valkey, Redpanda, MinIO, ElasticMQ, Moto, OpenBao, OpenObserve, OTel collector) lives here. Each PoC adds its own apps via override files.
+Base infra (Postgres, Valkey, Tansu, Floci, OpenObserve, OTel collector) lives here. Each PoC adds its own apps via override files.
 
 ## Usage
 
@@ -8,7 +8,8 @@ Base infra (Postgres, Valkey, Redpanda, MinIO, ElasticMQ, Moto, OpenBao, OpenObs
 # 1. Solo infra (sin apps)
 docker compose -f compose/docker-compose.yml up -d
 
-# 2. Infra + dev tools (Redpanda Console)
+# 2. Infra + dev tools (currently a no-op after the Tansu migration; no broker
+#    UI is bundled with Tansu — use kafka-topics CLI for inspection)
 docker compose -f compose/docker-compose.yml -f compose/docker-compose.dev-tools.yml up -d
 
 # 3. Infra + vertx-layer-as-pod-eventbus (most common)
@@ -42,12 +43,12 @@ Composability. Infra services have no opinion on which app consumes them. Adding
 Base infra defines three shared networks:
 
 - `app-net`: Java app services and Hazelcast TCP cluster traffic. Apps that need clustered EventBus membership join this network.
-- `data-net`: database/cache/secrets and base async infrastructure used by init jobs (Postgres, Valkey, Redpanda, MinIO, ElasticMQ, Moto, OpenBao).
+- `data-net`: database/cache/secrets and base async infrastructure used by init jobs (Postgres, Valkey, Tansu, Floci).
 - `telemetry-net`: OTel collector, OpenObserve, and apps emitting telemetry.
 
 The `poc/vertx-layer-as-pod-eventbus/compose.override.yml` override adds a fourth PoC-specific network:
 
-- `async-net`: Redpanda/MinIO/ElasticMQ plus `usecase-app` and `consumer-app`. This lets usecase/consumer publish and consume async outputs without joining `data-net`; `repository-app` remains the only app on `data-net` for DB/secrets access.
+- `async-net`: Tansu/Floci plus `usecase-app` and `consumer-app`. This lets usecase/consumer publish and consume async outputs without joining `data-net`; `repository-app` remains the only app on `data-net` for DB/secrets access.
 
 There is no `ingress-net` or `eventbus-net` anymore. Ingress is controlled by service `ports`, and clustered EventBus traffic uses `app-net`.
 
@@ -69,7 +70,6 @@ Suites tagged `needs_infra: compose` in `.ai/test-groups.yaml` use the vertx-lay
 
 | File | Purpose |
 |------|---------|
-| `docker-compose.yml` | Base infra (Postgres, Valkey, Redpanda, MinIO, ElasticMQ, Moto, OpenBao, OpenObserve, OTel) |
-| `docker-compose.dev-tools.yml` | Optional Redpanda Console UI |
+| `docker-compose.yml` | Base infra (Postgres, Valkey, Tansu, Floci, OpenObserve, OTel) |
+| `docker-compose.dev-tools.yml` | No-op override after the Tansu migration (no bundled broker UI) |
 | `otel-collector-config.yaml` | OTel collector pipeline config (moved from poc/vertx-layer-as-pod-eventbus/) |
-| `redpanda-console-config.yaml` | Redpanda Console broker config (moved from poc/vertx-layer-as-pod-eventbus/) |

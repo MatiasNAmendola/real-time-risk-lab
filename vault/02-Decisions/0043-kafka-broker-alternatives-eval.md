@@ -21,37 +21,65 @@ Se evaluaron 4 candidatos contra el baseline actual (Redpanda dev mode).
 
 ## Decisión
 
-**Mantener Redpanda como broker principal**, ajustando el límite de memoria a
-`1.5Gi` en `poc/k8s-local/addons/50-redpanda-values.yaml` y aplicando los args
-de dev mode (`--mode dev-container --memory 512M --reserve-memory 0M
---overprovisioned`).
+**Update 2026-05-11**: revertimos la decisión original ("mantener Redpanda")
+después de validar Tansu end-to-end contra el monolito Vert.x sobre la pila
+de compose (Apache Kafka JVM client + OTel instrumentation + producer real
+escribiendo `risk-decisions partition=1 offset=0 errorCode=0`).
 
-**Documentar Tansu como PoC paralela** en `poc/kafka-s3-tansu/` para
-exploración del modelo Kafka-sobre-object-storage. **No reemplazar Redpanda
-hasta que Tansu alcance 1.x y resuelva incompatibilidades con librdkafka 2.x.**
+**Tansu pasa a ser el broker principal en TODO el repo** — compose, k8s-local,
+tests de integración y ATDD. Redpanda queda eliminado:
 
-**AutoMQ queda registrado como candidato futuro** para una PoC posterior si
-se quiere explorar el caso "Kafka productivo con storage S3" — no se invierte
-ahora porque su footprint (~1.5-2 GiB) no mejora sobre Redpanda.
+- `compose/docker-compose.yml`: servicio `tansu` (`ghcr.io/tansu-io/tansu:0.6.0`)
+  con `STORAGE_ENGINE="s3://tansu/"` apuntando a Floci. Topic seeding por
+  `tansu-init` usando `confluentinc/cp-kafka:7.0.0` (Apache Kafka client).
+- `poc/k8s-local/addons/50-tansu.yaml`: Deployment + Service + Job de seeding.
+  Sin Helm: el chart de Redpanda se elimina.
+- `tests/integration/`: `TansuContainer` con `STORAGE_ENGINE="memory://tansu/"`
+  reemplaza al módulo Testcontainers de Redpanda. Misma 1-broker semantics.
+
+**Caveats explícitos y documentados como deuda**:
+- **librdkafka 2.x clients (kcat 1.7.1) NO funcionan** contra Tansu 0.6.0
+  (`ApiVersionRequest` "Read underflow"). Mitigación: el smoke CLI (`cli/risk-smoke/`)
+  usa `franz-go` (Go puro, no librdkafka) y los servicios Java usan el cliente
+  Apache Kafka JVM — ambos verificados. Si en el futuro entra un client basado
+  en librdkafka, hay que pinear a una versión vieja o esperar a Tansu 1.x.
+- **EOS / transactions / rebalance bajo carga**: no testeados. Para PoC local
+  basta; para producción habría que cerrar este gap (o seguir con Apache Kafka
+  / Redpanda en prod y mantener Tansu sólo en dev).
+- **Tansu sigue siendo pre-1.0** (`v0.6.0`, 2026-03-13). Asumimos breakage
+  hasta el primer release estable.
+
+**AutoMQ queda como candidato futuro** para producción real ("Kafka KRaft con
+storage S3"), si y cuando hay apetito de mover esa parte fuera del scope local.
 
 ## Consecuencias
 
 - Ventajas:
-  - Cero cambio de runtime en el path principal. ATDD, smoke y E2E siguen
-    contra Redpanda con garantías Kafka 100% (incluyendo EOS/transactions).
-  - Tansu queda disponible como dev-tier ultralight (~7.7 MiB idle vs 421 MiB
-    de Redpanda en el mismo host, medido con `docker stats`).
-  - La narrativa "exploramos esto" queda capturada y reproducible.
-- Desventajas:
-  - El cluster k8s consume 1.5 GiB sólo para el broker. En máquinas con
-    < 8 GiB de RAM esto deja poco margen para el resto del stack.
-  - Tansu en PoC paralela duplica costos de mantenimiento si más adelante se
-    decide migrar (env vars, healthchecks, formato de S3).
+  - **Stack mínimo coherente**: un solo broker entre compose, k8s-local e
+    integration tests. Misma imagen, mismos env vars, misma forma de seeding
+    (Apache Kafka client). Cero diferencias dev↔prod-shape.
+  - **Footprint colapsa**: ~7.7 MiB idle (Tansu) vs ~421 MiB (Redpanda) en
+    compose. En k8s-local desaparecen los 1.5 Gi pre-reservados del chart de
+    Redpanda y el Job de seeding requiere `<512Mi` ephemeral.
+  - **Reutiliza Floci** (ADR-0042): Tansu apunta al bucket `tansu` ya seeded
+    por `floci-init`. Cero infra de storage nueva.
+  - **Narrativa**: el repo entero consume "menos AWS real" — S3 vía Floci,
+    Kafka vía Tansu sobre Floci-S3. La práctica simula "Kafka cloud-native"
+    sin precio.
+- Desventajas (asumidas):
+  - librdkafka 2.x clients quedan fuera del path soportado. Cualquier
+    contributor que asuma "kcat funciona" se va a estrellar.
+  - EOS bajo carga sigue siendo blind spot — riesgo si el load test (k6,
+    ADR-0040) empuja patterns que requieren transactions.
+  - Tansu 0.6.0 puede romper en upgrades menores; pineamos el digest.
 - Mitigaciones:
-  - Documentar en `poc/kafka-s3-tansu/README.md` los gaps (`librdkafka 2.x`
-    fail, EOS untested) para evitar adopción accidental.
-  - Re-evaluar este ADR cuando Tansu publique `1.0` o cuando AutoMQ publique
-    una guía oficial de single-node dev con footprint medido.
+  - Smoke CLI hardcoded a `franz-go` — comentario explícito en
+    `cli/risk-smoke/internal/flows/kafka.go`.
+  - `tansu-init` usa `confluentinc/cp-kafka` (Apache Kafka client) para
+    seeding, no `rpk` ni `kafkacat`.
+  - Imagen pineada a `0.6.0` (no `:latest`). Bumps son explícitos.
+  - PoC `poc/kafka-s3-tansu/` queda como referencia histórica + scaffolding
+    para validar futuras versiones.
 
 ## Alternativas consideradas
 
@@ -124,7 +152,10 @@ Marginal en stack con Floci ya levantado: **~7.7 MiB**.
 - [[0042-floci-unified-aws-emulator]] — provee S3 para Tansu/AutoMQ.
 - [[0040-k6-for-load-testing]] — el load test eventualmente cerrará el gap de
   EOS/throughput sostenido.
-- `poc/kafka-s3-tansu/README.md` — PoC vigente.
+- `poc/kafka-s3-tansu/README.md` — scaffold de referencia; el approach ya es
+  mainstream tras la migración.
+- [[0030-redpanda-vs-kafka]] — superseded en cuanto a "Redpanda como broker";
+  conservar como contexto histórico.
 - Issue tracker upstream: tansu-io/tansu sobre librdkafka 2.x compat.
 
 ## Open questions (re-evaluar cuando aplique)

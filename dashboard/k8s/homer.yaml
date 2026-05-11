@@ -66,15 +66,10 @@ data:
       - name: "Streaming"
         icon: "fas fa-stream"
         items:
-          - name: "Redpanda Console"
-            subtitle: "Kafka UI — topics, consumers, schema"
+          - name: "Tansu broker"
+            subtitle: "Kafka wire :9092 (no bundled UI — use kafka-topics CLI). ADR-0043"
             tag: "kafka"
-            url: "http://redpanda-console.redpanda.svc.cluster.local:9000"
-            target: "_blank"
-
-          - name: "Redpanda Admin"
-            subtitle: "Cluster admin API"
-            url: "http://redpanda.redpanda.svc.cluster.local:9644/v1"
+            url: "http://tansu.tansu.svc.cluster.local:9092"
             target: "_blank"
 
       - name: "AWS Mocks"

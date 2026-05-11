@@ -12,7 +12,7 @@ review los mismos patrones de plataforma que existen en producción.
 - Argo Rollouts con canary analysis via OpenObserve HTTP API (success-rate + latency-p99).
 - OpenObserve standalone como unica fuente de observability: logs + metrics + traces + alerting (~150 MB).
 - External Secrets Operator con provider `kubernetes` (simula AWS Secrets Manager).
-- Redpanda 1 broker sin TLS (topologia in-cluster equivalente a producción).
+-  Tansu 1 broker sin TLS (topologia in-cluster equivalente a producción).
 - Traefik (built-in en k3d) como reemplazo de ALB + ACM.
 - Chart manual `risk-engine` con Rollout y ExternalSecret.
 
@@ -103,8 +103,8 @@ ArgoCD       → kubectl -n argocd port-forward svc/argocd-server 8081:80
 OpenObserve  → kubectl -n openobserve port-forward svc/openobserve 5080:5080
                  URL: http://localhost:5080  (root@example.com / ${OPENOBSERVE_PASSWORD:-change-me-openobserve-local})
 
-Redpanda     → kubectl -n redpanda port-forward svc/redpanda-console 9000:8080
-                 URL: http://localhost:9000
+ Tansu       → kubectl -n tansu port-forward svc/tansu 9092:9092
+                 No bundled UI; use: kafka-topics --bootstrap-server localhost:9092 --list
 
 Rollouts UI  → kubectl -n argo-rollouts port-forward svc/argo-rollouts-dashboard 3100:3100
                  URL: http://localhost:3100
@@ -126,7 +126,7 @@ Risk Engine  → kubectl -n risk port-forward svc/risk-engine 8090:8080
 | SQS + DLQ | ElasticMQ (`aws-mocks` namespace) | SQS-API compatible con DLQ support |
 | SNS / KMS / DynamoDB | Moto server (`aws-mocks` namespace) | Misma base de tests de botocore/moto |
 | Vault / KMS alternativo | OpenBao (`aws-mocks` namespace) | Fork comunitario de Vault, API identica, MPL 2.0 |
-| MSK / Redpanda in-cluster multi-broker | Redpanda operator 1 broker, sin TLS | Misma topologia, minimizada para PoC local |
+| MSK /  Tansu in-cluster multi-broker |  Tansu operator 1 broker, sin TLS | Misma topologia, minimizada para PoC local |
 | OTEL backend SaaS (Axiom u otro) | OpenObserve standalone | OTLP-compatible, autohospedado, sin costo |
 | ArgoCD + GitLab webhook | ArgoCD sync automatico local | `repoURL` puede apuntar a path local o Git remoto |
 | GitLab CI | (fuera de scope) | No aplica localmente |
@@ -258,7 +258,7 @@ poc/k8s-local/
 │   ├── 30-kube-prom-stack-values.yaml.disabled  # DISABLED — ver docs/17-decision-stack-observability-local.md
 │   ├── 40-external-secrets-values.yaml
 │   ├── 41-cluster-secret-store.yaml  # ClusterSecretStore + secret fuente local
-│   ├── 50-redpanda-values.yaml
+│   ├── 50-tansu.yaml          # ADR-0043: raw Deployment + Service + topic-seed Job
 │   ├── 60-openobserve-values.yaml
 │   ├── 70-aws-mocks.yaml             # MinIO + ElasticMQ + Moto + OpenBao
 │   └── 71-aws-mocks-init.yaml        # Job: crea buckets, queues, secrets iniciales
@@ -314,8 +314,8 @@ poc/k8s-local/
    Para clusters nuevos en prod, se usa un `Application of Applications` o ApplicationSet
    que genera las Applications de todos los servicios a partir de un directorio en Git.
 
-5. **"Por que Redpanda en lugar de MSK?"**
-   Redpanda es Kafka-API compatible, corre en Kubernetes nativo sin ZooKeeper, tiene
+5. **"Por que  Tansu en lugar de MSK?"**
+    Tansu es Kafka-API compatible, corre en Kubernetes nativo sin ZooKeeper, tiene
    menor latencia de tail que Apache Kafka, y el mismo operator funciona igual en local
    que en EKS. Para una PoC local elimina la dependencia de AWS; en prod la
    decision depende del costo operativo vs. managed MSK.
