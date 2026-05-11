@@ -6,55 +6,51 @@ import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.secretsmanager.SecretsManagerClient;
 import software.amazon.awssdk.services.secretsmanager.model.GetSecretValueRequest;
 
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
 import java.net.URI;
-import java.nio.charset.StandardCharsets;
+import java.util.Optional;
 
 /**
- * Resolves the Postgres password from Moto Secrets Manager, OpenBao, or env var fallback.
+ * Resolves the Postgres password from the Floci AWS emulator's Secrets Manager
+ * (ADR-0042), with an env-var fallback.
  *
- * Resolution priority:
- *   1. AWS_ENDPOINT_URL_SECRETSMANAGER set → Moto Secrets Manager
- *   2. OPENBAO_URL set → OpenBao KV v2 HTTP API
- *   3. Fallback → PG_PASSWORD env var
+ * <p>Resolution priority:
+ * <ol>
+ *   <li>{@code FLOCI_ENDPOINT} (or {@code AWS_ENDPOINT_URL} / legacy
+ *       {@code AWS_ENDPOINT_URL_SECRETSMANAGER}) set → AWS Secrets Manager API
+ *       via Floci.</li>
+ *   <li>Fallback → {@code PG_PASSWORD} env var (or hard-coded default).</li>
+ * </ol>
+ *
+ * <p>OpenBao was removed in ADR-0042; Floci's Secrets Manager replaces it.
  */
 public final class SecretsBootstrap {
 
     private SecretsBootstrap() {}
 
     public static String resolveDbPassword() {
-        String motoEndpoint = System.getenv("AWS_ENDPOINT_URL_SECRETSMANAGER");
-        String openbaoUrl   = System.getenv("OPENBAO_URL");
-        String secretName   = System.getenv().getOrDefault("DB_SECRET_NAME", "riskplatform/db-password");
-        String envFallback  = System.getenv().getOrDefault("PG_PASSWORD", "riskplatform");
+        Optional<URI> endpoint = FlociEndpoint.resolve("AWS_ENDPOINT_URL_SECRETSMANAGER");
+        String secretName  = System.getenv().getOrDefault("DB_SECRET_NAME", "riskplatform/db-password");
+        String envFallback = System.getenv().getOrDefault("PG_PASSWORD", "riskplatform");
 
-        if (motoEndpoint != null && !motoEndpoint.isBlank()) {
+        if (endpoint.isPresent()) {
             try {
-                return readFromSecretsManager(motoEndpoint, secretName);
+                return readFromSecretsManager(endpoint.get(), secretName);
             } catch (Exception e) {
-                System.err.println("[monolith] SecretsBootstrap: Moto failed (" + e.getMessage() + "), fallback");
-            }
-        } else if (openbaoUrl != null && !openbaoUrl.isBlank()) {
-            try {
-                return readFromOpenBao(openbaoUrl, secretName);
-            } catch (Exception e) {
-                System.err.println("[monolith] SecretsBootstrap: OpenBao failed (" + e.getMessage() + "), fallback");
+                System.err.println("[monolith] SecretsBootstrap: Floci Secrets Manager failed ("
+                    + e.getMessage() + "), falling back to env var");
             }
         }
 
         return envFallback;
     }
 
-    private static String readFromSecretsManager(String endpoint, String secretName) {
+    private static String readFromSecretsManager(URI endpoint, String secretName) {
         String accessKey = System.getenv().getOrDefault("AWS_ACCESS_KEY_ID", "test");
         String secretKey = System.getenv().getOrDefault("AWS_SECRET_ACCESS_KEY", "test");
         String region    = System.getenv().getOrDefault("AWS_REGION", "us-east-1");
 
         try (SecretsManagerClient client = SecretsManagerClient.builder()
-                .endpointOverride(URI.create(endpoint))
+                .endpointOverride(endpoint)
                 .credentialsProvider(StaticCredentialsProvider.create(
                     AwsBasicCredentials.create(accessKey, secretKey)))
                 .region(Region.of(region))
@@ -62,40 +58,8 @@ public final class SecretsBootstrap {
             String value = client.getSecretValue(
                 GetSecretValueRequest.builder().secretId(secretName).build()
             ).secretString();
-            System.out.println("[monolith] SecretsBootstrap: loaded '" + secretName + "' from Moto");
+            System.out.println("[monolith] SecretsBootstrap: loaded '" + secretName + "' from Floci Secrets Manager");
             return value;
         }
-    }
-
-    private static String readFromOpenBao(String openbaoUrl, String secretName) throws Exception {
-        String token  = System.getenv().getOrDefault("OPENBAO_TOKEN", "root");
-        String kvPath = openbaoUrl.replaceAll("/$", "") + "/v1/secret/data/" + secretName;
-
-        URI uri = URI.create(kvPath);
-        HttpURLConnection conn = (HttpURLConnection) uri.toURL().openConnection();
-        conn.setRequestMethod("GET");
-        conn.setRequestProperty("X-Vault-Token", token);
-        conn.setConnectTimeout(3000);
-        conn.setReadTimeout(3000);
-
-        if (conn.getResponseCode() != 200) {
-            throw new RuntimeException("OpenBao HTTP " + conn.getResponseCode());
-        }
-
-        String body;
-        try (InputStream is = conn.getInputStream();
-             BufferedReader reader = new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8))) {
-            StringBuilder sb = new StringBuilder();
-            String line;
-            while ((line = reader.readLine()) != null) sb.append(line);
-            body = sb.toString();
-        }
-
-        int idx = body.indexOf("\"value\":\"");
-        if (idx < 0) throw new RuntimeException("OpenBao response missing 'value'");
-        int start = idx + 9;
-        int end   = body.indexOf('"', start);
-        System.out.println("[monolith] SecretsBootstrap: loaded '" + secretName + "' from OpenBao");
-        return body.substring(start, end);
     }
 }

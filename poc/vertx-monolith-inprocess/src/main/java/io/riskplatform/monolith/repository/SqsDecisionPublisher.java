@@ -15,13 +15,14 @@ import software.amazon.awssdk.services.sqs.model.SendMessageRequest;
 
 import java.net.URI;
 import java.time.Instant;
+import java.util.Optional;
 import java.util.UUID;
 
 /**
- * Publishes risk decisions to ElasticMQ (SQS-compatible) via AWS SDK v2.
+ * Publishes risk decisions to the Floci AWS emulator (SQS, ADR-0042) via AWS SDK v2.
  *
- * <p>Env vars: AWS_ENDPOINT_URL_SQS, AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY,
- *             AWS_REGION, RISK_SQS_QUEUE
+ * <p>Env vars: FLOCI_ENDPOINT (or AWS_ENDPOINT_URL / legacy AWS_ENDPOINT_URL_SQS),
+ *             AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_REGION, RISK_SQS_QUEUE
  */
 public final class SqsDecisionPublisher {
 
@@ -34,8 +35,8 @@ public final class SqsDecisionPublisher {
 
     public SqsDecisionPublisher(Vertx vertx) {
         this.vertx = vertx;
-        String endpoint  = System.getenv("AWS_ENDPOINT_URL_SQS");
-        this.enabled     = endpoint != null && !endpoint.isBlank();
+        Optional<URI> endpoint = FlociEndpoint.resolve("AWS_ENDPOINT_URL_SQS");
+        this.enabled = endpoint.isPresent();
 
         if (this.enabled) {
             String accessKey = System.getenv().getOrDefault("AWS_ACCESS_KEY_ID", "test");
@@ -44,7 +45,7 @@ public final class SqsDecisionPublisher {
             String queueName = System.getenv().getOrDefault("RISK_SQS_QUEUE", "risk-decisions-queue");
 
             this.sqs = SqsClient.builder()
-                .endpointOverride(URI.create(endpoint))
+                .endpointOverride(endpoint.get())
                 .credentialsProvider(StaticCredentialsProvider.create(
                     AwsBasicCredentials.create(accessKey, secretKey)))
                 .region(Region.of(region))
@@ -56,7 +57,7 @@ public final class SqsDecisionPublisher {
                     GetQueueUrlRequest.builder().queueName(queueName).build()
                 ).queueUrl();
             } catch (Exception e) {
-                resolvedUrl = endpoint + "/000000000000/" + queueName;
+                resolvedUrl = endpoint.get() + "/000000000000/" + queueName;
                 log.warn("[monolith] SQS getQueueUrl failed, fallback URL: {}", resolvedUrl);
             }
             this.queueUrl = resolvedUrl;
@@ -64,7 +65,7 @@ public final class SqsDecisionPublisher {
         } else {
             this.sqs      = null;
             this.queueUrl = null;
-            log.info("[monolith] SqsDecisionPublisher disabled (AWS_ENDPOINT_URL_SQS not set)");
+            log.info("[monolith] SqsDecisionPublisher disabled (FLOCI_ENDPOINT not set)");
         }
     }
 

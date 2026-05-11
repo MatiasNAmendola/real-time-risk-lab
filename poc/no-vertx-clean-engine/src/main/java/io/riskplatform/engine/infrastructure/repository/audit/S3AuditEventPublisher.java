@@ -17,7 +17,7 @@ import io.riskplatform.engine.domain.repository.AuditEventPublisher;
  *  - Key pattern: "risk-audit/{year}/{month}/{day}/{eventId}.json"
  *  - Body: MiniJson.stringify of the DecisionEvent fields.
  *  - Env vars required:
- *      AWS_ENDPOINT_URL_S3=http://minio:9000   (or http://localhost:9000 locally)
+ *      FLOCI_ENDPOINT=http://floci:4566   (or http://localhost:4566 from host)
  *      RISK_AUDIT_BUCKET=risk-audit
  *      AWS_ACCESS_KEY_ID=test
  *      AWS_SECRET_ACCESS_KEY=test

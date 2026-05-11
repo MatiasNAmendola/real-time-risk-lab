@@ -18,7 +18,7 @@ import io.riskplatform.engine.infrastructure.repository.log.ConsoleStructuredLog
 import io.riskplatform.engine.infrastructure.repository.ml.FakeRiskModelScorer;
 import io.riskplatform.engine.infrastructure.repository.persistence.*;
 import io.riskplatform.engine.infrastructure.repository.secrets.EnvSecretsProvider;
-import io.riskplatform.engine.infrastructure.repository.secrets.MotoSecretsManagerProvider;
+import io.riskplatform.engine.infrastructure.repository.secrets.FlociSecretsManagerProvider;
 import io.riskplatform.engine.infrastructure.resilience.CircuitBreaker;
 import io.riskplatform.engine.infrastructure.time.SystemClockAdapter;
 import io.riskplatform.rules.audit.RulesAuditTrail;
@@ -35,11 +35,12 @@ import java.util.concurrent.Executors;
  * Manual DI wiring — equivalente a cmd/main.go (enterprise Go layout).
  * Construye el grafo de dependencias sin framework de inyección.
  *
- * AWS integration (graceful degradation):
- *   - AuditEventPublisher: uses S3AuditEventPublisher when AWS_ENDPOINT_URL_S3 is set
- *     (Phase 2 — requires AWS SDK v2). Falls back to NoOpAuditEventPublisher otherwise.
- *   - SecretsProvider: uses MotoSecretsManagerProvider when AWS_ENDPOINT_URL_SECRETSMANAGER
- *     is set (Phase 2). Falls back to EnvSecretsProvider (reads env vars) otherwise.
+ * AWS integration (graceful degradation, ADR-0042 — Floci unified emulator):
+ *   - AuditEventPublisher: uses S3AuditEventPublisher when FLOCI_ENDPOINT (or legacy
+ *     AWS_ENDPOINT_URL_S3) is set (Phase 2 — requires AWS SDK v2). Falls back to
+ *     NoOpAuditEventPublisher otherwise.
+ *   - SecretsProvider: uses FlociSecretsManagerProvider when FLOCI_ENDPOINT (or legacy
+ *     AWS_ENDPOINT_URL_SECRETSMANAGER) is set (Phase 2). Falls back to EnvSecretsProvider.
  */
 public final class RiskApplicationFactory implements AutoCloseable {
     private final InMemoryOutboxRepository outboxRepository;
@@ -61,13 +62,16 @@ public final class RiskApplicationFactory implements AutoCloseable {
                 new ConsoleStructuredLogger(silent).with("service", "risk-decision-poc")
         );
 
-        // AWS adapter wiring — graceful degradation when env vars are absent
-        // TODO(phase-2): S3AuditEventPublisher and MotoSecretsManagerProvider require AWS SDK v2.
+        // AWS adapter wiring — graceful degradation when env vars are absent.
+        // ADR-0042: single FLOCI_ENDPOINT replaces per-service AWS_ENDPOINT_URL_* vars.
+        // Legacy AWS_ENDPOINT_URL_S3 / _SECRETSMANAGER are still honored as fallback.
+        // TODO(phase-2): S3AuditEventPublisher and FlociSecretsManagerProvider require AWS SDK v2.
         //   Add Gradle build file with software.amazon.awssdk:s3:2.29.23,
         //   software.amazon.awssdk:secretsmanager:2.29.23, url-connection-client:2.29.23.
         //   Then these adapters will compile and the wiring below activates automatically.
-        String s3Endpoint       = System.getenv("AWS_ENDPOINT_URL_S3");
-        String secretsEndpoint  = System.getenv("AWS_ENDPOINT_URL_SECRETSMANAGER");
+        String unifiedEndpoint  = firstNonBlankEnv("FLOCI_ENDPOINT", "AWS_ENDPOINT_URL");
+        String s3Endpoint       = unifiedEndpoint != null ? unifiedEndpoint : System.getenv("AWS_ENDPOINT_URL_S3");
+        String secretsEndpoint  = unifiedEndpoint != null ? unifiedEndpoint : System.getenv("AWS_ENDPOINT_URL_SECRETSMANAGER");
         String auditBucket      = System.getenv().getOrDefault("RISK_AUDIT_BUCKET", "risk-audit");
 
         this.auditEventPublisher = (s3Endpoint != null)
@@ -75,7 +79,7 @@ public final class RiskApplicationFactory implements AutoCloseable {
                 : new NoOpAuditEventPublisher();
 
         this.secretsProvider = (secretsEndpoint != null)
-                ? new MotoSecretsManagerProvider(secretsEndpoint)
+                ? new FlociSecretsManagerProvider(secretsEndpoint)
                 : new EnvSecretsProvider();
 
         this.outboxRepository = new InMemoryOutboxRepository();
@@ -121,6 +125,14 @@ public final class RiskApplicationFactory implements AutoCloseable {
     public RulesAuditTrail rulesAuditTrail() { return rulesAuditTrail; }
 
     @Override public void close() throws Exception { outboxRelay.close(); }
+
+    private static String firstNonBlankEnv(String... keys) {
+        for (String k : keys) {
+            String v = System.getenv(k);
+            if (v != null && !v.isBlank()) return v;
+        }
+        return null;
+    }
 
     private static io.riskplatform.rules.config.RulesConfig buildMinimalConfig() {
         return new io.riskplatform.rules.config.RulesConfig(

@@ -1,8 +1,6 @@
 package io.riskplatform.integration;
 
-import io.riskplatform.integration.containers.MinioContainer;
-import io.riskplatform.integration.containers.MotoContainer;
-import io.riskplatform.integration.containers.OpenBaoContainer;
+import io.riskplatform.integration.containers.FlociContainer;
 import io.riskplatform.integration.containers.ValkeyContainer;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Testcontainers;
@@ -20,6 +18,11 @@ import org.testcontainers.redpanda.RedpandaContainer;
  * Opt-in pattern: subclasses annotate only the fields they need with {@code @Container}
  * so unneeded containers are never started.
  *
+ * <p>AWS mocks: a single {@link FlociContainer} (ADR-0042) covers S3 + SQS + SNS +
+ * Secrets Manager + KMS + STS + IAM. Use {@link #floci} from subclasses (also exposed
+ * via the legacy aliases {@code minio} and {@code moto} for source compatibility during
+ * the migration window — both resolve to the same container).
+ *
  * Example subclass:
  * <pre>{@code
  * @Testcontainers
@@ -27,6 +30,9 @@ import org.testcontainers.redpanda.RedpandaContainer;
  *
  *     @Container
  *     static final PostgreSQLContainer<?> PG = postgres;
+ *
+ *     @Container
+ *     static final FlociContainer AWS = floci;
  *
  *     @Test
  *     void something() { ... }
@@ -47,12 +53,19 @@ public abstract class IntegrationTestSupport {
     protected static final ValkeyContainer valkey =
             ValkeyContainer.create();
 
-    protected static final MinioContainer minio =
-            MinioContainer.create();
+    /** Unified AWS emulator — replaces MinIO + ElasticMQ + Moto + OpenBao (ADR-0042). */
+    protected static final FlociContainer floci =
+            FlociContainer.create();
 
-    protected static final MotoContainer moto =
-            MotoContainer.create();
+    /**
+     * Legacy alias for {@link #floci}. New tests should use {@code floci} directly.
+     * Kept so existing tests that reference {@code MINIO} continue to compile during
+     * the migration window. Both names refer to the same single Floci container.
+     */
+    protected static final FlociContainer minio = floci;
 
-    protected static final OpenBaoContainer openBao =
-            OpenBaoContainer.create();
+    /**
+     * Legacy alias for {@link #floci}. New tests should use {@code floci} directly.
+     */
+    protected static final FlociContainer moto = floci;
 }

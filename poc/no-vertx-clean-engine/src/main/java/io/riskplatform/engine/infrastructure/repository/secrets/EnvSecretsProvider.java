@@ -4,12 +4,12 @@ import io.riskplatform.engine.domain.repository.SecretsProvider;
 
 /**
  * SecretsProvider backed by environment variables.
- * Active fallback when SECRETS_ENDPOINT (Moto) is not configured.
+ * Active fallback when no Floci/AWS Secrets Manager endpoint is configured (ADR-0042).
  *
  * Mapping: secret name → env var name uses uppercase with dashes replaced by underscores.
  * Example: "risk-engine/db-password" → "RISK_ENGINE_DB_PASSWORD"
  *
- * TODO(phase-2): replace with MotoSecretsManagerProvider when AWS SDK v2 is available.
+ * TODO(phase-2): replace with FlociSecretsManagerProvider when AWS SDK v2 is available.
  */
 public final class EnvSecretsProvider implements SecretsProvider {
 

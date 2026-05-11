@@ -49,7 +49,8 @@ declare -a VERIFY_TOOLS=(
   "kubernetes|k3d|k3d version|k3d version v([0-9]+\.[0-9]+\.[0-9]+)|5.6.0|1"
   "kubernetes|argocd|argocd version --client 2>&1|argocd: v([0-9]+\.[0-9]+\.[0-9]+)|2.0.0|1"
   "kubernetes|kustomize|kustomize version|v([0-9]+\.[0-9]+\.[0-9]+)|4.0.0|1"
-  # aws: AWS CLI is used by scripts; MinIO mc/mcli is a convenience admin client.
+  # aws: AWS CLI is the single client for the Floci AWS emulator (ADR-0042).
+  # mc (MinIO client) is no longer part of the stack — kept as optional for ad-hoc use.
   "aws|aws|aws --version|aws-cli/([0-9]+\.[0-9]+\.[0-9]+)|2.15.0|0"
   "aws|mc|mc --version 2>&1|RELEASE\.([0-9]{4})-([0-9]{2})|2024.0|1"
   # streaming (1 tool)

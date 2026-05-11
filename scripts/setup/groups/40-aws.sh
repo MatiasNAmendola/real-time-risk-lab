@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
-# 40-aws.sh — AWS CLI v2, MinIO client (mc)
-# Tools: 2
+# 40-aws.sh — AWS CLI v2 (talks to the Floci AWS emulator on :4566, ADR-0042)
+# Tools: 1 required (aws), 1 optional (mc — kept for users still doing ad-hoc MinIO admin)
 
 GROUP_NAME="aws"
-GROUP_DESCRIPTION="AWS CLI + MinIO client"
+GROUP_DESCRIPTION="AWS CLI (Floci client; mc optional)"
 
 SCRIPT_DIR_GROUP="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 LIB_DIR="${SCRIPT_DIR_GROUP}/../lib"
@@ -178,7 +178,8 @@ group_check() {
   OUTDATED_TOOLS=()
   printf '\n  %s[%s]%s %s\n' "${BOLD}" "$GROUP_NAME" "${RESET}" "$GROUP_DESCRIPTION"
   check_aws
-  check_mc
+  # mc is no longer part of the AWS mocks stack (replaced by Floci, ADR-0042).
+  # Keep the installer available via group_install for users who still want it.
 }
 
 group_install() {

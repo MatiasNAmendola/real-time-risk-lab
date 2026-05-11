@@ -1,7 +1,7 @@
 package io.riskplatform.integration.e2e;
 
 import io.riskplatform.integration.IntegrationTestSupport;
-import io.riskplatform.integration.containers.MinioContainer;
+import io.riskplatform.integration.containers.FlociContainer;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
@@ -39,12 +39,13 @@ import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * End-to-end integration test that exercises Postgres + Redpanda + MinIO together.
+ * End-to-end integration test that exercises Postgres + Redpanda + Floci S3 together
+ * (ADR-0042).
  *
  * Flow:
  *  1. A APPROVE/DECLINE decision is persisted to decision_audit in Postgres.
  *  2. An outbox event for that decision is published to the risk-decisions Redpanda topic.
- *  3. An audit JSON is stored to MinIO risk-audit bucket.
+ *  3. An audit JSON is stored to the Floci risk-audit bucket.
  *  4. All three sides are asserted.
  */
 @Testcontainers
@@ -60,7 +61,7 @@ class RiskDecisionE2EIntegrationTest extends IntegrationTestSupport {
     static final RedpandaContainer REDPANDA = redpanda;
 
     @Container
-    static final MinioContainer MINIO = minio;
+    static final FlociContainer FLOCI = floci;
 
     private static S3Client s3;
 
@@ -79,12 +80,12 @@ class RiskDecisionE2EIntegrationTest extends IntegrationTestSupport {
                     """);
         }
 
-        // S3 client + bucket
+        // S3 client + bucket (Floci, ADR-0042)
         s3 = S3Client.builder()
-                .endpointOverride(URI.create(MINIO.s3Endpoint()))
+                .endpointOverride(URI.create(FLOCI.s3Endpoint()))
                 .region(Region.US_EAST_1)
                 .credentialsProvider(StaticCredentialsProvider.create(
-                        AwsBasicCredentials.create(MinioContainer.ROOT_USER, MinioContainer.ROOT_PASSWORD)))
+                        AwsBasicCredentials.create(FlociContainer.ACCESS_KEY, FlociContainer.SECRET_KEY)))
                 .forcePathStyle(true)
                 .httpClientBuilder(software.amazon.awssdk.http.urlconnection.UrlConnectionHttpClient.builder())
                 .build();
@@ -125,7 +126,7 @@ class RiskDecisionE2EIntegrationTest extends IntegrationTestSupport {
             producer.flush();
         }
 
-        // Step 3: write audit JSON to MinIO
+        // Step 3: write audit JSON to Floci S3
         String s3Key = "2026/05/07/" + decisionId + ".json";
         s3.putObject(
                 PutObjectRequest.builder().bucket(BUCKET).key(s3Key).contentType("application/json").build(),
@@ -165,7 +166,7 @@ class RiskDecisionE2EIntegrationTest extends IntegrationTestSupport {
         assertThat(receivedValues).hasSize(1);
         assertThat(receivedValues.get(0)).contains("APPROVE").contains(requestId);
 
-        // Assertions — side 3: MinIO
+        // Assertions — side 3: Floci S3
         byte[] auditBytes = s3.getObject(
                 GetObjectRequest.builder().bucket(BUCKET).key(s3Key).build(),
                 ResponseTransformer.toBytes()).asByteArray();

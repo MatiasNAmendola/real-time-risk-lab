@@ -2,8 +2,9 @@ package io.riskplatform.engine.domain.repository;
 
 /**
  * Port out: retrieves runtime secrets by name from a secrets manager
- * (Moto Secrets Manager mock / AWS Secrets Manager in production).
- * Impl: MotoSecretsManagerProvider (Phase 2 — requires AWS SDK v2 in classpath).
+ * (Floci AWS Secrets Manager emulator in local/CI per ADR-0042; AWS Secrets Manager
+ * in production).
+ * Impl: FlociSecretsManagerProvider (Phase 2 — requires AWS SDK v2 in classpath).
  * Fallback: EnvSecretsProvider (current — reads from environment variables).
  */
 public interface SecretsProvider {

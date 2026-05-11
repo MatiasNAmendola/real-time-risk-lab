@@ -15,10 +15,12 @@ import java.net.URI;
 import java.time.Instant;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
+import java.util.Optional;
 import java.util.UUID;
 
 /**
- * Publishes a DECLINE or REVIEW audit record to MinIO (S3-compatible) from consumer-app.
+ * Publishes a DECLINE or REVIEW audit record to the Floci AWS emulator (S3, ADR-0042)
+ * from consumer-app.
  *
  * This demonstrates that the same audit concern can be applied at both the source
  * (usecase-app, synchronously with the decision) and at the consumer (async, after
@@ -27,7 +29,7 @@ import java.util.UUID;
  * Key pattern: risk-audit/consumer/{year}/{month}/{day}/{eventId}.json
  *
  * Env vars (set in docker-compose.yml for consumer-app):
- *   AWS_ENDPOINT_URL_S3=http://minio:9000
+ *   FLOCI_ENDPOINT=http://floci:4566   (or AWS_ENDPOINT_URL / legacy AWS_ENDPOINT_URL_S3)
  *   AWS_ACCESS_KEY_ID=test
  *   AWS_SECRET_ACCESS_KEY=test
  *   AWS_REGION=us-east-1
@@ -44,9 +46,9 @@ public final class ConsumerS3AuditPublisher {
 
     public ConsumerS3AuditPublisher(Vertx vertx) {
         this.vertx = vertx;
-        String endpoint = System.getenv("AWS_ENDPOINT_URL_S3");
+        Optional<URI> endpoint = FlociEndpoint.resolve("AWS_ENDPOINT_URL_S3");
         this.bucket     = System.getenv().getOrDefault("RISK_AUDIT_BUCKET", "risk-audit");
-        this.enabled    = endpoint != null && !endpoint.isBlank();
+        this.enabled    = endpoint.isPresent();
 
         if (this.enabled) {
             String accessKey = System.getenv().getOrDefault(
@@ -56,17 +58,17 @@ public final class ConsumerS3AuditPublisher {
             String region    = System.getenv().getOrDefault("AWS_REGION", "us-east-1");
 
             this.s3 = S3Client.builder()
-                .endpointOverride(URI.create(endpoint))
+                .endpointOverride(endpoint.get())
                 .credentialsProvider(StaticCredentialsProvider.create(
                     AwsBasicCredentials.create(accessKey, secretKey)))
                 .region(Region.of(region))
                 .forcePathStyle(true)
                 .build();
             log.info("[consumer-app] ConsumerS3AuditPublisher configured: endpoint={} bucket={}",
-                endpoint, bucket);
+                endpoint.get(), bucket);
         } else {
             this.s3 = null;
-            log.info("[consumer-app] ConsumerS3AuditPublisher disabled (AWS_ENDPOINT_URL_S3 not set)");
+            log.info("[consumer-app] ConsumerS3AuditPublisher disabled (FLOCI_ENDPOINT not set)");
         }
     }
 

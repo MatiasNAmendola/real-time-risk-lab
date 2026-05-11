@@ -17,15 +17,17 @@ import java.net.URI;
 import java.time.Instant;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
+import java.util.Optional;
 import java.util.UUID;
 
 /**
- * Publishes risk decision audit records to MinIO (S3-compatible) via AWS SDK v2.
+ * Publishes risk decision audit records to the Floci AWS emulator (S3, ADR-0042)
+ * via AWS SDK v2.
  *
  * <p>Key pattern: risk-audit/{year}/{month}/{day}/{eventId}.json
  *
- * <p>Env vars: AWS_ENDPOINT_URL_S3, AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY,
- *             AWS_REGION, RISK_AUDIT_BUCKET
+ * <p>Env vars: FLOCI_ENDPOINT (or AWS_ENDPOINT_URL / legacy AWS_ENDPOINT_URL_S3),
+ *             AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_REGION, RISK_AUDIT_BUCKET
  */
 public final class S3AuditPublisher {
 
@@ -38,25 +40,25 @@ public final class S3AuditPublisher {
 
     public S3AuditPublisher(Vertx vertx) {
         this.vertx = vertx;
-        String endpoint = System.getenv("AWS_ENDPOINT_URL_S3");
+        Optional<URI> endpoint = FlociEndpoint.resolve("AWS_ENDPOINT_URL_S3");
         this.bucket  = System.getenv().getOrDefault("RISK_AUDIT_BUCKET", "risk-audit");
-        this.enabled = endpoint != null && !endpoint.isBlank();
+        this.enabled = endpoint.isPresent();
 
         if (this.enabled) {
             String accessKey = System.getenv().getOrDefault("AWS_ACCESS_KEY_ID", "test");
             String secretKey = System.getenv().getOrDefault("AWS_SECRET_ACCESS_KEY", "test");
             String region    = System.getenv().getOrDefault("AWS_REGION", "us-east-1");
             this.s3 = S3Client.builder()
-                .endpointOverride(URI.create(endpoint))
+                .endpointOverride(endpoint.get())
                 .credentialsProvider(StaticCredentialsProvider.create(
                     AwsBasicCredentials.create(accessKey, secretKey)))
                 .region(Region.of(region))
                 .forcePathStyle(true)
                 .build();
-            log.info("[monolith] S3AuditPublisher: endpoint={} bucket={}", endpoint, bucket);
+            log.info("[monolith] S3AuditPublisher: endpoint={} bucket={}", endpoint.get(), bucket);
         } else {
             this.s3 = null;
-            log.info("[monolith] S3AuditPublisher disabled (AWS_ENDPOINT_URL_S3 not set)");
+            log.info("[monolith] S3AuditPublisher disabled (FLOCI_ENDPOINT not set)");
         }
     }
 

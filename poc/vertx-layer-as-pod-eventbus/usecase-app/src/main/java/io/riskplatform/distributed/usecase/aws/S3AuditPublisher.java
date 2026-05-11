@@ -17,10 +17,12 @@ import java.net.URI;
 import java.time.Instant;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
+import java.util.Optional;
 import java.util.UUID;
 
 /**
- * Publishes risk decision audit records to MinIO (S3-compatible) via AWS SDK v2.
+ * Publishes risk decision audit records to the Floci AWS emulator (S3, ADR-0042)
+ * via AWS SDK v2.
  *
  * Key pattern: risk-audit/{year}/{month}/{day}/{eventId}.json
  *
@@ -28,7 +30,7 @@ import java.util.UUID;
  * via executeBlocking so the event loop is never blocked.
  *
  * Env vars (set in docker-compose.yml for usecase-app):
- *   AWS_ENDPOINT_URL_S3=http://minio:9000
+ *   FLOCI_ENDPOINT=http://floci:4566   (or AWS_ENDPOINT_URL / legacy AWS_ENDPOINT_URL_S3)
  *   AWS_ACCESS_KEY_ID=test
  *   AWS_SECRET_ACCESS_KEY=test
  *   AWS_REGION=us-east-1
@@ -45,9 +47,9 @@ public final class S3AuditPublisher {
 
     public S3AuditPublisher(Vertx vertx) {
         this.vertx = vertx;
-        String endpoint = System.getenv("AWS_ENDPOINT_URL_S3");
+        Optional<URI> endpoint = FlociEndpoint.resolve("AWS_ENDPOINT_URL_S3");
         this.bucket     = System.getenv().getOrDefault("RISK_AUDIT_BUCKET", "risk-audit");
-        this.enabled    = endpoint != null && !endpoint.isBlank();
+        this.enabled    = endpoint.isPresent();
 
         if (this.enabled) {
             String accessKey    = System.getenv().getOrDefault(
@@ -57,16 +59,16 @@ public final class S3AuditPublisher {
             String region       = System.getenv().getOrDefault("AWS_REGION", "us-east-1");
 
             this.s3 = S3Client.builder()
-                .endpointOverride(URI.create(endpoint))
+                .endpointOverride(endpoint.get())
                 .credentialsProvider(StaticCredentialsProvider.create(
                     AwsBasicCredentials.create(accessKey, secretKey)))
                 .region(Region.of(region))
-                .forcePathStyle(true)   // required for MinIO path-style access
+                .forcePathStyle(true)   // required for Floci/MinIO path-style access
                 .build();
-            log.info("[usecase-app] S3AuditPublisher configured: endpoint={} bucket={}", endpoint, bucket);
+            log.info("[usecase-app] S3AuditPublisher configured: endpoint={} bucket={}", endpoint.get(), bucket);
         } else {
             this.s3 = null;
-            log.info("[usecase-app] S3AuditPublisher disabled (AWS_ENDPOINT_URL_S3 not set)");
+            log.info("[usecase-app] S3AuditPublisher disabled (FLOCI_ENDPOINT not set)");
         }
     }
 

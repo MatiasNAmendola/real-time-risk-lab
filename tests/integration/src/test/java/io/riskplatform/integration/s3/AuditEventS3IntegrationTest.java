@@ -1,7 +1,7 @@
 package io.riskplatform.integration.s3;
 
 import io.riskplatform.integration.IntegrationTestSupport;
-import io.riskplatform.integration.containers.MinioContainer;
+import io.riskplatform.integration.containers.FlociContainer;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.testcontainers.junit.jupiter.Container;
@@ -23,8 +23,8 @@ import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Verifies that audit events can be written to and read back from a MinIO bucket
- * using the AWS S3 SDK with a custom endpoint.
+ * Verifies that audit events can be written to and read back from a Floci S3 bucket
+ * (ADR-0042) using the AWS S3 SDK with a custom endpoint.
  */
 @Testcontainers
 class AuditEventS3IntegrationTest extends IntegrationTestSupport {
@@ -32,17 +32,17 @@ class AuditEventS3IntegrationTest extends IntegrationTestSupport {
     private static final String BUCKET = "risk-audit";
 
     @Container
-    static final MinioContainer MINIO = minio;
+    static final FlociContainer FLOCI = floci;
 
     private static S3Client s3;
 
     @BeforeAll
     static void setupS3Client() {
         s3 = S3Client.builder()
-                .endpointOverride(URI.create(MINIO.s3Endpoint()))
+                .endpointOverride(URI.create(FLOCI.s3Endpoint()))
                 .region(Region.US_EAST_1)
                 .credentialsProvider(StaticCredentialsProvider.create(
-                        AwsBasicCredentials.create(MinioContainer.ROOT_USER, MinioContainer.ROOT_PASSWORD)))
+                        AwsBasicCredentials.create(FlociContainer.ACCESS_KEY, FlociContainer.SECRET_KEY)))
                 .forcePathStyle(true)
                 .httpClientBuilder(software.amazon.awssdk.http.urlconnection.UrlConnectionHttpClient.builder())
                 .build();
@@ -51,7 +51,7 @@ class AuditEventS3IntegrationTest extends IntegrationTestSupport {
     }
 
     @Test
-    void audit_event_can_be_stored_and_retrieved_from_minio() {
+    void audit_event_can_be_stored_and_retrieved_from_s3() {
         String objectId = UUID.randomUUID().toString();
         String key = "2026/05/07/" + objectId + ".json";
         String auditPayload = "{\"eventType\":\"RISK_DECISION\",\"decision\":\"APPROVE\",\"requestId\":\"" + objectId + "\",\"ts\":\"2026-05-07T00:00:00Z\"}";

@@ -1,7 +1,7 @@
 package io.riskplatform.integration.secrets;
 
 import io.riskplatform.integration.IntegrationTestSupport;
-import io.riskplatform.integration.containers.MotoContainer;
+import io.riskplatform.integration.containers.FlociContainer;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.testcontainers.junit.jupiter.Container;
@@ -19,27 +19,27 @@ import java.net.URI;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Validates AWS Secrets Manager operations against Moto (mock AWS).
+ * Validates AWS Secrets Manager operations against the Floci AWS emulator (ADR-0042).
  * Covers create-secret and get-secret-value.
  */
 @Testcontainers
-class MotoSecretsManagerIntegrationTest extends IntegrationTestSupport {
+class FlociSecretsManagerIntegrationTest extends IntegrationTestSupport {
 
     private static final String SECRET_NAME = "risk-engine/db-password";
     private static final String SECRET_VALUE = "superSecret";
 
     @Container
-    static final MotoContainer MOTO = moto;
+    static final FlociContainer FLOCI = floci;
 
     private static SecretsManagerClient secretsClient;
 
     @BeforeAll
     static void setupClient() {
         secretsClient = SecretsManagerClient.builder()
-                .endpointOverride(URI.create(MOTO.endpointUrl()))
-                .region(Region.of(MotoContainer.REGION))
+                .endpointOverride(URI.create(FLOCI.endpointUrl()))
+                .region(Region.of(FlociContainer.REGION))
                 .credentialsProvider(StaticCredentialsProvider.create(
-                        AwsBasicCredentials.create(MotoContainer.ACCESS_KEY, MotoContainer.SECRET_KEY)))
+                        AwsBasicCredentials.create(FlociContainer.ACCESS_KEY, FlociContainer.SECRET_KEY)))
                 .httpClientBuilder(software.amazon.awssdk.http.urlconnection.UrlConnectionHttpClient.builder())
                 .build();
     }

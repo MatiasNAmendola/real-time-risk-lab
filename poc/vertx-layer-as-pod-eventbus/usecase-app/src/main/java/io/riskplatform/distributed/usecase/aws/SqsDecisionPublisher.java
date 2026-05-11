@@ -15,18 +15,19 @@ import software.amazon.awssdk.services.sqs.model.SendMessageRequest;
 
 import java.net.URI;
 import java.time.Instant;
+import java.util.Optional;
 import java.util.UUID;
 
 /**
- * Alternative async output: publishes risk decisions to an SQS queue (ElasticMQ in local/CI).
+ * Alternative async output: publishes risk decisions to an SQS queue (Floci SQS, ADR-0042).
  *
  * Demonstrates dual-output architecture: the same decision is published to both
  * Kafka (Redpanda) for stream consumers and SQS for pull-based integrations.
  *
- * Queue name: risk-decisions-queue (created by elasticmq default or init container).
+ * Queue name: risk-decisions-queue (created by floci-init).
  *
  * Env vars (set in docker-compose.yml for usecase-app):
- *   AWS_ENDPOINT_URL_SQS=http://elasticmq:9324
+ *   FLOCI_ENDPOINT=http://floci:4566   (or AWS_ENDPOINT_URL / legacy AWS_ENDPOINT_URL_SQS)
  *   AWS_ACCESS_KEY_ID=test
  *   AWS_SECRET_ACCESS_KEY=test
  *   AWS_REGION=us-east-1
@@ -44,8 +45,8 @@ public final class SqsDecisionPublisher {
 
     public SqsDecisionPublisher(Vertx vertx) {
         this.vertx = vertx;
-        String endpoint = System.getenv("AWS_ENDPOINT_URL_SQS");
-        this.enabled    = endpoint != null && !endpoint.isBlank();
+        Optional<URI> endpoint = FlociEndpoint.resolve("AWS_ENDPOINT_URL_SQS");
+        this.enabled    = endpoint.isPresent();
 
         if (this.enabled) {
             String accessKey = System.getenv().getOrDefault("AWS_ACCESS_KEY_ID", "test");
@@ -54,13 +55,13 @@ public final class SqsDecisionPublisher {
             String queueName = System.getenv().getOrDefault("RISK_SQS_QUEUE", DEFAULT_QUEUE);
 
             this.sqs = SqsClient.builder()
-                .endpointOverride(URI.create(endpoint))
+                .endpointOverride(endpoint.get())
                 .credentialsProvider(StaticCredentialsProvider.create(
                     AwsBasicCredentials.create(accessKey, secretKey)))
                 .region(Region.of(region))
                 .build();
 
-            // Resolve queue URL at construction time (ElasticMQ path: http://elasticmq:9324/000000000000/{queue})
+            // Resolve queue URL at construction time (Floci path: http://floci:4566/000000000000/{queue})
             String resolvedUrl;
             try {
                 resolvedUrl = sqs.getQueueUrl(
@@ -68,7 +69,7 @@ public final class SqsDecisionPublisher {
                 ).queueUrl();
             } catch (Exception e) {
                 // Queue may not exist yet; fall back to constructed URL pattern
-                resolvedUrl = endpoint + "/000000000000/" + queueName;
+                resolvedUrl = endpoint.get() + "/000000000000/" + queueName;
                 log.warn("[usecase-app] SQS getQueueUrl failed, using fallback URL: {}", resolvedUrl);
             }
             this.queueUrl = resolvedUrl;
@@ -76,7 +77,7 @@ public final class SqsDecisionPublisher {
         } else {
             this.sqs      = null;
             this.queueUrl = null;
-            log.info("[usecase-app] SqsDecisionPublisher disabled (AWS_ENDPOINT_URL_SQS not set)");
+            log.info("[usecase-app] SqsDecisionPublisher disabled (FLOCI_ENDPOINT not set)");
         }
     }
 
