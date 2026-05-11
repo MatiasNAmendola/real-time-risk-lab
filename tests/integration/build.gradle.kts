@@ -14,7 +14,6 @@ dependencies {
     testImplementation(libs.testcontainers.core)
     testImplementation(libs.testcontainers.junit5)
     testImplementation(libs.testcontainers.postgresql)
-    testImplementation(libs.testcontainers.redpanda)
 
     // Drivers and clients
     testImplementation(libs.postgresql.driver)

@@ -364,7 +364,7 @@ bootstrap_k8s() {
     PF_PIDS+=($!)
   }
   _start_pf risk        risk-engine   8080 8080
-  _start_pf redpanda    redpanda      19092 9092
+  _start_pf tansu       tansu          9092 9092
   _start_pf openobserve openobserve   5080 5080
 
   # Moto / MinIO / OpenBao — start if services exist in cluster

@@ -7,8 +7,8 @@ info:
     Covers Kafka topic `risk-decisions` (Redpanda) and WebSocket channel `/ws/risk`.
 
 servers:
-  redpanda:
-    host: "redpanda:9092"
+  tansu:
+    host: "tansu:9092"
     protocol: "kafka"
     description: Redpanda broker (Kafka-compatible)
   websocket:
@@ -32,7 +32,7 @@ channels:
       riskDecisionMessage:
         $ref: "#/components/messages/RiskDecisionKafkaMessage"
     servers:
-      - $ref: "#/servers/redpanda"
+      - $ref: "#/servers/tansu"
 
   wsRisk:
     address: "/ws/risk"

@@ -14,7 +14,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Standalone Vert.x verticle that consumes `risk-decisions` from Redpanda/Kafka.
+ * Standalone Vert.x verticle that consumes `risk-decisions` from Tansu (Kafka-wire, ADR-0043).
  * Logs structured MDC fields so the OTel agent can correlate log → trace.
  *
  * The `traceparent` Kafka header is reconstructed and put into MDC so that any
@@ -34,7 +34,7 @@ public class RiskDecisionConsumerVerticle extends AbstractVerticle {
     public void start(Promise<Void> startPromise) {
         Map<String, String> config = new HashMap<>();
         config.put("bootstrap.servers",
-            System.getenv().getOrDefault("KAFKA_BOOTSTRAP_SERVERS", "redpanda:9092"));
+            System.getenv().getOrDefault("KAFKA_BOOTSTRAP_SERVERS", "tansu:9092"));
         config.put("key.deserializer",   "org.apache.kafka.common.serialization.StringDeserializer");
         config.put("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
         config.put("group.id",           GROUP_ID);

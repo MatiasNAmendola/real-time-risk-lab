@@ -21,7 +21,7 @@ import org.slf4j.LoggerFactory;
  * </ul>
  *
  * <p>Both PoCs share the same external infrastructure (Postgres, Valkey,
- * Redpanda, MinIO, ElasticMQ, Moto, OpenBao, OpenObserve) and the same
+ * Tansu, Floci AWS emulator, OpenObserve) and the same
  * pkg:risk-domain business rules.
  */
 public class Application {

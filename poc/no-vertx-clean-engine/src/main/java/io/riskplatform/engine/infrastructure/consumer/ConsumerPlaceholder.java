@@ -4,9 +4,9 @@ package io.riskplatform.engine.infrastructure.consumer;
  * Placeholder — esta carpeta contendrá consumers de mensajería (inbound adapters async).
  *
  * <p>Convención de layout enterprise Go: los consumers viven en {@code internal/infrastructure/consumers/} y
- * exponen listeners de Kafka/Redpanda (equivalente a {@code @KafkaListener} en Spring).
+ * exponen listeners de Kafka/Tansu (equivalente a {@code @KafkaListener} en Spring).
  * En esta PoC el "consumer" es el outbox relay en memoria ({@code AsyncOutboxRelay}). Cuando
- * reemplazemos {@code InMemoryOutboxRepository} por un producer real de Redpanda, el consumer
+ * reemplazemos {@code InMemoryOutboxRepository} por un producer real de Tansu, el consumer
  * de eventos de decisión iría aquí, no en {@code infrastructure/repository/event/}.
  *
  * <p>Ejemplo futuro: {@code RiskDecisionEventConsumer} — escucha el topic

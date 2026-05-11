@@ -15,12 +15,12 @@ import java.util.Properties;
 import java.util.UUID;
 
 /**
- * Publishes risk decisions to Redpanda (Kafka-compatible) via kafka-clients.
+ * Publishes risk decisions to Tansu (Kafka-wire-compatible, ADR-0043) via kafka-clients.
  *
  * <p>Uses the synchronous kafka-clients producer wrapped in Vert.x executeBlocking
  * from the call site to avoid blocking the event loop.
  *
- * <p>Env var: KAFKA_BOOTSTRAP_SERVERS (default: redpanda:9092)
+ * <p>Env var: KAFKA_BOOTSTRAP_SERVERS (default: tansu:9092)
  */
 public class KafkaDecisionPublisher {
 

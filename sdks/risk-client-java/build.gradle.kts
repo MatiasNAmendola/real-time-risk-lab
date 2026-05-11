@@ -53,6 +53,5 @@ dependencies {
     integrationTestImplementation("org.testcontainers:testcontainers:1.20.4")
     integrationTestImplementation("org.testcontainers:junit-jupiter:1.20.4")
     integrationTestImplementation("org.testcontainers:postgresql:1.20.4")
-    integrationTestImplementation("org.testcontainers:redpanda:1.20.4")
     integrationTestImplementation(libs.bundles.junit.testing)
 }

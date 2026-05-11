@@ -6,7 +6,7 @@ Testcontainers is a Java library that spins up real Docker containers programmat
 
 ## Why it applies here
 
-The risk-engine stack integrates with Postgres, Valkey, Redpanda, MinIO, Moto, and OpenBao. Mocking these in unit tests is fast but proves nothing about wire compatibility, serialization, or connection-pool behaviour. This suite exercises the real clients against real (containerised) servers to catch integration bugs before they reach staging.
+The risk-engine stack integrates with Postgres, Valkey, Tansu (ADR-0043), and Floci (unified AWS emulator, ADR-0042). Mocking these in unit tests is fast but proves nothing about wire compatibility, serialization, or connection-pool behaviour. This suite exercises the real clients against real (containerised) servers to catch integration bugs before they reach staging.
 
 ## How to run
 
@@ -35,7 +35,7 @@ cd tests/integration
 | Container | Image | Tests |
 |-----------|-------|-------|
 | Postgres 16 | `postgres:16-alpine` | `OutboxFlushIntegrationTest`, `RiskDecisionE2EIntegrationTest` |
-| Redpanda | `redpandadata/redpanda:v24.2.7` | `KafkaPublishConsumeIntegrationTest`, `OutboxFlushIntegrationTest`, `RiskDecisionE2EIntegrationTest` |
+| Tansu | `ghcr.io/tansu-io/tansu:0.6.0` (memory storage) | `KafkaPublishConsumeIntegrationTest`, `OutboxFlushIntegrationTest`, `RiskDecisionE2EIntegrationTest` |
 | Valkey 8 | `valkey/valkey:8-alpine` | `ValkeyIdempotencyIntegrationTest` |
 | MinIO | `minio/minio:RELEASE.2024-11-07T00-52-20Z` | `AuditEventS3IntegrationTest`, `RiskDecisionE2EIntegrationTest` |
 | Moto | `motoserver/moto:latest` | `MotoSecretsManagerIntegrationTest` |

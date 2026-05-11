@@ -62,7 +62,6 @@ testcontainers-bom = { module = "org.testcontainers:testcontainers-bom", version
 testcontainers-core = { module = "org.testcontainers:testcontainers", version.ref = "testcontainers" }
 testcontainers-junit5 = { module = "org.testcontainers:junit-jupiter", version.ref = "testcontainers" }
 testcontainers-postgresql = { module = "org.testcontainers:postgresql", version.ref = "testcontainers" }
-testcontainers-redpanda = { module = "org.testcontainers:redpanda", version.ref = "testcontainers" }
 lettuce-core = { module = "io.lettuce:lettuce-core", version.ref = "lettuce" }
 jmh-core = { module = "org.openjdk.jmh:jmh-core", version.ref = "jmh" }
 jmh-annprocess = { module = "org.openjdk.jmh:jmh-generator-annprocess", version.ref = "jmh" }

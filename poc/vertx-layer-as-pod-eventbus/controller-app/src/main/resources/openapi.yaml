@@ -2,7 +2,7 @@ openapi: "3.1.0"
 info:
   title: Risk Evaluation API
   description: |
-    Distributed risk evaluation system built with Vert.x 5, Hazelcast cluster, Kafka (Redpanda),
+    Distributed risk evaluation system built with Vert.x 5, Hazelcast cluster, Kafka (Tansu, ADR-0043),
     and full OpenTelemetry observability.
   version: "1.0.0"
   contact:

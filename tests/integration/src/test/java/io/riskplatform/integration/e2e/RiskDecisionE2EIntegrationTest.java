@@ -13,7 +13,7 @@ import org.junit.jupiter.api.Test;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
-import org.testcontainers.redpanda.RedpandaContainer;
+import io.riskplatform.integration.containers.TansuContainer;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider;
 import software.amazon.awssdk.core.sync.RequestBody;
@@ -39,12 +39,12 @@ import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * End-to-end integration test that exercises Postgres + Redpanda + Floci S3 together
+ * End-to-end integration test that exercises Postgres + Tansu + Floci S3 together
  * (ADR-0042).
  *
  * Flow:
  *  1. A APPROVE/DECLINE decision is persisted to decision_audit in Postgres.
- *  2. An outbox event for that decision is published to the risk-decisions Redpanda topic.
+ *  2. An outbox event for that decision is published to the risk-decisions Tansu topic.
  *  3. An audit JSON is stored to the Floci risk-audit bucket.
  *  4. All three sides are asserted.
  */
@@ -58,7 +58,7 @@ class RiskDecisionE2EIntegrationTest extends IntegrationTestSupport {
     static final PostgreSQLContainer<?> PG = postgres;
 
     @Container
-    static final RedpandaContainer REDPANDA = redpanda;
+    static final TansuContainer TANSU = tansu;
 
     @Container
     static final FlociContainer FLOCI = floci;
@@ -67,6 +67,9 @@ class RiskDecisionE2EIntegrationTest extends IntegrationTestSupport {
 
     @BeforeAll
     static void setup() throws Exception {
+        // Tansu 0.6.0 has no auto-create-topics; seed before any publish.
+        TANSU.createTopic(TOPIC, 1);
+
         // Postgres schema
         try (Connection conn = DriverManager.getConnection(PG.getJdbcUrl(), PG.getUsername(), PG.getPassword())) {
             conn.createStatement().execute("""
@@ -111,12 +114,12 @@ class RiskDecisionE2EIntegrationTest extends IntegrationTestSupport {
             ins.executeUpdate();
         }
 
-        // Step 2: publish outbox event to Redpanda
+        // Step 2: publish outbox event to Tansu
         String payload = String.format("{\"decisionId\":\"%s\",\"requestId\":\"%s\",\"decision\":\"%s\",\"amount\":%.2f}",
                 decisionId, requestId, decision, amount);
 
         Properties producerProps = new Properties();
-        producerProps.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, REDPANDA.getBootstrapServers());
+        producerProps.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, TANSU.getBootstrapServers());
         producerProps.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringSerializer");
         producerProps.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringSerializer");
         producerProps.put(ProducerConfig.ACKS_CONFIG, "all");
@@ -143,9 +146,9 @@ class RiskDecisionE2EIntegrationTest extends IntegrationTestSupport {
             assertThat(rs.getDouble("amount")).isEqualTo(15_000.00);
         }
 
-        // Assertions — side 2: Redpanda
+        // Assertions — side 2: Tansu
         Properties consumerProps = new Properties();
-        consumerProps.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, REDPANDA.getBootstrapServers());
+        consumerProps.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, TANSU.getBootstrapServers());
         consumerProps.put(ConsumerConfig.GROUP_ID_CONFIG, "e2e-test-group-" + UUID.randomUUID());
         consumerProps.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringDeserializer");
         consumerProps.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringDeserializer");

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Run vertx-monolith-inprocess standalone against already-running infra.
-# Requires: Postgres, Valkey, Redpanda, MinIO, ElasticMQ accessible at localhost.
+# Requires: Postgres, Valkey, Tansu, Floci accessible at localhost.
 set -euo pipefail
 REPO_ROOT="$(cd "$(dirname "$0")/../../.." && pwd)"
 JAR="$REPO_ROOT/poc/vertx-monolith-inprocess/build/libs/vertx-monolith-inprocess.jar"

@@ -22,7 +22,7 @@ import java.util.UUID;
  * Alternative async output: publishes risk decisions to an SQS queue (Floci SQS, ADR-0042).
  *
  * Demonstrates dual-output architecture: the same decision is published to both
- * Kafka (Redpanda) for stream consumers and SQS for pull-based integrations.
+ * Kafka (Tansu, ADR-0043) for stream consumers and SQS for pull-based integrations.
  *
  * Queue name: risk-decisions-queue (created by floci-init).
  *

@@ -103,7 +103,7 @@ public class EvaluateRiskVerticle extends AbstractVerticle {
 
         Map<String, String> kafkaConfig = new HashMap<>();
         kafkaConfig.put("bootstrap.servers",
-            System.getenv().getOrDefault("KAFKA_BOOTSTRAP_SERVERS", "redpanda:9092"));
+            System.getenv().getOrDefault("KAFKA_BOOTSTRAP_SERVERS", "tansu:9092"));
         kafkaConfig.put("key.serializer",   "org.apache.kafka.common.serialization.StringSerializer");
         kafkaConfig.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
         kafkaConfig.put("acks", "1");

@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Test;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
-import org.testcontainers.redpanda.RedpandaContainer;
+import io.riskplatform.integration.containers.TansuContainer;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -28,7 +28,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 /**
  * Verifies the outbox pattern end-to-end:
  *  1. An PENDING event is inserted into the outbox_event table (Postgres).
- *  2. An inline OutboxRelay reads PENDING rows, publishes to Redpanda, marks PUBLISHED.
+ *  2. An inline OutboxRelay reads PENDING rows, publishes to Tansu, marks PUBLISHED.
  *  3. A Kafka consumer confirms the message arrived on the topic.
  *  4. The Postgres row shows status = PUBLISHED.
  */
@@ -41,10 +41,12 @@ class OutboxFlushIntegrationTest extends IntegrationTestSupport {
     static final PostgreSQLContainer<?> PG = postgres;
 
     @Container
-    static final RedpandaContainer REDPANDA = redpanda;
+    static final TansuContainer TANSU = tansu;
 
     @BeforeAll
     static void createSchema() throws Exception {
+        // Tansu 0.6.0 has no auto-create-topics; seed before any publish.
+        TANSU.createTopic(TOPIC, 1);
         try (Connection conn = DriverManager.getConnection(PG.getJdbcUrl(), PG.getUsername(), PG.getPassword())) {
             conn.createStatement().execute("""
                     CREATE TABLE IF NOT EXISTS outbox_event (
@@ -59,7 +61,7 @@ class OutboxFlushIntegrationTest extends IntegrationTestSupport {
     }
 
     @Test
-    void outbox_relay_publishes_to_redpanda_and_marks_published() throws Exception {
+    void outbox_relay_publishes_to_tansu_and_marks_published() throws Exception {
         String eventId = UUID.randomUUID().toString();
         String payload = "{\"decision\":\"APPROVE\",\"requestId\":\"" + eventId + "\"}";
 
@@ -74,7 +76,7 @@ class OutboxFlushIntegrationTest extends IntegrationTestSupport {
 
         // 2. Inline OutboxRelay: read PENDING -> publish -> mark PUBLISHED
         Properties producerProps = new Properties();
-        producerProps.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, REDPANDA.getBootstrapServers());
+        producerProps.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, TANSU.getBootstrapServers());
         producerProps.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringSerializer");
         producerProps.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringSerializer");
         producerProps.put(ProducerConfig.ACKS_CONFIG, "all");
@@ -100,9 +102,9 @@ class OutboxFlushIntegrationTest extends IntegrationTestSupport {
             producer.flush();
         }
 
-        // 3. Consumer reads the message from Redpanda
+        // 3. Consumer reads the message from Tansu
         Properties consumerProps = new Properties();
-        consumerProps.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, REDPANDA.getBootstrapServers());
+        consumerProps.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, TANSU.getBootstrapServers());
         consumerProps.put(ConsumerConfig.GROUP_ID_CONFIG, "outbox-test-group-" + UUID.randomUUID());
         consumerProps.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringDeserializer");
         consumerProps.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringDeserializer");
@@ -125,7 +127,7 @@ class OutboxFlushIntegrationTest extends IntegrationTestSupport {
         }
 
         assertThat(receivedPayload)
-                .as("Message must be received on Redpanda topic")
+                .as("Message must be received on Tansu topic")
                 .isNotNull()
                 .contains("APPROVE");
 

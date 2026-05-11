@@ -1,10 +1,10 @@
 package io.riskplatform.integration;
 
 import io.riskplatform.integration.containers.FlociContainer;
+import io.riskplatform.integration.containers.TansuContainer;
 import io.riskplatform.integration.containers.ValkeyContainer;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Testcontainers;
-import org.testcontainers.redpanda.RedpandaContainer;
 
 /**
  * Base class for all integration tests.
@@ -47,8 +47,9 @@ public abstract class IntegrationTestSupport {
     protected static final PostgreSQLContainer<?> postgres =
             io.riskplatform.integration.containers.PostgresContainer.create();
 
-    protected static final RedpandaContainer redpanda =
-            io.riskplatform.integration.containers.RedpandaContainer.create();
+    /** Tansu (ADR-0043) Kafka-wire broker; supersedes the prior Redpanda container. */
+    protected static final TansuContainer tansu =
+            TansuContainer.create();
 
     protected static final ValkeyContainer valkey =
             ValkeyContainer.create();
