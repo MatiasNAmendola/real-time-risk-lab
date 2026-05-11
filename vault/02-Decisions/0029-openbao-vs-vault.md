@@ -1,17 +1,20 @@
 ---
 adr: "0029"
 title: OpenBao (Vault Fork) Instead de HashiCorp Vault
-status: accepted
+status: superseded
+superseded-by: "0042"
 date: 2026-05-07
 deciders: [Mati]
-tags: [decision/accepted, area/infrastructure, area/security]
+tags: [decision/superseded, area/infrastructure, area/security]
 ---
+
+> **Status: Superseded by [[0042-floci-unified-aws-emulator]] (2026-05-11).** OpenBao se eliminó completamente del stack — Floci provee Secrets Manager + KMS via AWS API.
 
 # ADR-0029: OpenBao (Linux Foundation Vault Fork) Instead de HashiCorp Vault
 
 ## Estado
 
-Aceptado el 2026-05-07.
+Aceptado el 2026-05-07. **Superseded por ADR-0042 el 2026-05-11.**
 
 ## Contexto
 

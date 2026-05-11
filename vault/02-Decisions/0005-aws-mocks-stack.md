@@ -1,17 +1,21 @@
 ---
 adr: "0005"
 title: AWS Mocks Stack (anti-LocalStack)
-status: accepted
+status: superseded
+superseded-by: "0042"
 date: 2026-05-07
 deciders: [Mati]
-tags: [decision/accepted, area/aws, area/testing, area/local-dev]
+tags: [decision/superseded, area/aws, area/testing, area/local-dev]
 ---
+
+> **Status: Superseded by [[0042-floci-unified-aws-emulator]] (2026-05-11).**
+> La pila per-servicio (MinIO + ElasticMQ + Moto + OpenBao) fue reemplazada por Floci como emulador AWS unificado. Este ADR se preserva por contexto histórico; ver ADR-0042 para la decisión vigente.
 
 # ADR-0005: Curated AWS Mocks Stack Instead of LocalStack
 
 ## Estado
 
-Aceptado el 2026-05-07.
+Aceptado el 2026-05-07. **Superseded por ADR-0042 el 2026-05-11.**
 
 ## Contexto
 

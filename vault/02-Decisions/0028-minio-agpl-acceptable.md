@@ -1,17 +1,20 @@
 ---
 adr: "0028"
 title: MinIO AGPL-3.0 License Acceptable para Local PoC
-status: accepted
+status: superseded
+superseded-by: "0042"
 date: 2026-05-07
 deciders: [Mati]
-tags: [decision/accepted, area/infrastructure, area/licensing]
+tags: [decision/superseded, area/infrastructure, area/licensing]
 ---
+
+> **Status: Superseded by [[0042-floci-unified-aws-emulator]] (2026-05-11).** MinIO ya no forma parte del stack — Floci (MIT) cubre S3 in-process.
 
 # ADR-0028: MinIO AGPL-3.0 License Acceptable para Local PoC
 
 ## Estado
 
-Aceptado el 2026-05-07.
+Aceptado el 2026-05-07. **Superseded por ADR-0042 el 2026-05-11.**
 
 ## Contexto
 

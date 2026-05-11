@@ -1,17 +1,20 @@
 ---
 adr: "0033"
 title: Moto Inline vs LocalStack para Integration Tests
-status: accepted
+status: superseded
+superseded-by: "0042"
 date: 2026-05-07
 deciders: [Mati]
-tags: [decision/accepted, area/testing, area/aws]
+tags: [decision/superseded, area/testing, area/aws]
 ---
+
+> **Status: Superseded by [[0042-floci-unified-aws-emulator]] (2026-05-11).** Moto ya no se usa — Floci cubre SNS / Secrets / KMS / STS / IAM in-process via AWS API. LocalStack Community fue sunset en marzo 2026.
 
 # ADR-0033: Moto Inline (Python decorator) vs LocalStack para AWS Integration Tests
 
 ## Estado
 
-Aceptado el 2026-05-07.
+Aceptado el 2026-05-07. **Superseded por ADR-0042 el 2026-05-11.**
 
 ## Contexto
 
