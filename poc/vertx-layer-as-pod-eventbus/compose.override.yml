@@ -18,22 +18,17 @@ services:
 
   # ============================================================================
   # Shared async infra network attachment for this PoC
-  #   Base compose keeps Redpanda/MinIO/ElasticMQ on data-net for init jobs.
-  #   This override also attaches them to async-net so usecase-app and
-  #   consumer-app can publish/consume async outputs without joining data-net
-  #   and without being able to reach Postgres/Moto/OpenBao.
+  #   Base compose keeps Redpanda + Floci on data-net for init jobs. This
+  #   override also attaches them to async-net so usecase-app and consumer-app
+  #   can publish/consume async outputs without joining data-net (and thus
+  #   without being able to reach Postgres directly).
   # ============================================================================
   redpanda:
     networks:
       - data-net
       - async-net
 
-  minio:
-    networks:
-      - data-net
-      - async-net
-
-  elasticmq:
+  floci:
     networks:
       - data-net
       - async-net
@@ -68,13 +63,14 @@ services:
       OTEL_METRICS_EXPORTER:           otlp
       OTEL_LOGS_EXPORTER:              otlp
       OTEL_INSTRUMENTATION_VERTX_ENABLED: "true"
-      AWS_ENDPOINT_URL_SECRETSMANAGER: http://moto:5000
-      AWS_ACCESS_KEY_ID:               ${AWS_MOCK_ACCESS_KEY_ID:-change-me-aws-mock-access-key}
-      AWS_SECRET_ACCESS_KEY:           ${AWS_MOCK_SECRET_ACCESS_KEY:-change-me-aws-mock-secret-key}
+      # AWS mocks via Floci unified emulator (ADR-0042). Single endpoint :4566
+      # serves S3 + SQS + SNS + Secrets Manager + KMS + STS + IAM.
+      FLOCI_ENDPOINT:                  http://floci:4566
+      AWS_ENDPOINT_URL:                http://floci:4566
+      AWS_ACCESS_KEY_ID:               test
+      AWS_SECRET_ACCESS_KEY:           test
       AWS_REGION:                      us-east-1
       DB_SECRET_NAME:                  riskplatform/db-password
-      OPENBAO_URL:                     http://openbao:8200
-      OPENBAO_TOKEN:                   ${OPENBAO_DEV_ROOT_TOKEN:-change-me-openbao-root-token}
       EVENT_BUS_HOST:                  repository-app
       HAZELCAST_CONFIG_PATH:            /etc/riskplatform/hazelcast/hazelcast.xml
       # JVM tuned to fit inside mem_limit=512m. Hazelcast network/thread/heartbeat
@@ -93,7 +89,7 @@ services:
         condition: service_healthy
       otel-collector:
         condition: service_started
-      moto-init:
+      floci-init:
         condition: service_completed_successfully
     healthcheck:
       test: ["CMD-SHELL", "pgrep -f repository-app >/dev/null || exit 1"]
@@ -135,12 +131,11 @@ services:
       EVENT_BUS_HOST:                  usecase-app
       HAZELCAST_CONFIG_PATH:            /etc/riskplatform/hazelcast/hazelcast.xml
       KAFKA_BOOTSTRAP_SERVERS:         redpanda:9092
-      AWS_ENDPOINT_URL_S3:             http://minio:9000
-      AWS_ENDPOINT_URL_SQS:            http://elasticmq:9324
-      AWS_ACCESS_KEY_ID:               ${AWS_MOCK_ACCESS_KEY_ID:-change-me-aws-mock-access-key}
-      AWS_SECRET_ACCESS_KEY:           ${AWS_MOCK_SECRET_ACCESS_KEY:-change-me-aws-mock-secret-key}
-      S3_ACCESS_KEY_ID:                ${MINIO_ROOT_USER:-change-me-minio-user}
-      S3_SECRET_ACCESS_KEY:            ${MINIO_ROOT_PASSWORD:-change-me-minio-password}
+      # AWS mocks via Floci unified emulator (ADR-0042).
+      FLOCI_ENDPOINT:                  http://floci:4566
+      AWS_ENDPOINT_URL:                http://floci:4566
+      AWS_ACCESS_KEY_ID:               test
+      AWS_SECRET_ACCESS_KEY:           test
       AWS_REGION:                      us-east-1
       RISK_AUDIT_BUCKET:               risk-audit
       RISK_SQS_QUEUE:                  risk-decisions-queue
@@ -164,9 +159,7 @@ services:
         condition: service_started
       redpanda-init:
         condition: service_completed_successfully
-      minio-init:
-        condition: service_completed_successfully
-      elasticmq-init:
+      floci-init:
         condition: service_completed_successfully
       otel-collector:
         condition: service_started
@@ -260,11 +253,11 @@ services:
       OTEL_METRICS_EXPORTER:           otlp
       OTEL_LOGS_EXPORTER:              otlp
       KAFKA_BOOTSTRAP_SERVERS:         redpanda:9092
-      AWS_ENDPOINT_URL_S3:             http://minio:9000
-      AWS_ACCESS_KEY_ID:               ${AWS_MOCK_ACCESS_KEY_ID:-change-me-aws-mock-access-key}
-      AWS_SECRET_ACCESS_KEY:           ${AWS_MOCK_SECRET_ACCESS_KEY:-change-me-aws-mock-secret-key}
-      S3_ACCESS_KEY_ID:                ${MINIO_ROOT_USER:-change-me-minio-user}
-      S3_SECRET_ACCESS_KEY:            ${MINIO_ROOT_PASSWORD:-change-me-minio-password}
+      # AWS mocks via Floci unified emulator (ADR-0042).
+      FLOCI_ENDPOINT:                  http://floci:4566
+      AWS_ENDPOINT_URL:                http://floci:4566
+      AWS_ACCESS_KEY_ID:               test
+      AWS_SECRET_ACCESS_KEY:           test
       AWS_REGION:                      us-east-1
       RISK_AUDIT_BUCKET:               risk-audit
       # consumer-app does not join Hazelcast cluster (Kafka-only); no EB host.
@@ -277,9 +270,7 @@ services:
     depends_on:
       redpanda-init:
         condition: service_completed_successfully
-      minio-init:
-        condition: service_completed_successfully
-      elasticmq-init:
+      floci-init:
         condition: service_completed_successfully
       otel-collector:
         condition: service_started

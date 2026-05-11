@@ -1,112 +1,28 @@
 ---
-# aws-mocks-init — creates baseline resources in MinIO, ElasticMQ, Moto, OpenBao
+# floci-init — seeds S3 buckets, SQS queues, SNS topics, Secrets Manager entries
+# against the Floci AWS emulator (single endpoint).
 # Re-runnable: up.sh deletes and re-creates this Job on each run.
+# ADR-0042.
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: aws-mocks-init
+  name: floci-init
   namespace: aws-mocks
   labels:
-    app.kubernetes.io/name: aws-mocks-init
+    app.kubernetes.io/name: floci-init
     app.kubernetes.io/part-of: aws-mocks
 spec:
   ttlSecondsAfterFinished: 600
   template:
     metadata:
       labels:
-        app.kubernetes.io/name: aws-mocks-init
+        app.kubernetes.io/name: floci-init
         app.kubernetes.io/part-of: aws-mocks
     spec:
       restartPolicy: OnFailure
       containers:
         - name: init
-          # amazon/aws-cli includes aws CLI; add mc (MinIO client) via curl
           image: amazon/aws-cli:latest
-          command: ["/bin/bash", "-c"]
-          args:
-            - |
-              set -euo pipefail
-
-              echo "=== Installing MinIO client (mc) ==="
-              curl -sSL https://dl.min.io/client/mc/release/linux-amd64/mc \
-                -o /usr/local/bin/mc && chmod +x /usr/local/bin/mc
-
-              # ─── MinIO (S3) ──────────────────────────────────────────────────
-              echo "=== Configuring MinIO ==="
-              mc alias set local http://minio.aws-mocks.svc:9000 ${MINIO_ROOT_USER:-change-me-minio-user} ${MINIO_ROOT_PASSWORD:-change-me-minio-password}
-              mc mb local/risk-events --ignore-existing
-              mc mb local/risk-models --ignore-existing
-              echo "MinIO buckets: risk-events, risk-models"
-
-              # ─── ElasticMQ (SQS) ─────────────────────────────────────────────
-              echo "=== Creating SQS queues in ElasticMQ ==="
-              export AWS_DEFAULT_REGION=us-east-1
-              export AWS_ACCESS_KEY_ID=test
-              export AWS_SECRET_ACCESS_KEY=test
-
-              # DLQ first (referenced by main queue)
-              aws --endpoint-url http://elasticmq.aws-mocks.svc:9324 sqs create-queue \
-                --queue-name risk-decisions-dlq \
-                --attributes VisibilityTimeout=30 \
-                2>/dev/null || true
-
-              DLQ_ARN=$(aws --endpoint-url http://elasticmq.aws-mocks.svc:9324 sqs get-queue-attributes \
-                --queue-url http://elasticmq.aws-mocks.svc:9324/queue/risk-decisions-dlq \
-                --attribute-names QueueArn \
-                --query 'Attributes.QueueArn' --output text)
-
-              aws --endpoint-url http://elasticmq.aws-mocks.svc:9324 sqs create-queue \
-                --queue-name risk-decisions \
-                --attributes "{\"VisibilityTimeout\":\"30\",\"RedrivePolicy\":\"{\\\"deadLetterTargetArn\\\":\\\"${DLQ_ARN}\\\",\\\"maxReceiveCount\\\":\\\"3\\\"}\"}" \
-                2>/dev/null || true
-
-              echo "SQS queues: risk-decisions, risk-decisions-dlq"
-
-              # ─── Moto (SNS + Secrets Manager) ────────────────────────────────
-              echo "=== Creating SNS topic + Secrets Manager secret in Moto ==="
-
-              aws --endpoint-url http://moto.aws-mocks.svc:5000 sns create-topic \
-                --name risk-events \
-                --region us-east-1 \
-                2>/dev/null || true
-
-              aws --endpoint-url http://moto.aws-mocks.svc:5000 secretsmanager create-secret \
-                --name risk-engine/db-password \
-                --secret-string "{\"password\":\"${POC_DB_PASSWORD:-change-me-db-password}\"}" \
-                --region us-east-1 \
-                2>/dev/null || true
-
-              aws --endpoint-url http://moto.aws-mocks.svc:5000 secretsmanager create-secret \
-                --name risk-engine/api-key \
-                --secret-string "${POC_API_KEY:-change-me-api-key}" \
-                --region us-east-1 \
-                2>/dev/null || true
-
-              echo "Moto: SNS topic risk-events, secrets risk-engine/db-password + risk-engine/api-key"
-
-              # ─── OpenBao (Vault-compatible KV) ───────────────────────────────
-              echo "=== Writing secrets to OpenBao ==="
-              export VAULT_ADDR=http://openbao.aws-mocks.svc:8200
-              export VAULT_TOKEN=root
-
-              # Install vault CLI (OpenBao is API-compatible)
-              curl -sSL https://releases.hashicorp.com/vault/1.15.6/vault_1.15.6_linux_amd64.zip \
-                -o /tmp/vault.zip
-              unzip -q /tmp/vault.zip -d /usr/local/bin/
-
-              POC_DB_PASSWORD="${POC_DB_PASSWORD:-change-me-db-password}"
-              vault kv put secret/risk-engine/db \
-                password=${POC_DB_PASSWORD} \
-                username=risk_user \
-                host=postgres.risk.svc
-
-              vault kv put secret/risk-engine/keys \
-                signing_key=${POC_SIGNING_KEY:-change-me-signing-key}
-
-              echo "OpenBao: secrets written at secret/risk-engine/db and secret/risk-engine/keys"
-
-              echo ""
-              echo "=== AWS mocks init complete ==="
           env:
             - name: AWS_DEFAULT_REGION
               value: us-east-1
@@ -114,6 +30,71 @@ spec:
               value: test
             - name: AWS_SECRET_ACCESS_KEY
               value: test
+            - name: FLOCI_ENDPOINT
+              value: http://floci.aws-mocks.svc.cluster.local:4566
+            - name: POC_DB_PASSWORD
+              value: change-me-db-password
+            - name: POC_API_KEY
+              value: change-me-api-key
+          command: ["/bin/sh", "-ec"]
+          args:
+            - |
+              EP="$FLOCI_ENDPOINT"
+              echo "=== Seeding Floci at $EP ==="
+
+              # ─── S3 buckets ────────────────────────────────────────────────
+              for b in risk-events risk-models risk-audit; do
+                if aws --endpoint-url=$EP s3api head-bucket --bucket "$b" >/dev/null 2>&1; then
+                  echo "  s3 exists:   $b"
+                else
+                  aws --endpoint-url=$EP s3 mb "s3://$b" >/dev/null
+                  echo "  s3 created:  $b"
+                fi
+              done
+
+              # ─── SQS queues (DLQ first; then main with redrive) ────────────
+              aws --endpoint-url=$EP sqs create-queue \
+                --queue-name risk-decisions-dlq \
+                --attributes VisibilityTimeout=30 >/dev/null 2>&1 || true
+
+              DLQ_ARN=$(aws --endpoint-url=$EP sqs get-queue-attributes \
+                --queue-url $EP/000000000000/risk-decisions-dlq \
+                --attribute-names QueueArn \
+                --query 'Attributes.QueueArn' --output text 2>/dev/null || true)
+
+              if [ -n "$DLQ_ARN" ] && [ "$DLQ_ARN" != "None" ]; then
+                aws --endpoint-url=$EP sqs create-queue \
+                  --queue-name risk-decisions \
+                  --attributes "{\"VisibilityTimeout\":\"30\",\"RedrivePolicy\":\"{\\\"deadLetterTargetArn\\\":\\\"${DLQ_ARN}\\\",\\\"maxReceiveCount\\\":\\\"3\\\"}\"}" \
+                  >/dev/null 2>&1 || true
+              else
+                aws --endpoint-url=$EP sqs create-queue --queue-name risk-decisions >/dev/null 2>&1 || true
+              fi
+              aws --endpoint-url=$EP sqs create-queue --queue-name risk-decisions-queue >/dev/null 2>&1 || true
+              aws --endpoint-url=$EP sqs create-queue --queue-name risk-audit-queue >/dev/null 2>&1 || true
+              echo "  sqs ready:   risk-decisions(+dlq), risk-decisions-queue, risk-audit-queue"
+
+              # ─── SNS topic ─────────────────────────────────────────────────
+              aws --endpoint-url=$EP sns create-topic --name risk-events >/dev/null 2>&1 || true
+              echo "  sns ready:   risk-events"
+
+              # ─── Secrets Manager ───────────────────────────────────────────
+              seed_secret() {
+                NAME="$1"; VAL="$2"
+                if aws --endpoint-url=$EP secretsmanager describe-secret --secret-id "$NAME" >/dev/null 2>&1; then
+                  echo "  sec exists:  $NAME"
+                else
+                  aws --endpoint-url=$EP secretsmanager create-secret \
+                    --name "$NAME" --secret-string "$VAL" >/dev/null
+                  echo "  sec created: $NAME"
+                fi
+              }
+              seed_secret risk-engine/db-password "$POC_DB_PASSWORD"
+              seed_secret risk-engine/api-key     "$POC_API_KEY"
+              seed_secret riskplatform/db-password "$POC_DB_PASSWORD"
+
+              echo ""
+              echo "=== Floci init complete ==="
           resources:
             requests:
               cpu: 50m

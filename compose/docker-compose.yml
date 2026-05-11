@@ -4,7 +4,7 @@
 # Network topology — 3 networks (collapsed from 5 for Hazelcast cluster connectivity):
 #
 #   app-net       : the Java app pods + Hazelcast TCP cluster.
-#   data-net      : data services (Postgres, Valkey, Redpanda, MinIO, ElasticMQ, Moto, OpenBao)
+#   data-net      : data services (Postgres, Valkey, Redpanda, Floci AWS emulator)
 #                   + apps that consume them.
 #   telemetry-net : OTel collector + OpenObserve + all apps that emit telemetry.
 #
@@ -171,182 +171,113 @@ services:
     cpus: "0.50"
 
   # ============================================================================
-  # AWS Mocks — MinIO (S3), Moto (Secrets/SNS/IAM), ElasticMQ (SQS), OpenBao (Vault)
+  # AWS Mocks — Floci unified AWS emulator (S3 + SQS + SNS + Secrets + KMS + STS + IAM)
+  # ADR-0042: replaces the prior MinIO + ElasticMQ + Moto + OpenBao stack.
+  # Image: floci/floci:latest (GraalVM native, MIT, ~40 MB, ~24 ms startup).
+  # Endpoint: http://floci:4566 (single port for ALL AWS services).
+  # Health: GET /_floci/health on 4566.
   # ============================================================================
 
-  minio:
-    image: minio/minio:latest
+  floci:
+    image: floci/floci:latest
     networks:
       - data-net
     ports:
-      - "9000:9000"
-      - "9100:9001"   # Console on host 9100 to avoid conflict with redpanda-console (9001)
+      - "4566:4566"
     environment:
-      MINIO_ROOT_USER:     ${MINIO_ROOT_USER:-change-me-minio-user}
-      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-change-me-minio-password}
-    command: server /data --console-address ":9001"
+      # Returned URLs (e.g. SQS QueueUrl) must use the docker service hostname,
+      # not localhost, so other containers can reach them.
+      FLOCI_HOSTNAME:       floci
+      FLOCI_BASE_URL:       http://floci:4566
+      FLOCI_DEFAULT_REGION: us-east-1
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      test: ["CMD-SHELL", "wget -q --spider http://localhost:4566/_floci/health || exit 1"]
       interval: 5s
       timeout: 3s
-      retries: 10
-    mem_limit: 256m
-    cpus: "0.50"
-
-  minio-init:
-    image: minio/mc:latest
-    networks:
-      - data-net
-    depends_on:
-      minio:
-        condition: service_healthy
-    entrypoint: /bin/sh
-    command:
-      - -c
-      - "mc alias set local http://minio:9000 \"$${MINIO_ROOT_USER}\" \"$${MINIO_ROOT_PASSWORD}\" && mc mb local/risk-audit --ignore-existing && echo 'MinIO bucket risk-audit created'"
-    environment:
-      MINIO_ROOT_USER:     ${MINIO_ROOT_USER:-change-me-minio-user}
-      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-change-me-minio-password}
-    restart: "no"
-
-  moto:
-    image: motoserver/moto:latest
-    networks:
-      - data-net
-    ports:
-      - "5000:5000"
-    healthcheck:
-      test: ["CMD-SHELL", "python3 -c 'import urllib.request; urllib.request.urlopen(\"http://localhost:5000/moto-api/\")' || exit 1"]
-      interval: 5s
-      timeout: 5s
       retries: 20
-      start_period: 20s
-    mem_limit: 256m
-    cpus: "0.50"
-
-  # Moto secret seeding (idempotent, fails loudly on real errors).
-  # Wait-for: explicitly polls moto-api/ until 200 OK before creating secrets.
-  # Verify: describe-secret after create to confirm the resource is queryable.
-  moto-init:
-    image: python:3.12-slim
-    networks:
-      - data-net
-    depends_on:
-      moto:
-        condition: service_healthy
-    entrypoint: /bin/sh
-    command:
-      - -ec
-      - |
-        pip install --quiet boto3
-        python3 - <<'PY'
-        import os, sys, time, urllib.request, urllib.error
-        # 1) Wait-for: explicit 30s poll on moto-api/ until 200 OK.
-        deadline = time.time() + 30
-        last_err = None
-        while time.time() < deadline:
-            try:
-                with urllib.request.urlopen('http://moto:5000/moto-api/', timeout=2) as r:
-                    if r.status == 200:
-                        last_err = None
-                        break
-            except Exception as e:
-                last_err = e
-            time.sleep(1)
-        if last_err is not None:
-            print('FATAL: moto endpoint not reachable after 30s:', last_err, file=sys.stderr)
-            sys.exit(1)
-        print('Moto endpoint is up.')
-
-        import boto3
-        sm = boto3.client('secretsmanager',
-          endpoint_url='http://moto:5000',
-          region_name='us-east-1',
-          aws_access_key_id=os.environ.get('AWS_MOCK_ACCESS_KEY_ID', 'change-me-aws-mock-access-key'),
-          aws_secret_access_key=os.environ.get('AWS_MOCK_SECRET_ACCESS_KEY', 'change-me-aws-mock-secret-key'))
-        secrets = [
-            ('riskplatform/db-password', os.environ.get('POC_DB_PASSWORD', 'change-me-db-password')),
-            ('risk-engine/db-password',  os.environ.get('POC_DB_PASSWORD', 'change-me-db-password')),
-            ('risk-engine/api-key',      os.environ.get('POC_API_KEY', 'change-me-api-key')),
-        ]
-        # 2) Create (idempotent on ResourceExistsException).
-        for name, val in secrets:
-            try:
-                sm.create_secret(Name=name, SecretString=val)
-                print('  created:', name)
-            except sm.exceptions.ResourceExistsException:
-                print('  exists: ', name)
-        # 3) Verify each secret is now describable. Hard fail if any missing.
-        missing = []
-        for name, _ in secrets:
-            try:
-                sm.describe_secret(SecretId=name)
-                print('  verified:', name)
-            except Exception as e:
-                print('  MISSING:', name, e, file=sys.stderr)
-                missing.append(name)
-        if missing:
-            print('FATAL: secrets missing post-create:', missing, file=sys.stderr)
-            sys.exit(2)
-        print('Moto secrets seeded and verified.')
-        PY
-    environment:
-      AWS_MOCK_ACCESS_KEY_ID:     ${AWS_MOCK_ACCESS_KEY_ID:-change-me-aws-mock-access-key}
-      AWS_MOCK_SECRET_ACCESS_KEY: ${AWS_MOCK_SECRET_ACCESS_KEY:-change-me-aws-mock-secret-key}
-      POC_DB_PASSWORD:           ${POC_DB_PASSWORD:-change-me-db-password}
-      POC_API_KEY:               ${POC_API_KEY:-change-me-api-key}
-    restart: "no"
-
-  elasticmq:
-    image: softwaremill/elasticmq-native:latest
-    networks:
-      - data-net
-    ports:
-      - "9324:9324"
-      - "9325:9325"
-    healthcheck:
-      test: ["CMD-SHELL", "wget -qO- http://localhost:9324/?Action=ListQueues || exit 1"]
-      interval: 10s
-      timeout: 5s
-      retries: 10
       start_period: 10s
     mem_limit: 256m
+    mem_reservation: 64m
     cpus: "0.50"
 
-  # ElasticMQ queue seeding (idempotent). Mirrors moto-init / minio-init pattern.
-  # Queues must match RISK_SQS_QUEUE env in poc/vertx-layer-as-pod-eventbus/compose.override.yml
-  # and SqsDecisionPublisher#DEFAULT_QUEUE in usecase-app.
-  elasticmq-init:
+  # Floci seeding — single init job that creates ALL AWS resources via aws CLI.
+  # Idempotent (every create swallows "already exists" errors). Verifies the
+  # resources are listable after creation; fails loudly on missing.
+  floci-init:
     image: amazon/aws-cli:latest
     networks:
       - data-net
     depends_on:
-      elasticmq:
+      floci:
         condition: service_healthy
     environment:
-      AWS_ACCESS_KEY_ID:     ${AWS_MOCK_ACCESS_KEY_ID:-change-me-aws-mock-access-key}
-      AWS_SECRET_ACCESS_KEY: ${AWS_MOCK_SECRET_ACCESS_KEY:-change-me-aws-mock-secret-key}
+      AWS_ACCESS_KEY_ID:     test
+      AWS_SECRET_ACCESS_KEY: test
       AWS_DEFAULT_REGION:    us-east-1
+      FLOCI_ENDPOINT:        http://floci:4566
+      POC_DB_PASSWORD:       ${POC_DB_PASSWORD:-change-me-db-password}
+      POC_API_KEY:           ${POC_API_KEY:-change-me-api-key}
     entrypoint: /bin/sh
     command:
       - -ec
       - |
-        ENDPOINT=http://elasticmq:9324
-        QUEUES="risk-decisions-queue risk-decisions-dlq risk-audit-queue"
-        for q in $$QUEUES; do
-          if aws --endpoint-url=$$ENDPOINT sqs get-queue-url --queue-name "$$q" >/dev/null 2>&1; then
-            echo "  exists:  $$q"
+        EP="$$FLOCI_ENDPOINT"
+        echo "=== Seeding Floci at $$EP ==="
+
+        # ─── S3 buckets ──────────────────────────────────────────────────────
+        for b in risk-events risk-models risk-audit; do
+          if aws --endpoint-url=$$EP s3api head-bucket --bucket "$$b" >/dev/null 2>&1; then
+            echo "  s3 exists:   $$b"
           else
-            aws --endpoint-url=$$ENDPOINT sqs create-queue --queue-name "$$q" >/dev/null
-            echo "  created: $$q"
+            aws --endpoint-url=$$EP s3 mb "s3://$$b" >/dev/null
+            echo "  s3 created:  $$b"
           fi
         done
-        # Verify all queues now listable.
-        LISTED=$$(aws --endpoint-url=$$ENDPOINT sqs list-queues --output text || true)
+
+        # ─── SQS queues (DLQ first; main queues; audit) ──────────────────────
+        QUEUES="risk-decisions-dlq risk-decisions risk-decisions-queue risk-audit-queue"
         for q in $$QUEUES; do
-          echo "$$LISTED" | grep -q "$$q" || { echo "FATAL: queue missing post-create: $$q" >&2; exit 2; }
+          if aws --endpoint-url=$$EP sqs get-queue-url --queue-name "$$q" >/dev/null 2>&1; then
+            echo "  sqs exists:  $$q"
+          else
+            aws --endpoint-url=$$EP sqs create-queue --queue-name "$$q" >/dev/null
+            echo "  sqs created: $$q"
+          fi
         done
-        echo "ElasticMQ queues seeded and verified."
+
+        # ─── SNS topic ────────────────────────────────────────────────────────
+        aws --endpoint-url=$$EP sns create-topic --name risk-events >/dev/null 2>&1 || true
+        echo "  sns ready:   risk-events"
+
+        # ─── Secrets Manager ──────────────────────────────────────────────────
+        seed_secret() {
+          NAME="$$1"; VAL="$$2"
+          if aws --endpoint-url=$$EP secretsmanager describe-secret --secret-id "$$NAME" >/dev/null 2>&1; then
+            echo "  sec exists:  $$NAME"
+          else
+            aws --endpoint-url=$$EP secretsmanager create-secret \
+              --name "$$NAME" --secret-string "$$VAL" >/dev/null
+            echo "  sec created: $$NAME"
+          fi
+        }
+        seed_secret riskplatform/db-password "$$POC_DB_PASSWORD"
+        seed_secret risk-engine/db-password  "$$POC_DB_PASSWORD"
+        seed_secret risk-engine/api-key      "$$POC_API_KEY"
+
+        # ─── Verify (loudly) ──────────────────────────────────────────────────
+        for b in risk-events risk-models risk-audit; do
+          aws --endpoint-url=$$EP s3api head-bucket --bucket "$$b" >/dev/null \
+            || { echo "FATAL: s3 bucket missing post-create: $$b" >&2; exit 2; }
+        done
+        for q in risk-decisions-dlq risk-decisions risk-decisions-queue risk-audit-queue; do
+          aws --endpoint-url=$$EP sqs get-queue-url --queue-name "$$q" >/dev/null \
+            || { echo "FATAL: sqs queue missing post-create: $$q" >&2; exit 2; }
+        done
+        for s in riskplatform/db-password risk-engine/db-password risk-engine/api-key; do
+          aws --endpoint-url=$$EP secretsmanager describe-secret --secret-id "$$s" >/dev/null \
+            || { echo "FATAL: secret missing post-create: $$s" >&2; exit 2; }
+        done
+        echo "=== Floci seeded and verified ==="
     restart: "no"
 
   # Postgres schema seeding (idempotent). Creates customer_features pre-app-startup
@@ -388,44 +319,6 @@ services:
           | grep -q customer_features \
           || { echo "FATAL: customer_features missing post-create" >&2; exit 2; }
         echo "Postgres schema seeded and verified."
-    restart: "no"
-
-  openbao:
-    image: openbao/openbao:latest
-    networks:
-      - data-net
-    cap_add:
-      - IPC_LOCK
-    environment:
-      BAO_DEV_ROOT_TOKEN_ID: ${OPENBAO_DEV_ROOT_TOKEN:-change-me-openbao-root-token}
-      BAO_DEV_LISTEN_ADDRESS: 0.0.0.0:8200
-      # Make `bao status` work without exporting BAO_ADDR every time.
-      BAO_ADDR: http://127.0.0.1:8200
-    ports:
-      - "8200:8200"
-    command: server -dev
-    # OpenBao dev-server binds to 0.0.0.0 only; localhost/127.0.0.1 work,
-    # but we use `bao status` because it follows BAO_ADDR and is the
-    # canonical readiness signal (initialized + unsealed).
-    healthcheck:
-      test: ["CMD-SHELL", "bao status > /dev/null 2>&1 || exit 1"]
-      interval: 5s
-      timeout: 5s
-      retries: 20
-      start_period: 15s
-    mem_limit: 256m
-
-  openbao-init:
-    image: openbao/openbao:latest
-    networks:
-      - data-net
-    depends_on:
-      openbao:
-        condition: service_healthy
-    entrypoint: /bin/sh
-    command:
-      - -c
-      - "export BAO_ADDR=http://openbao:8200 && export BAO_TOKEN=root && bao kv put secret/riskplatform/db-password value=riskplatform && bao kv put secret/risk-engine/db-password value=riskplatform && bao kv put secret/risk-engine/api-key value=poc-api-key-local && echo 'OpenBao KV secrets seeded'"
     restart: "no"
 
 networks:

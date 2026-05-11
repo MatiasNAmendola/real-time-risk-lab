@@ -15,14 +15,12 @@ services:
       PG_PASSWORD:                     riskplatform
       VALKEY_URL:                      redis://valkey:6379
       KAFKA_BOOTSTRAP_SERVERS:         redpanda:9092
-      AWS_ENDPOINT_URL_S3:             http://minio:9000
-      AWS_ENDPOINT_URL_SQS:            http://elasticmq:9324
-      AWS_ENDPOINT_URL_SECRETSMANAGER: http://moto:5000
+      # AWS mocks via Floci unified emulator (ADR-0042). Single endpoint :4566.
+      FLOCI_ENDPOINT:                  http://floci:4566
+      AWS_ENDPOINT_URL:                http://floci:4566
       AWS_ACCESS_KEY_ID:               test
       AWS_SECRET_ACCESS_KEY:           test
       AWS_REGION:                      us-east-1
-      OPENBAO_URL:                     http://openbao:8200
-      OPENBAO_TOKEN:                   root
       RISK_AUDIT_BUCKET:               risk-audit
       RISK_SQS_QUEUE:                  risk-decisions-queue
       RULES_CONFIG_PATH:               /etc/riskplatform/rules/rules.yaml
@@ -40,8 +38,8 @@ services:
     depends_on:
       postgres: { condition: service_healthy }
       redpanda: { condition: service_healthy }
-      minio: { condition: service_healthy }
-      moto-init: { condition: service_completed_successfully }
+      floci: { condition: service_healthy }
+      floci-init: { condition: service_completed_successfully }
       otel-collector: { condition: service_started }
     healthcheck:
       test: ["CMD-SHELL", "wget -qO- http://localhost:8090/healthz || exit 1"]
