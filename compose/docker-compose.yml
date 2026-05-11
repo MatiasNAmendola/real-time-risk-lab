@@ -27,7 +27,9 @@ services:
     environment:
       POSTGRES_DB:       riskplatform
       POSTGRES_USER:     riskplatform
-      POSTGRES_PASSWORD: riskplatform
+      # Must match POC_DB_PASSWORD seeded into Floci Secrets Manager so the
+      # monolith (which reads riskplatform/db-password from Floci) can auth.
+      POSTGRES_PASSWORD: ${POC_DB_PASSWORD:-change-me-db-password}
     networks:
       - data-net
     healthcheck:
@@ -191,7 +193,7 @@ services:
       FLOCI_BASE_URL:       http://floci:4566
       FLOCI_DEFAULT_REGION: us-east-1
     healthcheck:
-      test: ["CMD-SHELL", "wget -q --spider http://localhost:4566/_floci/health || exit 1"]
+      test: ["CMD-SHELL", "curl -fsS http://localhost:4566/_floci/health > /dev/null || exit 1"]
       interval: 5s
       timeout: 3s
       retries: 20

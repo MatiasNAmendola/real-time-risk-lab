@@ -74,23 +74,56 @@ done
 
 bootstrap_orbstack() {
   if ! command -v orb &>/dev/null; then
-    err "OrbStack not found. Install from https://orbstack.dev then re-run."
+    warn "OrbStack not found — auto-falling back to k3d."
+    K8S_PROVIDER="k3d"
+    bootstrap_k3d
+    return
   fi
 
   if ! orb status &>/dev/null; then
-    err "OrbStack is not running. Run: orb start  (or open OrbStack from the menu bar)"
+    warn "OrbStack is not running — auto-falling back to k3d."
+    warn "To use OrbStack: 'orb start' (or open the menu bar app), then re-run."
+    K8S_PROVIDER="k3d"
+    bootstrap_k3d
+    return
   fi
 
   if ! kubectl config get-contexts orbstack &>/dev/null; then
     log "Enabling Kubernetes in OrbStack..."
+    local enabled=0
     if orb config set k8s.enabled true 2>/dev/null; then
-      log "Kubernetes enabled. Waiting 60s for control plane..."
-      sleep 60
-    else
-      warn "Could not enable k8s via CLI. Enable it manually:" \
-           "OrbStack menu → Settings → Kubernetes → Enable Kubernetes"
-      echo "[up.sh] WARN: Then re-run this script." >&2
-      exit 1
+      enabled=1
+    elif [[ -f "$HOME/.orbstack/config.yml" ]]; then
+      # Some OrbStack versions don't expose `orb config set`; patch the file.
+      if grep -q "^k8s:" "$HOME/.orbstack/config.yml"; then
+        sed -i.bak '/^k8s:/,/^[a-zA-Z]/ { s/enabled: false/enabled: true/; }' \
+          "$HOME/.orbstack/config.yml" && enabled=1
+      else
+        printf '\nk8s:\n  enabled: true\n' >> "$HOME/.orbstack/config.yml" && enabled=1
+      fi
+      if [[ "$enabled" -eq 1 ]]; then
+        log "Patched ~/.orbstack/config.yml — restarting OrbStack to apply..."
+        orb restart 2>/dev/null || true
+      fi
+    fi
+
+    if [[ "$enabled" -eq 1 ]]; then
+      log "Waiting up to 120s for orbstack context to appear..."
+      for _ in $(seq 1 24); do
+        kubectl config get-contexts orbstack &>/dev/null && break
+        sleep 5
+      done
+    fi
+
+    if ! kubectl config get-contexts orbstack &>/dev/null; then
+      warn "Could not auto-enable OrbStack Kubernetes — falling back to k3d."
+      warn "If you prefer OrbStack: Settings → Kubernetes → Enable, then re-run with --provider orbstack."
+      if ! command -v k3d &>/dev/null; then
+        err "k3d is not installed either. Install with: brew install k3d"
+      fi
+      K8S_PROVIDER="k3d"
+      bootstrap_k3d
+      return
     fi
   fi
 
