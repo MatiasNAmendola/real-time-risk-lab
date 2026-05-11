@@ -36,6 +36,12 @@ tasks.withType<Test>().configureEach {
         exclude("**/*IntegrationTest.class")
     }
     jvmArgs("--enable-preview")
+    // OrbStack rejects Docker API < 1.40; docker-java defaults to 1.32.
+    // Force a compatible API version for Testcontainers regardless of host runtime.
+    environment("DOCKER_API_VERSION", "1.43")
+    environment("DOCKER_HOST", System.getenv("DOCKER_HOST") ?: "unix:///var/run/docker.sock")
+    systemProperty("api.version", "1.43")
+    systemProperty("docker.client.strategy", "org.testcontainers.dockerclient.UnixSocketClientProviderStrategy")
 }
 
 tasks.withType<JavaCompile>().configureEach {

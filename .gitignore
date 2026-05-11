@@ -19,6 +19,7 @@ Desktop.ini
 *.temp
 *.bak
 *.orig
+.watchman-cookie-*
 
 # -----------------------------------------------------------------------------
 # IDE local state (keep repo-level instruction files, ignore machine state)
