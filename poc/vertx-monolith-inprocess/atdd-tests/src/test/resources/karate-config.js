@@ -1,8 +1,12 @@
 function fn() {
   var env = karate.env || 'local';
 
+  // Self-launching suite publishes the chosen port via -Dmonolith.baseUrl.
+  // Falls back to the legacy :8090 when running against a pre-existing compose stack.
+  var resolvedBaseUrl = karate.properties['monolith.baseUrl'] || 'http://localhost:8090';
+
   var config = {
-    baseUrl: 'http://localhost:8090',
+    baseUrl: resolvedBaseUrl,
     kafkaBroker: 'localhost:19092',
     openObserveUrl: 'http://localhost:5080',
     kafkaTopic: 'risk-decisions',

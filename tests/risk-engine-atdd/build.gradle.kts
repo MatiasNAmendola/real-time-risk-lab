@@ -22,9 +22,13 @@ dependencies {
 tasks.withType<Test>().configureEach {
     include("**/RunCucumberTest.class")
     systemProperty("cucumber.filter.tags", System.getProperty("cucumber.filter.tags", "not @wip and not @karate-only"))
-    // Skip unless -Patdd flag is passed — these tests require the risk engine process running
-    val runAtdd = providers.gradleProperty("atdd").isPresent
-    onlyIf { runAtdd }
+    // SELF-LAUNCHING: this suite wires the risk engine as a library via RiskApplicationFixture
+    // (in-process, no HTTP). No external services or running monolith required, so we let it
+    // run on `./gradlew test` like any other suite. Set -Patdd=false to opt out if needed.
+    val skipAtdd = providers.gradleProperty("atdd")
+        .map { it.equals("false", ignoreCase = true) }
+        .getOrElse(false)
+    onlyIf { !skipAtdd }
 }
 
 // Expose feature files on the test classpath (Cucumber needs them)
