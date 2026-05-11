@@ -58,6 +58,7 @@ Cada ADR sigue el formato de Nygard con una sección "Alternativas consideradas"
 | [[0038-riskplatform-package-namespace]] | Mantener `io.riskplatform.poc.*` como identificador técnico legacy | accepted | architecture/packaging | 2026-05-07 |
 | [[0039-vertx-eventbus-host-advertisement]] | Configurar `EventBusOptions.setHost()` en cada Main del PoC distribuido | accepted | distributed/networking | 2026-05-07 |
 | [[0042-floci-unified-aws-emulator]] | Floci como emulador AWS unificado (supersede 0005/0028/0029/0033) | accepted | infrastructure/aws/testing | 2026-05-11 |
+| [[0043-kafka-broker-alternatives-eval]] | Mantener Redpanda; Tansu como PoC paralela (kafka-s3-tansu) | accepted | infrastructure/kafka/footprint | 2026-05-11 |
 
 ---
 
