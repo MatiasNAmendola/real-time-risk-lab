@@ -8,7 +8,7 @@ Plataforma de práctica para discutir decisiones de riesgo/fraude en tiempo real
 
 - **No es producción**: es una exploración técnica reproducible para discusiones técnicas y reviews de arquitectura. Los mocks locales, credenciales de demo y manifiestos k8s existen solo para discusión y laboratorio.
 - **No incluye licencia OSS**: salvo que se agregue un `LICENSE`, el código queda visible para lectura/review pero no concede permisos explícitos de copia, modificación o redistribución.
-- **Stack de terceros**: MinIO/OpenBao/Redpanda y el resto del tooling se usan como servicios/dev dependencies; ver reglas internas de licencia en [`.ai/primitives/rules/licensing.md`](.ai/primitives/rules/licensing.md).
+- **Stack de terceros**: Floci/Redpanda y el resto del tooling se usan como servicios/dev dependencies; ver reglas internas de licencia en [`.ai/primitives/rules/licensing.md`](.ai/primitives/rules/licensing.md).
 
 ## Estado verificado actual
 
@@ -33,7 +33,7 @@ Plataforma de práctica para discutir decisiones de riesgo/fraude en tiempo real
 - **Camino crítico vs async**: decisión online separada de auditoría/eventos/consumers.
 - **Trazabilidad**: correlationId, idempotencyKey, eventos versionados y decision trace.
 - **Resiliencia**: timeouts, circuit breakers, fallbacks e idempotencia.
-- **Infra local**: Postgres, Valkey, Redpanda, MinIO, ElasticMQ, Moto, OpenBao, OTEL/OpenObserve.
+- **Infra local**: Postgres, Valkey, Redpanda, Floci (unified AWS emulator — S3/SQS/SNS/Secrets/KMS), OTEL/OpenObserve.
 - **Testing y verificación**: ATDD, ArchUnit, smoke tests, JMH y auditorías propias.
 - **SDKs y contratos**: clientes Java/TypeScript/Go y contratos de eventos.
 

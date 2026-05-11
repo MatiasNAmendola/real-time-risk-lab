@@ -171,7 +171,7 @@ Evalua la transaccion contra el config activo (o uno especifico por hash) sin re
 
 ### PoC
 
-Header `X-Admin-Token: <token>` validado contra un secret en Secrets Manager (Moto en tests locales, OpenBao en staging).
+Header `X-Admin-Token: <token>` validado contra un secret en AWS Secrets Manager (Floci en tests/staging locales, ADR-0042; AWS real en producción).
 
 ```java
 @Component

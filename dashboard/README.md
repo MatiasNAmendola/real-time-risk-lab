@@ -31,14 +31,14 @@ El config vive en `assets/config.yml`. Reload: `docker compose restart homer` (o
 - **API Documentation**: OpenAPI 3.1 + AsyncAPI 3.0 + Swagger UI + AsyncAPI Studio.
 - **Observability**: OpenObserve, Grafana, Prometheus, Alertmanager.
 - **Streaming**: Redpanda Console + Admin API.
-- **AWS Mocks**: MinIO, ElasticMQ, Moto, OpenBao.
+- **AWS Mocks**: Floci unified AWS emulator (ADR-0042) — S3 + SQS + SNS + Secrets + KMS + STS + IAM en `:4566`.
 - **Data**: Postgres, Valkey.
 - **ArgoCD (k8s mode)**: GitOps + Argo Rollouts.
 - **Tests & Reports**: smoke, ATDD, perf comparison.
 
 ## Conflicto de puertos
 
-MinIO Console (9001) y Redpanda Console usan puertos distintos (9001 vs 9000) en esta configuracion — no hay colision directa. Sin embargo, si el docker-compose principal mapea Redpanda Console a 9001 en lugar de 9000, la tile de MinIO quedaria apuntando al servicio incorrecto. Verificar con `docker compose ps` en `poc/vertx-layer-as-pod-eventbus/` y ajustar la URL en `assets/config.yml` si corresponde.
+Floci escucha en 4566 (puerto AWS-LocalStack-compatible) y no colisiona con Redpanda Console. Verificar con `docker compose ps` en `poc/vertx-layer-as-pod-eventbus/` y ajustar la URL en `assets/config.yml` si corresponde.
 
 ## Archivos
 

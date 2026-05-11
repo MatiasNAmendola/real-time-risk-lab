@@ -64,17 +64,18 @@ updated: 2026-05-07
 - [[0006-atdd-karate-cucumber]] — ATDD dual con Karate + Cucumber-JVM
 - [[0021-testcontainers-integration]] — Testcontainers para integration tests
 - [[0032-jacoco-tcp-attach]] — JaCoCo TCP server para cobertura ATDD cross-module
-- [[0033-moto-inline-vs-localstack]] — Moto server para integration tests AWS
+- [[0033-moto-inline-vs-localstack]] — Moto server para integration tests AWS (superseded by [[0042-floci-unified-aws-emulator]])
 - [[0036-archunit-structural-verification]] — ArchUnit para enforcement de la regla de dependencias
 
 ## Decisiones — Infraestructura local
 
 - [[0004-openobserve-otel]] — OpenObserve como backend OTEL unificado
-- [[0005-aws-mocks-stack]] — mocks AWS curados (sin LocalStack)
+- [[0005-aws-mocks-stack]] — mocks AWS curados (superseded by [[0042-floci-unified-aws-emulator]])
 - [[0007-k3d-orbstack-switch]] — k3d + autodetección de OrbStack
 - [[0027-orbstack-k3d-autodetect]] — OrbStack k8s built-in vs k3d
-- [[0028-minio-agpl-acceptable]] — análisis de licencia AGPL de MinIO
-- [[0029-openbao-vs-vault]] — OpenBao en lugar de HashiCorp Vault
+- [[0028-minio-agpl-acceptable]] — análisis de licencia AGPL de MinIO (superseded by [[0042-floci-unified-aws-emulator]])
+- [[0029-openbao-vs-vault]] — OpenBao en lugar de HashiCorp Vault (superseded by [[0042-floci-unified-aws-emulator]])
+- [[0042-floci-unified-aws-emulator]] — Floci como emulador AWS unificado (MIT, vigente)
 
 ## Decisiones — Tooling de IA
 

@@ -48,15 +48,13 @@ Ver [[0004-openobserve-otel]], [[Observability]].
 
 ## Mocks AWS
 
-| Tool | Reemplaza |
-|------|-----------|
-| Moto | Lambda, SQS, SNS, IAM |
-| MinIO | S3 |
-| ElasticMQ | SQS (nativo) |
-| OpenBao | Secrets Manager / SSM |
-| DynamoDB Local | DynamoDB |
+Un único emulador AWS unificado — **Floci** — cubre todos los servicios:
 
-Ver [[0005-aws-mocks-stack]].
+| Tool | Reemplaza | Endpoint |
+|------|-----------|----------|
+| Floci | S3, SQS, SNS, Secrets Manager, KMS, STS, IAM, DynamoDB, etc. (46 servicios) | `:4566` |
+
+Ver [[0042-floci-unified-aws-emulator]] (supersede a [[0005-aws-mocks-stack]], [[0028-minio-agpl-acceptable]], [[0029-openbao-vs-vault]] y [[0033-moto-inline-vs-localstack]]).
 
 ## Testing
 

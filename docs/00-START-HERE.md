@@ -9,7 +9,7 @@ Una exploración técnica de un use case de detección de fraude productivo, que
 - varias PoCs en Java con funcionalidad comparable pero arquitecturas distintas (para argumentar trade-offs con números).
 - Stack 2026: Java 21, Gradle Kotlin DSL multi-módulo, Vert.x 5, cluster Hazelcast.
 - Observabilidad completa vía OTel + OpenObserve.
-- AWS encapsulado localmente (MinIO, ElasticMQ, Moto, OpenBao) — sin LocalStack.
+- AWS encapsulado localmente con Floci (un solo contenedor, MIT, ADR-0042) — sin LocalStack (sunset en marzo 2026).
 - 3 SDKs cliente (Java/TS/Go) que encapsulan 7 canales de comunicación.
 - CLI maestra `./nx` que orquesta todo.
 - Sistema de primitivas IDE-agnóstico (`.ai/`) para que cualquier agente IA (Claude Code, Cursor, Windsurf, Copilot, etc.) pueda trabajar sin leer el código fuente.
@@ -71,7 +71,7 @@ Una exploración técnica de un use case de detección de fraude productivo, que
 ./nx dashboard up
 ```
 
-Output esperado: tabla de tests + `http://localhost:8888` (dashboard Homer) con links a OpenObserve, Redpanda Console, consola MinIO, etc.
+Output esperado: tabla de tests + `http://localhost:8888` (dashboard Homer) con links a OpenObserve, Redpanda Console, Floci (`:4566`), etc.
 
 ---
 
@@ -101,7 +101,7 @@ CON VERT.X
 | HTTP API | puerto 8081, stdlib | puerto 8090, Vert.x | puerto 8080, Vert.x |
 | Persistencia real | in-memory | Postgres + Valkey | Postgres + Valkey (vía repo-app) |
 | Publicación Kafka | outbox in-memory | Real (Redpanda) | Real (Redpanda) |
-| S3/SQS/Secrets | adapters NoOp | Real (MinIO/ElasticMQ/Moto) | Real (mismo) |
+| S3/SQS/Secrets | adapters NoOp | Real (Floci unified emulator) | Real (mismo) |
 | Frameworks externos | ninguno | Vert.x + AWS SDK + JDBC + Lettuce | igual + cluster Hazelcast |
 | Layering físico | métodos in-process | verticles in-process | 3 JVMs en path síncrono vía EventBus + consumer async Kafka |
 | Latencia esperada | la más baja | la más baja (igual a no-vertx-clean-engine) | mayor (overhead de red/serialización) |

@@ -45,18 +45,19 @@ Cada ADR sigue el formato de Nygard con una sección "Alternativas consideradas"
 | [[0025-skill-router-hybrid-scoring]] | Skill router con scoring híbrido stdlib | accepted | tooling/ai | 2026-05-07 |
 | [[0026-convention-plugins]] | Convention plugins en build-logic/ | accepted | build/tooling | 2026-05-07 |
 | [[0027-orbstack-k3d-autodetect]] | OrbStack k8s built-in vs autodetección de k3d | accepted | infrastructure/local-dev | 2026-05-07 |
-| [[0028-minio-agpl-acceptable]] | MinIO AGPL-3.0 aceptable para PoC | accepted | infrastructure/licensing | 2026-05-07 |
-| [[0029-openbao-vs-vault]] | OpenBao (fork de Vault de Linux Foundation) | accepted | infrastructure/security | 2026-05-07 |
+| [[0028-minio-agpl-acceptable]] | MinIO AGPL-3.0 aceptable para PoC | superseded by 0042 | infrastructure/licensing | 2026-05-07 |
+| [[0029-openbao-vs-vault]] | OpenBao (fork de Vault de Linux Foundation) | superseded by 0042 | infrastructure/security | 2026-05-07 |
 | [[0030-redpanda-vs-kafka]] | Redpanda v24 en lugar de Kafka 3.9 para broker local | accepted | infrastructure/messaging | 2026-05-07 |
 | [[0031-no-di-framework]] | Sin framework de DI — wiring manual en config/ | accepted | architecture/poc | 2026-05-07 |
 | [[0032-jacoco-tcp-attach]] | Attach del JaCoCo TCP server para cobertura cross-module | accepted | testing/tooling | 2026-05-07 |
-| [[0033-moto-inline-vs-localstack]] | Moto server para integration tests AWS | accepted | testing/aws | 2026-05-07 |
+| [[0033-moto-inline-vs-localstack]] | Moto server para integration tests AWS | superseded by 0042 | testing/aws | 2026-05-07 |
 | [[0034-doc-driven-vault-structure]] | Repo doc-driven — capas vault/, docs/, .ai/ | accepted | documentation/architecture | 2026-05-07 |
 | [[0035-java-go-polyglot]] | Dos lenguajes — Java para apps, Go para CLI | accepted | architecture/tooling | 2026-05-07 |
 | [[0036-archunit-structural-verification]] | ArchUnit para verificación estructural de la arquitectura | accepted | testing/architecture | 2026-05-07 |
 | [[0037-virtual-threads-http-server]] | Virtual threads como executor del servidor HTTP | accepted | runtime/java/concurrency | 2026-05-07 |
 | [[0038-riskplatform-package-namespace]] | Mantener `io.riskplatform.poc.*` como identificador técnico legacy | accepted | architecture/packaging | 2026-05-07 |
 | [[0039-vertx-eventbus-host-advertisement]] | Configurar `EventBusOptions.setHost()` en cada Main del PoC distribuido | accepted | distributed/networking | 2026-05-07 |
+| [[0042-floci-unified-aws-emulator]] | Floci como emulador AWS unificado (supersede 0005/0028/0029/0033) | accepted | infrastructure/aws/testing | 2026-05-11 |
 
 ---
 
@@ -102,11 +103,12 @@ Cada ADR sigue el formato de Nygard con una sección "Alternativas consideradas"
 
 ### Infraestructura local
 - [[0004-openobserve-otel]] — backend OTEL
-- [[0005-aws-mocks-stack]] — mocks AWS
+- [[0005-aws-mocks-stack]] — mocks AWS (superseded by 0042)
 - [[0007-k3d-orbstack-switch]] — k3d + OrbStack
 - [[0027-orbstack-k3d-autodetect]] — selección del backend k8s
-- [[0028-minio-agpl-acceptable]] — licencia de MinIO
-- [[0029-openbao-vs-vault]] — gestión de secrets
+- [[0028-minio-agpl-acceptable]] — licencia de MinIO (superseded by 0042)
+- [[0029-openbao-vs-vault]] — gestión de secrets (superseded by 0042)
+- [[0042-floci-unified-aws-emulator]] — emulador AWS unificado (vigente)
 
 ### Tooling de IA
 - [[0010-ide-agnostic-primitives]] — directorio .ai/

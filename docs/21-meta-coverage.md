@@ -115,7 +115,7 @@ Una trampa frecuente al leer JaCoCo: tomar el % de UNA suite como si fuera el co
 |---|---|---|
 | Cucumber-JVM (ATDD bare) | domain, application.usecase, infrastructure adapters in-process | HTTP controller, main, factory, mappers vacios |
 | JUnit unit (smoke tests) | HTTP controller, main, factory, adapters concretos | rules deep tree, integration con Postgres real |
-| Integration (Testcontainers) | adapters contra DB/Kafka/MinIO/Moto reales | use case puro, rules sin DB |
+| Integration (Testcontainers) | adapters contra DB/Kafka/Floci reales (ADR-0042) | use case puro, rules sin DB |
 | Karate ATDD (Vertx) | full stack via HTTP, event bus, Kafka publish | bare-javac path |
 
 Si miras solo Cucumber sobre `poc/no-vertx-clean-engine/` vas a ver 44% — enganoso. El package `infrastructure.controller` aparece al 0% no porque este sin testear, sino porque Cucumber no entra por HTTP — el HTTP controller se cubre con `HttpControllerSmokeTest` (JUnit), `infrastructure.repository.feature` con Integration (Testcontainers), y asi.

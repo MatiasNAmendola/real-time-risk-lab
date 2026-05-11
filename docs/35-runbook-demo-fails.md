@@ -94,8 +94,9 @@ Si dispara repetido → AWS SDK init en event loop (fix en 9i, ver `docs/34-less
 Endpoint admin protegido. Necesitás token válido.
 ```bash
 ./nx admin rules list  # sin auth, vas a 401
-# Get token from OpenBao:
-docker exec compose-openbao-1 sh -c 'BAO_ADDR=http://127.0.0.1:8200 BAO_TOKEN=root bao kv get -field=token secret/admin'
+# Get token from Floci Secrets Manager (ADR-0042):
+aws --endpoint-url http://localhost:4566 secretsmanager get-secret-value \
+  --secret-id admin/token --query SecretString --output text
 ```
 
 ## 4. HTTP 4xx — payload validation
@@ -121,8 +122,8 @@ docker logs compose-usecase-app-1 2>&1 | grep -E "Exception|ERROR" | tail -10
 ```
 
 Buscá:
-- `SecretsManager` errors → moto-init no creó secrets (ver §1.1).
-- `S3` / `Sqs` errors → MinIO/ElasticMQ sin recursos (ver §1.1).
+- `SecretsManager` errors → floci-init no creó secrets (ver §1.1).
+- `S3` / `Sqs` errors → Floci sin recursos (ver §1.1).
 - `OutOfMemoryError` → bumpear `mem_limit` en compose.override.yml.
 - `Hazelcast` partition errors → cluster flapping bajo memoria justa (ver `docs/34-lessons-learned.md` §6).
 
@@ -140,17 +141,17 @@ docker exec compose-valkey-1 valkey-cli PING
 # Redpanda
 docker exec compose-redpanda-1 rpk topic list
 
-# MinIO
-docker exec compose-minio-1 mc ls local/risk-audit
+# Floci — S3 buckets
+aws --endpoint-url http://localhost:4566 s3 ls
 
-# ElasticMQ
-curl -s "http://localhost:9324/?Action=ListQueues"
+# Floci — SQS queues
+aws --endpoint-url http://localhost:4566 sqs list-queues
 
-# Moto secrets
-curl -s -X POST http://localhost:5000/ -H "X-Amz-Target: secretsmanager.ListSecrets" -d '{}' | jq .
+# Floci — Secrets Manager
+aws --endpoint-url http://localhost:4566 secretsmanager list-secrets
 
-# OpenBao
-docker exec compose-openbao-1 sh -c 'BAO_ADDR=http://127.0.0.1:8200 bao status'
+# Floci — health
+curl -s http://localhost:4566/_floci/health
 ```
 
 Si alguno falla → ese servicio es la raíz.
