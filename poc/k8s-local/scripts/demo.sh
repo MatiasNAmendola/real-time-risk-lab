@@ -40,9 +40,9 @@ printf "  %-16s → %s\n" "OpenObserve" \
   "kubectl -n openobserve port-forward svc/openobserve 5080:5080"
 printf "  %-16s   URL: http://localhost:5080  (root@example.com / ${OPENOBSERVE_PASSWORD:-change-me-openobserve-local})\n\n" ""
 
-printf "  %-16s → %s\n" "Redpanda Con." \
-  "kubectl -n redpanda port-forward svc/redpanda-console 9000:8080"
-printf "  %-16s   URL: http://localhost:9000\n\n" ""
+printf "  %-16s → %s\n" "Tansu broker" \
+  "kubectl -n tansu port-forward svc/tansu 9092:9092"
+printf "  %-16s   No bundled UI; use: kafka-topics --bootstrap-server localhost:9092 --list\n\n" ""
 
 printf "  %-16s → %s\n" "Argo Rollouts" \
   "kubectl -n argo-rollouts port-forward svc/argo-rollouts-dashboard 3100:3100"

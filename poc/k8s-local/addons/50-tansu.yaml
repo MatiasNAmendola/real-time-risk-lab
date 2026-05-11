@@ -1,0 +1,161 @@
+# Tansu broker (ADR-0043) — Kafka-wire-compatible, S3-backed via Floci.
+# Replaces the prior Redpanda helm chart. Single replica is sufficient for the
+# local PoC (cluster.replicas mirrors the dev-mode Redpanda values that were
+# here before). Persistence lives in the `tansu` S3 bucket inside Floci, so
+# the pod itself is stateless — no PVC required.
+#
+# Storage flow:
+#   Tansu pod (tansu ns) → http://floci.aws-mocks.svc.cluster.local:4566 → S3 emu
+#
+# Topic seeding runs as a Job (mirrors compose's `tansu-init`) using the
+# JVM Apache Kafka client; librdkafka 2.x clients (kcat/kafkacat 1.7.x) hit
+# ApiVersionRequest incompatibilities with Tansu 0.6.0, so cp-kafka:7.0.0 is
+# the chosen seeder.
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tansu
+  namespace: tansu
+  labels:
+    app.kubernetes.io/name: tansu
+    app.kubernetes.io/part-of: kafka-platform
+spec:
+  replicas: 1
+  strategy:
+    # Tansu listens on a single :9092; rolling is fine since clients reconnect.
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+      maxSurge: 0
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: tansu
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: tansu
+        app.kubernetes.io/part-of: kafka-platform
+    spec:
+      containers:
+        - name: tansu
+          image: ghcr.io/tansu-io/tansu:0.6.0
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: kafka
+              containerPort: 9092
+              protocol: TCP
+          env:
+            - name: CLUSTER_ID
+              value: "tansu"
+            # Advertised host MUST match the Service name so in-cluster Kafka
+            # clients can reach the broker after the initial metadata round-trip.
+            - name: ADVERTISED_LISTENER_URL
+              value: "tcp://tansu.tansu.svc.cluster.local:9092"
+            - name: STORAGE_ENGINE
+              value: "s3://tansu/"
+            - name: AWS_ACCESS_KEY_ID
+              value: "test"
+            - name: AWS_SECRET_ACCESS_KEY
+              value: "test"
+            - name: AWS_DEFAULT_REGION
+              value: "us-east-1"
+            - name: AWS_ENDPOINT
+              value: "http://floci.aws-mocks.svc.cluster.local:4566"
+            - name: AWS_ALLOW_HTTP
+              value: "true"
+            - name: RUST_LOG
+              value: "warn,tansu_broker=info,tansu_storage=info"
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "96Mi"
+            limits:
+              cpu: "500m"
+              memory: "256Mi"
+          # Tansu has no shell or curl in the image; readiness is implicit
+          # via TCP listener on :9092. tansu-init Job below acts as the true
+          # external readiness gate by seeding topics through the wire.
+          readinessProbe:
+            tcpSocket:
+              port: 9092
+            initialDelaySeconds: 3
+            periodSeconds: 5
+            failureThreshold: 6
+          livenessProbe:
+            tcpSocket:
+              port: 9092
+            initialDelaySeconds: 15
+            periodSeconds: 20
+            failureThreshold: 3
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: tansu
+  namespace: tansu
+  labels:
+    app.kubernetes.io/name: tansu
+    app.kubernetes.io/part-of: kafka-platform
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/name: tansu
+  ports:
+    - name: kafka
+      port: 9092
+      targetPort: 9092
+      protocol: TCP
+---
+# Topic seeding job. Idempotent: --if-not-exists swallows AlreadyExists.
+# Mirrors compose/tansu-init exactly. backoffLimit=6 covers the case where
+# Tansu's pod schedules slower than the Job; the script also polls
+# kafka-broker-api-versions before issuing creates.
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: tansu-init
+  namespace: tansu
+  labels:
+    app.kubernetes.io/name: tansu-init
+    app.kubernetes.io/part-of: kafka-platform
+spec:
+  backoffLimit: 6
+  ttlSecondsAfterFinished: 600
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: tansu-init
+    spec:
+      restartPolicy: OnFailure
+      containers:
+        - name: kafka-cli
+          image: confluentinc/cp-kafka:7.0.0
+          command:
+            - /bin/bash
+            - -ec
+            - |
+              BROKER="tansu.tansu.svc.cluster.local:9092"
+              for i in $(seq 1 30); do
+                if kafka-broker-api-versions --bootstrap-server "$BROKER" >/dev/null 2>&1; then
+                  echo "tansu :9092 ready after $i attempt(s)"
+                  break
+                fi
+                [ "$i" = "30" ] && { echo "FATAL: tansu :9092 unreachable" >&2; exit 2; }
+                sleep 2
+              done
+              kafka-topics --bootstrap-server "$BROKER" --create --if-not-exists \
+                  --topic risk-decisions     --partitions 3 --replication-factor 1
+              kafka-topics --bootstrap-server "$BROKER" --create --if-not-exists \
+                  --topic risk-decisions-dlq --partitions 1 --replication-factor 1
+              kafka-topics --bootstrap-server "$BROKER" --create --if-not-exists \
+                  --topic risk-audit         --partitions 1 --replication-factor 1
+              kafka-topics --bootstrap-server "$BROKER" --list
+              echo "Tansu topics ready."
+          resources:
+            requests:
+              cpu: "50m"
+              memory: "256Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"

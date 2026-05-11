@@ -27,7 +27,7 @@ POC_NAMESPACES=(
   argo-rollouts
   monitoring
   external-secrets
-  redpanda
+  tansu
   openobserve
   risk
   secrets-source
@@ -53,7 +53,7 @@ case "${CURRENT_CTX}" in
 
     if [[ "${FULL}" == "true" ]]; then
       log "--full flag set: disabling Kubernetes in OrbStack..."
-      if orb config set k8s.enabled false 2>/dev/null; then
+      if orb config set k8s.enable false 2>/dev/null; then
         log "Kubernetes disabled in OrbStack."
       else
         warn "Could not disable k8s via CLI. Disable manually: OrbStack → Settings → Kubernetes"

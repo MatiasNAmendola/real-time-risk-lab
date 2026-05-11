@@ -89,27 +89,22 @@ bootstrap_orbstack() {
   fi
 
   if ! kubectl config get-contexts orbstack &>/dev/null; then
-    log "Enabling Kubernetes in OrbStack..."
+    log "Enabling Kubernetes in OrbStack (key: k8s.enable)..."
     local enabled=0
-    if orb config set k8s.enabled true 2>/dev/null; then
+    # Correct OrbStack key is `k8s.enable` (verified via `orb config show`),
+    # not `k8s.enabled`. Setting it requires a restart for the daemon to
+    # spawn the embedded k8s control plane.
+    if orb config set k8s.enable true 2>/dev/null; then
       enabled=1
-    elif [[ -f "$HOME/.orbstack/config.yml" ]]; then
-      # Some OrbStack versions don't expose `orb config set`; patch the file.
-      if grep -q "^k8s:" "$HOME/.orbstack/config.yml"; then
-        sed -i.bak '/^k8s:/,/^[a-zA-Z]/ { s/enabled: false/enabled: true/; }' \
-          "$HOME/.orbstack/config.yml" && enabled=1
-      else
-        printf '\nk8s:\n  enabled: true\n' >> "$HOME/.orbstack/config.yml" && enabled=1
-      fi
-      if [[ "$enabled" -eq 1 ]]; then
-        log "Patched ~/.orbstack/config.yml — restarting OrbStack to apply..."
-        orb restart 2>/dev/null || true
-      fi
+      log "k8s.enable=true set; restarting OrbStack to apply..."
+      orb stop 2>/dev/null || true
+      sleep 3
+      orb start 2>/dev/null || true
     fi
 
     if [[ "$enabled" -eq 1 ]]; then
-      log "Waiting up to 120s for orbstack context to appear..."
-      for _ in $(seq 1 24); do
+      log "Waiting up to 180s for orbstack context to appear..."
+      for _ in $(seq 1 36); do
         kubectl config get-contexts orbstack &>/dev/null && break
         sleep 5
       done
@@ -173,23 +168,26 @@ log "Adding Helm repos..."
 {
   helm repo add argo             https://argoproj.github.io/argo-helm 2>/dev/null || true
   helm repo add external-secrets https://charts.external-secrets.io   2>/dev/null || true
-  helm repo add redpanda         https://charts.redpanda.com/          2>/dev/null || true
   helm repo add openobserve      https://charts.openobserve.ai         2>/dev/null || true
   helm repo update
 } 2>&1 | tee -a "$OUT_DIR/stdout.log"
 ok "Helm repos updated."
 
 # ─── Helper: install with 1 retry on timeout ──────────────────────────────────
+# Heavy charts (OpenObserve) need extra time on first install for image pulls
+# and StatefulSet readiness. Default 10m; per-call override via the
+# HELM_INSTALL_TIMEOUT env. Drop --atomic so partial progress (e.g. images
+# already pulled) is not rolled back on a single timeout; rely on retry loop.
 helm_install() {
   local name="$1" chart="$2" ns="$3" values="$4"
-  log "Installing ${name} from ${chart}..."
+  local timeout="${HELM_INSTALL_TIMEOUT:-10m}"
+  log "Installing ${name} from ${chart} (timeout ${timeout})..."
   local attempt=0
   while [[ $attempt -lt 2 ]]; do
     if helm upgrade --install "${name}" "${chart}" \
         --namespace "${ns}" \
         -f "${values}" \
-        --timeout 5m \
-        --atomic \
+        --timeout "${timeout}" \
         --wait 2>&1 | tee -a "$OUT_DIR/stdout.log"; then
       ok "${name} installed."
       return 0
@@ -215,7 +213,6 @@ log "Applying ClusterSecretStore + source secret..."
 kubectl apply -f "${ROOT_DIR}/addons/41-cluster-secret-store.yaml" 2>&1 | tee -a "$OUT_DIR/stdout.log"
 ok "ClusterSecretStore ready."
 
-helm_install redpanda redpanda/redpanda redpanda "${ROOT_DIR}/addons/50-redpanda-values.yaml"
 helm_install openobserve openobserve/openobserve-standalone openobserve "${ROOT_DIR}/addons/60-openobserve-values.yaml"
 
 log "Deploying AWS mock services..."
@@ -237,6 +234,20 @@ kubectl wait --for=condition=complete job/aws-mocks-init \
   -n aws-mocks \
   --timeout=180s 2>&1 | tee -a "$OUT_DIR/stdout.log" || warn "AWS mocks init job did not complete in time."
 ok "AWS mocks initialized."
+
+# ─── Tansu broker (ADR-0043, replaces Redpanda) ───────────────────────────────
+# Tansu persists to the `tansu` S3 bucket on Floci, so its bring-up must follow
+# the AWS-mocks init job (which creates the bucket). Raw k8s manifest, not Helm:
+# Tansu has no official chart and one Deployment + one Service is sufficient.
+log "Deploying Tansu broker..."
+kubectl apply -f "${ROOT_DIR}/addons/50-tansu.yaml" 2>&1 | tee -a "$OUT_DIR/stdout.log"
+kubectl wait --for=condition=Available deployment/tansu -n tansu --timeout=180s \
+  2>&1 | tee -a "$OUT_DIR/stdout.log" || warn "Tansu Deployment not Available in time."
+
+log "Waiting for tansu-init Job (topic seeding) to complete..."
+kubectl wait --for=condition=complete job/tansu-init -n tansu --timeout=180s \
+  2>&1 | tee -a "$OUT_DIR/stdout.log" || warn "tansu-init Job did not complete in time."
+ok "Tansu broker + topics ready."
 
 log "Applying ArgoCD project and application manifests..."
 kubectl apply -f "${ROOT_DIR}/argocd/project.yaml" 2>&1 | tee -a "$OUT_DIR/stdout.log"
