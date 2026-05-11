@@ -23,6 +23,10 @@ spec:
         app.kubernetes.io/name: floci
         app.kubernetes.io/part-of: aws-mocks
     spec:
+      # Disable k8s legacy service-link env injection: k8s otherwise sets
+      # FLOCI_PORT=tcp://<ip>:4566 which Quarkus parses as `quarkus.http.port`
+      # and the boot fails with SRCFG00029 (Expected an integer, got tcp://...).
+      enableServiceLinks: false
       containers:
         - name: floci
           image: floci/floci:latest
@@ -33,6 +37,9 @@ spec:
               value: http://floci.aws-mocks.svc.cluster.local:4566
             - name: FLOCI_DEFAULT_REGION
               value: us-east-1
+            # Explicit Quarkus port — defence in depth against env collision.
+            - name: QUARKUS_HTTP_PORT
+              value: "4566"
           ports:
             - name: aws
               containerPort: 4566

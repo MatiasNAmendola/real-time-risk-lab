@@ -4,6 +4,16 @@
 # Local-first OTEL backend; SaaS alternatives like Axiom are equivalent in production
 # OTEL collector can forward to OpenObserve via OTLP HTTP on port 5080
 
+# The chart's default image registry `o2cr.ai/openobserve/openobserve` requires
+# private auth and returns 401 for anonymous pulls (verified 2026-05-11).
+# Switch to the Public ECR image used in compose for pull-anywhere reliability.
+# Chart structure nests the OSS image under image.oss (not flat image.*).
+image:
+  oss:
+    repository: public.ecr.aws/zinclabs/openobserve
+    tag: "v0.14.7"
+  pullPolicy: IfNotPresent
+
 auth:
   ZO_ROOT_USER_EMAIL: "root@example.com"
   ZO_ROOT_USER_PASSWORD: "${OPENOBSERVE_PASSWORD:-change-me-openobserve-local}"

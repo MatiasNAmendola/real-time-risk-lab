@@ -48,6 +48,20 @@ tests de integración y ATDD. Redpanda queda eliminado:
   / Redpanda en prod y mantener Tansu sólo en dev).
 - **Tansu sigue siendo pre-1.0** (`v0.6.0`, 2026-03-13). Asumimos breakage
   hasta el primer release estable.
+- **🔴 k8s + S3 storage CreateTopics bug (descubierto 2026-05-11)**: el
+  `tansu-init` Job en k8s (`poc/k8s-local/addons/50-tansu.yaml`) crashloopa
+  con `org.apache.kafka.common.protocol.types.SchemaException: Buffer
+  underflow while parsing response for request CREATE_TOPICS apiVersion=7`.
+  Reproducible con `confluentinc/cp-kafka:7.0.0` y también con el cliente
+  legacy `cp-kafka:5.5.0` (apiVersion=5). NO ocurre en compose ni en
+  integration tests (`STORAGE_ENGINE=memory://`). El broker pod arranca y
+  responde Metadata, pero el CreateTopics serializa una response
+  malformada cuando el storage backend es S3 sobre Floci. Workaround
+  inmediato: levantar topics manualmente vía PoC compose
+  (`./poc/kafka-s3-tansu/scripts/up.sh`) ya que ahí el seeding sí
+  funciona, o esperar fix upstream (issue a abrir en
+  github.com/tansu-io/tansu). Si esto bloquea k8s en CI/demo, revertir
+  el commit `23db11d` y volver a Redpanda en k8s.
 
 **AutoMQ queda como candidato futuro** para producción real ("Kafka KRaft con
 storage S3"), si y cuando hay apetito de mover esa parte fuera del scope local.

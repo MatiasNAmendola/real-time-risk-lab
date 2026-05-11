@@ -50,8 +50,12 @@ spec:
               value: "tansu"
             # Advertised host MUST match the Service name so in-cluster Kafka
             # clients can reach the broker after the initial metadata round-trip.
+            # Use the short Service name (not FQDN): Tansu 0.6.0's wire encoder
+            # truncates CreateTopics responses when the advertised host is the
+            # 30-char FQDN, causing BufferUnderflowException on the client.
+            # Short name `tansu` resolves cross-namespace via CoreDNS search domains.
             - name: ADVERTISED_LISTENER_URL
-              value: "tcp://tansu.tansu.svc.cluster.local:9092"
+              value: "tcp://tansu:9092"
             - name: STORAGE_ENGINE
               value: "s3://tansu/"
             - name: AWS_ACCESS_KEY_ID
