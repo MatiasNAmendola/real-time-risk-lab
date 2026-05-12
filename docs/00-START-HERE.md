@@ -25,19 +25,17 @@ Una exploración técnica de un use case de detección de fraude productivo, que
 2. **`docs/38-java-apps-architecture-performance-matrix.md`** — matriz de apps Java: misma lógica, distintas topologías/stacks y beneficios de Vert.x.
 3. **[`docs/39-share-ready-baseline.md`](39-share-ready-baseline.md)** — anchor público, auditabilidad histórica y checks pre-tag.
 4. **`docs/37-java-go-performance-positioning.md`** — investigación con fuentes primarias: Java moderno vs Go en performance/concurrencia.
-5. **`docs/04-clean-architecture-java.md`** — Clean Architecture aplicada a Java enterprise.
-6. **`docs/13-paridad-logica-poc.md`** — qué cambia y qué NO cambia entre las PoCs.
-7. **`vault/02-Decisions/`** — 37 ADRs con análisis de alternativas Opción A/B/C/D.
+5. **`vault/02-Decisions/`** — 37 ADRs con análisis de alternativas Opción A/B/C/D.
 
 ### Si tu objetivo es entender el enfoque de testing
 
-1. **`docs/11-atdd.md`** — filosofía ATDD + Karate vs Cucumber.
-2. **`docs/20-business-rules-test-plan.md`** — 68 casos de prueba para el motor de reglas.
-3. **`docs/21-meta-coverage.md`** — meta-cobertura: docs, CLI, primitivas más allá de los tests.
+1. **`vault/04-Concepts/ATDD.md`** — filosofía ATDD + Karate vs Cucumber.
+2. **`vault/03-PoCs/Rules-Engine-Test-Plan.md`** — 68 casos de prueba para el motor de reglas.
+3. **`vault/04-Concepts/Meta-Coverage.md`** — meta-cobertura: docs, CLI, primitivas más allá de los tests.
 
 ### Si tu objetivo es metodología de diseño
 
-1. **`docs/01-design-conversation-framework.md`** — cómo descomponer problemas de systems design.
+1. **`vault/05-Methodology/Design-Conversation-Framework.md`** — cómo descomponer problemas de systems design.
 2. **`docs/09-architecture-question-bank.md`** — 25+ preguntas de arquitectura con análisis modelo y modos de falla comunes.
 3. **`vault/05-Methodology/Architectural-Anchors.md`** — principios de diseño que pesan.
 
@@ -72,6 +70,29 @@ Una exploración técnica de un use case de detección de fraude productivo, que
 ```
 
 Output esperado: tabla de tests + `http://localhost:8888` (dashboard Homer) con links a OpenObserve, Tansu broker, Floci (`:4566`), etc.
+
+---
+
+## Manifest: trigger → fuente de verdad
+
+Para agentes y humanos: si vas a tocar X, leé Y antes.
+
+| Vas a tocar… | Leé primero | Por qué |
+|---|---|---|
+| reglas de fraude (`domain/rule/`) | [[Rules-Engine]] + [[Rules-Engine-Test-Plan]] | contrato + 68 casos |
+| endpoint REST nuevo | `.ai/primitives/skills/add-rest-endpoint.md` | layout enterprise |
+| consumer Kafka | `.ai/primitives/skills/add-kafka-consumer.md` + [[0043-kafka-broker-alternatives-eval]] | gap CreateTopics en Tansu |
+| boundary domain/infra | `.ai/primitives/rules/clean-arch-boundaries.md` | R5 non-negotiable |
+| OTEL span/metric | [[0045-observability-stack-local]] + `.ai/primitives/rules/observability-otel.md` | R4 |
+| versión Java | [[0001-java-25-lts]] + `.ai/primitives/rules/java-version.md` | R1 (21 baseline, 25 target) |
+| AWS mock | [[0042-floci-unified-aws-emulator]] + [[0005-aws-mocks-stack]] | Floci, no LocalStack |
+| k8s addon | `poc/k8s-local/addons/` + [[K8s-Deployment-Tests]] | source of truth |
+| ATDD scenario | [[ATDD]] + `.ai/primitives/skills/add-feature-test-cucumber.md` | R3 |
+| performance claim | [[Java-vs-Go-Performance]] + [[Poc-Parity-Matrix]] | fuentes primarias |
+| nueva PoC | `.ai/primitives/skills/bootstrap-new-poc.md` + [[Risk-Platform-Overview]] | layout + tabla canónica |
+| ADR nuevo | `vault/02-Decisions/_template.md` + `.ai/primitives/skills/add-architecture-decision.md` | numeración + formato |
+| meta-cobertura / coverage | [[Meta-Coverage]] + [[Primitive-Coverage-Ratio]] | 4 ejes + ratio formula |
+| confidencialidad / secrets | [[Confidentiality-Hashing]] + [[Secrets-PII-Protection]] | threat model |
 
 ---
 
@@ -243,14 +264,7 @@ Esta sección existe para que el auditor documental tenga referencias explícita
 
 ### Documentos secundarios incluidos en el mapa público
 
-- `docs/06-vertx-pods-locales.md`
-- `docs/07-technical-leadership-design-mindset.md`
-- `docs/08-technical-discussion-simulation.md`
-- `docs/14-primitive-usage-retro.md`
 - `docs/17-decision-stack-observability-local.md`
-- `docs/18-rules-engine-design.md`
-- `docs/19-backoffice-simulation-design.md`
-- `docs/32-failure-debug-toolkit.md`
 - `docs/35-runbook-demo-fails.md`
 
 ### Scripts y tests auxiliares
