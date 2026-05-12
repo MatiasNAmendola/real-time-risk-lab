@@ -5,13 +5,13 @@ Audiencia: operadores que llegan al repo. Tabla completa de subcomandos del orqu
 > Estado actual del CLI tras Phase 6 + Phase 9. Solo se documentan flags y subcomandos verificados con `./nx <cmd> --help`.
 
 Documentos relacionados:
-[doc 26](26-java-version-compat-2026.md) · [doc 27](27-test-runner.md) · [doc 30](30-consistency-audit.md) · [doc 33](33-codebase-access-audit.md) · [doc 34](34-lessons-learned.md)
+[doc 26](26-java-version-compat-2026.md) ([ADR-0001](../vault/02-Decisions/0001-java-25-lts.md)) · [doc 27](27-test-runner.md) · [doc 30](30-consistency-audit.md) · [doc 33](33-codebase-access-audit.md) · [doc 34](34-lessons-learned.md)
 
 ---
 
 ## Setup
 
-Toolchain installer/verifier. Respeta `JAVA_HOME` y acepta cualquier Java >= 21 ([doc 26](26-java-version-compat-2026.md)).
+Toolchain installer/verifier. Respeta `JAVA_HOME` y acepta cualquier Java >= 21 ([doc 26](26-java-version-compat-2026.md) / [ADR-0001](../vault/02-Decisions/0001-java-25-lts.md)).
 
 | Subcomando | Descripción | Ejemplo |
 |------------|-------------|---------|
