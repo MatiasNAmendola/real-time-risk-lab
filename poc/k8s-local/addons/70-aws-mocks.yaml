@@ -40,33 +40,58 @@ spec:
             # Explicit Quarkus port — defence in depth against env collision.
             - name: QUARKUS_HTTP_PORT
               value: "4566"
+            # Persist S3/SQS/Secrets state across pod restarts to /app/data.
+            # Without this Floci runs in memory mode (verified in logs:
+            # "Storage mode: memory") and every restart wipes buckets/objects,
+            # leaving Tansu's broker referencing orphan S3 metadata.
+            - name: FLOCI_STORAGE_MODE
+              value: persistent
           ports:
             - name: aws
               containerPort: 4566
           resources:
             requests:
-              cpu: 50m
-              memory: 64Mi
+              cpu: 100m
+              memory: 128Mi
+            # 256Mi triggers OOM during S3 init under concurrent load.
             limits:
-              cpu: 500m
-              memory: 256Mi
+              cpu: 1000m
+              memory: 768Mi
+          # Startup probe gives the GraalVM native binary up to ~90s for the
+          # cold-init S3 storage scan; afterwards the periodic probes take over.
+          startupProbe:
+            httpGet:
+              path: /_floci/health
+              port: 4566
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            timeoutSeconds: 5
+            failureThreshold: 18
           readinessProbe:
             httpGet:
               path: /_floci/health
               port: 4566
-            initialDelaySeconds: 3
-            periodSeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          # Liveness must tolerate scheduler pauses (Floci ticks every 10s,
+          # plus async S3 writes). timeout=1s + period=15s was killing the
+          # pod under any momentary slowness → restart-loop → in-memory wipe.
           livenessProbe:
             httpGet:
               path: /_floci/health
               port: 4566
-            initialDelaySeconds: 10
-            periodSeconds: 15
+            periodSeconds: 30
+            timeoutSeconds: 10
+            failureThreshold: 5
           volumeMounts:
             - name: data
               mountPath: /app/data
       volumes:
         - name: data
+          # emptyDir survives container restart within the same pod but NOT
+          # pod recreation. For PoC-local dev this is acceptable; production
+          # would want a PVC.
           emptyDir: {}
 ---
 apiVersion: v1

@@ -73,10 +73,13 @@ spec:
           resources:
             requests:
               cpu: "100m"
-              memory: "96Mi"
+              # Tansu idle ~7.7 MiB but S3 async I/O bursts push working set
+              # over 100 MiB during cluster-meta load. 256Mi limit triggers
+              # async-task aborts mid-CreateTopics → malformed response.
+              memory: "192Mi"
             limits:
               cpu: "500m"
-              memory: "256Mi"
+              memory: "512Mi"
           # Tansu has no shell or curl in the image; readiness is implicit
           # via TCP listener on :9092. tansu-init Job below acts as the true
           # external readiness gate by seeding topics through the wire.
@@ -140,12 +143,21 @@ spec:
             - -ec
             - |
               BROKER="tansu.tansu.svc.cluster.local:9092"
-              for i in $(seq 1 30); do
-                if kafka-broker-api-versions --bootstrap-server "$BROKER" >/dev/null 2>&1; then
-                  echo "tansu :9092 ready after $i attempt(s)"
-                  break
+              # Probe ApiVersions + Metadata until stable. Tansu in k8s+S3 mode
+              # responds to ApiVersions earlier than its S3 metadata is loaded,
+              # so a CreateTopics issued in that window returns a half-built
+              # response (BufferUnderflow on the client). Require 3 consecutive
+              # successful metadata fetches before proceeding.
+              stable=0
+              for i in $(seq 1 60); do
+                if kafka-broker-api-versions --bootstrap-server "$BROKER" >/dev/null 2>&1 \
+                   && kafka-topics --bootstrap-server "$BROKER" --list >/dev/null 2>&1; then
+                  stable=$((stable + 1))
+                  [ "$stable" -ge 3 ] && { echo "tansu :9092 stable after $i attempt(s)"; break; }
+                else
+                  stable=0
                 fi
-                [ "$i" = "30" ] && { echo "FATAL: tansu :9092 unreachable" >&2; exit 2; }
+                [ "$i" = "60" ] && { echo "FATAL: tansu :9092 not stable" >&2; exit 2; }
                 sleep 2
               done
               kafka-topics --bootstrap-server "$BROKER" --create --if-not-exists \

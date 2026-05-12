@@ -43,7 +43,10 @@ spec:
               echo "=== Seeding Floci at $EP ==="
 
               # ─── S3 buckets ────────────────────────────────────────────────
-              for b in risk-events risk-models risk-audit; do
+              # `tansu` bucket holds the Tansu broker's S3 storage backend
+              # (clusters/tansu/meta.json, partitions, watermarks). Added
+              # 2026-05-12 — required by poc/k8s-local/addons/50-tansu.yaml.
+              for b in risk-events risk-models risk-audit tansu; do
                 if aws --endpoint-url=$EP s3api head-bucket --bucket "$b" >/dev/null 2>&1; then
                   echo "  s3 exists:   $b"
                 else
