@@ -1,6 +1,18 @@
-# Arquitectura del repo — real-time-risk-lab
+# Architecture — context pointer
 
-## Diagrama general
+> Este archivo es un pointer para agentes. La fuente de verdad atómica vive en `vault/`.
+
+## Mapa rápido
+
+- **Layout enterprise (R2)**: `vault/04-Concepts/Clean-Architecture.md` + `vault/04-Concepts/Hexagonal-Architecture.md`
+- **Boundaries (R5)**: `.ai/primitives/rules/clean-arch-boundaries.md`
+- **Decisiones cerradas**: `vault/02-Decisions/` (ADRs, ver `_index.md`)
+- **MOC raíz**: `vault/00-MOCs/Risk-Platform-Overview.md`
+- **PoCs (tabla canónica)**: `AGENTS.md §3` o `docs/03-poc-roadmap.md`
+- **Performance + paridad**: `vault/03-PoCs/Poc-Parity-Matrix.md`
+- **Observabilidad**: `vault/02-Decisions/0045-observability-stack-local.md`
+
+## Diagrama de alto nivel
 
 ```mermaid
 graph TB
@@ -20,12 +32,6 @@ graph TB
             smoke["risk-smoke<br/>Go + Bubble Tea TUI<br/>9 smoke checks"]
         end
 
-        subgraph docs["docs/"]
-            d0["00-mapa-tecnico"]
-            d1["01-design-conversation-framework"]
-            d9["09-question-bank"]
-        end
-
         subgraph ai[".ai/ — primitives system"]
             prim["primitives/<br/>skills/ rules/ workflows/ hooks/"]
             ctx["context/<br/>architecture poc-inventory decisions glossary"]
@@ -39,70 +45,7 @@ graph TB
     k8s -->|deploys| vrp
 ```
 
-## PoC: no-vertx-clean-engine
-
-**Proposito**: demostrar Clean Architecture pura sin frameworks.
-
-```
-poc/no-vertx-clean-engine/
-├── src/main/java/io/riskplatform/<package>/risk/
-│   ├── domain/{entity,repository,usecase,service,rule}
-│   ├── application/{usecase,mapper,dto,common}
-│   ├── infrastructure/{controller,consumer,repository,resilience,time}
-│   ├── config/
-│   └── cmd/
-└── scripts/{run.sh,test.sh,bench.sh}
-```
-
-**Patrones demostrados**: Circuit Breaker, Idempotencia, Outbox, Correlation ID, Virtual Threads, ATDD.
-
-**Como correr**: `./scripts/run.sh` (bare javac, sin Gradle).
-
-## PoC: vertx-layer-as-pod-eventbus
-
-**Proposito**: demostrar arquitectura distribuida con cada capa como pod separado.
-
-```
-poc/vertx-layer-as-pod-eventbus/
-├── shared/          # DTOs y contratos compartidos
-├── controller-app/  # HTTP layer (Vert.x Router)
-├── usecase-app/     # Business logic (Vert.x EventBus)
-├── repository-app/  # Persistence (Postgres + Valkey)
-├── consumer-app/    # Kafka consumer (Tansu)
-└── atdd-tests/      # Karate ATDD
-```
-
-**Redes Docker**: cada modulo en su propia red Docker con UID distinto.
-**Cluster manager**: Hazelcast TCP.
-
-## PoC: vertx-layer-as-pod-http
-
-**Proposito**: plataforma Vert.x 5 completa con todos los patrones de comunicacion.
-
-**Patrones**: REST, SSE, WebSocket, Webhooks, Kafka, OpenAPI, AsyncAPI, OTEL.
-
-## PoC: k8s-local
-
-**Proposito**: replica local de infra produccion para demos k8s.
-
-```
-poc/k8s-local/
-├── addons/          # Helm values para cada addon
-├── argocd/          # AppProject + Application CRDs
-├── apps/            # Chart del risk-engine
-└── scripts/{up.sh,down.sh,status.sh,demo.sh}
-```
-
-**Addons instalados**:
-- ArgoCD 9.2.4
-- Argo Rollouts 2.40.5
-- kube-prometheus-stack 80.11.0
-- External Secrets 1.2.1
-- Tansu (ADR-0043)
-- OpenObserve
-- AWS mocks (Moto, MinIO, ElasticMQ, OpenBao)
-
-## Flujo de una transaccion
+## Flujo de una transacción
 
 ```
 Cliente
@@ -121,11 +64,6 @@ Cliente
   → Log estructurado con correlationId, traceId
 ```
 
-## Dependencias entre PoCs
+## Reglas non-negotiable (R1-R5)
 
-- `no-vertx-clean-engine`: independiente. Cero dependencias externas en runtime.
-- `vertx-layer-as-pod-eventbus`: requiere docker-compose (Postgres, Valkey, Tansu, OTEL collector).
-- `vertx-layer-as-pod-http`: requiere docker-compose similar.
-- `k8s-local`: requiere Docker + k3d o OrbStack.
-- `tests/risk-engine-atdd`: requiere la app corriendo en `localhost:8080`.
-- `cli/risk-smoke`: requiere la app corriendo en `localhost:8080` (o URL configurable).
+Definidas en `AGENTS.md §4` y `.ai/primitives/rules/`.

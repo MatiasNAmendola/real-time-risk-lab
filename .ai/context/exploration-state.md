@@ -1,8 +1,9 @@
 # Project State — Real-Time Risk Lab
 
+> Estado actual estable del proyecto. Las entradas datadas (retros, milestones, descubrimientos) viven en Engram.
+
 **Project**: Real-Time Risk Lab — multi-architecture exploration
 **Domain**: Production-grade fraud detection use case
-**Last updated**: 2026-05-07
 
 ---
 
@@ -106,25 +107,9 @@ cd cli/risk-smoke && go run .
 
 ---
 
-## 2026-05-08 — Java vs Go performance positioning
+## Historial datado
 
-- [x] Added `docs/37-java-go-performance-positioning.md` with primary-source research on Java 21+ vs Go performance trade-offs.
-- [x] Added Q&A H8 in `docs/09-architecture-question-bank.md` for technical discussion: “¿Por qué Java para performance si Go suele ser más liviano?”
-- [x] Linked the new doc from `docs/00-START-HERE.md` and `docs/QUICK-REFERENCE.md`.
-- Decision framing: Java 21 LTS remains the executable baseline; Java 25 remains documented target. Go is acknowledged as stronger for startup/footprint/binario único; Java is defended for long-running hot services, JIT, GC, virtual threads and enterprise observability.
+Las entradas con fecha (retros, milestones, descubrimientos) ahora viven en Engram. Buscá:
 
-
-## 2026-05-08 — Java apps architecture/performance matrix
-
-- [x] Added `docs/38-java-apps-architecture-performance-matrix.md` to consolidate the Java PoC portfolio narrative: same risk decision domain, different stacks/topologies.
-- [x] Documented `vertx-layer-as-pod-eventbus` as layer-as-pod and `vertx-service-mesh-bounded-contexts` as true service-to-service bounded contexts.
-- [x] Linked the new matrix from `docs/00-START-HERE.md` and `docs/QUICK-REFERENCE.md`.
-- Next step: run comparable k6/JMH benchmarks with and without simulated ML latency to turn expected performance ordering into measured data.
-- [x] Clarified wording after web research: do not claim Vert.x requires grouping controllers/usecases/repositories in pods; say Vert.x provides verticles/EventBus and the PoC chooses its deployment topology.
-- [x] Added final layer-as-pod wording: `vertx-layer-as-pod-eventbus` uses Vert.x verticles/adapters per layer in separate processes/pods to evidence permissions isolation, boundary enforcement, blast radius, scaling profiles and network/serialization cost; this is a PoC topology, not a Vert.x prescription or business microservices claim.
-## 2026-05-08 — Share-ready v0.1 baseline
-
-- [x] Added `docs/39-share-ready-baseline.md` to mark the public baseline and document that Wave 2 reframing commits are useful but low-auditability.
-- [x] Reviewed `scripts/process-guard.py`; defaults remain conservative and invalid signal handling now returns a friendly CLI error.
-- [x] Reviewed `poc/vertx-layer-as-pod-eventbus/controller-app/src/main/java/io/riskplatform/distributed/controller/HttpVerticle.java`; webhook input handling and 502 trace headers were hardened.
-- [x] Create/push `share/v0.1` and `v0.1-shareable` after validation and commit.
+- `mem_search(query: "exploration-state", project: "real-time-risk-lab")`
+- O por fecha: `mem_search(query: "exploration-state-2026-05")`
