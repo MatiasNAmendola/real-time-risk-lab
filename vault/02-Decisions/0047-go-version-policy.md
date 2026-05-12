@@ -25,7 +25,7 @@ El proyecto incluye un smoke runner CLI escrito en Go (`cli/risk-smoke/`). Se ne
 
 - **Estado equivalente a LTS estable**: Go sigue una cadencia de release semestral (febrero y agosto). Go 1.26 salió en febrero de 2026 y recibirá patches de seguridad hasta que salga Go 1.28 (agosto 2027).
 - **Mejoras de toolchain y performance**: Go 1.26 continúa los refinamientos en PGO (profile-guided optimization), el iterador range-over-function (estabilizado en 1.22+) y latencia mejorada del garbage collector — todo relevante para un servicio de 150 TPS, p99 < 300ms.
-- **Compatibilidad con dependencias del proyecto**: charmbracelet/bubbletea 1.3.x, charmbracelet/lipgloss 1.1.x, twmb/franz-go 1.21.x y coder/websocket 1.8.x declaran `go 1.21` o menor como mínimo, así que compilan limpio en 1.26.
+- **Compatibilidad con dependencias del proyecto**: charmbracelet/bubbletea 1.3.x, charmbracelet/lipgloss 1.1.x, coder/websocket 1.8.x y AWS SDK v2 declaran `go 1.21` o menor como mínimo, así que compilan limpio en 1.26.
 - **Sin breaking changes**: aplica la garantía de compatibilidad de Go 1. Todo código que compilaba en 1.21 compila igual en 1.26.
 
 ## Consecuencias

@@ -9,8 +9,8 @@
 #
 # Topic seeding runs as a Job (mirrors compose's `tansu-init`) using the
 # JVM Apache Kafka client; librdkafka 2.x clients (kcat/kafkacat 1.7.x) hit
-# ApiVersionRequest incompatibilities with Tansu 0.6.0, so cp-kafka:7.0.0 is
-# the chosen seeder.
+# ApiVersionRequest incompatibilities and franz-go consumer groups hit upstream
+# Fetch hangs (tansu-io/tansu#668), so cp-kafka:7.0.0 is the chosen seeder.
 ---
 apiVersion: apps/v1
 kind: Deployment

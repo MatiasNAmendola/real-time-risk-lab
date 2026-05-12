@@ -90,7 +90,7 @@ spec change → openapi.yaml + asyncapi.yaml updated in source
 |---|---|---|---|
 | Sync evaluate | `client.sync().evaluate(req)` | `client.sync.evaluate(req)` | `client.Sync.Evaluate(ctx, req)` |
 | SSE stream | `client.stream().decisions()` | `client.stream.decisions()` | `client.Stream.Decisions(ctx)` |
-| Kafka consume | `client.events().consumeDecisions(group, handler)` | `client.events.consumeDecisions(group, handler)` | `client.Events.ConsumeDecisions(ctx, group, handler)` |
+| Event consume | `client.events().consumeDecisions(group, handler)` | `client.events.consumeDecisions(group, handler)` | `client.Events.ConsumeDecisions(ctx, group, handler)` via HTTP/SSE adapter |
 
 ## Self-dogfooding
 

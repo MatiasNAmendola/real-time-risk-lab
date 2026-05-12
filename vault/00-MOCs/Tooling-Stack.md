@@ -32,7 +32,7 @@ Ver [[0003-vertx-for-distributed-poc]].
 | OrbStack | latest | Docker/k8s nativo en Mac, más rápido que Docker Desktop |
 | ArgoCD | 2.x | CD vía GitOps |
 | Argo Rollouts | 1.x | canary deployments |
-|  Tansu | latest | compatible con Kafka, single binary, sin ZooKeeper |
+| Tansu | 0.6.0 | Kafka-wire local, single binary, sin ZooKeeper; cp-kafka 7.x como cliente soportado |
 
 Ver [[0007-k3d-orbstack-switch]], [[k8s-local]].
 

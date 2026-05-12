@@ -45,9 +45,10 @@ disk — segments are objects in S3.
 - **Floci already adopted (ADR-0042).** This PoC adds zero new infra
   dependencies — only the `tansu` bucket is appended to the existing
   `floci-init` seeding job, and a single `tansu` service is added via override.
-- **Drop-in for any PoC.** Swapping a PoC from Redpanda to Tansu is one env
+- **Drop-in for Java PoCs.** Swapping a Java PoC from Redpanda to Tansu is one env
   change: `KAFKA_BOOTSTRAP_SERVERS=redpanda:9092` → `tansu:9092`. Java code is
-  untouched.
+  unchanged on the cp-kafka 7.x-verified path. Do not assume the same for
+  `librdkafka` 2.x or `franz-go` consumer groups.
 
 ## Observed S3 object layout (live capture)
 
@@ -70,9 +71,9 @@ trivial during exploration.
 - Long-running soak with sustained throughput (no perf numbers in this PoC).
 - Idempotent producer / EOS / transactions.
 - Multi-partition consumer-group rebalance under churn.
-- librdkafka modern clients (edenhill/kcat 1.7.1 fails ApiVersionRequest;
-  see README "What doesn't work"). Java clients via `confluentinc/cp-kafka:7.0.0`
-  are fine.
+- Modern `librdkafka` clients (edenhill/kcat 1.7.1 fails ApiVersionRequest)
+  and `franz-go` consumer groups (Fetch hang, `tansu-io/tansu#668`) are not
+  supported paths. Java clients via `confluentinc/cp-kafka:7.0.0` are fine.
 
 ## References
 

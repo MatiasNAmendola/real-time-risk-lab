@@ -37,26 +37,26 @@ tests de integración y ATDD. Redpanda queda eliminado:
 - `tests/integration/`: `TansuContainer` con `STORAGE_ENGINE="memory://tansu/"`
   reemplaza al módulo Testcontainers de Redpanda. Misma 1-broker semantics.
 
-**Caveats explícitos y documentados como deuda**:
+**Caveats explícitos y deuda upstream separada de deuda local**:
 - **librdkafka 2.x clients (kcat 1.7.1) NO funcionan** contra Tansu 0.6.0
   (`ApiVersionRequest` "Read underflow"). Mitigación: los servicios Java usan
   el cliente Apache Kafka JVM — verificado contra compose (producer monolith
-  + consumer `kafka-console-consumer` con consumer-group). Si en el futuro
-  entra un client basado en librdkafka, hay que pinear a una versión vieja
-  o esperar a Tansu 1.x.
-- **franz-go consumer group NO funciona** contra Tansu 0.6.0 (descubierto
-  2026-05-11). El smoke CLI (`cli/risk-smoke/internal/flows/kafka.go`) usa
-  `kgo.NewClient` con `ConsumerGroup + ConsumeTopics + ConsumeResetOffset` y
-  falla silenciosamente (timeout sin mensaje de error visible) contra Tansu,
-  mientras que el mismo topic con el mismo grupo + mismos mensajes lee OK
-  con `confluentinc/cp-kafka:7.0.0` `kafka-console-consumer`. La compat
-  parcial Java-OK / Go-broken se suma al patrón librdkafka. **Smoke check
-  `kafka` queda en estado FAIL conocido** hasta que franz-go o Tansu resuelvan
-  el handshake. Workaround inmediato: el resto del smoke (health, openapi,
-  asyncapi, rest, sse, websocket, webhook) sigue dando 7/9.
+  + consumer `confluentinc/cp-kafka:7.0.0` `kafka-console-consumer`). Si en el
+  futuro entra un client basado en librdkafka, hay que pinear a una versión
+  vieja o esperar a un fix upstream de Tansu.
+- **franz-go consumer group + Fetch CONFIRMED upstream (issue
+  tansu-io/tansu#668)**: `kgo.NewClient` con
+  `ConsumerGroup + ConsumeTopics + ConsumeResetOffset(AtEnd)` cuelga en
+  `Fetch`. Workarounds probados (`kgo.MaxVersions(V2_6)`, `V2_1`, `V0_11` +
+  `DisableAutoCommit + RangeBalancer`) también cuelgan. El bug está en el
+  lado servidor de Tansu — no es resoluble desde el cliente.
+  **Deuda local cerrada 2026-05-12**: el smoke CLI dejó de depender de
+  `franz-go` por default y consume con `confluentinc/cp-kafka:7.0.0` vía
+  Docker. `franz-go` queda removido del path de smoke para no volver a colgar
+  el chequeo local.
 - **EOS / transactions / rebalance bajo carga**: no testeados. Para PoC local
-  basta; para producción habría que cerrar este gap (o seguir con Apache Kafka
-  / Redpanda en prod y mantener Tansu sólo en dev).
+  basta; para producción habría que cerrar este gap con un broker Kafka/MSK
+  gestionado o una versión de Tansu que demuestre estas garantías bajo k6.
 - **Tansu sigue siendo pre-1.0** (`v0.6.0`, 2026-03-13). Asumimos breakage
   hasta el primer release estable.
 - **k8s + S3 storage CreateTopics — RESUELTO 2026-05-12**: el síntoma
@@ -74,19 +74,6 @@ tests de integración y ATDD. Redpanda queda eliminado:
   **Lección**: cuando aparezca "BufferUnderflow on Kafka response" contra
   Tansu, antes de culpar al broker chequear si el storage S3 (Floci/MinIO)
   está sano y persistente.
-- **franz-go con consumer group + Fetch CONFIRMED upstream (issue
-  tansu-io/tansu#668)**: el smoke CLI usa `kgo.NewClient` con
-  `ConsumerGroup + ConsumeTopics + ConsumeResetOffset(AtEnd)` y la
-  `Fetch` request cuelga indefinidamente — mismo síntoma reportado en
-  issue #668 con librdkafka 2.14.0 Y `kafka-console-consumer.sh` (Kafka
-  4.2.0 JVM client). Probé workarounds en franz-go (`kgo.MaxVersions(V2_6)`,
-  `V2_1`, `V0_11` + `DisableAutoCommit + RangeBalancer`): TODOS hangean
-  a los ~42s (poll timeout del check). El bug está en el lado servidor
-  de Tansu — no es resoluble desde el cliente. El smoke check `kafka`
-  queda en estado FAIL conocido hasta que upstream resuelva #668.
-  **Sin embargo**: `confluentinc/cp-kafka:7.0.0` `kafka-console-consumer`
-  SÍ lee correctamente — Tansu responde Fetch en algunos paths
-  específicos. Java cp-kafka 7.0.0 sigue siendo el cliente recomendado.
 
 **AutoMQ queda como candidato futuro** para producción real ("Kafka KRaft con
 storage S3"), si y cuando hay apetito de mover esa parte fuera del scope local.
@@ -106,16 +93,17 @@ storage S3"), si y cuando hay apetito de mover esa parte fuera del scope local.
     Kafka vía Tansu sobre Floci-S3. La práctica simula "Kafka cloud-native"
     sin precio.
 - Desventajas (asumidas):
-  - librdkafka 2.x clients quedan fuera del path soportado. Cualquier
-    contributor que asuma "kcat funciona" se va a estrellar.
+  - `librdkafka` 2.x y `franz-go` consumer groups quedan fuera del path soportado
+    contra Tansu 0.6.0. Cualquier contributor que asuma "kcat/franz-go funciona"
+    se va a estrellar.
   - EOS bajo carga sigue siendo blind spot — riesgo si el load test (k6,
     ADR-0040) empuja patterns que requieren transactions.
   - Tansu 0.6.0 puede romper en upgrades menores; pineamos el digest.
 - Mitigaciones:
-  - Smoke CLI hardcoded a `franz-go` — comentario explícito en
-    `cli/risk-smoke/internal/flows/kafka.go`.
-  - `tansu-init` usa `confluentinc/cp-kafka` (Apache Kafka client) para
-    seeding, no `rpk` ni `kafkacat`.
+  - Smoke CLI usa `cp-kafka` vía Docker y ya no inicializa consumer groups
+    `franz-go` contra Tansu.
+  - `tansu-init` y smoke Kafka usan `confluentinc/cp-kafka` (Apache Kafka client)
+    para seeding/consume, no `rpk`, `kcat` ni `franz-go`.
   - Imagen pineada a `0.6.0` (no `:latest`). Bumps son explícitos.
   - PoC `poc/kafka-s3-tansu/` queda como referencia histórica + scaffolding
     para validar futuras versiones.
@@ -141,9 +129,11 @@ storage S3"), si y cuando hay apetito de mover esa parte fuera del scope local.
   Floci-S3 :4566 con `STORAGE_ENGINE="s3://tansu/"`. Records escritos
   visiblemente en `s3://tansu/clusters/tansu/topics/.../*.batch`.
 - **Imagen**: `ghcr.io/tansu-io/tansu:0.6.0` (digest pineado).
-- **Razón de descarte como principal**: incompat librdkafka 2.x +
-  EOS/transactions/rebalance untested + pre-1.0 status.
-- **Adoptado como PoC**: `poc/kafka-s3-tansu/` (commit 39be14b).
+- **Deuda asumida al adoptarlo como principal local**: incompat `librdkafka` 2.x /
+  `franz-go` consumer groups + EOS/transactions/rebalance untested + pre-1.0
+  status.
+- **Adoptado como broker repo-wide local**: `poc/kafka-s3-tansu/` queda como
+  scaffold histórico y banco de prueba para futuros releases.
 
 ### C) AutoMQ (Apache-2.0)
 - **Compatibilidad**: 100% wire protocol (es Kafka KRaft con storage
@@ -195,11 +185,11 @@ Marginal en stack con Floci ya levantado: **~7.7 MiB**.
   mainstream tras la migración.
 - [[0030-redpanda-vs-kafka]] — superseded en cuanto a "Redpanda como broker";
   conservar como contexto histórico.
-- Issue tracker upstream: tansu-io/tansu sobre librdkafka 2.x compat.
+- Issue tracker upstream: `tansu-io/tansu#668` para Fetch hangs con `librdkafka` 2.x / `franz-go`.
 
 ## Open questions (re-evaluar cuando aplique)
 
-- ¿Tansu 1.x resolverá `ApiVersionRequest` para librdkafka 2.x?
+- ¿Qué release de Tansu cerrará `tansu-io/tansu#668` y `ApiVersionRequest` para `librdkafka` 2.x?
 - ¿AutoMQ publicará guía de single-node dev con footprint medido < 1 GiB?
 - ¿Existe interés productivo real en "Kafka-sobre-S3" o es performance art?
 - ¿La PoC k6 expondrá problemas de throughput sostenido en Tansu que aquí

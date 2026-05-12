@@ -11,9 +11,9 @@ and check whether it can replace Redpanda for local dev / lightweight CI.
 > `ghcr.io/tansu-io/tansu:0.6.0`. Redpanda is removed.
 >
 > See the updated **[ADR-0043](../../vault/02-Decisions/0043-kafka-broker-alternatives-eval.md)**
-> for the migration decision, the verified compat caveats (librdkafka 2.x
-> clients fail; the smoke CLI uses `franz-go` to sidestep this), and the
-> documented gaps (EOS/transactions untested).
+> for the migration decision, the verified compat caveats (`librdkafka` 2.x
+> and `franz-go` consumer groups are upstream-incompatible with Tansu 0.6.0),
+> and the documented gaps (EOS/transactions untested).
 >
 > This PoC directory survives as the reference scaffold (compose override,
 > footprint comparison, architecture notes) and as a stable smoke target for
@@ -66,18 +66,22 @@ on macOS arm64 / OrbStack on 2026-05-11:
   Older `confluentinc/cp-kafkacat:7.0.0` (librdkafka ~1.7) negotiates fine.
   Java AdminClient + producer + consumer (cp-kafka 7.0.0) all work. This is a
   **real Kafka-wire incompatibility on the API-versions path**, not a config
-  issue. Newer official Kafka / Confluent clients (post-3.x) have not been
-  tested against this image.
+  issue. Newer official Kafka / Confluent clients (post-3.x) are not the
+  supported path for this repo.
+- **`franz-go` consumer group Fetch hangs** against Tansu 0.6.0 — confirmed
+  upstream as `tansu-io/tansu#668`. Client-side mitigations tested here
+  (`kgo.MaxVersions(V2_6)`, `V2_1`, `V0_11`, `DisableAutoCommit`,
+  `RangeBalancer`) still hang at the smoke-check timeout (~47s). Treat this
+  as a Tansu server-side Fetch bug, not a Go client configuration issue.
+  Workaround: use the verified Java cp-kafka 7.x path, or avoid Kafka wire
+  from Go until upstream ships a fix (for example use an HTTP/gRPC adapter).
 - **Idempotent producer** (`enable.idempotence=true`) — **not tested**.
 - **Transactions / EOS** — **not tested**.
 - **Consumer-group rebalance under churn / multi-consumer** — **not tested**;
-  only a single console consumer was exercised.
+  only a single Java console consumer path is considered supported.
 - **Sustained throughput** (e.g. our 150 TPS target) — **not benchmarked**.
 - **Schema Registry / Pandaproxy / Kafka Connect interop** — N/A, Tansu does
   not expose any of those.
-- **Reading the existing repo's `risk-decisions` topic** with a real
-  monolith — **not wired**. The override file does not (yet) point the
-  monolith at Tansu; that's a follow-up.
 
 ## Open questions
 
@@ -88,8 +92,9 @@ on macOS arm64 / OrbStack on 2026-05-11:
 3. Behavior under Floci restart (in-memory) vs real S3 / MinIO with durable
    disk — does Tansu recover cluster metadata from S3, or expect a
    bootstrap-on-empty path?
-4. Wire compatibility with current librdkafka (≥ 2.x) — this PoC found a
-   regression with kcat 1.7.1; needs an upstream issue or version pin doc.
+4. Wire compatibility with current `librdkafka` (≥ 2.x) and `franz-go`
+   consumer groups — tracked upstream in `tansu-io/tansu#668`; keep the repo
+   pinned to Java cp-kafka 7.x for broker probes until the fix is released.
 5. Memory under load (idle is 7.73 MiB; what does the working set look like
    at 150 TPS sustained?).
 
@@ -140,7 +145,7 @@ docker compose -f compose/docker-compose.yml \
 | Maturity                       | Stable, prod-deployed        | Pre-1.0, exploratory               |
 | Schema Registry / Pandaproxy   | Yes (built-in)               | No                                 |
 | EOS / transactions             | Yes                          | **Not validated** here             |
-| Wire compat (librdkafka 2.x)   | Full                         | **Partial — see kcat 1.7.1 issue** |
+| Wire compat (`librdkafka` 2.x / `franz-go` groups) | Full | **Broken — upstream `tansu-io/tansu#668`; use Java cp-kafka 7.x** |
 | License                        | BSL → Apache-2.0 (per-feature) | Apache-2.0                       |
 
 See [docs/footprint-comparison.md](docs/footprint-comparison.md) for the raw
@@ -153,10 +158,12 @@ See [docs/footprint-comparison.md](docs/footprint-comparison.md) for the raw
   "Kafka with no broker disk".
 - **Do NOT use this PoC for:** production traffic, EOS-critical pipelines,
   anything that depends on Schema Registry / Pandaproxy / Connect, anything
-  that targets modern librdkafka clients without first testing the wire path.
-- As a Redpanda replacement in this repo today: **not yet**. Revisit when
-  Tansu reaches 1.x and the librdkafka 2.x compat path is fixed. Until then,
-  Redpanda stays as the default broker in `compose/docker-compose.yml`.
+  that targets modern `librdkafka` clients or `franz-go` consumer groups
+  before validating the exact Tansu release.
+- As a local-dev replacement in this repo today: **yes, with guardrails**.
+  Tansu is the default broker, but Kafka-wire checks must use the verified
+  Java cp-kafka 7.x client path. The Go smoke CLI now shells out to
+  `confluentinc/cp-kafka:7.0.0` instead of opening a Go Kafka consumer group.
 
 ## Citations
 

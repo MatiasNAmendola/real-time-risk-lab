@@ -27,7 +27,7 @@ Entorno Kubernetes local que demuestra GitOps + canary deployment + observabilid
 | Argo Rollouts | 1.x |
 | kube-prom-stack | Prometheus + Grafana |
 | ESO | External Secrets Operator |
-|  Tansu | latest |
+| Tansu | 0.6.0 |
 | OpenObserve | latest |
 
 ## Cómo correrlo
