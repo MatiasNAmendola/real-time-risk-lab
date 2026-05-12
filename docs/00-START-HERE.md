@@ -43,7 +43,7 @@ Una exploración técnica de un use case de detección de fraude productivo, que
 
 ### Si te interesa el meta (agentes IA + tooling)
 
-1. **`docs/16-agent-os-principles.md`** — 8 principios de orquestación de agentes IA.
+1. **`.ai/context/agent-os-principles.md`** — 8 principios de orquestación de agentes IA.
 2. **`docs/22-client-sdks.md`** — diseño multi-lenguaje + SemVer.
 3. **`docs/27-test-runner.md`** — test runner con DAG + throttling de recursos.
 4. **`.ai/scripts/quick-check.py`** — guardrail sub-segundo de demo: boundaries fuente + freshness warnings sin invocar Gradle.
