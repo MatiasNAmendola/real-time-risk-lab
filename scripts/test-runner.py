@@ -32,6 +32,14 @@ REPO_ROOT = Path(__file__).resolve().parent.parent
 GROUPS_FILE = REPO_ROOT / ".ai" / "test-groups.yaml"
 DEFAULT_OUT_DIR = REPO_ROOT / "out" / "test-runner"
 
+# Codex/non-login shells on macOS often miss Homebrew tool paths. Make the
+# runner resolve Docker, k6, fnm/npm, etc. the same way an interactive shell does.
+os.environ["PATH"] = ":".join([
+    "/opt/homebrew/bin",
+    "/usr/local/bin",
+    os.environ.get("PATH", ""),
+])
+
 # ---------------------------------------------------------------------------
 # Mini YAML parser (stdlib only) — handles the test-groups.yaml format
 # ---------------------------------------------------------------------------
@@ -392,11 +400,48 @@ def _compose_up(dry_run: bool = False) -> bool:
     return result.returncode == 0
 
 
+def _compose_controller_ready(timeout_sec: int = 3) -> bool:
+    """Return True when the shared compose controller is reachable on localhost."""
+    try:
+        result = subprocess.run(
+            ["curl", "-fsS", "--max-time", str(timeout_sec), "http://localhost:8080/ready"],
+            cwd=str(REPO_ROOT),
+            stdout=subprocess.DEVNULL,
+            stderr=subprocess.DEVNULL,
+            text=True,
+        )
+        return result.returncode == 0
+    except FileNotFoundError:
+        # Fallback to Python stdlib if curl is unavailable.
+        try:
+            from urllib.request import urlopen
+            with urlopen("http://localhost:8080/ready", timeout=timeout_sec) as r:  # nosec: local test probe
+                return 200 <= r.status < 300
+        except Exception:
+            return False
+
+
+def _ensure_compose_ready_for_job(name: str) -> bool:
+    """Compose jobs share one long-lived stack. Re-check it before each job.
+
+    Some exclusive jobs (or local operator actions) can leave the controller
+    stopped between runner levels, which makes later smoke/k6 checks fail with
+    localhost:8080 connection refused. The canonical up.sh is idempotent and
+    waits for /ready, so use it as the repair path.
+    """
+    if _compose_controller_ready():
+        return True
+    print(f"[runner] Compose controller not ready before {name}; refreshing stack...")
+    if not _compose_up(dry_run=False):
+        return False
+    return _compose_controller_ready(timeout_sec=10)
+
+
 # ---------------------------------------------------------------------------
 # Job execution (runs in subprocess via ThreadPoolExecutor)
 # ---------------------------------------------------------------------------
 
-def _run_job_fn(name: str, cmd: str, out_dir_str: str) -> JobResult:
+def _run_job_fn(name: str, cmd: str, out_dir_str: str, needs_infra: str = "false") -> JobResult:
     """Execute a single test group.
 
     The heavy work is the child process (`gradlew`, `npm`, `go`, docker tools),
@@ -411,6 +456,13 @@ def _run_job_fn(name: str, cmd: str, out_dir_str: str) -> JobResult:
 
     start = time.monotonic()
     try:
+        if (needs_infra or "").lower() == "compose" and not _ensure_compose_ready_for_job(name):
+            duration = time.monotonic() - start
+            msg = "compose controller-app was not reachable and auto-repair failed"
+            with open(log_path, "w", encoding="utf-8") as f:
+                f.write(f"# Job: {name}\n# Command: {cmd}\n# Duration: {duration:.1f}s\n# Exit code: 1\n\n{msg}\n")
+            return JobResult(name=name, status="FAIL", returncode=1, error=msg, duration_sec=duration)
+
         proc = subprocess.run(
             cmd,
             shell=True,
@@ -732,7 +784,7 @@ class TestRunner:
                     if self._can_dispatch(job):
                         self._reserve(job)
                         future = pool.submit(
-                            _run_job_fn, job.name, job.cmd, str(self.out_dir)
+                            _run_job_fn, job.name, job.cmd, str(self.out_dir), job.needs_infra
                         )
                         futures[future] = job
                         pending.pop(i)
@@ -750,7 +802,7 @@ class TestRunner:
                     job = pending.pop(0)
                     self._reserve(job)
                     future = pool.submit(
-                        _run_job_fn, job.name, job.cmd, str(self.out_dir)
+                        _run_job_fn, job.name, job.cmd, str(self.out_dir), job.needs_infra
                     )
                     futures[future] = job
                     self._print_status(
@@ -958,6 +1010,11 @@ def _build_parser() -> argparse.ArgumentParser:
         help="Output directory (default: out/test-runner/<ts>/)",
     )
     p.add_argument("--json", action="store_true", help="JSON output for CI")
+    p.add_argument(
+        "--headless",
+        action="store_true",
+        help="Compatibility no-op for ./nx test all --headless; the runner is always non-interactive",
+    )
     p.add_argument("--watch", action="store_true", help="Live dashboard (refresh every 1s)")
     return p
 

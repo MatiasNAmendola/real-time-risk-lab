@@ -118,7 +118,7 @@ groups:
     requires: [docker]
 
   integration-compose-smoke:
-    cmd: "cli/risk-smoke/bin/risk-smoke --headless"
+    cmd: "cd cli/risk-smoke && go build -o bin/risk-smoke . && bin/risk-smoke --headless"
     needs_infra: compose
     cost_cpu: low
     cost_ram_mb: 200
@@ -181,7 +181,7 @@ groups:
     requires: [go, docker]
 
   contract:
-    cmd: "./gradlew :sdks:contract-test:test -Pcontract"
+    cmd: "RISK_BASE_URL=http://localhost:8080 ./gradlew :sdks:contract-test:test -Pcontract"
     needs_infra: compose
     cost_cpu: medium
     cost_ram_mb: 1200
@@ -190,7 +190,7 @@ groups:
     requires: [docker]
 
   bench-inproc:
-    cmd: "./gradlew :bench:inprocess-bench:run"
+    cmd: 'rm -f "${TMPDIR:-/tmp}/jmh.lock" /tmp/jmh.lock && ./gradlew :bench:inprocess-bench:run --no-configuration-cache'
     needs_infra: false
     cost_cpu: high
     cost_ram_mb: 1200
@@ -331,7 +331,7 @@ groups:
     requires: [docker]
 
   smoke:
-    cmd: "cli/risk-smoke/bin/risk-smoke --headless"
+    cmd: "cd cli/risk-smoke && go build -o bin/risk-smoke . && bin/risk-smoke --headless"
     needs_infra: compose
     cost_cpu: low
     cost_ram_mb: 200
@@ -394,7 +394,7 @@ groups:
     requires: [k6, docker]
 
   sdk-contract:
-    cmd: "./gradlew :sdks:contract-test:test -Pcontract"
+    cmd: "RISK_BASE_URL=http://localhost:8080 ./gradlew :sdks:contract-test:test -Pcontract"
     needs_infra: compose
     cost_cpu: medium
     cost_ram_mb: 1200
