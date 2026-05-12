@@ -39,10 +39,21 @@ tests de integración y ATDD. Redpanda queda eliminado:
 
 **Caveats explícitos y documentados como deuda**:
 - **librdkafka 2.x clients (kcat 1.7.1) NO funcionan** contra Tansu 0.6.0
-  (`ApiVersionRequest` "Read underflow"). Mitigación: el smoke CLI (`cli/risk-smoke/`)
-  usa `franz-go` (Go puro, no librdkafka) y los servicios Java usan el cliente
-  Apache Kafka JVM — ambos verificados. Si en el futuro entra un client basado
-  en librdkafka, hay que pinear a una versión vieja o esperar a Tansu 1.x.
+  (`ApiVersionRequest` "Read underflow"). Mitigación: los servicios Java usan
+  el cliente Apache Kafka JVM — verificado contra compose (producer monolith
+  + consumer `kafka-console-consumer` con consumer-group). Si en el futuro
+  entra un client basado en librdkafka, hay que pinear a una versión vieja
+  o esperar a Tansu 1.x.
+- **franz-go consumer group NO funciona** contra Tansu 0.6.0 (descubierto
+  2026-05-11). El smoke CLI (`cli/risk-smoke/internal/flows/kafka.go`) usa
+  `kgo.NewClient` con `ConsumerGroup + ConsumeTopics + ConsumeResetOffset` y
+  falla silenciosamente (timeout sin mensaje de error visible) contra Tansu,
+  mientras que el mismo topic con el mismo grupo + mismos mensajes lee OK
+  con `confluentinc/cp-kafka:7.0.0` `kafka-console-consumer`. La compat
+  parcial Java-OK / Go-broken se suma al patrón librdkafka. **Smoke check
+  `kafka` queda en estado FAIL conocido** hasta que franz-go o Tansu resuelvan
+  el handshake. Workaround inmediato: el resto del smoke (health, openapi,
+  asyncapi, rest, sse, websocket, webhook) sigue dando 7/9.
 - **EOS / transactions / rebalance bajo carga**: no testeados. Para PoC local
   basta; para producción habría que cerrar este gap (o seguir con Apache Kafka
   / Redpanda en prod y mantener Tansu sólo en dev).
