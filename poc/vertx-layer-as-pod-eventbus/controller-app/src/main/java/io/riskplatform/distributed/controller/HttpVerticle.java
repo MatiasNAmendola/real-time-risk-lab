@@ -8,6 +8,7 @@ import io.riskplatform.rules.config.RulesConfigLoader;
 import io.riskplatform.rules.engine.RuleEngine;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Promise;
+import io.vertx.core.Handler;
 import io.vertx.core.eventbus.DeliveryOptions;
 import io.vertx.core.http.RequestOptions;
 import io.vertx.core.http.ServerWebSocket;
@@ -15,6 +16,7 @@ import io.vertx.core.http.ServerWebSocketHandshake;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
 import io.vertx.ext.web.Router;
+import io.vertx.ext.web.RoutingContext;
 import io.vertx.ext.web.handler.BodyHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -321,17 +323,22 @@ public class HttpVerticle extends AbstractVerticle {
         });
 
         // ── Health ────────────────────────────────────────────────────────────
-        router.get("/health").handler(ctx ->
-            ctx.response().setStatusCode(200)
-                .putHeader("Content-Type", "application/json")
-                .end(new JsonObject().put("status", "UP").encode())
-        );
+        // Keep legacy SDK/smoke paths and ATDD paths compatible:
+        // - /health and /healthz are liveness aliases
+        // - /ready and /health/ready are readiness aliases
+        // - /health/live is an explicit Kubernetes-style liveness alias
+        Handler<RoutingContext> liveHandler = ctx -> ctx.response().setStatusCode(200)
+            .putHeader("Content-Type", "application/json")
+            .end(new JsonObject().put("status", "UP").encode());
+        router.get("/health").handler(liveHandler);
+        router.get("/healthz").handler(liveHandler);
+        router.get("/health/live").handler(liveHandler);
 
         // Readiness is stricter than liveness: it proves clustered EventBus
         // request/reply works end-to-end without evaluating or storing a
         // decision. This catches Hazelcast reply-address regressions before a
         // smoke/ATDD request hangs for the full /risk timeout.
-        router.get("/ready").handler(ctx -> {
+        Handler<RoutingContext> readyHandler = ctx -> {
             DeliveryOptions opts = new DeliveryOptions().setSendTimeout(2_000L);
             vertx.eventBus().<String>request(EventBusAddress.USECASE_READY, "ping", opts)
                 .onSuccess(reply -> ctx.response()
@@ -348,7 +355,9 @@ public class HttpVerticle extends AbstractVerticle {
                         .put("status", "NOT_READY")
                         .put("error", err.getMessage())
                         .encode()));
-        });
+        };
+        router.get("/ready").handler(readyHandler);
+        router.get("/health/ready").handler(readyHandler);
 
         // ── Admin Rules API ───────────────────────────────────────────────────
         // GET  /admin/rules         — list rules (proxied from usecase-app via event bus)

@@ -13,7 +13,7 @@ AMOUNT="${2:?amount required}"
 NEW_DEVICE="${3:-false}"
 BASE_URL="${4:-http://localhost:8080}"
 
-REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../../../../.." && pwd)"
+REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../../../.." && pwd)"
 SDK_DIR="${REPO_ROOT}/sdks/risk-client-go"
 
 # Build a temporary evaluator binary.

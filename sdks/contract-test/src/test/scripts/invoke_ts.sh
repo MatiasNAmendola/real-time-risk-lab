@@ -13,7 +13,7 @@ AMOUNT="${2:?amount required}"
 NEW_DEVICE="${3:-false}"
 BASE_URL="${4:-http://localhost:8080}"
 
-REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../../../../.." && pwd)"
+REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../../../.." && pwd)"
 SDK_DIR="${REPO_ROOT}/sdks/risk-client-typescript"
 
 # Build the SDK if dist/ does not exist.
@@ -25,14 +25,14 @@ fi
 node - <<EOF
 const { RiskClient } = require('${SDK_DIR}/dist/index.js');
 
+// Must be set before constructing RiskClient; channels resolve endpoints in constructors.
+process.env.RISK_BASE_URL = '${BASE_URL}';
+
 const client = new RiskClient({
   environment: 'LOCAL',
   apiKey: process.env.RISK_CLIENT_API_KEY || 'change-me-client-api-key',
   timeoutMs: 10000,
 });
-
-// Override fetch base URL via environment variable recognised by env.ts.
-process.env.RISK_BASE_URL = '${BASE_URL}';
 
 const req = {
   transactionId:  '${TX_ID}',

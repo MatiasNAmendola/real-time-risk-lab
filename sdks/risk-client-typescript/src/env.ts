@@ -30,5 +30,10 @@ const ENV_MAP: Record<Environment, EnvCoords> = {
 };
 
 export function resolveEnv(env: Environment): EnvCoords {
-  return ENV_MAP[env];
+  const coords = ENV_MAP[env];
+  const baseOverride = typeof process !== 'undefined' ? process.env.RISK_BASE_URL : undefined;
+  if (env === 'LOCAL' && baseOverride) {
+    return { ...coords, restBaseUrl: baseOverride };
+  }
+  return coords;
 }

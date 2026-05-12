@@ -1,6 +1,7 @@
 package io.riskplatform.distributed.shared;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
@@ -12,6 +13,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * <p>{@code newDevice} signals whether the transaction originated from a device the customer
  * has not used before. Used by {@link io.riskplatform.distributed.shared.rules.NewDeviceYoungCustomerRule}.
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 public record RiskRequest(
         @JsonProperty("transactionId")   String  transactionId,
         @JsonProperty("customerId")      String  customerId,
