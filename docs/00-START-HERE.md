@@ -47,7 +47,7 @@ Una exploración técnica de un use case de detección de fraude productivo, que
 2. **`docs/22-client-sdks.md`** — diseño multi-lenguaje + SemVer.
 3. **`docs/27-test-runner.md`** — test runner con DAG + throttling de recursos.
 4. **`.ai/scripts/quick-check.py`** — guardrail sub-segundo de demo: boundaries fuente + freshness warnings sin invocar Gradle.
-4. **`docs/30-consistency-audit.md`** — meta-cobertura de docs.
+4. **`.ai/scripts/consistency-auditor.py`** + **`.ai/audit-rules/terminology.yaml`** — meta-cobertura de docs (la spec vive en el script).
 
 ---
 
@@ -247,7 +247,6 @@ Esta sección existe para que el auditor documental tenga referencias explícita
 - `docs/07-technical-leadership-design-mindset.md`
 - `docs/08-technical-discussion-simulation.md`
 - `docs/14-primitive-usage-retro.md`
-- `docs/15-script-output-audit.md`
 - `docs/17-decision-stack-observability-local.md`
 - `docs/18-rules-engine-design.md`
 - `docs/19-backoffice-simulation-design.md`

@@ -8,6 +8,40 @@
 # Auditor behaviour: scan all .md files, report every alias occurrence,
 # print "found '<alias>' at file:line — should be '<canonical>'".
 # The auditor NEVER auto-corrects; the list below is the authoritative reference.
+#
+# ============================================================
+# prohibited_in_public — rationale (migrated 2026-05-12 from docs/30-consistency-audit.md)
+# ------------------------------------------------------------
+# The repo is positioned as a technical exploration of a production-grade fraud
+# detection platform, not personal interview-prep material. Two categories of
+# terms break that positioning:
+#
+#   technical_practice_leak — terms that make the repo look like personal
+#     preparation rather than a technical exploration (e.g. prep-interview
+#     vocabulary). These undermine the credibility of the content when shared.
+#
+#   company_specific — names of specific companies or brand variants that add
+#     no technical value in public docs and expose unnecessary context when the
+#     intent is to discuss generic engineering patterns and decisions.
+#
+# Excluded paths (historical / context-justified):
+#   vault/01-Build-Log/       — narrative history; terms may appear as origin refs
+#   .ai/research/             — WebSearch results; mention products nominally
+#   out/                      — run outputs, not public docs
+#   _personal/                — private folder (reserved)
+#   docs/30-consistency-audit.md — self-reference (doc that describes the rules)
+#   vault/02-Decisions/0038-riskplatform-package-namespace.md — ADR justifying
+#                               the riskplatform namespace; must cite the name
+#   .kiro/, .windsurf/, .cursor/ — IDE-agent steering files (private context)
+#
+# Technical identifier exemption: lines containing io.riskplatform,
+# urn:riskplatform:, riskplatform/<key>, or com/riskplatform/ are NOT flagged
+# because they are code identifiers (Java packages, URNs, Secrets Manager keys)
+# not marketing copy. See TECHNICAL_IDENTIFIER_PATTERNS in consistency-auditor.py
+# and the technical_identifiers_excluded section below.
+#
+# Score: max(0, 100 - matches * 5) — each match deducts 5 points.
+# ============================================================
 
 terms:
   # NOTE: matcher is naive substring (case-sensitive). Aliases MUST be long

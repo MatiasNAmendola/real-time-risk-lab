@@ -12,6 +12,18 @@
 #   OUT_BASE  — $REPO_ROOT/out/<name>
 #   OUT_DIR   — $OUT_BASE/<ISO-timestamp>
 #   OUT_TS    — the timestamp slug used for the directory name
+#
+# ============================================================
+# Output convention for audit scripts
+# ------------------------------------------------------------
+# All audit scripts route output through this helper to enforce:
+#   - out/<audit-name>/<timestamp>/        : timestamped run
+#   - out/<audit-name>/latest/             : symlink to latest run
+#   - .gitignore: out/ is ignored
+#
+# Status snapshot (migrated 2026-05-12 from docs/15-script-output-audit.md):
+# all in-tree audit scripts wire through this helper.
+# ============================================================
 
 # Require REPO_ROOT to be set by the caller before sourcing.
 : "${REPO_ROOT:?REPO_ROOT must be set before sourcing output.sh}"
