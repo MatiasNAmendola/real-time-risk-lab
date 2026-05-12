@@ -101,7 +101,7 @@ The wrapper auto-enables this output if `K6_PROMETHEUS_RW_SERVER_URL` is set.
 | Preset       | p99       | error rate | Use for       |
 |---           |---        |---         |---            |
 | `sloStrict`  | < 300ms   | < 1%       | load          |
-| `sloRelaxed` | < 800ms   | < 5%       | smoke         |
+| `sloRelaxed` | < 3000ms  | < 5%       | smoke/local cold-start gate |
 | `sloSoak`    | < 400ms   | < 2%       | soak          |
 
 `stress` and `spike` intentionally don't gate on SLO — they push past it.
