@@ -1,92 +1,35 @@
 package riskclient
 
-import (
-	"context"
-	"encoding/json"
+import "context"
 
-	"github.com/twmb/franz-go/pkg/kgo"
-)
-
-const (
-	decisionsTopicName    = "risk-decisions"
-	customEventsTopicName = "risk-custom-events"
-)
-
-// EventsClient encapsulates Kafka operations.
+// EventsClient exposes asynchronous decision events without using Kafka wire
+// directly from Go. Against local Tansu 0.6.0, Go Kafka consumer groups hang in
+// Fetch (tansu-io/tansu#668), so the Go SDK routes consumption through the
+// supported HTTP/SSE adapter and leaves Kafka wire to JVM cp-kafka clients.
 type EventsClient struct {
-	broker string
+	stream  *StreamClient
+	http    *jsonHTTP
+	baseURL string
 }
 
-func newEventsClient(cfg Config) *EventsClient {
-	return &EventsClient{broker: envMap[cfg.Environment].kafkaBroker}
+func newEventsClient(cfg Config, h *jsonHTTP) *EventsClient {
+	return &EventsClient{
+		stream:  newStreamClient(cfg, h),
+		http:    h,
+		baseURL: envMap[cfg.Environment].restBaseURL,
+	}
 }
 
-// ConsumeDecisions subscribes to the decisions topic and calls handler for
-// each event. Blocks until ctx is cancelled.
+// ConsumeDecisions subscribes to the decision event stream and calls handler for
+// each event. groupID is accepted for API parity with Java/TypeScript SDKs, but
+// the Go adapter is SSE-backed and does not join a Kafka consumer group.
 func (e *EventsClient) ConsumeDecisions(ctx context.Context, groupID string, handler DecisionHandler) error {
-	cl, err := kgo.NewClient(
-		kgo.SeedBrokers(e.broker),
-		kgo.ConsumerGroup(groupID),
-		kgo.ConsumeTopics(decisionsTopicName),
-		kgo.ConsumeResetOffset(kgo.NewOffset().AtEnd()),
-	)
-	if err != nil {
-		return &RiskClientError{Message: "kafka client init", Cause: err}
-	}
-	defer cl.Close()
-
-	for {
-		select {
-		case <-ctx.Done():
-			return ctx.Err()
-		default:
-		}
-
-		fetches := cl.PollFetches(ctx)
-		if errs := fetches.Errors(); len(errs) > 0 {
-			if ctx.Err() != nil {
-				return ctx.Err()
-			}
-			return &RiskClientError{Message: "kafka poll", Cause: errs[0].Err}
-		}
-
-		var handlerErr error
-		fetches.EachRecord(func(r *kgo.Record) {
-			if handlerErr != nil {
-				return
-			}
-			var event DecisionEvent
-			if jsonErr := json.Unmarshal(r.Value, &event); jsonErr == nil {
-				handlerErr = handler(ctx, event)
-			}
-		})
-		if handlerErr != nil {
-			return handlerErr
-		}
-	}
+	_ = groupID
+	return e.stream.Decisions(ctx, handler)
 }
 
-// PublishCustomEvent serializes envelope and produces it to the custom events topic.
+// PublishCustomEvent posts an event envelope to the HTTP event-ingress adapter.
+// The server side can fan this into Kafka with a supported JVM client.
 func (e *EventsClient) PublishCustomEvent(ctx context.Context, envelope map[string]any) error {
-	cl, err := kgo.NewClient(kgo.SeedBrokers(e.broker))
-	if err != nil {
-		return &RiskClientError{Message: "kafka producer init", Cause: err}
-	}
-	defer cl.Close()
-
-	b, err := json.Marshal(envelope)
-	if err != nil {
-		return &RiskClientError{Message: "marshal envelope", Cause: err}
-	}
-
-	results := cl.ProduceSync(ctx, &kgo.Record{
-		Topic: customEventsTopicName,
-		Value: b,
-	})
-	for _, res := range results {
-		if res.Err != nil {
-			return &RiskClientError{Message: "kafka produce", Cause: res.Err}
-		}
-	}
-	return nil
+	return e.http.postJSON(ctx, e.baseURL+"/events/custom", envelope, nil)
 }

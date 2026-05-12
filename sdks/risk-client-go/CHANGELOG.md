@@ -8,7 +8,7 @@
 - Sync REST: evaluate, evaluateBatch, health.
 - Stream SSE: decisions stream.
 - Channel WebSocket: bidirectional.
-- Events: Kafka consume + publish custom.
+- Events: HTTP/SSE adapter consume + publish custom (Go avoids direct Kafka wire against Tansu 0.6.0).
 - Queue: SQS send + receive.
 - Webhooks: subscribe, unsubscribe, list, verify.
 - Admin: listRules, reloadRules, testRule, audit.

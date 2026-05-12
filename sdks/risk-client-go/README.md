@@ -1,7 +1,7 @@
 # risk-client-go
 
 > Risk engine client SDK for the Go ecosystem. Encapsulates 7 communication channels
-> (REST sync, REST batch, SSE, WebSocket, Webhooks, Kafka, SQS, Admin).
+> (REST sync, REST batch, SSE, WebSocket, Webhooks, HTTP/SSE events adapter, SQS, Admin).
 > Production-ready, semver-compatible, infrastructure-agnostic.
 
 ## Install
@@ -58,7 +58,7 @@ func main() {
 | `riskclient.Dev` | `https://risk-dev.riskplatform.com` | Feature branches |
 | `riskclient.Local` | `http://localhost:8080` | Local development |
 
-The SDK resolves all downstream URLs (REST endpoints, Kafka brokers, SQS queue ARNs,
+The SDK resolves all downstream URLs (REST endpoints, event adapter paths, SQS queue ARNs,
 WebSocket paths) from the `Environment` constant. You never hard-code infrastructure URLs.
 
 ### Full config options
@@ -262,28 +262,27 @@ func handleWebhook(w http.ResponseWriter, r *http.Request) {
 }
 ```
 
-### 6. Kafka events — `client.Events`
+### 6. Events adapter — `client.Events`
 
-Subscribe to the decision stream via Kafka. The SDK manages broker discovery,
-consumer group coordination, offset commits, and deserialization.
+Subscribe to the decision stream via the supported HTTP/SSE adapter. The Go SDK
+does **not** open Kafka consumer groups directly against local Tansu 0.6.0 because
+that path is blocked by upstream `tansu-io/tansu#668`. Server-side Java/cp-kafka
+components remain responsible for Kafka wire interactions.
 
 ```go
 // Consume decisions — blocks until ctx is cancelled or handler returns an error
 err := client.Events.ConsumeDecisions(ctx, "my-consumer-group",
     func(ctx context.Context, e riskclient.DecisionEvent) error {
         processDecision(e)
-        return nil // nil = ack; non-nil = nack, message will be retried
+        return nil
     },
 )
 
-// Publish a custom event into the pipeline
-err = client.Events.PublishCustomEvent(ctx, riskclient.CustomEventEnvelope{
-    EventType: "FRAUD_SIGNAL",
-    Payload:   map[string]any{"userId": "user-42", "signal": "device_mismatch"},
+// Publish a custom event through HTTP ingress; the platform can fan it into Kafka.
+err = client.Events.PublishCustomEvent(ctx, map[string]any{
+    "eventType": "FRAUD_SIGNAL",
+    "payload":   map[string]any{"userId": "user-42", "signal": "device_mismatch"},
 })
-
-// Explicit ack if you need manual control
-err = client.Events.AckProcessed(ctx, event.EventID)
 ```
 
 ### 7. SQS queue — `client.Queue`
@@ -513,7 +512,7 @@ http.HandleFunc("/risk-callback", func(w http.ResponseWriter, r *http.Request) {
 })
 ```
 
-### Kafka consumer with context cancellation
+### Events adapter with context cancellation
 
 ```go
 ctx, cancel := signal.NotifyContext(context.Background(), syscall.SIGTERM, syscall.SIGINT)
@@ -562,7 +561,7 @@ func TestEvaluateLowAmountReturnsApprove(t *testing.T) {
 | SSE `ConsumeDecisions` handler never fires | Proxy buffers SSE response | Set `X-Accel-Buffering: no` header on proxy; check firewall allows keep-alive |
 | `*ChannelClosedError` on WebSocket receive | Proxy strips `Upgrade: websocket` | Configure reverse proxy for WebSocket passthrough |
 | `*SchemaError` (422) | Request field invalid or missing | Log `err.ValidationErrors` and compare to `RiskRequest` struct tags |
-| Kafka consumer exits immediately | Context already cancelled before call | Pass a fresh `context.Background()` with cancellation tied to `SIGTERM` |
+| Events adapter exits immediately | Context already cancelled before call | Pass a fresh `context.Background()` with cancellation tied to `SIGTERM` |
 | SQS `ReceiveDecisions` handler never fires | Queue empty or wrong region | Confirm queue ARN and region match the configured `Environment` |
 | `*ServerError` (503) | Server under load or restarting | Enable retry policy; add circuit breaker via `gobreaker` |
 | Admin calls return 403 | API key lacks ADMIN scope | Request ADMIN-scoped key from platform team |

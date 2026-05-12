@@ -69,7 +69,7 @@ func newClient(cfg Config, sqsClient SQSClientAPI) *Client {
 		Sync:     newSyncClient(cfg, h),
 		Stream:   newStreamClient(cfg, h),
 		Channel:  newChannelClient(cfg),
-		Events:   newEventsClient(cfg),
+		Events:   newEventsClient(cfg, h),
 		Queue:    newQueueClient(cfg, sqsClient),
 		Webhooks: newWebhooksClient(cfg, h),
 		Admin:    newAdminClient(cfg, h),
@@ -95,7 +95,6 @@ func NewWithServerOverride(cfg Config, serverURL string, sqsClient SQSClientAPI)
 	origCoords := envMap[Local]
 	envMap[Local] = envCoords{
 		restBaseURL: serverURL,
-		kafkaBroker: origCoords.kafkaBroker,
 		sqsQueueURL: origCoords.sqsQueueURL,
 	}
 	client := newClient(cfg, sqsClient)

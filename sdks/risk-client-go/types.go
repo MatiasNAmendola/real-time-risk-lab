@@ -18,29 +18,24 @@ const (
 
 type envCoords struct {
 	restBaseURL string
-	kafkaBroker string
 	sqsQueueURL string
 }
 
 var envMap = map[Environment]envCoords{
 	Prod: {
 		restBaseURL: "https://risk.riskplatform.com",
-		kafkaBroker: "kafka.riskplatform.com:9092",
 		sqsQueueURL: "https://sqs.us-east-1.amazonaws.com/123456789/risk-decisions-prod",
 	},
 	Staging: {
 		restBaseURL: "https://risk-staging.riskplatform.com",
-		kafkaBroker: "kafka-staging.riskplatform.com:9092",
 		sqsQueueURL: "https://sqs.us-east-1.amazonaws.com/123456789/risk-decisions-staging",
 	},
 	Dev: {
 		restBaseURL: "https://risk-dev.riskplatform.com",
-		kafkaBroker: "kafka-dev.riskplatform.com:9092",
 		sqsQueueURL: "https://sqs.us-east-1.amazonaws.com/123456789/risk-decisions-dev",
 	},
 	Local: {
 		restBaseURL: "http://localhost:8080",
-		kafkaBroker: "localhost:9092",
 		sqsQueueURL: "http://localhost:4566/000000000000/risk-decisions",
 	},
 }
@@ -69,9 +64,9 @@ type RiskDecision struct {
 	Elapsed       time.Duration `json:"elapsedMs,omitempty"`
 }
 
-func (d *RiskDecision) IsApproved() bool      { return d.Decision == "APPROVE" }
-func (d *RiskDecision) IsDeclined() bool      { return d.Decision == "DECLINE" }
-func (d *RiskDecision) RequiresReview() bool  { return d.Decision == "REVIEW" }
+func (d *RiskDecision) IsApproved() bool     { return d.Decision == "APPROVE" }
+func (d *RiskDecision) IsDeclined() bool     { return d.Decision == "DECLINE" }
+func (d *RiskDecision) RequiresReview() bool { return d.Decision == "REVIEW" }
 
 // DecisionEvent is emitted for every evaluation.
 type DecisionEvent struct {
