@@ -63,4 +63,4 @@ son los que dictan promote/rollback (no condiciones manuales del test).
 - [[0036-archunit-structural-verification]]
 - [[poc/k8s-local/README]]
 - `tests/k8s-deployment/README.md`
-- `docs/36-k8s-deployment-tests.md`
+- `vault/03-PoCs/K8s-Deployment-Tests.md`

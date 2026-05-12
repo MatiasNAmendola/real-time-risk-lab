@@ -30,7 +30,7 @@ tasks.withType<Test>().configureEach {
         exclude("**/*Test.class")
     }
     // Per project rule: integration/test modules target Java 21 (frameworks
-    // do not yet support classfile 25 — see docs/26-java-version-compat-2026.md).
+    // do not yet support classfile 25 — see vault/02-Decisions/0001-java-25-lts.md).
     // The `riskplatform.testing-conventions` plugin already pins toolchain to 21.
     useJUnitPlatform()
     systemProperty("kubectl.namespace", System.getProperty("kubectl.namespace", "risk-test"))

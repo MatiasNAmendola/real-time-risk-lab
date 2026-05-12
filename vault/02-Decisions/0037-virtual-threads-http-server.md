@@ -75,7 +75,7 @@ Se pasa `Executors.newVirtualThreadPerTaskExecutor()` como executor a `HttpServe
 - [[0001-java-25-lts]]
 - [[0031-no-di-framework]]
 - [[0023-smoke-runner-asymmetric]]
-- Docs: doc 12 (`docs/12-rendimiento-y-separacion.md`)
+- Docs: doc 12 (`vault/04-Concepts/In-Process-vs-Distributed.md`)
 
 ## Referencias
 

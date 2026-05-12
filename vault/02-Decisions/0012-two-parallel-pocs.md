@@ -87,5 +87,5 @@ The two PoCs converge en `pkg/*` shared modules (Gradle) para cross-cutting conc
 
 ## Referencias
 
-- doc 12: `docs/12-rendimiento-y-separacion.md`
+- doc 12: `vault/04-Concepts/In-Process-vs-Distributed.md`
 - doc 13: `docs/13-paridad-logica-poc.md`

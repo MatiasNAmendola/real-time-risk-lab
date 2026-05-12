@@ -10,7 +10,7 @@
 # Also re-enable servicemonitor.yaml and prometheusrule.yaml in apps/risk-engine/templates/
 # and revert the analysis-templates to the prometheus provider.
 #
-# See docs/17-decision-stack-observability-local.md for the full decision rationale.
+# See vault/02-Decisions/0045-observability-stack-local.md for the full decision rationale.
 #
 # Original file: kube-prometheus-stack values for local k3d PoC
 # Ref: https://github.com/prometheus-community/helm-charts/tree/main/charts/kube-prometheus-stack

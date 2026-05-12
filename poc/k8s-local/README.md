@@ -130,7 +130,7 @@ Risk Engine  → kubectl -n risk port-forward svc/risk-engine 8090:8080
 | OTEL backend SaaS (Axiom u otro) | OpenObserve standalone | OTLP-compatible, autohospedado, sin costo |
 | ArgoCD + GitLab webhook | ArgoCD sync automatico local | `repoURL` puede apuntar a path local o Git remoto |
 | GitLab CI | (fuera de scope) | No aplica localmente |
-| kube-prometheus-stack | OpenObserve standalone | ~150 MB vs ~1.5 GB; cubre logs + metrics + traces + alerting en un solo binario. Ver docs/17-decision-stack-observability-local.md |
+| kube-prometheus-stack | OpenObserve standalone | ~150 MB vs ~1.5 GB; cubre logs + metrics + traces + alerting en un solo binario. Ver vault/02-Decisions/0045-observability-stack-local.md |
 | Argo Rollouts canary + Prometheus analysis | Argo Rollouts canary + OpenObserve `web` provider | AnalysisTemplates usan HTTP GET a la API SQL de OpenObserve en lugar de PromQL |
 | IRSA (IAM Roles for Service Accounts) | ServiceAccount + RoleBinding plano | Sin AWS STS; ESO usa SA con RoleBinding a `secrets-source` |
 
@@ -255,7 +255,7 @@ poc/k8s-local/
 │   ├── 00-namespaces.yaml
 │   ├── 10-argocd-values.yaml
 │   ├── 20-argo-rollouts-values.yaml
-│   ├── 30-kube-prom-stack-values.yaml.disabled  # DISABLED — ver docs/17-decision-stack-observability-local.md
+│   ├── 30-kube-prom-stack-values.yaml.disabled  # DISABLED — ver vault/02-Decisions/0045-observability-stack-local.md
 │   ├── 40-external-secrets-values.yaml
 │   ├── 41-cluster-secret-store.yaml  # ClusterSecretStore + secret fuente local
 │   ├── 50-tansu.yaml          # ADR-0043: raw Deployment + Service + topic-seed Job

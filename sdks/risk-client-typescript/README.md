@@ -413,7 +413,7 @@ response headers. The SDK logs a one-time warning per process and continues work
 | Server 1.1 | compatible (deprecated features unused) | compatible | not compatible |
 | Server 2.0 | not compatible | compatible (with /v1 fallback) | compatible |
 
-Full matrix: [docs/22-client-sdks.md](../../docs/22-client-sdks.md).
+Full matrix: [vault/04-Concepts/Client-SDK-Strategy.md](../../vault/04-Concepts/Client-SDK-Strategy.md).
 
 ## Examples
 
@@ -551,7 +551,7 @@ Apache-2.0
 
 ## Related docs
 
-- [docs/22-client-sdks.md](../../docs/22-client-sdks.md) — Design rationale, SemVer policy, deprecation rules.
+- [vault/04-Concepts/Client-SDK-Strategy.md](../../vault/04-Concepts/Client-SDK-Strategy.md) — Design rationale, SemVer policy, deprecation rules.
 - [API specs](http://localhost:8080/openapi.json) — OpenAPI 3.1 (REST) + AsyncAPI 3.0 (events/WS/webhooks).
 - [Cross-SDK contract tests](../contract-test/) — proves Java/TypeScript/Go agree on every channel.
 - [sdks/README.md](../README.md) — Cross-language equivalence table.

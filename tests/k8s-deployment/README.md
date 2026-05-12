@@ -76,5 +76,5 @@ generated this suite) does not have `k3d` installed, so the suite was scaffolded
 and verified to compile but the actual `./gradlew :tests:k8s-deployment:test
 -Pk8s` execution is gated on installing `k3d` (or enabling OrbStack k8s).
 
-See `docs/36-k8s-deployment-tests.md` for output samples and CI integration
+See `vault/03-PoCs/K8s-Deployment-Tests.md` for output samples and CI integration
 notes.

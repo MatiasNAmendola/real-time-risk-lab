@@ -4,7 +4,7 @@ Objetivo: mostrar criterio arquitectónico sin depender de una demo frágil.
 
 ## 0. Posicionamiento
 
-Antes de correr comandos, abrir con la frase de [`docs/36-technical-positioning.md`](docs/36-technical-positioning.md):
+Antes de correr comandos, abrir con la frase de [`vault/05-Methodology/Technical-Positioning.md`](vault/05-Methodology/Technical-Positioning.md):
 
 > Te comparto una exploración técnica curada para discutir arquitectura de decisiones de riesgo en tiempo real. No intenta ser producción cerrada, sino una demo conversacional para hablar de trade-offs: Clean Architecture, boundaries, performance, trazabilidad, evaluación sincrónica, eventos asíncronos, permisos entre componentes, benchmarks y simulación local de despliegue distribuido.
 

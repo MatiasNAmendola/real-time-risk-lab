@@ -82,4 +82,4 @@ Se estructura `poc/vertx-layer-as-pod-eventbus/` como un reactor Gradle de cinco
 ## Referencias
 
 - Vert.x Clustered EventBus: https://vertx.io/docs/vertx-hazelcast/java/
-- doc 12: `docs/12-rendimiento-y-separacion.md`
+- doc 12: `vault/04-Concepts/In-Process-vs-Distributed.md`

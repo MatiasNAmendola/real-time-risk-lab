@@ -76,4 +76,4 @@ The `out/` directory es gitignored — results son local artifacts, no source co
 ## Referencias
 
 - JMH result format: https://openjdk.org/projects/code-tools/jmh/
-- doc 12: `docs/12-rendimiento-y-separacion.md`
+- doc 12: `vault/04-Concepts/In-Process-vs-Distributed.md`

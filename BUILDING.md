@@ -6,7 +6,7 @@
 - El resolver Foojay aprovisiona automáticamente un toolchain Java 21 si no está instalado.
 - No se requiere instalación global de Gradle — el wrapper descarga Gradle 8.11.1 en la primera corrida.
 
-> **¿Por qué bytecode 21 y no 25?** La decisión arquitectónica (ADR-0001) documenta Java 25 LTS como objetivo, pero JMH 1.37, el plugin Shadow y Karate 1.4 fallan con classfile 25 en 2026-05. Compromiso pragmático: bytecode 21; runtime JDK 21+ (Java 25 opcional como objetivo). Ver `docs/26-java-version-compat-2026.md` para detalles completos + triggers para revertir.
+> **¿Por qué bytecode 21 y no 25?** La decisión arquitectónica (ADR-0001) documenta Java 25 LTS como objetivo, pero JMH 1.37, el plugin Shadow y Karate 1.4 fallan con classfile 25 en 2026-05. Compromiso pragmático: bytecode 21; runtime JDK 21+ (Java 25 opcional como objetivo). Ver `vault/02-Decisions/0001-java-25-lts.md` para detalles completos + triggers para revertir.
 
 ## Primera corrida
 

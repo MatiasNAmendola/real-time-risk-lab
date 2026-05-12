@@ -84,7 +84,7 @@ Si un reviewer presenta un reporte de Cucumber al 44% como "evidencia" de bajo c
 
 > "44% es la slice de Cucumber sola. Cucumber valida comportamiento de negocio via use case directo, no via HTTP. El controller, el main, el factory son scope de JUnit unit + integration con Testcontainers. El agregado cross-suite es ~80%. La métrica que importa para ATDD es % de comportamiento de negocio cubierto: ahí `domain.rule` está al 100%, `application.usecase.risk` al 93%. El riesgo regulatorio está cubierto."
 
-Ver también `docs/09-architecture-question-bank.md` G5 para el análisis completo de esta pregunta.
+Ver también `vault/05-Methodology/Architecture-Question-Bank.md` G5 para el análisis completo de esta pregunta.
 
 ## Cómo interpretar los resultados
 

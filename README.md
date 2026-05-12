@@ -147,7 +147,7 @@ Ver [`cli/README.md`](cli/README.md) para el modo seguro, `--include-tracked` y 
 - [`DEMO_SCRIPT.md`](DEMO_SCRIPT.md) — recorrido seguro para mostrar el repo.
 - [`STATUS.md`](STATUS.md) — matriz empírica actual.
 - [`docs/00-START-HERE.md`](docs/00-START-HERE.md) — onboarding extendido.
-- [`docs/09-architecture-question-bank.md`](docs/09-architecture-question-bank.md) — banco de preguntas/respuestas de arquitectura.
-- [`docs/36-technical-positioning.md`](docs/36-technical-positioning.md) — frase de posicionamiento para discusión técnica.
-- [`docs/12-rendimiento-y-separacion.md`](docs/12-rendimiento-y-separacion.md) — performance y trade-offs.
+- [`vault/05-Methodology/Architecture-Question-Bank.md`](vault/05-Methodology/Architecture-Question-Bank.md) — banco de preguntas/respuestas de arquitectura.
+- [`vault/05-Methodology/Technical-Positioning.md`](vault/05-Methodology/Technical-Positioning.md) — frase de posicionamiento para discusión técnica.
+- [`vault/04-Concepts/In-Process-vs-Distributed.md`](vault/04-Concepts/In-Process-vs-Distributed.md) — performance y trade-offs.
 - [`vault/02-Decisions/`](vault/02-Decisions/) — ADRs.

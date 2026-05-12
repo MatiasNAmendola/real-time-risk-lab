@@ -137,7 +137,7 @@ sudo dnf remove <package>
 ## Go Version Management (goenv)
 
 The setup script detects `goenv` and prefers it over a direct brew/apt install.
-Target version: **Go 1.26.2** (latest stable as of 2026-05-07; see `docs/23-go-version-policy.md`).
+Target version: **Go 1.26.2** (latest stable as of 2026-05-07; see `vault/02-Decisions/0047-go-version-policy.md`).
 
 ### Install goenv first (recommended)
 

@@ -81,4 +81,4 @@ Se elige Vert.x 5 (`io.vertx:vertx-stack-depchain:5.0.12`) con Hazelcast TCP clu
 
 - Vert.x Clustered EventBus: https://vertx.io/docs/vertx-hazelcast/java/
 - Vert.x 5 release: https://vertx.io/blog/eclipse-vert-x-5-is-here/
-- doc 12: `docs/12-rendimiento-y-separacion.md`
+- doc 12: `vault/04-Concepts/In-Process-vs-Distributed.md`

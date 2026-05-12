@@ -32,7 +32,7 @@ El repo queda compartible como **exploración técnica curada**, no como sistema
 2. `./nx setup --verify`: k3d/kustomize/mc/otel-cli/websocat no bloquean core demo; se muestran como opcionales.
 3. `./nx test --composite quick`: redefinido como guardrail live sub-segundo/segundos (`quick-check`) para evitar esperas imposibles durante demo.
 4. `arch` queda `exclusive` dentro de `ci-fast` para evitar carrera XML cuando se corren unit + ArchUnit reales.
-5. Consistency audit: `docs/09-architecture-question-bank.md` agregado como fuente Q&A; `./nx audit consistency` corre en modo strict.
+5. Consistency audit: `vault/05-Methodology/Architecture-Question-Bank.md` agregado como fuente Q&A; `./nx audit consistency` corre en modo strict.
 6. Confidentiality: `.ai/blocklist.sha256` no vacía para evitar falso “scan skipped”.
 7. Scrub: mock password de OpenBao convertido a variable local.
 8. Términos públicos residuales limpiados: audit queda en 0 matches.
@@ -47,7 +47,7 @@ Frase recomendada para compartirlo:
 
 Ver [`DEMO_SCRIPT.md`](DEMO_SCRIPT.md). Recomendación:
 
-1. Mostrar primero `README.md`, `docs/09-architecture-question-bank.md` y ADRs.
+1. Mostrar primero `README.md`, `vault/05-Methodology/Architecture-Question-Bank.md` y ADRs.
 2. Correr `./nx setup --verify`, `./nx build`, `./nx test --composite quick`, `./nx audit consistency`.
 3. Mostrar `poc/vertx-layer-as-pod-http` local pods porque demuestra separación por capas/permisos de manera determinística.
 4. Correr `./nx bench inproc` para respaldar performance con medición reproducible.

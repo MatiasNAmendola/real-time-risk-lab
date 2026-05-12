@@ -78,5 +78,5 @@ The rationale para adding HTTP un la bare-javac PoC a todos (rather than keeping
 
 ## Referencias
 
-- doc 12: `docs/12-rendimiento-y-separacion.md`
+- doc 12: `vault/04-Concepts/In-Process-vs-Distributed.md`
 - Java virtual threads HTTP server: https://openjdk.org/jeps/444

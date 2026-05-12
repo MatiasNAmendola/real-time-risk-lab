@@ -116,7 +116,7 @@ shows every operation across all three languages.
 | Server 1.1 | compatible | compatible | compatible |
 | Server 2.0 | not compatible | not compatible | not compatible |
 
-Full versioning policy and compatibility rules: [docs/22-client-sdks.md](../docs/22-client-sdks.md).
+Full versioning policy and compatibility rules: [vault/04-Concepts/Client-SDK-Strategy.md](../vault/04-Concepts/Client-SDK-Strategy.md).
 
 ## Stability contract
 
@@ -128,7 +128,7 @@ Full versioning policy and compatibility rules: [docs/22-client-sdks.md](../docs
 
 ## Full design
 
-See [docs/22-client-sdks.md](../docs/22-client-sdks.md) for design rationale, SemVer policy,
+See [vault/04-Concepts/Client-SDK-Strategy.md](../vault/04-Concepts/Client-SDK-Strategy.md) for design rationale, SemVer policy,
 deprecation rules, and migration playbook templates.
 
 ## Contract tests
