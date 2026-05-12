@@ -20,7 +20,7 @@ Runs 9 smoke checks against every integration surface of the Risk Engine:
 | 5 | `sse`       | `GET /risk/stream` (SSE) → reads up to 3 events in 5s       |
 | 6 | `websocket` | `WS /ws/risk` → sends 3 tx, reads ≥3 responses             |
 | 7 | `webhook`   | Register local listener → fire DECLINE tx → await callback  |
-| 8 | `kafka`     | Redpanda consumer on `risk-decisions` topic, 5 msgs / 5s    |
+| 8 | `kafka`     | Tansu topic consume via `cp-kafka:7.0.0`, 5 msgs / 7s        |
 | 9 | `otel`      | `POST /risk` → `traceresponse` → OpenObserve trace lookup   |
 
 ---
@@ -238,7 +238,10 @@ RISK_SMOKE_INCLUDE_ATDD=1 ./bin/risk-smoke --headless
 | Variable                      | Default                    |
 |-------------------------------|----------------------------|
 | `RISK_SMOKE_CONTROLLER_URL`   | `http://localhost:8080`    |
-| `RISK_SMOKE_KAFKA_BROKER`     | `localhost:19092`          |
+| `RISK_SMOKE_KAFKA_BROKER`     | `localhost:9092`           |
 | `RISK_SMOKE_OPENOBSERVE_URL`  | `http://localhost:5080`    |
 | `RISK_SMOKE_KAFKA_TOPIC`      | `risk-decisions`           |
+| `RISK_SMOKE_KAFKA_DOCKER_IMAGE` | `confluentinc/cp-kafka:7.0.0` |
+| `RISK_SMOKE_KAFKA_DOCKER_NETWORK` | `compose_data-net`      |
+| `RISK_SMOKE_KAFKA_DOCKER_BROKER`  | `tansu:9092`            |
 | `RISK_SMOKE_INCLUDE_ATDD`    | _(unset)_ — set to `1` to auto-include `cucumber-bare` |

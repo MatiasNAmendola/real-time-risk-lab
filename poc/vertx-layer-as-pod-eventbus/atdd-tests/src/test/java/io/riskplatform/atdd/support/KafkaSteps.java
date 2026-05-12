@@ -35,7 +35,7 @@ public class KafkaSteps {
      * Creates an ephemeral consumer, subscribes to {@code topic}, and polls until
      * {@code expectedCount} records are received or {@code timeoutMs} elapses.
      *
-     * @param broker       bootstrap server, e.g. {@code localhost:19092}
+     * @param broker       bootstrap server, e.g. {@code localhost:9092}
      * @param topic        Kafka topic name
      * @param expectedCount number of records to wait for
      * @param timeoutMs    maximum total wait in milliseconds

@@ -18,15 +18,18 @@ func main() {
 	cfg := config.Default()
 
 	var (
-		headless       = flag.Bool("headless", false, "Run all checks without TUI, exit 0/1")
-		ci             = flag.Bool("ci", false, "Alias for --headless")
-		baseURL        = flag.String("base-url", "", "Override controller base URL (default: $RISK_SMOKE_CONTROLLER_URL or http://localhost:8080)")
-		kafkaBrk       = flag.String("kafka-broker", "", "Kafka/Redpanda broker address (default: localhost:19092)")
-		openobs        = flag.String("openobserve", "", "OpenObserve base URL (default: http://localhost:5080)")
-		onlyChecks     = flag.String("only", "", "Comma-separated list of check IDs to run (e.g. health,rest,kafka)")
-		outDir         = flag.String("out-dir", "out/smoke/", "Directory for file reports")
-		noFileReport   = flag.Bool("no-file-report", false, "Disable file output (console only)")
-		reportOnlyFail = flag.Bool("report-only-fail", false, "Only write file report for failed checks")
+		headless           = flag.Bool("headless", false, "Run all checks without TUI, exit 0/1")
+		ci                 = flag.Bool("ci", false, "Alias for --headless")
+		baseURL            = flag.String("base-url", "", "Override controller base URL (default: $RISK_SMOKE_CONTROLLER_URL or http://localhost:8080)")
+		kafkaBrk           = flag.String("kafka-broker", "", "Kafka/Tansu broker address for native clients (default: localhost:9092)")
+		openobs            = flag.String("openobserve", "", "OpenObserve base URL (default: http://localhost:5080)")
+		kafkaDockerImage   = flag.String("kafka-docker-image", "", "Docker image for cp-kafka smoke client (default: confluentinc/cp-kafka:7.0.0)")
+		kafkaDockerNetwork = flag.String("kafka-docker-network", "", "Docker network for cp-kafka smoke client (default: compose_data-net)")
+		kafkaDockerBroker  = flag.String("kafka-docker-broker", "", "Broker address from inside Docker network (default: tansu:9092)")
+		onlyChecks         = flag.String("only", "", "Comma-separated list of check IDs to run (e.g. health,rest,kafka)")
+		outDir             = flag.String("out-dir", "out/smoke/", "Directory for file reports")
+		noFileReport       = flag.Bool("no-file-report", false, "Disable file output (console only)")
+		reportOnlyFail     = flag.Bool("report-only-fail", false, "Only write file report for failed checks")
 	)
 
 	flag.Usage = func() {
@@ -47,7 +50,7 @@ CHECK IDs (for --only)
   sse             GET /risk/stream (SSE, up to 3 events)
   websocket       WS /ws/risk (bidi, 3 messages)
   webhook         Register local listener, fire DECLINE tx, wait callback
-  kafka           Consume topic risk-decisions (Redpanda)
+  kafka           Consume topic risk-decisions (Tansu via cp-kafka 7.x by default)
   otel            POST /risk → traceresponse → OpenObserve trace lookup
   cucumber-bare   Run Gradle Cucumber ATDD for no-vertx-clean-engine (opt-in, slow)
 
@@ -61,9 +64,12 @@ EXAMPLES
 
 ENV VARS
   RISK_SMOKE_CONTROLLER_URL   (default: http://localhost:8080)
-  RISK_SMOKE_KAFKA_BROKER     (default: localhost:19092)
+  RISK_SMOKE_KAFKA_BROKER     (default: localhost:9092)
   RISK_SMOKE_OPENOBSERVE_URL  (default: http://localhost:5080)
   RISK_SMOKE_KAFKA_TOPIC      (default: risk-decisions)
+  RISK_SMOKE_KAFKA_DOCKER_IMAGE   (default: confluentinc/cp-kafka:7.0.0)
+  RISK_SMOKE_KAFKA_DOCKER_NETWORK (default: compose_data-net)
+  RISK_SMOKE_KAFKA_DOCKER_BROKER  (default: tansu:9092)
   RISK_SMOKE_INCLUDE_ATDD    set to 1 to auto-include cucumber-bare in every run
 `)
 	}
@@ -78,6 +84,15 @@ ENV VARS
 	}
 	if *openobs != "" {
 		cfg.OpenObserveURL = *openobs
+	}
+	if *kafkaDockerImage != "" {
+		cfg.KafkaDockerImage = *kafkaDockerImage
+	}
+	if *kafkaDockerNetwork != "" {
+		cfg.KafkaDockerNetwork = *kafkaDockerNetwork
+	}
+	if *kafkaDockerBroker != "" {
+		cfg.KafkaDockerBroker = *kafkaDockerBroker
 	}
 	if *onlyChecks != "" {
 		cfg.OnlyChecks = splitComma(*onlyChecks)

@@ -27,8 +27,9 @@ import java.util.concurrent.TimeUnit;
  * lifecycle; parallel-class execution would clash.
  *
  * <p>Compat note: librdkafka 2.x clients (kcat 1.7.x) fail Tansu's
- * ApiVersionRequest handshake. The JVM Apache Kafka client used by these
- * integration tests is verified to work.
+ * ApiVersionRequest handshake, and franz-go consumer groups hit upstream
+ * Fetch hangs (tansu-io/tansu#668). The JVM Apache Kafka 7.x client used
+ * by these integration tests is verified to work.
  */
 public final class TansuContainer extends GenericContainer<TansuContainer> {
 

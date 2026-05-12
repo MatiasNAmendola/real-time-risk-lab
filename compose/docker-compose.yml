@@ -96,8 +96,9 @@ services:
     cpus: "0.50"
 
   # Topic seeding via Apache Kafka client (works against Tansu wire protocol).
-  # librdkafka 2.x clients (kcat 1.7.1) hit incompatibilities at handshake;
-  # confluentinc/cp-kafka ships the JVM Apache Kafka client which works.
+  # librdkafka 2.x clients (kcat 1.7.1) hit handshake incompatibilities and
+  # franz-go consumer groups hit upstream Fetch hangs (tansu-io/tansu#668);
+  # confluentinc/cp-kafka ships the JVM Apache Kafka 7.x client which works.
   # Idempotent: --if-not-exists swallows AlreadyExistsException.
   tansu-init:
     image: confluentinc/cp-kafka:7.0.0

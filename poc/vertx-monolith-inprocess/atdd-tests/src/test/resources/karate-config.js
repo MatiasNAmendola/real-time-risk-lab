@@ -7,7 +7,7 @@ function fn() {
 
   var config = {
     baseUrl: resolvedBaseUrl,
-    kafkaBroker: 'localhost:19092',
+    kafkaBroker: 'localhost:9092',
     openObserveUrl: 'http://localhost:5080',
     kafkaTopic: 'risk-decisions',
     webhookListenerHost: 'host.docker.internal'
@@ -15,7 +15,7 @@ function fn() {
 
   if (env === 'ci') {
     config.baseUrl = 'http://vertx-monolith-inprocess:8090';
-    config.kafkaBroker = 'kafka:9092';
+    config.kafkaBroker = 'tansu:9092';
     config.openObserveUrl = 'http://openobserve:5080';
     config.webhookListenerHost = 'localhost';
   }
