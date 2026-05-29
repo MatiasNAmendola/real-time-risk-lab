@@ -1,0 +1,10 @@
+[project]
+name = "real-time-risk-lab"
+version = "0.1.0"
+description = "Python tooling for Real-Time Risk Lab repository automation and audits."
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = []
+
+[tool.uv]
+package = false
