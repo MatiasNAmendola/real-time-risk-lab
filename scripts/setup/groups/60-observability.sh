@@ -97,15 +97,15 @@ install_websocat() {
 }
 
 install_wscat() {
-  log_step "Installing wscat (WebSocket CLI, via npm)..."
-  if ! has_command npm; then
-    log_warn "npm not found. wscat requires Node.js/npm. Install Node.js first: https://nodejs.org"
+  log_step "Installing wscat (WebSocket CLI, via Bun)..."
+  if ! has_command bun; then
+    log_warn "bun not found. wscat installs via Bun in this repo. Install Bun first: https://bun.sh/docs/installation"
     return 1
   fi
   if [[ "$DRY_RUN" != "1" ]]; then
-    retry 3 2 npm install -g wscat
+    retry 3 2 bun add -g wscat
   else
-    log_arrow "[dry-run] npm install -g wscat"
+    log_arrow "[dry-run] bun add -g wscat"
   fi
 }
 

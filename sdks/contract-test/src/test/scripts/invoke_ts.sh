@@ -18,11 +18,11 @@ SDK_DIR="${REPO_ROOT}/sdks/risk-client-typescript"
 
 # Build the SDK if dist/ does not exist.
 if [ ! -d "${SDK_DIR}/dist" ]; then
-  (cd "${SDK_DIR}" && npm run build --silent 2>/dev/null || npm install --silent && npm run build --silent)
+  (cd "${SDK_DIR}" && bun run build --silent 2>/dev/null || (bun install --frozen-lockfile --silent && bun run build --silent))
 fi
 
-# Inline Node script — evaluates the request and prints JSON to stdout.
-node - <<EOF
+# Inline Bun script — evaluates the request and prints JSON to stdout.
+bun - <<EOF
 const { RiskClient } = require('${SDK_DIR}/dist/index.js');
 
 // Must be set before constructing RiskClient; channels resolve endpoints in constructors.

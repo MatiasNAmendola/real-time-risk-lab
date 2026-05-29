@@ -44,7 +44,8 @@ Una exploración técnica de un use case de detección de fraude productivo, que
 1. **`.ai/context/agent-os-principles.md`** — 8 principios de orquestación de agentes IA.
 2. **`docs/22-client-sdks.md`** — diseño multi-lenguaje + SemVer.
 3. **`docs/27-test-runner.md`** — test runner con DAG + throttling de recursos.
-4. **`.ai/scripts/quick-check.py`** — guardrail sub-segundo de demo: boundaries fuente + freshness warnings sin invocar Gradle.
+4. **`docs/40-bun-package-manager-security.md`** — Bun obligatorio + hardening contra lifecycle scripts.
+5. **`.ai/scripts/quick-check.py`** — guardrail sub-segundo de demo: boundaries fuente + freshness warnings sin invocar Gradle.
 4. **`.ai/scripts/consistency-auditor.py`** + **`.ai/audit-rules/terminology.yaml`** — meta-cobertura de docs (la spec vive en el script).
 
 ---
@@ -93,6 +94,7 @@ Para agentes y humanos: si vas a tocar X, leé Y antes.
 | ADR nuevo | `vault/02-Decisions/_template.md` + `.ai/primitives/skills/add-architecture-decision.md` | numeración + formato |
 | meta-cobertura / coverage | [[Meta-Coverage]] + [[Primitive-Coverage-Ratio]] | 4 ejes + ratio formula |
 | confidencialidad / secrets | [[Confidentiality-Hashing]] + [[Secrets-PII-Protection]] | threat model |
+| JS/TypeScript deps | `docs/40-bun-package-manager-security.md` + `bunfig.toml` | Bun obligatorio + `ignoreScripts=true` |
 
 ---
 

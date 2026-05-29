@@ -34,11 +34,11 @@ declare -a VERIFY_TOOLS=(
   "core|jq|jq --version|jq-([0-9]+\.[0-9]+)|1.6.0|0"
   "core|yq|yq --version|version v([0-9]+\.[0-9]+\.[0-9]+)|4.40.0|0"
   "core|make|make --version|GNU Make ([0-9]+\.[0-9]+)|3.80|0"
-  # languages (4 tools — node via fnm is optional, only required for TS SDK)
+  # languages (4 tools)
   "languages|java|java -version 2>&1|version.\"([0-9]+)|21|0"
   "languages|go|go version|go([0-9]+\.[0-9]+\.[0-9]+)|1.23.0|0"
   "languages|python3|python3 --version|Python ([0-9]+\.[0-9]+\.[0-9]+)|3.11.0|0"
-  "languages|node-toolchain|true|()|0|1"
+  "languages|bun|bun --version|([0-9]+\.[0-9]+\.[0-9]+)|1.3.0|0"
   # containers (3 tools)
   "containers|docker|docker --version|Docker version ([0-9]+\.[0-9]+\.[0-9]+)|24.0.0|0"
   "containers|docker-compose-v2|docker compose version|v([0-9]+\.[0-9]+\.[0-9]+)|2.20.0|0"
@@ -91,38 +91,6 @@ verify_tool() {
 
   GROUP_TOTAL[$group]=$(( ${GROUP_TOTAL[$group]:-0} + 1 ))
 
-  # Special check for Node.js toolchain. The user may manage Node via fnm
-  # (preferred), nvm, asdf, Volta, or system install. We accept any of:
-  #   1. fnm present  → activate `fnm env` and verify node/npm resolve
-  #   2. node + npm already on PATH (any other manager)
-  if [[ "$name" == "node-toolchain" ]]; then
-    local node_ok=0
-    local detail=""
-    if has_command fnm; then
-      # Activate in a subshell so we don't pollute the verify script env
-      if (eval "$(fnm env --shell bash 2>/dev/null || fnm env 2>/dev/null)"; \
-          command -v node >/dev/null && command -v npm >/dev/null) 2>/dev/null; then
-        local nv
-        nv="$(eval "$(fnm env --shell bash 2>/dev/null || fnm env 2>/dev/null)"; node --version 2>/dev/null || true)"
-        detail="fnm + node ${nv}"
-        node_ok=1
-      else
-        detail="fnm present but no LTS installed (run: fnm install --lts)"
-      fi
-    elif has_command node && has_command npm; then
-      detail="node $(node --version 2>/dev/null) (no fnm — consider: brew install fnm)"
-      node_ok=1
-    fi
-
-    if [[ $node_ok -eq 1 ]]; then
-      GROUP_OK[$group]=$(( ${GROUP_OK[$group]:-0} + 1 ))
-    else
-      # Optional, so it never blocks the verify exit code
-      GROUP_MISSING[$group]=$(( ${GROUP_MISSING[$group]:-0} + 1 ))
-      GROUP_MISSING_NAMES[$group]+=" node-toolchain(${detail:-not-found; brew install fnm})"
-    fi
-    return
-  fi
 
   # Special check for docker compose v2 (plugin not standalone)
   if [[ "$name" == "docker-compose-v2" ]]; then

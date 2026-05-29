@@ -167,30 +167,33 @@ Auditoría cross-platform vía la herramienta de cobertura:
 # Incluye chequeo "cross-platform aware" con % de scripts usando patrones portables.
 ```
 
-## Node.js: gestionado vía fnm
+## JavaScript/TypeScript: Bun obligatorio
 
-Para el SDK TypeScript usamos **fnm** (Fast Node Manager), no `brew install node`
-ni descargas directas. fnm provee:
-
-- Switching automático con `.node-version` por proyecto.
-- Mac y Linux con un único path de instalación (Homebrew o instalador shell).
-- Activación por shell (no contamina el sistema).
+Para el SDK TypeScript usamos **Bun** como package manager/runtime del repo, no
+`npm`, `pnpm`, `yarn` ni `fnm` como flujo soportado.
 
 Setup:
 
 ```bash
-brew install fnm                                         # macOS
-curl -fsSL https://fnm.vercel.app/install | bash         # Linux
+brew install bun                              # macOS
+curl -fsSL https://bun.sh/install | bash      # Linux
 
-# Activar en ~/.zshrc o ~/.bashrc:
-eval "$(fnm env --use-on-cd)"
-
-fnm install --lts && fnm default lts-latest
+bun --version
 ```
 
-`./nx setup --verify` detecta fnm y verifica que node/npm resuelvan después de
-activar. Ver `27-test-runner.md` (sección "Node.js via fnm") para detalles del
-wrapper `scripts/lib/with-fnm.sh` que activa fnm en jobs del test runner.
+Política de seguridad:
+
+```toml
+[install]
+ignoreScripts = true
+```
+
+Esto evita que `bun install` / `bun add` ejecuten lifecycle scripts
+(`prepare`, `preinstall`, `install`, `postinstall`, etc.) de paquetes o
+workspaces. Ver `docs/40-bun-package-manager-security.md`.
+
+`./nx setup --verify` detecta `bun`. El test runner usa
+`scripts/lib/with-bun.sh` en los jobs del SDK TypeScript.
 
 ## Referencia de diseño
 

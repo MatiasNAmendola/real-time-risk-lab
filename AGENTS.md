@@ -56,7 +56,7 @@ Inventario completo: [.ai/context/poc-inventory.md](.ai/context/poc-inventory.md
 
 ## 4. Reglas non-negotiable
 
-Estas 5 reglas se aplican en TODO el codigo de este repo. No hay excepciones.
+Estas 6 reglas se aplican en TODO el codigo de este repo. No hay excepciones.
 
 ### R1: Java baseline real + objetivo LTS
 Baseline ejecutable actual: **Java 21 LTS** (`--release 21`) por compatibilidad de Gradle/JMH/Karate/ArchUnit. Objetivo documentado: **Java 25 LTS** cuando el tooling soporte classfile 25 sin fricción. No afirmar Java 25 como build real si el repo compila con 21.
@@ -77,6 +77,10 @@ Regla completa: [.ai/primitives/rules/observability-otel.md](.ai/primitives/rule
 ### R5: Clean boundaries
 `domain/` NO importa de `application/` ni `infrastructure/`. Puertos en `domain/`, adapters en `infrastructure/`.
 Regla completa: [.ai/primitives/rules/clean-arch-boundaries.md](.ai/primitives/rules/clean-arch-boundaries.md)
+
+### R6: Python con uv; JS/TypeScript con Bun seguro
+Si hay Python, usar **uv** (`pyproject.toml`, `uv.lock`, `requirements.txt` exportado por uv). Si hay Node/JS/TypeScript, usar **Bun** como package manager/runtime de repo; no usar npm/pnpm/yarn para installs. Bun debe mantener `[install] ignoreScripts = true` en `bunfig.toml`, lo que bloquea lifecycle scripts (`prepare`, `preinstall`, `install`, `postinstall`, etc.) de paquetes/workspaces para reducir riesgo de malware.
+Regla completa: [docs/40-bun-package-manager-security.md](docs/40-bun-package-manager-security.md)
 
 ---
 

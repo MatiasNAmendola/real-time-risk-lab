@@ -90,7 +90,7 @@ Estos grupos requieren `./nx up k8s` previamente (k3d u OrbStack k8s). Ver
 
 ### Skip por toolchain faltante
 
-Cada grupo declara en `.ai/test-groups.yaml` el campo `requires:` con las CLIs necesarias (`docker`, `fnm`, `npm`, `node`, `go`). Si falta alguna, el runner emite SKIP con la razón en lugar de fallar con exit 127. Sintaxis OR soportada: `requires: ["fnm|npm"]` (cumple cualquiera). Ver [doc 27](27-test-runner.md).
+Cada grupo declara en `.ai/test-groups.yaml` el campo `requires:` con las CLIs necesarias (`docker`, `bun`, `go`). Si falta alguna, el runner emite SKIP con la razón en lugar de fallar con exit 127. Ver [doc 27](27-test-runner.md). Para JS/TypeScript, Bun es obligatorio y está endurecido con `ignoreScripts=true`; ver [doc 40](40-bun-package-manager-security.md).
 
 ---
 

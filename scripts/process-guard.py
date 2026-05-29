@@ -29,7 +29,8 @@ INTERESTING_TOKENS = (
     "gradle-wrapper.jar",
     "GradleDaemon",
     "org.gradle.wrapper.GradleWrapperMain",
-    "npm test",
+    "bun test",
+    "bun run test",
     "go test",
     "docker compose",
     "./nx test",
@@ -40,7 +41,7 @@ CLASSIFIERS = (
     ("test-runner", ("scripts/test-runner.py", "test-runner.py")),
     ("gradle-wrapper", ("gradle-wrapper.jar", "org.gradle.wrapper.GradleWrapperMain")),
     ("gradle-daemon", ("GradleDaemon", "org.gradle.launcher.daemon.bootstrap.GradleDaemon")),
-    ("npm", ("npm test", " jest ", "ts-jest")),
+    ("bun", ("bun test", "bun run test", " jest ", "ts-jest")),
     ("go-test", ("go test",)),
     ("docker-compose", ("docker compose", "docker-compose")),
 )

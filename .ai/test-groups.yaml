@@ -19,7 +19,7 @@
 #   duration_estimate_sec   rough expected wall-clock seconds  (default: 60)
 #   exclusive        true = must run alone, no concurrent jobs  (default: false)
 #   requires         flow-list of external CLI tools that MUST be in PATH for
-#                    the group to run. Example: requires: [npm, node]. If any
+#                    the group to run. Example: requires: [bun]. If any
 #                    listed tool is missing, the runner SKIPs the group with a
 #                    clear verdict instead of failing with exit 127.
 
@@ -66,13 +66,13 @@ groups:
     exclusive: false
 
   unit-sdk-typescript:
-    cmd: "scripts/lib/with-fnm.sh sh -c 'cd sdks/risk-client-typescript && ([ -d node_modules ] || npm ci --silent) && npm test -- --runInBand'"
+    cmd: "scripts/lib/with-bun.sh sh -c 'cd sdks/risk-client-typescript && ([ -d node_modules ] || bun install --frozen-lockfile --silent) && bun run test -- --runInBand'"
     needs_infra: false
     cost_cpu: low
     cost_ram_mb: 400
     duration_estimate_sec: 20
     exclusive: false
-    requires: ["fnm|npm"]
+    requires: [bun]
 
   unit-sdk-go:
     cmd: "cd sdks/risk-client-go && go test ./..."
@@ -163,13 +163,13 @@ groups:
     requires: [docker]
 
   sdk-typescript-integration:
-    cmd: "scripts/lib/with-fnm.sh sh -c 'cd sdks/risk-client-typescript && npm run test:integration'"
+    cmd: "scripts/lib/with-bun.sh sh -c 'cd sdks/risk-client-typescript && ([ -d node_modules ] || bun install --frozen-lockfile --silent) && bun run test:integration'"
     needs_infra: compose
     cost_cpu: low
     cost_ram_mb: 400
     duration_estimate_sec: 90
     exclusive: true
-    requires: ["fnm|npm", docker]
+    requires: [bun, docker]
 
   sdk-go-integration:
     cmd: "cd sdks/risk-client-go && go test -tags=integration ./..."
@@ -304,13 +304,13 @@ groups:
     exclusive: false
 
   sdk-typescript:
-    cmd: "scripts/lib/with-fnm.sh sh -c 'cd sdks/risk-client-typescript && ([ -d node_modules ] || npm ci --silent) && npm test -- --runInBand'"
+    cmd: "scripts/lib/with-bun.sh sh -c 'cd sdks/risk-client-typescript && ([ -d node_modules ] || bun install --frozen-lockfile --silent) && bun run test -- --runInBand'"
     needs_infra: false
     cost_cpu: low
     cost_ram_mb: 400
     duration_estimate_sec: 20
     exclusive: false
-    requires: ["fnm|npm"]
+    requires: [bun]
 
   sdk-go:
     cmd: "cd sdks/risk-client-go && go test ./..."

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# 10-languages.sh — Java 21+ runtime/toolchain, Go 1.26+ (goenv preferred), Python 3.11+
-# Tools: 3
+# 10-languages.sh — Java 21+ runtime/toolchain, Go 1.26+ (goenv preferred), Python 3.11+, Bun
+# Tools: 4
 
 GROUP_NAME="languages"
 GROUP_DESCRIPTION="Programming language runtimes"
@@ -103,59 +103,43 @@ check_go() {
   fi
 }
 
-check_node() {
-  # Node.js is optional (only needed for the TypeScript SDK). Preferred manager
-  # is fnm (fast, written in Rust, supports `.node-version` auto-switching).
-  # Accept any of: fnm with an LTS installed, or system node+npm via another
-  # manager (nvm, asdf, Volta, brew install node).
-  if has_command fnm; then
-    local node_ver=""
-    node_ver="$(eval "$(fnm env --shell bash 2>/dev/null || fnm env 2>/dev/null)"; node --version 2>/dev/null || true)"
-    if [[ -n "$node_ver" ]]; then
-      log_tool_status "node (via fnm)" "$node_ver" "ok"
-    else
-      log_tool_status "node (via fnm)" "fnm installed, no LTS yet" "missing"
-      MISSING_TOOLS+=("node")
-    fi
-  elif has_command node && has_command npm; then
-    log_tool_status "node" "$(node --version 2>/dev/null) (consider fnm)" "ok"
+check_bun() {
+  # Bun is required for all JavaScript/TypeScript package-manager workflows in
+  # this repo. We intentionally do not require npm/pnpm/yarn for repo tests.
+  if ! has_command bun; then
+    log_tool_status "bun" "" "missing"
+    MISSING_TOOLS+=("bun")
+    return
+  fi
+
+  local version
+  version="$(bun --version 2>/dev/null || true)"
+  if version_at_least "$version" "1.3.0"; then
+    log_tool_status "bun" "$version" "ok"
   else
-    log_tool_status "node" "" "missing"
-    MISSING_TOOLS+=("node")
+    log_tool_status "bun" "$version (need >=1.3)" "outdated"
+    OUTDATED_TOOLS+=("bun")
   fi
 }
 
-install_node() {
+install_bun() {
   local pkg_mgr
   pkg_mgr="$(detect_package_manager)"
-  log_step "Installing fnm (Fast Node Manager) + Node.js LTS..."
+  log_step "Installing Bun..."
   case "$pkg_mgr" in
-    brew)
-      install_with_brew "fnm" || return 1
-      ;;
+    brew) install_with_brew "bun" ;;
     apt|dnf)
       if [[ "$DRY_RUN" != "1" ]]; then
-        retry 3 2 curl -fsSL https://fnm.vercel.app/install | bash -s -- --skip-shell || return 1
+        retry 3 2 curl -fsSL https://bun.sh/install | bash || return 1
       else
-        log_arrow "[dry-run] Would run: curl -fsSL https://fnm.vercel.app/install | bash"
+        log_arrow "[dry-run] Would run: curl -fsSL https://bun.sh/install | bash"
       fi
       ;;
     *)
-      log_warn "Install fnm manually: https://github.com/Schniz/fnm#installation"
+      log_warn "Install Bun manually: https://bun.sh/docs/installation"
       return 1
       ;;
   esac
-
-  if [[ "$DRY_RUN" != "1" ]] && has_command fnm; then
-    eval "$(fnm env --shell bash 2>/dev/null || fnm env 2>/dev/null)"
-    fnm install --lts || true
-    fnm default lts-latest 2>/dev/null || true
-    log_ok "fnm: Node LTS installed and set as default"
-    if confirm "  Add fnm activation (eval \"\$(fnm env --use-on-cd)\") to your shell RC?" "Y"; then
-      append_to_shell_rc "fnm (set by setup.sh)" \
-        'eval "$(fnm env --use-on-cd)"'
-    fi
-  fi
 }
 
 check_python() {
@@ -322,7 +306,7 @@ group_check() {
   check_java
   check_go
   check_python
-  check_node
+  check_bun
 }
 
 group_install() {
@@ -343,7 +327,7 @@ group_install() {
       java)    install_java    && record_install "java"    || record_failure "java" "install failed" ;;
       go)      install_go      && record_install "go"      || record_failure "go" "install failed" ;;
       python3) install_python  && record_install "python3" || record_failure "python3" "install failed" ;;
-      node)    install_node    && record_install "node"    || record_failure "node" "install failed" ;;
+      bun)     install_bun     && record_install "bun"     || record_failure "bun" "install failed" ;;
     esac
   done
 }

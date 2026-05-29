@@ -37,7 +37,7 @@ de ejecución, lo que hace el output del dry-run estable y útil para revisión 
 en CI.
 
 La ejecución usa un `ThreadPoolExecutor`: cada thread solo espera a un proceso hijo
-(`gradlew`, `npm`, `go`, docker tools). Esto evita el overhead de `multiprocessing`
+(`gradlew`, `bun`, `go`, docker tools). Esto evita el overhead de `multiprocessing`
 en macOS y reduce el riesgo de semáforos filtrados o bloqueos del runtime Python.
 
 ### Throttle de recursos
@@ -83,15 +83,13 @@ unit-java-fast:
   cost_cpu: medium     # low=15%, medium=35%, high=70% de reserva de CPU
   cost_ram_mb: 800     # consumo pico estimado de RAM
   exclusive: false     # cuando es true, corre solo (sin jobs concurrentes)
-  requires: ["fnm|npm"]  # tools externos requeridos en PATH (opcional). El
-                          # separador `|` indica alternativas: cualquiera de las
-                          # listadas satisface el requisito.
+  requires: [bun]        # tools externos requeridos en PATH (opcional).
 ```
 
 ### Campo `requires`: SKIP-on-missing-tool
 
 Algunos grupos dependen de CLIs externos que pueden no estar instalados en el host
-(ej. `sdk-typescript` necesita `npm`/`node`, `sdk-go` necesita `go`, los grupos con
+(ej. `sdk-typescript` necesita `bun`, `sdk-go` necesita `go`, los grupos con
 `needs_infra: compose|docker` necesitan `docker`). Antes, si la herramienta faltaba,
 el job fallaba con `exit 127` (command not found) y contaba como FAIL en el reporte
 de CI, ensuciando el verdict.
@@ -101,7 +99,7 @@ Antes de despachar un job, el runner ejecuta `shutil.which(tool)` para cada entr
 si alguna falta, el job se marca como **SKIP** con un mensaje claro:
 
 ```
-SKIP     sdk-typescript   (required tool 'npm' not found in PATH
+SKIP     sdk-typescript   (required tool 'bun' not found in PATH
                            (install it to enable sdk-typescript tests))
 ```
 
@@ -109,7 +107,7 @@ Comportamiento:
 
 - Tool ausente → `SKIP`, no cuenta como fallo, exit code del runner = 0 si los demás pasan.
 - Tool presente y comando OK → `PASS`.
-- Tool presente y comando falla (ej. `npm install` rompe) → `FAIL` normal.
+- Tool presente y comando falla (ej. `bun install --frozen-lockfile` rompe) → `FAIL` normal.
 
 Los jobs SKIP aparecen en `summary.md`, `results.json` (status `SKIP`), y el output
 de `--dry-run` los enumera bajo `SKIPPED (missing tools)`. Esto vuelve idempotente
@@ -120,55 +118,30 @@ Grupos que actualmente declaran `requires`:
 
 | Grupo | requires |
 |---|---|
-| `unit-sdk-typescript`, `sdk-typescript`, `sdk-typescript-integration` | `["fnm\|npm"]` (+ `docker` para integration). El comando se envuelve en `scripts/lib/with-fnm.sh` para activar el entorno fnm si está presente. |
+| `unit-sdk-typescript`, `sdk-typescript`, `sdk-typescript-integration` | `[bun]` (+ `docker` para integration). El comando se envuelve en `scripts/lib/with-bun.sh` y usa `bun install --frozen-lockfile` + `bun run ...`. |
 | `unit-sdk-go`, `sdk-go`, `sdk-go-integration` | `[go]` (+ `docker` para integration) |
 | `integration-*`, `sdk-*-integration`, `contract`, `k6`, `bench-distributed`, aliases legacy compose/docker | `[docker]` (+ `k6` para `k6`) |
 
-### Node.js via fnm
+### JavaScript/TypeScript via Bun
 
-Este repo usa **fnm** (Fast Node Manager, https://github.com/Schniz/fnm) para
-gestionar Node.js. Es como nvm pero escrito en Rust, switching automático con
-`.node-version`. Razones:
+Este repo usa **Bun** como package manager obligatorio para todo flujo JS/TypeScript.
+No usar `npm`, `pnpm` ni `yarn` para instalar dependencias del repo.
 
-- Multiples versiones de Node coexisten sin conflictos.
-- `fnm use` automático al hacer `cd` a un dir con `.node-version` (con `--use-on-cd`).
-- Activación por shell, no global; no rompe otros proyectos.
+El hardening vive en `bunfig.toml`:
 
-**Instalación:**
-
-```bash
-brew install fnm                   # macOS
-# o:  curl -fsSL https://fnm.vercel.app/install | bash   # Linux
-
-fnm install --lts                  # instala la última LTS
-fnm default lts-latest             # la marca como default
+```toml
+[install]
+ignoreScripts = true
 ```
 
-**Activación en shell (~/.zshrc o ~/.bashrc):**
+Con esto, `bun install` / `bun add` no ejecutan lifecycle scripts como
+`preinstall`, `install`, `postinstall` o `prepare` de paquetes ni workspaces.
+El objetivo es prevenir ejecución automática de código de terceros durante installs.
+Ver `docs/40-bun-package-manager-security.md` para impacto y proceso de excepción.
 
-```bash
-eval "$(fnm env --use-on-cd)"
-```
-
-Sin esa línea, `node` y `npm` no estarán en PATH aunque fnm esté instalado.
-
-**Cómo lo usa el test-runner:** los grupos `sdk-typescript[-integration]` envuelven
-su comando en `scripts/lib/with-fnm.sh`, que ejecuta `eval "$(fnm env)"` antes de
-correr `npm install && npm test`. Si fnm no está pero `node`/`npm` están en PATH
-(otro manager), el wrapper también funciona. Si nada está disponible, el grupo
-hace SKIP graciosamente.
-
-**Pinning por proyecto:** `sdks/risk-client-typescript/.node-version` fija la
-versión usada (actualmente `22.14.0`). fnm la respeta automáticamente.
-
-`--parallel` usa un default conservador de `2` para desarrollo local. `--auto-parallel`
-es opt-in y deriva el máximo desde la cantidad de cores; usalo en CI o en una
-máquina dedicada, no durante trabajo interactivo.
-
-`--max-cpu` (default 80%) y `--max-ram` (default 80% de la RAM total del sistema) son
-los techos. Con 4 SDKs costando cada uno 15% de CPU y 400MB de RAM en una máquina de 16GB:
-los 4 corren concurrentemente sin tocar ningún techo.
-
+**Cómo lo usa el test-runner:** los grupos `sdk-typescript[-integration]`
+requieren `bun` y corren `scripts/lib/with-bun.sh`, que falla rápido si Bun no
+está instalado. Los installs usan `bun install --frozen-lockfile`.
 
 ## Taxonomía actual de suites
 

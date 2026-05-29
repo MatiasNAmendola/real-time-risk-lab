@@ -7,6 +7,8 @@
 | Java | 21 LTS baseline | `--release 21` por compatibilidad de tooling; Java 25 LTS queda como objetivo documentado. |
 | Gradle | 3.9.x | `./gradlew --version` |
 | Go | 1.22+ | Para `cli/risk-smoke/` |
+| Python | >=3.11 | Gestionado con uv (`pyproject.toml`, `uv.lock`) |
+| Bun | >=1.3 | Package manager/runtime obligatorio para JS/TypeScript; `ignoreScripts=true` |
 | Bash | 5.x | Scripts de setup |
 
 ## Frameworks Java
@@ -87,6 +89,8 @@
 java -version           # 25.x
 ./gradlew --version            # 3.9.x
 go version              # 1.22+
+uv --version            # Python tooling
+bun --version           # JS/TS tooling
 docker version          # cualquier version reciente
 kubectl version         # 1.29+
 helm version            # 3.14+

@@ -1,0 +1,5 @@
+[install]
+# Security default: never execute dependency/workspace lifecycle scripts during
+# bun install / bun add. This blocks preinstall, install, postinstall, prepare,
+# and related lifecycle hooks unless a maintainer deliberately runs/audits them.
+ignoreScripts = true

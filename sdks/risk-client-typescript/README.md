@@ -7,10 +7,10 @@
 ## Install
 
 ```bash
-npm install @riskplatform/risk-client
+bun add @riskplatform/risk-client
 ```
 
-Requires Node.js 18+ and TypeScript 5+.
+Repo development requires Bun 1.3+ and TypeScript 5+. The published package remains Node.js-compatible.
 
 ## Quick start
 
@@ -495,7 +495,7 @@ describe('RiskClient integration', () => {
 |---|---|---|
 | `RiskTimeoutError` on first call | Server not reachable or wrong `environment` | Run `await client.sync.health()` to verify connectivity |
 | `RiskAuthError` (401) | API key expired or wrong env key | Rotate key in secrets manager; check `RISK_API_KEY` env var |
-| `426 Upgrade Required` | Server version newer than SDK | Run `npm install @riskplatform/risk-client@latest` |
+| `426 Upgrade Required` | Server version newer than SDK | Run `bun add @riskplatform/risk-client@latest` |
 | SSE stream never yields | Firewall/proxy strips `text/event-stream` | Ensure proxy passes `Accept: text/event-stream` and does not buffer |
 | `for await...of` exits immediately | `AbortController` already aborted | Check `signal.aborted` before starting the loop |
 | `RiskSchemaError` (422) | Request field invalid or missing | Log `err.validationErrors` and fix request shape against the type definition |
@@ -535,11 +535,10 @@ Development setup:
 
 ```bash
 cd sdks/risk-client-typescript
-npm install
-npm test
-npm run test:integration   # requires Docker
-npm run lint
-npm run build
+bun install --frozen-lockfile
+bun run test
+bun run test:integration   # requires Docker
+bun run build
 ```
 
 All PRs require passing unit tests (Jest) and at least one new integration test for

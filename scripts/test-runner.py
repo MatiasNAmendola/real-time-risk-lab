@@ -33,7 +33,7 @@ GROUPS_FILE = REPO_ROOT / ".ai" / "test-groups.yaml"
 DEFAULT_OUT_DIR = REPO_ROOT / "out" / "test-runner"
 
 # Codex/non-login shells on macOS often miss Homebrew tool paths. Make the
-# runner resolve Docker, k6, fnm/npm, etc. the same way an interactive shell does.
+# runner resolve Docker, k6, bun, etc. the same way an interactive shell does.
 os.environ["PATH"] = ":".join([
     "/opt/homebrew/bin",
     "/usr/local/bin",
@@ -315,7 +315,7 @@ class TestGroup:
     cost_ram_mb: int = 500
     duration_estimate_sec: int = 60
     exclusive: bool = False
-    requires: list[str] = field(default_factory=list)  # external tools (npm, go, ./gradlew...)
+    requires: list[str] = field(default_factory=list)  # external tools (bun, go, ./gradlew...)
 
     @property
     def cost_cpu_pct(self) -> int:
@@ -345,11 +345,10 @@ class TestGroup:
     def missing_tool(self) -> str | None:
         """Return the first required tool not found in PATH, or None if all present.
 
-        Each entry in `requires` may be a single tool name (e.g. ``"docker"``) or
-        a pipe-separated alternation (e.g. ``"fnm|npm"``) meaning *any one of*
-        the listed tools satisfies the requirement. This lets groups that need
-        Node.js work with either `fnm` (which lazy-activates node/npm on
-        demand) OR a directly-installed `npm`.
+        Each entry in `requires` may be a single tool name (e.g. ``"docker"``)
+        or a pipe-separated alternation meaning *any one of* the alternatives is
+        enough. The TypeScript SDK uses `bun` directly; npm/fnm are intentionally
+        not part of the supported repo test path.
         """
         import shutil
         for spec in self.requires:
@@ -444,7 +443,7 @@ def _ensure_compose_ready_for_job(name: str) -> bool:
 def _run_job_fn(name: str, cmd: str, out_dir_str: str, needs_infra: str = "false") -> JobResult:
     """Execute a single test group.
 
-    The heavy work is the child process (`gradlew`, `npm`, `go`, docker tools),
+    The heavy work is the child process (`gradlew`, `bun`, `go`, docker tools),
     so a thread pool is enough and avoids multiprocessing semaphore overhead on
     constrained macOS sandboxes/laptops.
     """

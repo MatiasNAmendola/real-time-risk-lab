@@ -9,7 +9,7 @@ SDK modules expose stable, versioned contracts for use by consumers outside this
 |---|---|---|---|
 | `sdks:risk-events` | `io.riskplatform.poc:risk-events:0.1.0-SNAPSHOT` | Java 21 | Shared records: `RiskRequest`, `RiskDecision`, `DecisionEvent` |
 | `sdks:risk-client-java` | `io.riskplatform.poc:risk-client:1.0.0-SNAPSHOT` | Java 21 | Full client SDK — REST, SSE, WS, Kafka, SQS, Webhooks, Admin |
-| `sdks/risk-client-typescript` | `@riskplatform/risk-client@1.0.0` | TypeScript (Node 18+) | Full client SDK — same facade as Java |
+| `sdks/risk-client-typescript` | `@riskplatform/risk-client@1.0.0` | TypeScript (Bun for repo tooling; Node-compatible package) | Full client SDK — same facade as Java |
 | `sdks/risk-client-go` | `github.com/riskplatform/risk-client@v1.0.0` | Go 1.21+ | Full client SDK — same facade as Java |
 
 ## Install
@@ -26,7 +26,7 @@ dependencies {
 ### TypeScript
 
 ```bash
-npm install @riskplatform/risk-client
+bun add @riskplatform/risk-client
 ```
 
 ### Go

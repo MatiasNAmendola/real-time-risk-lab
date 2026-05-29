@@ -6,7 +6,7 @@
  *
  *   docker compose -f poc/vertx-layer-as-pod-eventbus/docker-compose.yml up -d --wait
  *
- * Run with: npm run test:integration
+ * Run with: bun run test:integration
  *
  * The RISK_BASE_URL environment variable can override the default endpoint.
  */

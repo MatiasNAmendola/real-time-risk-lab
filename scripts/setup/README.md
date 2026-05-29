@@ -58,6 +58,7 @@ and never makes changes without asking.
 | languages     | gradle           | 3.9.0             |                                    |
 | languages     | go              | 1.26.0            | For Bubble Tea TUI; goenv preferred |
 | languages     | python3         | 3.11.0            | For auxiliary scripts              |
+| languages     | bun             | 1.3.0             | For TypeScript SDK tooling         |
 | containers    | docker          | 24.0.0            | OrbStack or Docker Desktop         |
 | containers    | compose         | 2.20.0            | Plugin v2 (`docker compose`)       |
 | kubernetes    | kubectl         | 1.28.0            |                                    |
