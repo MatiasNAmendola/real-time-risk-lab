@@ -4,7 +4,7 @@
 replicaCount: 3
 
 image:
-  # Placeholder — import real image with: k3d image import risk-engine:dev -c naranja-poc
+  # Placeholder — import real image with: k3d image import risk-engine:dev -c risk-lab-local
   repository: localhost:5000/risk-engine
   tag: dev
   pullPolicy: IfNotPresent

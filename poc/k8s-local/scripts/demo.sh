@@ -13,7 +13,7 @@ init_output "k8s-demo"
 {
 echo ""
 echo "════════════════════════════════════════════════════════════════════════════"
-echo "  naranja-poc — Service Access (run each port-forward in a separate shell)"
+echo "  risk-lab-local — Service Access (run each port-forward in a separate shell)"
 echo "════════════════════════════════════════════════════════════════════════════"
 echo ""
 

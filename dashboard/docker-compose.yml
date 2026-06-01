@@ -1,6 +1,6 @@
 services:
   homer:
-    container_name: naranja_dashboard
+    container_name: risk_lab_dashboard
     image: b4bz/homer:latest
     ports:
       - "8888:8080"

@@ -4,7 +4,7 @@ metadata:
   name: success-rate
   namespace: risk
   labels:
-    app.kubernetes.io/part-of: naranja-poc
+    app.kubernetes.io/part-of: risk-lab-local
 spec:
   args:
     - name: namespace

@@ -145,7 +145,7 @@ Una vez que `poc/vertx-layer-as-pod-eventbus/` tenga un Dockerfile listo:
 docker build -t risk-engine:dev ../../poc/vertx-layer-as-pod-eventbus/
 
 # 2. Importarla al cluster k3d (no necesita registry externo)
-k3d image import risk-engine:dev -c naranja-poc
+k3d image import risk-engine:dev -c risk-lab-local
 
 # 3. Actualizar el Rollout para disparar un canary
 kubectl -n risk set image rollout/risk-engine risk-engine=risk-engine:dev

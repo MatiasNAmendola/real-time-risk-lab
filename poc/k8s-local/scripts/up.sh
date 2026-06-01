@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# up.sh — Idempotent bootstrap for naranja-poc cluster
+# up.sh — Idempotent bootstrap for risk-lab-local cluster
 # Usage: ./scripts/up.sh [--provider orbstack|k3d]
 # Prerequisites: brew install helm kubectl
 #   k3d provider: brew install k3d
@@ -10,7 +10,7 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(cd "${SCRIPT_DIR}/.." && pwd)"
 REPO_ROOT="$(cd "$ROOT_DIR/../.." && pwd)"
-CLUSTER_NAME="naranja-poc"
+CLUSTER_NAME="risk-lab-local"
 
 source "$REPO_ROOT/scripts/lib/output.sh"
 init_output "k8s-up"
@@ -279,7 +279,7 @@ ARGOCD_PASS=$(kubectl -n argocd get secret argocd-initial-admin-secret \
 {
   echo ""
   echo "════════════════════════════════════════════════════════════════"
-  echo "  naranja-poc cluster is UP  (provider: ${K8S_PROVIDER})"
+  echo "  risk-lab-local cluster is UP  (provider: ${K8S_PROVIDER})"
   echo "════════════════════════════════════════════════════════════════"
   echo ""
   echo "  ArgoCD initial admin password: ${ARGOCD_PASS}"

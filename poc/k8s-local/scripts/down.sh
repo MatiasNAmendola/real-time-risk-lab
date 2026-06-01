@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
-# down.sh — Tear down the naranja-poc cluster
+# down.sh — Tear down the risk-lab-local cluster
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(cd "${SCRIPT_DIR}/.." && pwd)"
 REPO_ROOT="$(cd "$ROOT_DIR/../.." && pwd)"
-CLUSTER_NAME="naranja-poc"
+CLUSTER_NAME="risk-lab-local"
 FULL=false
 
 while [[ $# -gt 0 ]]; do
