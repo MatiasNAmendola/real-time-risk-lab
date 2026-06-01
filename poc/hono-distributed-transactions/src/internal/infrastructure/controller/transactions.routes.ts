@@ -5,6 +5,7 @@ import { DepositMoneyCommand } from '../../application/command/deposit-money.com
 import { OpenAccountCommand } from '../../application/command/open-account.command';
 import { PostLedgerTransferCommand } from '../../application/command/post-ledger-transfer.command';
 import { GetAccountBalanceQuery } from '../../application/query/get-account-balance.query';
+import { decimalAmountToMinorUnits } from '../../application/mapper/money.mapper';
 import { AppContainer } from '../../../cmd/container';
 
 const depositMoneySchema = z.object({
@@ -39,7 +40,7 @@ export function transactionsRoutes(container: AppContainer): Hono {
     const body = depositMoneySchema.parse(await c.req.json());
     return c.json(
       await container.commandBus.depositMoney(
-        new DepositMoneyCommand(c.req.param('id'), BigInt(Math.round(body.amount * 100)).toString(), body.currency ?? 'ARS', correlationId(c)),
+        new DepositMoneyCommand(c.req.param('id'), decimalAmountToMinorUnits(body.amount), body.currency ?? 'ARS', correlationId(c)),
       ),
     );
   });
@@ -75,7 +76,7 @@ export function transactionsRoutes(container: AppContainer): Hono {
           randomUUID(),
           body.debitAccountId,
           body.creditAccountId,
-          BigInt(Math.round(body.amount * 100)).toString(),
+          decimalAmountToMinorUnits(body.amount),
           body.currency,
           correlationId(c),
         ),

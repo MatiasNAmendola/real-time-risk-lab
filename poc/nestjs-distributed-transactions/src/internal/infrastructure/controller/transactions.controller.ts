@@ -11,6 +11,7 @@ import { DepositMoneyCommand } from '../../application/command/deposit-money.com
 import { OpenAccountCommand } from '../../application/command/open-account.command';
 import { PostLedgerTransferCommand } from '../../application/command/post-ledger-transfer.command';
 import { GetAccountBalanceQuery } from '../../application/query/get-account-balance.query';
+import { decimalAmountToMinorUnits } from '../../application/mapper/money.mapper';
 import { ACCOUNT_PROJECTION_REPOSITORY } from '../../domain/repository/account-projection.repository';
 import type { AccountProjectionRepository } from '../../domain/repository/account-projection.repository';
 import { EVENT_STORE_REPOSITORY } from '../../domain/repository/event-store.repository';
@@ -50,7 +51,7 @@ export class TransactionsController {
   @ApiOperation({ summary: 'Ejemplo simple Event Sourcing: deposita dinero y proyecta el balance.' })
   async depositMoney(@Param('id') accountId: string, @Body() body: DepositMoneyRequest, @Req() req: CorrelatedRequest) {
     return this.commandBus.execute(
-      new DepositMoneyCommand(accountId, BigInt(Math.round(body.amount * 100)).toString(), body.currency ?? 'ARS', this.correlationId(req)),
+      new DepositMoneyCommand(accountId, decimalAmountToMinorUnits(body.amount), body.currency ?? 'ARS', this.correlationId(req)),
     );
   }
 
@@ -96,7 +97,7 @@ export class TransactionsController {
         randomUUID(),
         body.debitAccountId,
         body.creditAccountId,
-        BigInt(Math.round(body.amount * 100)).toString(),
+        decimalAmountToMinorUnits(body.amount),
         body.currency,
         this.correlationId(req),
       ),
