@@ -50,6 +50,15 @@ Mensaje central:
 - 15 minutos: sumar benchmark, separación por capas y mapa NestJS/Hono.
 - 30 minutos: sumar Saga, idempotencia, auditoría transversal y deuda aceptada.
 
+
+## Pulido final
+
+- Preparar un guion corto de demo de 10 a 15 minutos.
+- Elegir 2 o 3 PoCs máximo para no dispersar.
+- Separar demo principal de deep dive opcional.
+- Tener listos comandos de arranque, test y apagado.
+- Evitar mencionar empresas, clientes o motivaciones específicas en la conversación o en material de apoyo.
+
 ## Relacionado
 
 - [[Technical-Positioning]]

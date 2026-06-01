@@ -134,6 +134,26 @@ python3 .ai/scripts/app-compliance-audit.py
 4. Mostrar auditoría transversal y documentación metódica.
 5. Discutir deuda aceptada y próximos pasos.
 
+
+## Pulido final antes de una discusión técnica exigente
+
+Antes de compartir o presentar el repo en una conversación exigente, conviene cerrar estos puntos:
+
+- preparar un guion corto de demo de 10 a 15 minutos;
+- elegir 2 o 3 PoCs máximo para no dispersar la conversación;
+- dejar explícito qué es demo principal y qué queda como deep dive opcional;
+- tener a mano comandos de arranque, test y apagado;
+- evitar mencionar empresas, clientes o motivaciones específicas tanto oralmente como en slides o notas de apoyo.
+
+Checklist mínimo recomendado:
+
+```bash
+./nx test --composite quick
+./nx test --composite typescript-transactional-pocs
+python3 .ai/scripts/app-compliance-audit.py
+./nx stop all --yes
+```
+
 ## Preguntas que conviene invitar
 
 - ¿Qué entra y qué no entra en el budget p99 < 300 ms?
