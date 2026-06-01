@@ -47,8 +47,9 @@ Una exploración técnica de un use case de detección de fraude productivo, que
 3. **`docs/27-test-runner.md`** — test runner con DAG + throttling de recursos.
 4. **`docs/40-bun-package-manager-security.md`** — Bun obligatorio + hardening contra lifecycle scripts.
 5. **`.ai/scripts/quick-check.py`** — guardrail sub-segundo de demo: boundaries fuente + freshness warnings sin invocar Gradle.
-6. **`docs/42-documentacion-metodica.md`** — cómo sincronizar `docs/`, `vault/`, `.ai/context`, primitivas y adapters IDE/CLI.
-7. **`.ai/scripts/consistency-auditor.py`** + **`.ai/audit-rules/terminology.yaml`** — meta-cobertura de docs (la spec vive en el script).
+6. **[`docs/43-auditoria-transversal-apps.md`](43-auditoria-transversal-apps.md)** — matriz de cumplimiento por PoC, violaciones, fixes rápidos, deuda aceptada y guardrails automáticos.
+7. **`docs/42-documentacion-metodica.md`** — cómo sincronizar `docs/`, `vault/`, `.ai/context`, primitivas y adapters IDE/CLI.
+8. **`.ai/scripts/consistency-auditor.py`** + **`.ai/audit-rules/terminology.yaml`** — meta-cobertura de docs (la spec vive en el script).
 
 ---
 
@@ -100,6 +101,7 @@ Para agentes y humanos: si vas a tocar X, leé Y antes.
 | JS/TypeScript deps | `docs/40-bun-package-manager-security.md` + `bunfig.toml` | Bun obligatorio + `ignoreScripts=true` |
 | CQRS/Event Sourcing/EDA | `docs/41-cqrs-event-sourcing-transacciones.md` + [[CQRS-Event-Sourcing]] + [[nestjs-distributed-transactions]] + [[hono-distributed-transactions]] | comandos, queries, event store, proyecciones, sagas, BullMQ y Valkey |
 | documentación | `docs/42-documentacion-metodica.md` + `.ai/primitives/rules/documentation-system.md` | cuándo actualizar docs, vault, contexto IA, primitivas y adapters |
+| auditoría transversal de apps | `docs/43-auditoria-transversal-apps.md` + `.ai/scripts/app-compliance-audit.py` | matriz de cumplimiento por PoC, violaciones, deuda aceptada y guardrails automáticos |
 
 ---
 
