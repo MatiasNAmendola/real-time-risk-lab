@@ -32,6 +32,54 @@ _err()     { printf '[nx] ERROR: %s\n' "$*" >&2; }
 _die()     { _err "$*"; exit 1; }
 
 # ---------------------------------------------------------------------------
+# Java baseline guard
+# ---------------------------------------------------------------------------
+# The repo executes on Java 21 LTS. Some local machines may have a newer
+# Homebrew JDK first in PATH; Gradle/Kotlin can fail before toolchains are
+# applied when launched with an unsupported classfile/runtime version. Prefer a
+# repo-local Java 21 launcher when available without mutating the user's shell.
+_detect_java_major() {
+  local java_bin="$1"
+  local version_line major
+  [ -x "$java_bin" ] || return 1
+  version_line="$("$java_bin" -version 2>&1 | head -n 1 || true)"
+  major="$(printf '%s\n' "$version_line" | sed -E 's/.*version "([0-9]+).*/\1/')"
+  case "$major" in
+    ''|*[!0-9]*) return 1 ;;
+    *) printf '%s\n' "$major" ;;
+  esac
+}
+
+_select_java21_for_repo() {
+  local current_major java21_home
+  current_major="$(_detect_java_major "${JAVA_HOME:-}/bin/java" 2>/dev/null || _detect_java_major "$(command -v java 2>/dev/null || true)" 2>/dev/null || true)"
+  if [ "$current_major" = "21" ]; then
+    return 0
+  fi
+
+  java21_home=""
+  if [ -d "/opt/homebrew/opt/openjdk@21/libexec/openjdk.jdk/Contents/Home" ]; then
+    java21_home="/opt/homebrew/opt/openjdk@21/libexec/openjdk.jdk/Contents/Home"
+  elif [ -d "/usr/local/opt/openjdk@21/libexec/openjdk.jdk/Contents/Home" ]; then
+    java21_home="/usr/local/opt/openjdk@21/libexec/openjdk.jdk/Contents/Home"
+  elif command -v /usr/libexec/java_home >/dev/null 2>&1; then
+    java21_home="$(/usr/libexec/java_home -v 21 2>/dev/null || true)"
+  fi
+
+  if [ -n "$java21_home" ] && [ -x "$java21_home/bin/java" ]; then
+    export JAVA_HOME="$java21_home"
+    export PATH="$JAVA_HOME/bin:$PATH"
+    if [ -n "$current_major" ]; then
+      _info "Using Java 21 for repo commands (detected Java $current_major in shell)"
+    else
+      _info "Using Java 21 for repo commands"
+    fi
+  fi
+}
+
+_select_java21_for_repo
+
+# ---------------------------------------------------------------------------
 # Help text
 # ---------------------------------------------------------------------------
 usage() {
