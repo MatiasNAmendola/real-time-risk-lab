@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # .ai/adapters/kiro/install.sh
-# Instala el adapter de Kiro: crea .kiro/steering/*.md con frontmatter correcto
-# Idempotente.
+# Installs the Kiro adapter: creates .kiro/steering/*.md with the expected frontmatter
+# Idempotent.
 
 set -e
 
@@ -12,7 +12,7 @@ echo "=== Kiro adapter install ==="
 mkdir -p "$REPO_ROOT/.kiro/steering"
 mkdir -p "$REPO_ROOT/.kiro/hooks"
 
-# product.md — contexto del producto, inclusion: always
+# product.md — product context, inclusion: always
 cat > "$REPO_ROOT/.kiro/steering/product.md" <<'EOF'
 ---
 inclusion: always
@@ -40,7 +40,7 @@ EOF
 
 echo "  created: $REPO_ROOT/.kiro/steering/product.md"
 
-# tech.md — stack tecnico, inclusion: always
+# tech.md — technology stack, inclusion: always
 cat > "$REPO_ROOT/.kiro/steering/tech.md" <<'EOF'
 ---
 inclusion: always
@@ -48,7 +48,7 @@ inclusion: always
 
 # Tech Stack
 
-Java 21 LTS baseline operativo, --release 21; Java 25 LTS es objetivo documentado.
+Java 21 LTS executable baseline, --release 21; Java 25 LTS is a documented target.
 Vert.x 5.0.12 reactive (non-blocking event loop).
 Gradle 3.9, Postgres 16, Valkey 8, Redpanda v24.2.4.
 OpenTelemetry Java agent 2.x, OpenObserve backend.
@@ -58,14 +58,14 @@ Full versions: .ai/context/stack.md
 
 ## Non-negotiable
 
-- Java 21 LTS baseline operativo; Java 25 LTS es objetivo documentado, no build actual.
+- Java 21 LTS executable baseline; Java 25 LTS is a documented target, no build actual.
 - Every request must produce trace + log + metric via OTEL.
 - correlationId in MDC and response header X-Correlation-Id.
 EOF
 
 echo "  created: $REPO_ROOT/.kiro/steering/tech.md"
 
-# structure.md — layout del proyecto, inclusion: fileMatch para Java
+# structure.md — project layout, inclusion: fileMatch for Java
 cat > "$REPO_ROOT/.kiro/steering/structure.md" <<'EOF'
 ---
 inclusion: fileMatch

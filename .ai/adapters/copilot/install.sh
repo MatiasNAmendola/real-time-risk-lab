@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # .ai/adapters/copilot/install.sh
-# Instala el adapter de GitHub Copilot: genera .github/copilot-instructions.md
-# Idempotente.
+# Installs the GitHub Copilot adapter: generates .github/copilot-instructions.md
+# Idempotent.
 
 set -e
 
@@ -28,7 +28,7 @@ cat > "$DEST" <<'INSTRUCTIONS'
 
 Technical architecture exploration for Real-Time Risk Lab.
 Real-time fraud detection: 150 TPS, p99 < 300ms latency.
-Stack: Java 21 LTS baseline operativo (Java 25 LTS objetivo documentado), Gradle Kotlin DSL, Vert.x 5.0.12, Postgres 16, Valkey 8, Redpanda, k3d/OrbStack.
+Stack: Java 21 LTS executable baseline (Java 25 LTS documented target), Gradle Kotlin DSL, Vert.x 5.0.12, Postgres 16, Valkey 8, Redpanda, k3d/OrbStack.
 
 Full context: .ai/context/architecture.md
 PoC inventory: .ai/context/poc-inventory.md
@@ -36,7 +36,7 @@ Stack versions: .ai/context/stack.md
 
 ## Non-negotiable rules
 
-1. Java 21 LTS baseline operativo. Usar --release 21; Java 25 LTS es objetivo documentado, no build actual.
+1. Java 21 LTS executable baseline. Use --release 21; Java 25 LTS is a documented target, no build actual.
 2. Clean Architecture layout: domain/{entity,repository,usecase,service,rule}, application/{usecase/<aggregate>,mapper,dto}, infrastructure/{controller,consumer,repository,resilience,time}, config/, cmd/.
 3. domain/ must NOT import from application/ or infrastructure/ — ever.
 4. ATDD first: write the .feature file before any production code.

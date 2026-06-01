@@ -1,23 +1,23 @@
 # Adapter: Continue (continue.dev)
 
-Continue es una extension open source para VS Code/JetBrains.
-Config global: `~/.continue/config.yaml` (formato canonico desde 2025).
-Override de proyecto: `.continuerc.json` (merge sobre config global).
+Continue is an open-source VS Code and JetBrains extension.
+Global config: `~/.continue/config.yaml`.
+Project override: `.continuerc.json`, merged over global config.
 
-## CAMBIO IMPORTANTE
+## Important migration note
 
-Continue migro de `config.json` a `config.yaml` como formato canonico.
-`config.json` esta deprecated. `slashCommands` en config.json esta deprecated — usar prompt files.
+Continue migrated from `config.json` to canonical `config.yaml`.
+`config.json` is deprecated. `slashCommands` in `config.json` is deprecated; use prompt files instead.
 
-## Archivos que usa este adapter
+## Files used by this adapter
 
-| Archivo | Proposito |
+| File | Purpose |
 |---|---|
-| `.continuerc.json` (root) | Override de proyecto. Merge sobre config global. |
-| `.continue/prompts/*.prompt` | Prompt files (reemplazo de slashCommands deprecated) |
-| `~/.continue/config.yaml` | Config global canonica (gestionada por el usuario) |
+| `.continuerc.json` (root) | Project override merged over global config. |
+| `.continue/prompts/*.prompt` | Prompt files, replacing deprecated slash commands. |
+| `~/.continue/config.yaml` | Canonical global config, user-managed. |
 
-## Formato de config.yaml global (nuevo)
+## Global `config.yaml` format
 
 ```yaml
 models:
@@ -42,7 +42,7 @@ rules:
   - Follow the existing code style
 ```
 
-## Formato de .continuerc.json (override de proyecto)
+## Project `.continuerc.json` format
 
 ```json
 {
@@ -53,40 +53,40 @@ rules:
 }
 ```
 
-`mergeBehavior: "merge"` aplica encima del config global; `"overwrite"` reemplaza todo.
+`mergeBehavior: "merge"` applies on top of global config. `"overwrite"` replaces it.
 
-## Prompt files (reemplazo de slashCommands)
+## Prompt files
 
-Ubicacion: `.continue/prompts/*.prompt` o `~/.continue/prompts/*.prompt`.
-Los prompt files reemplazan el array `slashCommands` de config.json (deprecated).
-MCP prompts via `mcpServers` tambien se registran automaticamente como slash commands.
+Location: `.continue/prompts/*.prompt` or `~/.continue/prompts/*.prompt`.
+Prompt files replace the deprecated `slashCommands` array from `config.json`.
+MCP prompts exposed through `mcpServers` are also registered as slash commands.
 
-## Context providers (@)
+## Context providers
 
-Se referencian con `@` en el chat:
-- `@code` — simbolos y archivos del codebase
-- `@docs` — documentacion indexada
-- `@diff` — cambios actuales en git
-- `@open` — archivos abiertos en el editor
+Use them in chat with `@`:
+- `@code` — codebase symbols and files.
+- `@docs` — indexed documentation.
+- `@diff` — current git changes.
+- `@open` — files open in the editor.
 
-## Limitaciones conocidas
+## Known limitations
 
-- `config.json` esta deprecated — nuevos setups deben usar `config.yaml`.
-- `.continuerc.json` es JSON (inconsistente con el nuevo `config.yaml`).
-- `.continuerc.json` no soporta todas las opciones de config global.
-- Config global en `~/.continue/` no se versiona con el proyecto.
+- `config.json` is deprecated; new setups must use `config.yaml`.
+- `.continuerc.json` is JSON, while global config is YAML.
+- `.continuerc.json` does not support every global config option.
+- Global config under `~/.continue/` is user-managed and not versioned here.
 
-## Instalar
+## Install
 
 ```bash
 ./.ai/adapters/continue/install.sh
 ```
 
-Luego instalar la extension: `continue.continue` en VS Code.
+Then install the VS Code extension: `continue.continue`.
 
-## Documentacion oficial
+## Official documentation
 
 - https://docs.continue.dev/customize/overview
 - https://docs.continue.dev/customize/deep-dives/configuration
-- https://docs.continue.dev/reference (config.yaml reference)
+- https://docs.continue.dev/reference
 - https://docs.continue.dev/customize/slash-commands

@@ -2,18 +2,17 @@
 
 ## Project context
 
-Real-Time Risk Lab — Architecture Exploration.
-Technical exploration of a real-time fraud detection use case: 150 TPS, p99 < 300ms latency.
-Stack: Java 21 LTS executable baseline, Gradle Kotlin DSL, Vert.x 5.0.12, Postgres 16, Valkey 8, Redpanda, k3d/OrbStack.
+Technical architecture exploration for Real-Time Risk Lab.
+Real-time fraud detection: 150 TPS, p99 < 300ms latency.
+Stack: Java 21 LTS executable baseline (Java 25 LTS documented target), Gradle Kotlin DSL, Vert.x 5.0.12, Postgres 16, Valkey 8, Redpanda, k3d/OrbStack.
 
 Full context: .ai/context/architecture.md
-Documentation method: .ai/primitives/rules/documentation-system.md
 PoC inventory: .ai/context/poc-inventory.md
 Stack versions: .ai/context/stack.md
 
 ## Non-negotiable rules
 
-1. Java 21 LTS is the executable baseline via Gradle toolchains (`--release 21`). Java 25 LTS is a documented future target only.
+1. Java 21 LTS executable baseline. Use --release 21; Java 25 LTS is a documented target, no build actual.
 2. Clean Architecture layout: domain/{entity,repository,usecase,service,rule}, application/{usecase/<aggregate>,mapper,dto}, infrastructure/{controller,consumer,repository,resilience,time}, config/, cmd/.
 3. domain/ must NOT import from application/ or infrastructure/ — ever.
 4. ATDD first: write the .feature file before any production code.
@@ -38,4 +37,4 @@ Before implementing anything, check if there is a skill for it:
 
 ## Editing project areas
 
-You may edit `poc/`, `tests/`, `cli/`, `docs/` and `vault/` only when the task requires it. Before doing so, read the applicable rule/skill in `.ai/primitives/` and keep docs/vault/context/adapters synchronized.
+You may edit `poc/`, `tests/`, `cli/`, `docs/` and `vault/` only when the task requires it. Before doing so, read the applicable rule/skill in `.ai/primitives/`.

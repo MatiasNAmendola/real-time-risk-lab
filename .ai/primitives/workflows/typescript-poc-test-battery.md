@@ -1,30 +1,30 @@
 ---
 name: typescript-poc-test-battery
-description: Workflow para agregar y validar batería de tests en PoCs NestJS/Hono con Bun
+description: Workflow to add and validate a Bun-based test battery for NestJS/Hono PoCs
 steps: [read-rules, write-atdd, implement-tests, register-runner, verify, document]
 ---
 
 # Workflow: typescript-poc-test-battery
 
-## Cuándo usar
+## When to use
 
-Cuando se agrega o refactoriza una PoC TypeScript (`nestjs-distributed-transactions` o `hono-distributed-transactions`) y se necesita cobertura unit/integration/e2e/smoke con ATDD.
+Use when adding or refactoring a TypeScript PoC (`nestjs-distributed-transactions` or `hono-distributed-transactions`) and unit/integration/e2e/smoke coverage with ATDD is required.
 
-## Pasos
+## Steps
 
-1. Leer:
+1. Read:
    - `.ai/primitives/rules/testing-atdd.md`
    - `.ai/primitives/rules/typescript-service-poc.md`
    - `.ai/primitives/rules/clean-arch-boundaries.md`
-2. Escribir o actualizar `tests/atdd/*.feature`.
-3. Implementar tests:
-   - `src/**/*.test.ts` para unit;
-   - `tests/integration/**/*.test.ts` para adapters;
-   - `tests/e2e/**/*.test.ts` para HTTP real;
-   - `tests/smoke/*.ts` para demo mínima.
-4. Exponer scripts en `package.json` y `scripts/*.sh`.
-5. Si se integra con el runner global, editar `.ai/test-groups.yaml` y `docs/27-test-runner.md`.
-6. Verificar:
+2. Write or update `tests/atdd/*.feature`.
+3. Implement tests:
+   - `src/**/*.test.ts` for unit coverage;
+   - `tests/integration/**/*.test.ts` for adapters;
+   - `tests/e2e/**/*.test.ts` for real HTTP;
+   - `tests/smoke/*.ts` for the minimal demo.
+4. Expose scripts in `package.json` and `scripts/*.sh`.
+5. If integrating with the global runner, edit `.ai/test-groups.yaml` and `docs/27-test-runner.md`.
+6. Verify:
    ```bash
    ./scripts/check-boundaries.sh
    bun run build
@@ -33,4 +33,4 @@ Cuando se agrega o refactoriza una PoC TypeScript (`nestjs-distributed-transacti
    bun run test:e2e
    bun run test:smoke
    ```
-7. Documentar comandos y alcance de la suite en el README de la PoC.
+7. Document commands and suite scope in the PoC README.

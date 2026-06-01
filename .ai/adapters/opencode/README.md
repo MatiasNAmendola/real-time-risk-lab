@@ -1,19 +1,18 @@
 # Adapter: opencode
 
-opencode es un CLI TUI open source escrito en Go para coding AI.
-Config de proyecto: `opencode.json` en root (mayor precedencia que config global).
+opencode is an open-source terminal UI coding agent written in Go.
+Project config: `opencode.json` at the repository root, with higher precedence than global config.
 
-> Confianza: MEDIA — config principal (`opencode.json`) bien documentada;
-> estructura interna de `agents/`, `skills/` subdirs en `~/.config/opencode/` no completamente especificada.
+> Confidence: medium. Main config is documented; internal `agents/` and `skills/` directories under `~/.config/opencode/` are not fully specified.
 
-## Archivos que usa este adapter
+## Files used by this adapter
 
-| Archivo | Proposito |
+| File | Purpose |
 |---|---|
-| `opencode.json` (root) | Config del proyecto. Mayor precedencia que global. |
-| `~/.config/opencode/opencode.json` | Config global (menor precedencia) |
+| `opencode.json` (root) | Project config, higher precedence than global config. |
+| `~/.config/opencode/opencode.json` | Global config, lower precedence. |
 
-## Formato de opencode.json
+## `opencode.json` format
 
 ```json
 {
@@ -35,36 +34,36 @@ Config de proyecto: `opencode.json` en root (mayor precedencia que config global
 }
 ```
 
-## Como opencode consume las primitivas
+## How opencode consumes primitives
 
-1. opencode carga `opencode.json` al iniciar en el directorio del repo.
-2. El campo `instructions` contiene el contexto del proyecto.
-3. El agente puede leer archivos adicionales con herramientas de lectura.
-4. MCP servers se configuran bajo `mcp.servers`.
+1. opencode loads `opencode.json` when started in the repo directory.
+2. The `instructions` field contains project context.
+3. The agent can read additional files with its file tools.
+4. MCP servers are configured under `mcp.servers`.
 
-## Subdirectorios globales (documentacion incompleta)
+## Global subdirectories
 
-`~/.config/opencode/` contiene: `agents/`, `commands/`, `modes/`, `plugins/`, `skills/`, `tools/`, `themes/`.
-La estructura interna de `agents/` y `skills/` no esta completamente documentada en las sources verificadas.
-No confundir: estos son directorios del sistema global, no del proyecto.
+`~/.config/opencode/` may contain `agents/`, `commands/`, `modes/`, `plugins/`, `skills/`, `tools/`, and `themes/`.
+The internal structure of `agents/` and `skills/` is not fully documented in the verified sources.
+These are global system directories, not project directories.
 
-## No confundir con
+## Do not confuse with
 
-"Crush" de Charmbracelet — es una herramienta diferente en el mismo espacio de terminal AI.
-opencode es `github.com/opencode-ai/opencode` (Go), no el proyecto Charmbracelet.
+Charmbracelet Crush. It is a different terminal AI tool.
+opencode is `github.com/opencode-ai/opencode`.
 
-## Limitaciones conocidas
+## Known limitations
 
-- Estructura interna de `agents/` y `skills/` en config global no completamente documentada.
-- Hot reload no documentado — puede requerir reinicio.
+- Internal global `agents/` and `skills/` structure is not fully documented.
+- Hot reload is not clearly documented and may require restart.
 
-## Instalar
+## Install
 
 ```bash
 ./.ai/adapters/opencode/install.sh
 ```
 
-## Documentacion oficial
+## Official documentation
 
 - https://opencode.ai/docs/config/
 - https://opencode.ai/docs/mcp-servers/

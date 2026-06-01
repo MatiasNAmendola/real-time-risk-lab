@@ -8,7 +8,7 @@ description: Clean Architecture and Java baseline conventions
 
 Full rule: .ai/primitives/rules/architecture-clean.md
 
-## Layout canonico
+## Canonical layout
 
 domain/{entity,repository,usecase,service,rule}
 application/{usecase/<aggregate>,mapper,dto}
@@ -22,8 +22,8 @@ domain/ must NOT import from application/ or infrastructure/.
 
 ## Java baseline
 
-- Java 21 LTS (`--release 21`) en el build actual; Java 25 es objetivo documentado
-- Virtual threads para I/O bloqueante
-- Records para Value Objects
+- Java 21 LTS (`--release 21`) in the current build; Java 25 is a documented target
+- Virtual threads for blocking I/O
+- Records for Value Objects
 
 See: .ai/primitives/rules/naming-conventions.md

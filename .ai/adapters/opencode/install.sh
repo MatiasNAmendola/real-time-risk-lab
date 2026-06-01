@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # .ai/adapters/opencode/install.sh
-# Instala el adapter de opencode: genera opencode.json en root del proyecto
-# Idempotente.
-# Confianza: MEDIA — config principal bien documentada; estructura interna de agents/skills/ subdirs incierta.
+# Installs the opencode adapter: generates opencode.json at the project root
+# Idempotent.
+# Confidence: medium — main config is documented; internal agents/skills subdirs are uncertain.
 
 set -e
 
@@ -22,7 +22,7 @@ fi
 
 cat > "$DEST" <<'EOF'
 {
-  "instructions": "Real-Time Risk Lab architecture exploration. Stack: Java 21 LTS baseline operativo (Java 25 LTS objetivo documentado), Gradle Kotlin DSL, Vert.x 5.0.12, Postgres 16, Valkey 8, Redpanda. Java 21 baseline operativo; Java 25 objetivo documentado. Clean Architecture: domain/ must NOT import from application/ or infrastructure/. ATDD first: write .feature before production code. Every request must produce trace + log + metric via OpenTelemetry. Check .ai/primitives/skills/ and .ai/primitives/rules/ before implementing. Editing project areas: edit poc/, tests/, cli/, docs/ and vault/ only when required; read applicable .ai/primitives first.",
+  "instructions": "Real-Time Risk Lab architecture exploration. Stack: Java 21 LTS executable baseline (Java 25 LTS documented target), Gradle Kotlin DSL, Vert.x 5.0.12, Postgres 16, Valkey 8, Redpanda. Java 21 executable baseline; Java 25 documented target. Clean Architecture: domain/ must NOT import from application/ or infrastructure/. ATDD first: write .feature before production code. Every request must produce trace + log + metric via OpenTelemetry. Check .ai/primitives/skills/ and .ai/primitives/rules/ before implementing. Editing project areas: edit poc/, tests/, cli/, docs/ and vault/ only when required; read applicable .ai/primitives first.",
   "provider": "anthropic",
   "model": "claude-sonnet-4-6",
   "mcp": {

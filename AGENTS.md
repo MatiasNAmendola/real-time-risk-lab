@@ -1,166 +1,163 @@
 # AGENTS.md — Real-Time Risk Lab
 
-Entrypoint universal para agentes IA. Este archivo es leido automaticamente por: Codex CLI, opencode, Cursor, Kiro, y cualquier agente que siga la convencion AGENTS.md.
+Universal entrypoint for AI agents. This file is read automatically by Codex CLI, opencode, Cursor, Kiro, and any agent that follows the `AGENTS.md` convention.
 
 ---
 
-## 1. Quien sos
+## 1. Identity
 
-Este repo es una exploración técnica de un caso de uso de detección de fraude en tiempo real.
+This repository is a technical exploration of real-time fraud detection architecture.
 
-- Tema: 150 TPS sostenidos, p99 < 300ms, arquitectura híbrida sync (decisión) + async (audit, ML, downstream).
-- Contexto de negocio: cada decisión de riesgo aprueba o rechaza una transacción de pago en < 300ms.
-- Inspirado en patrones productivos de fraud detection (Lambda monolítico → EKS microservicios), pero no representa un sistema real ni código productivo.
+- Topic: 150 sustained TPS, p99 < 300 ms, hybrid sync decision + async audit/ML/downstream architecture.
+- Business context: each risk decision approves or rejects a payment transaction in < 300 ms.
+- Inspired by production fraud-detection patterns, but this is not a real production system.
 
 ---
 
-## 2. Layout del repo
+## 2. Repository layout
 
-```
+```text
 real-time-risk-lab/
 ├── poc/
-│   ├── no-vertx-clean-engine/              # Sin Vert.x: Clean Architecture baseline
-│   ├── vertx-monolith-inprocess/           # Con Vert.x: single JVM/in-process
-│   ├── vertx-layer-as-pod-eventbus/        # Con Vert.x: layer-as-pod + clustered EventBus
-│   ├── vertx-layer-as-pod-http/            # Con Vert.x: layer-as-pod + HTTP/tokens
-│   ├── vertx-service-mesh-bounded-contexts/# Con Vert.x: bounded contexts service-to-service
-│   ├── nestjs-distributed-transactions/     # NestJS: CQRS/Event Sourcing simple + Saga/TigerBeetle/EDA avanzada
-│   ├── hono-distributed-transactions/       # Hono: CQRS/Event Sourcing simple + demo avanzada
-│   └── k8s-local/               # k3d/OrbStack + ArgoCD + addons completos
+│   ├── no-vertx-clean-engine/              # No Vert.x: Clean Architecture baseline
+│   ├── vertx-monolith-inprocess/           # Vert.x: single JVM/in-process
+│   ├── vertx-layer-as-pod-eventbus/        # Vert.x: layer-as-pod + clustered EventBus
+│   ├── vertx-layer-as-pod-http/            # Vert.x: layer-as-pod + HTTP/tokens
+│   ├── vertx-service-mesh-bounded-contexts/# Vert.x: real bounded contexts service-to-service
+│   └── k8s-local/                          # k3d/OrbStack + ArgoCD + addons
 ├── tests/
-│   └── risk-engine-atdd/        # Cucumber-JVM 7 ATDD
+│   └── risk-engine-atdd/                   # Cucumber-JVM 7 ATDD
 ├── cli/
-│   └── risk-smoke/              # Go + Bubble Tea TUI (9 smoke checks)
-├── docs/                        # Documentación técnica (00-11)
-├── .ai/                         # Sistema de primitivas IDE-agnosticas (este sistema)
-├── AGENTS.md                    # Este archivo
-└── CLAUDE.md                    # Entrypoint Claude Code
+│   └── risk-smoke/                         # Go + Bubble Tea TUI smoke checks
+├── docs/                                   # Technical documentation
+├── vault/                                  # Obsidian vault: ADRs, concepts, PoCs, methodology
+├── .ai/                                    # IDE-agnostic primitive system
+├── AGENTS.md                               # Universal agent entrypoint
+└── CLAUDE.md                               # Claude Code entrypoint
 ```
 
-Arquitectura completa: [.ai/context/architecture.md](.ai/context/architecture.md)
+Full architecture: `.ai/context/architecture.md`
+PoC inventory: `.ai/context/poc-inventory.md`
 
 ---
 
 ## 3. PoCs
 
-| PoC | Que demuestra | Como correr |
+| PoC | Demonstrates | Run |
 |---|---|---|
-| `no-vertx-clean-engine` | Sin Vert.x: Clean Architecture pura, benchmarks | `./scripts/run.sh` |
-| `vertx-monolith-inprocess` | Con Vert.x: single JVM/in-process, EventBus local | `./nx run vertx-monolith-inprocess` |
-| `vertx-layer-as-pod-eventbus` | Con Vert.x: layer-as-pod vía clustered EventBus/Hazelcast | `./nx up vertx-layer-as-pod-eventbus && ./gradlew :poc:vertx-layer-as-pod-eventbus:atdd-tests:test -Patdd` |
-| `vertx-layer-as-pod-http` | Con Vert.x: layer-as-pod vía HTTP + tokens | `./nx up vertx-layer-as-pod-http` |
-| `vertx-service-mesh-bounded-contexts` | Con Vert.x: bounded contexts reales via EventBus RPC/async | `./scripts/up.sh && ./scripts/demo.sh` |
-| `k8s-local` | ArgoCD, canary, SLO, AWS mocks | `./scripts/up.sh` |
-| `nestjs-distributed-transactions` | NestJS: cuenta bancaria simple con CQRS/Event Sourcing + demo avanzada Saga/TigerBeetle/EDA | `./scripts/test.sh` |
-| `hono-distributed-transactions` | Hono: mismo ejemplo simple con rutas explícitas y wiring manual + demo avanzada separada | `./scripts/test.sh` |
-
-Inventario completo: [.ai/context/poc-inventory.md](.ai/context/poc-inventory.md)
+| `no-vertx-clean-engine` | Pure Clean Architecture baseline, benchmarks | `./scripts/run.sh` |
+| `vertx-monolith-inprocess` | Vert.x single JVM/in-process, local EventBus | `./nx run vertx-monolith-inprocess` |
+| `vertx-layer-as-pod-eventbus` | Layer-as-pod with clustered EventBus/Hazelcast | `./nx up vertx-layer-as-pod-eventbus && ./gradlew :poc:vertx-layer-as-pod-eventbus:atdd-tests:test -Patdd` |
+| `vertx-layer-as-pod-http` | Layer-as-pod through HTTP + tokens | `./nx up vertx-layer-as-pod-http` |
+| `vertx-service-mesh-bounded-contexts` | Real bounded contexts through EventBus RPC/async | `./scripts/up.sh && ./scripts/demo.sh` |
+| `k8s-local` | ArgoCD, canary, SLOs, AWS mocks | `./scripts/up.sh` |
+| `nestjs-distributed-transactions` | CQRS/Event Sourcing + Saga/TigerBeetle/BullMQ | `bun run start` from the PoC dir |
+| `hono-distributed-transactions` | Same transactional demo with Hono/manual wiring | `bun run start` from the PoC dir |
 
 ---
 
-## 4. Reglas non-negotiable
+## 4. Non-negotiable rules
 
-Estas 6 reglas se aplican en TODO el codigo de este repo. No hay excepciones.
+These rules apply to the entire repository.
 
-### R1: Java baseline real + objetivo LTS
-Baseline ejecutable actual: **Java 21 LTS** (`--release 21`) por compatibilidad de Gradle/JMH/Karate/ArchUnit. Objetivo documentado: **Java 25 LTS** cuando el tooling soporte classfile 25 sin fricción. No afirmar Java 25 como build real si el repo compila con 21.
-Regla completa: [.ai/primitives/rules/java-version.md](.ai/primitives/rules/java-version.md)
+### R1: Real Java baseline + LTS target
 
-### R2: Layout enterprise Go en Java
-Todo modulo Java sigue: `domain/{entity,repository,usecase,service,rule}`, `application/{usecase/<aggregate>,mapper,dto}`, `infrastructure/{controller,consumer,repository,resilience,time}`, `cmd/`, `config/`.
-Regla completa: [.ai/primitives/rules/architecture-clean.md](.ai/primitives/rules/architecture-clean.md)
+Executable baseline: **Java 21 LTS** (`--release 21`) for Gradle/JMH/Karate/ArchUnit compatibility.
+Documented target: **Java 25 LTS** when tooling supports it without friction.
+Do not claim Java 25 as the real build baseline while the repo compiles with Java 21.
+Rule: `.ai/primitives/rules/java-version.md`
 
-### R3: ATDD primero
-Feature file antes de codigo de produccion. Karate 1.5+ o Cucumber-JVM 7+ segun contexto.
-Regla completa: [.ai/primitives/rules/testing-atdd.md](.ai/primitives/rules/testing-atdd.md)
+### R2: Enterprise-Go layout in Java
 
-### R4: OTEL en todo request
-Todo request produce trace + log estructurado + metrica. correlationId en MDC y en header de respuesta.
-Regla completa: [.ai/primitives/rules/observability-otel.md](.ai/primitives/rules/observability-otel.md)
+Java modules follow: `domain/{entity,repository,usecase,service,rule}`, `application/{usecase/<aggregate>,mapper,dto}`, `infrastructure/{controller,consumer,repository,resilience,time}`, `cmd/`, `config/`.
+Rule: `.ai/primitives/rules/architecture-clean.md`
+
+### R3: ATDD first
+
+Feature file before production code. Use Karate 1.5+ or Cucumber-JVM 7+ depending on context.
+Rule: `.ai/primitives/rules/testing-atdd.md`
+
+### R4: OTEL on every request
+
+Every request produces trace + structured log + metric. `correlationId` must be in MDC and in the response header.
+Rule: `.ai/primitives/rules/observability-otel.md`
 
 ### R5: Clean boundaries
-`domain/` NO importa de `application/` ni `infrastructure/`. Puertos en `domain/`, adapters en `infrastructure/`.
-Regla completa: [.ai/primitives/rules/clean-arch-boundaries.md](.ai/primitives/rules/clean-arch-boundaries.md)
 
-### R6: Python con uv; JS/TypeScript con Bun seguro
-Si hay Python, usar **uv** (`pyproject.toml`, `uv.lock`, `requirements.txt` exportado por uv). Si hay Node/JS/TypeScript, usar **Bun** como package manager/runtime de repo; no usar npm/pnpm/yarn para installs. Bun debe mantener `[install] ignoreScripts = true` en `bunfig.toml`, lo que bloquea lifecycle scripts (`prepare`, `preinstall`, `install`, `postinstall`, etc.) de paquetes/workspaces para reducir riesgo de malware.
-Regla completa: [docs/40-bun-package-manager-security.md](docs/40-bun-package-manager-security.md)
+`domain/` must not import `application/` or `infrastructure/`. Ports live in `domain/`; adapters live in `infrastructure/`.
+Rule: `.ai/primitives/rules/clean-arch-boundaries.md`
 
+### R6: Python with uv; JS/TypeScript with safe Bun
 
-### R7: Documentación metódica multi-superficie
-
-No documentes sólo en `docs/` cuando el cambio sea una PoC, decisión o concepto reutilizable. Sincronizá `docs/`, `vault/`, `.ai/context`, `.ai/primitives` y adapters IDE/CLI según corresponda.
-Regla completa: [.ai/primitives/rules/documentation-system.md](.ai/primitives/rules/documentation-system.md)
-
-Agent-facing primitives must be concise English; human documentation in `docs/` and `vault/` stays Spanish.
+Python uses **uv** (`pyproject.toml`, `uv.lock`, `requirements.txt` exported by uv).
+Node/JS/TypeScript uses **Bun** as package manager/runtime. Do not use npm/pnpm/yarn for installs.
+`bunfig.toml` must keep `[install] ignoreScripts = true` to block lifecycle scripts.
+Rule: `docs/40-bun-package-manager-security.md`
 
 ---
 
-## 5. Como extender el sistema
+## 5. Extending the system
 
-Antes de implementar cualquier feature, busca el skill correspondiente:
+Before implementing any feature, find the matching skill:
 
-```
+```text
 .ai/primitives/skills/
-  add-rest-endpoint.md       add-sse-stream.md          add-websocket-channel.md
-  add-webhook-subscription.md add-kafka-publisher.md    add-kafka-consumer.md
-  add-fraud-rule.md          add-port-out.md            add-port-in.md
-  add-domain-entity.md       add-value-object.md        add-otel-custom-span.md
-  add-otel-custom-metric.md  add-resilience-pattern.md  add-idempotency-key.md
-  add-outbox-event.md        add-helm-template.md       add-prometheus-rule.md
-  add-feature-test-karate.md add-feature-test-cucumber.md add-jacoco-coverage-target.md
-  add-mock-aws-service.md    add-architecture-decision.md add-domain-entity.md
-  add-typescript-http-atdd-suite.md add-nestjs-transactional-service.md add-hono-transactional-service.md
-  bootstrap-new-poc.md       refactor-to-enterprise-layout.md benchmark-poc.md
-  debug-failing-test.md      update-poc-readme.md       wire-engram-memory.md
-  update-architecture-doc.md
-  documentation-system.md (rule; para cambios de docs/vault/context/adapters)
+  add-rest-endpoint.md        add-sse-stream.md             add-websocket-channel.md
+  add-webhook-subscription.md add-kafka-publisher.md        add-kafka-consumer.md
+  add-fraud-rule.md           add-port-out.md               add-port-in.md
+  add-domain-entity.md        add-value-object.md           add-otel-custom-span.md
+  add-otel-custom-metric.md   add-resilience-pattern.md     add-idempotency-key.md
+  add-outbox-event.md         add-helm-template.md          add-prometheus-rule.md
+  add-feature-test-karate.md  add-feature-test-cucumber.md  add-jacoco-coverage-target.md
+  add-mock-aws-service.md     add-architecture-decision.md  bootstrap-new-poc.md
+  refactor-to-enterprise-layout.md benchmark-poc.md         debug-failing-test.md
+  update-poc-readme.md        wire-engram-memory.md         update-architecture-doc.md
 ```
 
-Para tareas multi-paso, usa un workflow:
-[.ai/primitives/workflows/](.ai/primitives/workflows/) — workflows disponibles, incluyendo `typescript-poc-test-battery` para PoCs NestJS/Hono.
+For multi-step tasks, use a workflow from `.ai/primitives/workflows/`.
 
 ---
 
-## 6. Memoria persistente (Engram)
+## 6. Persistent memory: Engram
 
-Este proyecto usa Engram MCP para memoria entre sesiones.
+This project uses Engram MCP for cross-session memory.
 
 - Project key: `real-time-risk-lab`
-- Al iniciar: `mem_context(project: "real-time-risk-lab")`
-- Al finalizar: `mem_session_summary(...)` (OBLIGATORIO)
-- Guia completa: [.ai/context/engram.md](.ai/context/engram.md)
+- Session start: `mem_context(project: "real-time-risk-lab")`
+- Session end: `mem_session_summary(...)` is mandatory when Engram tools are available.
+- Guide: `.ai/context/engram.md`
 
 ---
 
-## 7. Adapters por IDE
+## 7. IDE adapters
 
-| IDE | Archivo principal | Adapter |
+| IDE/tool | Main file | Adapter |
 |---|---|---|
-| Claude Code | `CLAUDE.md` | [.ai/adapters/claude-code/](.ai/adapters/claude-code/) |
-| Cursor | `.cursor/rules/*.mdc` | [.ai/adapters/cursor/](.ai/adapters/cursor/) |
-| Windsurf | `.windsurfrules` | [.ai/adapters/windsurf/](.ai/adapters/windsurf/) |
-| GitHub Copilot | `.github/copilot-instructions.md` | [.ai/adapters/copilot/](.ai/adapters/copilot/) |
-| Codex CLI | `AGENTS.md` (este archivo) | [.ai/adapters/codex/](.ai/adapters/codex/) |
-| opencode | `AGENTS.md` + `.opencode/agents.md` | [.ai/adapters/opencode/](.ai/adapters/opencode/) |
-| Kiro | `.kiro/instructions.md` | [.ai/adapters/kiro/](.ai/adapters/kiro/) |
-| Antigravity | placeholder | [.ai/adapters/antigravity/](.ai/adapters/antigravity/) |
+| Claude Code | `CLAUDE.md` | `.ai/adapters/claude-code/` |
+| Cursor | `.cursor/rules/*.mdc` | `.ai/adapters/cursor/` |
+| Windsurf | `.windsurfrules` + `.windsurf/rules/` | `.ai/adapters/windsurf/` |
+| GitHub Copilot | `.github/copilot-instructions.md` | `.ai/adapters/copilot/` |
+| Codex CLI | `AGENTS.md` | `.ai/adapters/codex/` |
+| opencode | `AGENTS.md` + `opencode.json` | `.ai/adapters/opencode/` |
+| Kiro | `.kiro/steering/*.md` | `.ai/adapters/kiro/` |
+| Antigravity | `GEMINI.md` | `.ai/adapters/antigravity/` |
 
-Para instalar todos los adapters:
+Install all adapters:
+
 ```bash
 for ide in claude-code cursor windsurf copilot codex opencode kiro; do
-    ./.ai/adapters/$ide/install.sh
+    bash ./.ai/adapters/$ide/install.sh
 done
 ```
 
 ---
 
-## 8. Estado de la exploración
+## 8. Exploration state
 
-Estado actual: [.ai/context/exploration-state.md](.ai/context/exploration-state.md)
+Current state: `.ai/context/exploration-state.md`
 
 ---
 
-> No edites codigo sin antes leer la rule aplicable y ejecutar el workflow correspondiente.
-> Si te falta una primitiva, agregala en `.ai/primitives/` antes de implementar.
-> Verifica el sistema: `.ai/scripts/verify-primitives.sh`
+> Do not edit code before reading the applicable rule and workflow.
+> If a primitive is missing, add it under `.ai/primitives/` before implementing.
+> Verify the system with `./.ai/scripts/verify-primitives.sh`.

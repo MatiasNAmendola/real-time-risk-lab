@@ -1,25 +1,25 @@
 # GEMINI.md — Real-Time Risk Lab (Google Antigravity)
 
-## Proyecto
+## Project
 
-Exploración técnica de un use case de detección de fraude en tiempo real.
-Detección de fraude en tiempo real: 150 TPS, p99 < 300ms.
-Stack: Java 21 LTS executable baseline, Gradle Kotlin DSL, Vert.x 5.0.12, Postgres 16, Valkey 8, Redpanda, k3d/OrbStack.
+Technical exploration of real-time fraud detection architecture.
+Target scenario: 150 sustained TPS, p99 < 300 ms.
+Stack: Java 21 LTS executable baseline, Gradle Kotlin DSL, Vert.x 5, Postgres, Valkey, Tansu/Kafka, k3d/OrbStack.
 
-Contexto completo: .ai/context/architecture.md
+Full context: `.ai/context/architecture.md`
 
-## Reglas non-negotiable
+## Non-negotiable rules
 
-1. Java 21 LTS es el baseline ejecutable via Gradle (`--release 21`). Java 25 LTS queda como objetivo futuro documentado.
-2. Clean Architecture: domain/ NO importa de application/ ni infrastructure/.
-3. ATDD primero: escribir el .feature antes que el código de producción.
-4. Cada request debe producir trace + log + métrica vía OpenTelemetry.
-5. correlationId en MDC y en el header de respuesta X-Correlation-Id.
+1. Java 21 LTS is the executable Gradle baseline (`--release 21`). Java 25 LTS is only a documented future target.
+2. Clean Architecture: `domain/` must not import from `application/` or `infrastructure/`.
+3. ATDD first: write the `.feature` before production code.
+4. Every request must produce trace + structured log + metric through OpenTelemetry.
+5. `correlationId` must be present in MDC and in the `X-Correlation-Id` response header.
 
-## Skills y reglas
+## Skills and rules
 
-Antes de implementar cualquier cosa, revisar .ai/primitives/skills/ y .ai/primitives/rules/.
+Before implementing, check `.ai/primitives/skills/` and `.ai/primitives/rules/`.
 
-## No tocar
+## Editing scope
 
-poc/, tests/, cli/, docs/, vault/ — propiedad exclusiva del usuario.
+Edit `poc/`, `tests/`, `cli/`, `docs/`, and `vault/` only when the task explicitly requires it.

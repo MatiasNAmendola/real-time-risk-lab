@@ -1,62 +1,62 @@
 # Adapter: GitHub Copilot
 
-GitHub Copilot lee `.github/copilot-instructions.md` como archivo global de instrucciones, y desde noviembre 2025 soporta instrucciones por archivo/lenguaje en `.github/instructions/`.
+GitHub Copilot reads `.github/copilot-instructions.md` as repository-wide instructions and supports per-file or per-language instructions in `.github/instructions/`.
 
-## Archivos que usa este adapter
+## Files used by this adapter
 
-| Archivo | Proposito |
+| File | Purpose |
 |---|---|
-| `.github/copilot-instructions.md` | Instrucciones globales del repo (sin frontmatter) |
-| `.github/instructions/*.instructions.md` | Instrucciones per-file/per-language con frontmatter |
+| `.github/copilot-instructions.md` | Global repository instructions without frontmatter. |
+| `.github/instructions/*.instructions.md` | Per-file/per-language instructions with frontmatter. |
 
-## Jerarquia de instrucciones
+## Instruction precedence
 
-1. Personal instructions (usuario) — mayor prioridad
-2. Repository instructions (`.github/copilot-instructions.md`) — este repo
-3. Organization instructions — menor prioridad
+1. Personal user instructions.
+2. Repository instructions from `.github/copilot-instructions.md`.
+3. Organization instructions.
 
-## Formato per-file (`.github/instructions/`)
+## Per-file format
 
 ```yaml
 ---
 applyTo: "**/*.java"
-# Multiples patrones:
+# Multiple patterns:
 # applyTo: "**/*.java,**/build.gradle.kts"
-# Excluir agentes especificos (desde noviembre 2025):
+# Agent exclusions:
 # excludeAgent: "code-review"
 # excludeAgent: "coding-agent"
 ---
 # Java-specific instructions
 ```
 
-Campos:
-- `applyTo` (glob): archivos a los que aplica
-- `excludeAgent`: `"code-review"` o `"coding-agent"` para excluir agentes especificos
+Fields:
+- `applyTo`: target glob.
+- `excludeAgent`: `"code-review"` or `"coding-agent"`.
 
-## Importante
+## Important
 
-`.github/copilot-instructions.md` NO lleva frontmatter — todo el contenido es instruccion plana.
-Los archivos `.instructions.md` en `.github/instructions/` SI llevan frontmatter con `applyTo`.
+`.github/copilot-instructions.md` has no frontmatter. Its whole body is plain instruction text.
+Files under `.github/instructions/` do use frontmatter with `applyTo`.
 
-## Como Copilot consume las primitivas
+## How Copilot consumes primitives
 
-1. Copilot lee `.github/copilot-instructions.md` al abrir el repo.
-2. El usuario puede referenciar archivos adicionales en el chat con `#file:.ai/primitives/skills/add-rest-endpoint.md`.
-3. Con instrucciones per-file, se pueden aplicar reglas especificas por lenguaje automaticamente.
+1. Copilot reads `.github/copilot-instructions.md` when the repo opens.
+2. Users can reference extra files in chat, for example `#file:.ai/primitives/skills/add-rest-endpoint.md`.
+3. Per-file instructions apply automatically by language or glob.
 
-## Limitaciones conocidas
+## Known limitations
 
-- `.github/copilot-instructions.md` no soporta frontmatter.
-- Limite de tamano no documentado oficialmente — mantener conciso.
-- CLI Copilot tiene su propio sistema de instrucciones separado.
+- `.github/copilot-instructions.md` does not support frontmatter.
+- Official size limits are not clearly documented; keep instructions concise.
+- Copilot CLI has a separate instruction system.
 
-## Instalar
+## Install
 
 ```bash
 ./.ai/adapters/copilot/install.sh
 ```
 
-## Documentacion oficial
+## Official documentation
 
 - https://docs.github.com/copilot/customizing-copilot/adding-custom-instructions-for-github-copilot
 - https://github.blog/changelog/2025-11-12-copilot-code-review-and-coding-agent-now-support-agent-specific-instructions/

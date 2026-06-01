@@ -19,7 +19,7 @@ See full rules: @.ai/primitives/rules/architecture-clean.md
 
 ## Java baseline
 
-- Java 21 LTS (`--release 21`) en el build actual; Java 25 es objetivo documentado
+- Java 21 LTS (`--release 21`) in the current build; Java 25 is a documented target
 - Use records for Value Objects
 - Use virtual threads for blocking I/O
 

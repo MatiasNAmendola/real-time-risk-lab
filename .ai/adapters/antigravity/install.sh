@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # .ai/adapters/antigravity/install.sh
-# Instala el adapter de Google Antigravity: crea GEMINI.md y .agent/rules/
-# Idempotente.
+# Installs the Google Antigravity adapter: creates GEMINI.md and .agent/rules/
+# Idempotent.
 
 set -e
 
@@ -11,7 +11,7 @@ REPO_ROOT="$(cd "$SCRIPT_DIR/../../.." && pwd)"
 echo "=== Antigravity adapter install ==="
 mkdir -p "$REPO_ROOT/.agent/rules"
 
-# GEMINI.md en root — mayor prioridad para Antigravity
+# Root GEMINI.md — highest priority for Antigravity
 GEMINI_FILE="$REPO_ROOT/GEMINI.md"
 if [ -f "$GEMINI_FILE" ]; then
     echo "  already exists: $GEMINI_FILE (skipping)"
@@ -23,13 +23,13 @@ cat > "$GEMINI_FILE" <<'EOF'
 
 Technical architecture exploration for Real-Time Risk Lab.
 Real-time fraud detection: 150 TPS, p99 < 300ms.
-Stack: Java 21 LTS baseline operativo (Java 25 LTS objetivo documentado), Gradle Kotlin DSL, Vert.x 5.0.12, Postgres 16, Valkey 8, Redpanda, k3d/OrbStack.
+Stack: Java 21 LTS executable baseline (Java 25 LTS documented target), Gradle Kotlin DSL, Vert.x 5.0.12, Postgres 16, Valkey 8, Redpanda, k3d/OrbStack.
 
 Full context: .ai/context/architecture.md
 
 ## Non-negotiable rules
 
-1. Java 21 LTS baseline operativo. Usar --release 21; Java 25 LTS queda como objetivo documentado.
+1. Java 21 LTS executable baseline. Use --release 21; Java 25 LTS remains a documented target.
 2. Clean Architecture: domain/ does NOT import from application/ or infrastructure/.
 3. ATDD first: write .feature before production code.
 4. Every request must produce trace + log + metric via OpenTelemetry.
@@ -54,7 +54,7 @@ else
     echo "  WARNING: AGENTS.md not found. Antigravity reads AGENTS.md since v1.20.3."
 fi
 
-# .agent/rules/ — adicionales organizados por concern
+# .agent/rules/ — additional concern-specific rules
 cat > "$REPO_ROOT/.agent/rules/architecture.md" <<'EOF'
 # Architecture Rules
 

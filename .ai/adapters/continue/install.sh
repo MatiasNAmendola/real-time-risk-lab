@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 # .ai/adapters/continue/install.sh
-# Instala el adapter de Continue: genera .continuerc.json y .continue/prompts/
-# Idempotente.
-# Nota: el config global (~/.continue/config.yaml) lo gestiona el usuario, no este script.
+# Installs the Continue adapter: generates .continuerc.json and .continue/prompts/
+# Idempotent.
+# Note: global config (~/.continue/config.yaml) is user-managed, not managed by this script.
 
 set -e
 
@@ -11,7 +11,7 @@ REPO_ROOT="$(cd "$SCRIPT_DIR/../../.." && pwd)"
 
 echo "=== Continue adapter install ==="
 
-# .continuerc.json — override de proyecto (merge sobre config.yaml global)
+# .continuerc.json — project override merged over global config.yaml
 DEST="$REPO_ROOT/.continuerc.json"
 if [ -f "$DEST" ]; then
     echo "  already exists: $DEST (skipping)"
@@ -20,7 +20,7 @@ cat > "$DEST" <<'EOF'
 {
   "mergeBehavior": "merge",
   "rules": [
-    "Java 21 LTS baseline operativo. Usar --release 21; Java 25 LTS queda como objetivo documentado.",
+    "Java 21 LTS executable baseline. Use --release 21; Java 25 LTS remains a documented target.",
     "Clean Architecture: domain/ must NOT import from application/ or infrastructure/.",
     "ATDD first: write .feature file before any production code.",
     "Every request must produce trace + log + metric via OpenTelemetry. correlationId in MDC and header.",
@@ -38,7 +38,7 @@ EOF
     echo "  created: $DEST"
 fi
 
-# .continue/prompts/ — reemplazo de slashCommands (nuevo formato post-migración)
+# .continue/prompts/ — replacement for deprecated slashCommands
 mkdir -p "$REPO_ROOT/.continue/prompts"
 
 ATDD_PROMPT="$REPO_ROOT/.continue/prompts/atdd-feature.prompt"

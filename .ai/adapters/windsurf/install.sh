@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # .ai/adapters/windsurf/install.sh
-# Instala el adapter de Windsurf: genera .windsurf/rules/*.md (Wave 8+) Y .windsurfrules (compat legacy)
-# Idempotente.
+# Installs the Windsurf adapter: generates .windsurf/rules/*.md (Wave 8+) and .windsurfrules (legacy compatibility)
+# Idempotent.
 
 set -e
 
@@ -11,47 +11,47 @@ RULES_DIR="$REPO_ROOT/.windsurf/rules"
 
 echo "=== Windsurf adapter install ==="
 
-# --- Wave 8+ format: .windsurf/rules/*.md con frontmatter de trigger ---
+# --- Wave 8+ format: .windsurf/rules/*.md with trigger frontmatter ---
 mkdir -p "$RULES_DIR"
 
-# 00-project.md — siempre activo
+# 00-project.md — always active
 cat > "$RULES_DIR/00-project.md" <<'EOF'
 ---
 trigger: always_on
 description: Real-Time Risk Lab project context and non-negotiable rules
 ---
 
-# Proyecto: Real-Time Risk Lab — Architecture Exploration
+# Project: Real-Time Risk Lab — Architecture Exploration
 
-Exploración técnica de arquitectura de riesgo transaccional.
-Sistema de fraude tiempo real: 150 TPS, p99 < 300ms.
-Stack: Java 21 LTS baseline operativo (Java 25 LTS objetivo documentado), Gradle Kotlin DSL, Vert.x 5.0.12, Postgres 16, Valkey 8, Redpanda, k3d/OrbStack.
+Technical architecture exploration for transactional risk.
+Real-time fraud system: 150 TPS, p99 < 300ms.
+Stack: Java 21 LTS executable baseline (Java 25 LTS documented target), Gradle Kotlin DSL, Vert.x 5.0.12, Postgres 16, Valkey 8, Redpanda, k3d/OrbStack.
 
 Full context: .ai/context/architecture.md
 PoC inventory: .ai/context/poc-inventory.md
 
-## Reglas non-negotiable
+## Non-negotiable rules
 
-1. Java 21 LTS baseline operativo; Java 25 LTS queda como objetivo documentado.
-2. Clean Architecture layout (enterprise Go pattern). Ver .ai/primitives/rules/architecture-clean.md
-3. ATDD primero. Escribir .feature ANTES del codigo de produccion.
-4. OTEL en todo request: trace + log + metric. correlationId en MDC y header.
-5. domain/ no importa de application/ ni infrastructure/.
+1. Java 21 LTS executable baseline; Java 25 LTS remains a documented target.
+2. Clean Architecture layout (enterprise Go pattern). See .ai/primitives/rules/architecture-clean.md
+3. ATDD first. Write the .feature file BEFORE production code.
+4. OTEL on every request: trace + log + metric. correlationId in MDC and response header.
+5. domain/ must not import from application/ or infrastructure/.
 
-## Skills disponibles
+## Available skills
 
-Antes de implementar, revisar: .ai/primitives/skills/
-Rules completas: .ai/primitives/rules/
+Before implementing, review: .ai/primitives/skills/
+Full rules: .ai/primitives/rules/
 Workflows: .ai/primitives/workflows/
 
-## No tocar
+## Do not touch
 
-poc/, tests/, cli/, docs/, vault/ — ownership del usuario.
+poc/, tests/, cli/, docs/, vault/ — user-owned.
 EOF
 
 echo "  created: $RULES_DIR/00-project.md"
 
-# 10-java-arch.md — activo en archivos Java
+# 10-java-arch.md — active for Java files
 cat > "$RULES_DIR/10-java-arch.md" <<'EOF'
 ---
 trigger: glob
@@ -63,7 +63,7 @@ description: Clean Architecture and Java baseline conventions
 
 Full rule: .ai/primitives/rules/architecture-clean.md
 
-## Layout canonico
+## Canonical layout
 
 domain/{entity,repository,usecase,service,rule}
 application/{usecase/<aggregate>,mapper,dto}
@@ -77,16 +77,16 @@ domain/ must NOT import from application/ or infrastructure/.
 
 ## Java baseline
 
-- Java 21 LTS (`--release 21`) en el build actual; Java 25 es objetivo documentado
-- Virtual threads para I/O bloqueante
-- Records para Value Objects
+- Java 21 LTS (`--release 21`) in the current build; Java 25 is a documented target
+- Virtual threads for blocking I/O
+- Records for Value Objects
 
 See: .ai/primitives/rules/naming-conventions.md
 EOF
 
 echo "  created: $RULES_DIR/10-java-arch.md"
 
-# 20-testing.md — activo en archivos de test
+# 20-testing.md — active for test files
 cat > "$RULES_DIR/20-testing.md" <<'EOF'
 ---
 trigger: glob
@@ -100,38 +100,38 @@ Full rule: .ai/primitives/rules/testing-atdd.md
 
 ## ATDD first
 
-1. Escribir .feature ANTES del codigo de produccion.
+1. Write the .feature file BEFORE production code.
 2. Run -> FAIL (RED confirmed).
-3. Implementar minimo para pasar.
+3. Implement the minimum to pass.
 4. Run -> PASS (GREEN).
 
 ## Frameworks
 
 Karate 1.5+ (PoCs), Cucumber-JVM 7+ (tests/), JUnit 5 (unit).
-Coverage: >= 80% line en domain/ y application/.
+Coverage: >= 80% line in domain/ and application/.
 EOF
 
 echo "  created: $RULES_DIR/20-testing.md"
 
-# --- Legacy compat: .windsurfrules para versiones pre-Wave 8 ---
+# --- Legacy compatibility: .windsurfrules for pre-Wave 8 versions ---
 cat > "$REPO_ROOT/.windsurfrules" <<'EOF'
 # Real-Time Risk Lab — Windsurf Rules (legacy compat, pre-Wave 8)
-# Para Windsurf Wave 8+, las rules estan en .windsurf/rules/*.md
+# For Windsurf Wave 8+, rules live in .windsurf/rules/*.md
 
-## Proyecto
+## Project
 
-Exploración técnica de arquitectura de riesgo transaccional.
-Sistema de fraude tiempo real: 150 TPS, p99 < 300ms.
-Stack: Java 21 LTS baseline operativo (Java 25 LTS objetivo documentado), Gradle Kotlin DSL, Vert.x 5.0.12, Postgres 16, Valkey 8, Redpanda, k3d/OrbStack.
+Technical architecture exploration for transactional risk.
+Real-time fraud system: 150 TPS, p99 < 300ms.
+Stack: Java 21 LTS executable baseline (Java 25 LTS documented target), Gradle Kotlin DSL, Vert.x 5.0.12, Postgres 16, Valkey 8, Redpanda, k3d/OrbStack.
 
 Full context: .ai/context/architecture.md
 
 ## Java version
 
-- Java 21 LTS baseline operativo; Java 25 LTS queda como objetivo documentado.
-- --release 21 en el build actual.
-- Virtual threads para I/O bloqueante.
-- Records para Value Objects.
+- Java 21 LTS executable baseline; Java 25 LTS remains a documented target.
+- --release 21 in the current build.
+- Virtual threads for blocking I/O.
+- Records for Value Objects.
 
 ## Clean Architecture layout
 
@@ -140,28 +140,28 @@ application/{usecase/<aggregate>,mapper,dto}
 infrastructure/{controller,consumer,repository,resilience,time}
 config/ cmd/
 
-Invariante: domain/ NO importa de application/ ni infrastructure/.
+Invariant: domain/ must NOT import from application/ or infrastructure/.
 
 ## ATDD first
 
-Escribir .feature ANTES del codigo de produccion.
+Write the .feature file BEFORE production code.
 Frameworks: Karate 1.5+ (PoCs), Cucumber-JVM 7+ (tests/).
-Coverage: >= 80% line en domain/ y application/.
+Coverage: >= 80% line in domain/ and application/.
 
-## Observabilidad OTEL
+## OTEL observability
 
-Todo request produce trace + log + metric.
-correlationId en MDC, en response header X-Correlation-Id, en eventos Kafka.
+Every request produces trace + log + metric.
+correlationId in MDC, the X-Correlation-Id response header, and Kafka events.
 Backend: OpenObserve.
 
-## No tocar
+## Do not touch
 
-poc/, tests/, cli/, docs/, vault/ — ownership del usuario.
+poc/, tests/, cli/, docs/, vault/ — user-owned.
 
-## Skills disponibles
+## Available skills
 
-Antes de implementar, revisar: .ai/primitives/skills/
-Rules completas: .ai/primitives/rules/
+Before implementing, review: .ai/primitives/skills/
+Full rules: .ai/primitives/rules/
 Workflows: .ai/primitives/workflows/
 EOF
 

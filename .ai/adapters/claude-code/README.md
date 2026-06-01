@@ -1,40 +1,40 @@
 # Adapter: Claude Code
 
-Claude Code es el CLI oficial de Anthropic. Lee `CLAUDE.md` en la raiz del repo y soporta hooks via `.claude/settings.json`.
+Claude Code is Anthropic's CLI. It reads `CLAUDE.md` at the repository root and supports hooks through `.claude/settings.json`.
 
-## Archivos que usa este adapter
+## Files used by this adapter
 
-| Archivo | Proposito |
+| File | Purpose |
 |---|---|
-| `CLAUDE.md` (raiz) | Entrypoint principal. Usa `@AGENTS.md` para importar el contexto comun. |
-| `.claude/settings.json` | Hooks, permisos, configuracion del harness |
-| `.claude/agents/*.md` | Sub-agents para skills especificos (uno por workflow/skill) |
+| `CLAUDE.md` (root) | Main entrypoint. Uses `@AGENTS.md` to import shared project context. |
+| `.claude/settings.json` | Hooks, permissions, and harness config. |
+| `.claude/agents/*.md` | Skill-specific sub-agents, one per workflow/skill. |
 
-## Como Claude Code consume las primitivas
+## How Claude Code consumes primitives
 
-1. Al abrir el repo, Claude Code lee `CLAUDE.md`.
-2. `CLAUDE.md` incluye `@AGENTS.md` (sintaxis de importacion de Claude Code).
-3. El usuario puede referenciar skills con `/skill-name` (slash commands).
-4. Los hooks en `.claude/settings.json` se ejecutan automaticamente en eventos del harness.
-5. Los sub-agents en `.claude/agents/` pueden invocarse para tareas especificas.
+1. Claude Code reads `CLAUDE.md` when the repo opens.
+2. `CLAUDE.md` includes `@AGENTS.md` using Claude Code import syntax.
+3. Users can reference skills with slash commands or direct file references.
+4. Hooks in `.claude/settings.json` run on harness events.
+5. Sub-agents in `.claude/agents/` can be invoked for focused tasks.
 
-## Limitaciones conocidas
+## Known limitations
 
-- Los slash commands requieren definicion manual en `.claude/settings.json` o como skills del harness.
-- `@import` solo funciona para archivos del repo, no URLs.
-- Los hooks son comandos shell: deben ser rapidos para no bloquear.
+- Slash commands require manual setup in `.claude/settings.json` or harness skills.
+- `@import` works for repository files, not URLs.
+- Hook commands must be fast to avoid blocking the agent loop.
 
-## Instalar
+## Install
 
 ```bash
 ./.ai/adapters/claude-code/install.sh
 ```
 
-El script crea los archivos en `.claude/agents/` con un sub-agent por skill.
+The script creates one `.claude/agents/` sub-agent per skill.
 
-## Hooks recomendados (.claude/settings.json)
+## Recommended hooks
 
-Ver `.ai/primitives/hooks/` para los detalles de cada hook.
+See `.ai/primitives/hooks/` for each hook contract.
 
 ```json
 {

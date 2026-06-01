@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # .ai/adapters/claude-code/install.sh
-# Instala el adapter de Claude Code: crea sub-agents en .claude/agents/
-# Idempotente: se puede correr multiples veces.
+# Installs the Claude Code adapter: creates sub-agents under .claude/agents/
+# Idempotent: safe to run multiple times.
 
 set -e
 
@@ -13,10 +13,10 @@ AGENTS_DIR="$REPO_ROOT/.claude/agents"
 echo "=== Claude Code adapter install ==="
 echo "Repo: $REPO_ROOT"
 
-# Crear directorio de agents
+# Create the agents directory
 mkdir -p "$AGENTS_DIR"
 
-# Generar un sub-agent por skill
+# Generate one sub-agent per skill
 for skill_file in "$AI_DIR/primitives/skills/"*.md; do
     skill_name=$(basename "$skill_file" .md)
     agent_file="$AGENTS_DIR/${skill_name}.md"
@@ -26,7 +26,7 @@ for skill_file in "$AI_DIR/primitives/skills/"*.md; do
         continue
     fi
 
-    # Extraer intent del frontmatter
+    # Extract intent from frontmatter
     intent=$(grep "^intent:" "$skill_file" 2>/dev/null | head -1 | sed 's/^intent: //' | tr -d '"' || echo "Execute skill $skill_name")
 
     cat > "$agent_file" <<EOF
@@ -46,7 +46,7 @@ EOF
     echo "  created: $agent_file"
 done
 
-# Verificar que settings.json existe (no sobreescribir si ya existe)
+# Create settings.json only if it does not already exist
 SETTINGS="$REPO_ROOT/.claude/settings.json"
 if [ ! -f "$SETTINGS" ]; then
     cat > "$SETTINGS" <<'EOF'

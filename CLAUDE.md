@@ -2,13 +2,13 @@
 
 ---
 
-# CLAUDE.md — Configuracion especifica de Claude Code
+# CLAUDE.md — Claude Code-specific config
 
-Este archivo extiende `AGENTS.md` con configuracion especifica para el harness de Claude Code.
+This file extends `AGENTS.md` with Claude Code harness-specific guidance.
 
-## Hooks recomendados (.claude/settings.json)
+## Recommended hooks (`.claude/settings.json`)
 
-Agregar los siguientes hooks para automatizar comportamientos:
+Add hooks like these to automate safety checks:
 
 ```json
 {
@@ -39,69 +39,68 @@ Agregar los siguientes hooks para automatizar comportamientos:
 }
 ```
 
-Ver hooks completos en: `.ai/primitives/hooks/`
+Full hook contracts: `.ai/primitives/hooks/`
 
-## Sub-agents disponibles
+## Available sub-agents
 
-Los sub-agents en `.claude/agents/` corresponden a los skills atomicos:
+Sub-agents in `.claude/agents/` map to atomic skills:
 
 ```bash
-# Instalar todos los sub-agents:
+# Install all sub-agents:
 ./.ai/adapters/claude-code/install.sh
 
-# Usar un skill especifico:
-# "usa el skill add-rest-endpoint"
-# "ejecuta el workflow new-feature-atdd"
+# Example prompts:
+# "use the add-rest-endpoint skill"
+# "run the new-feature-atdd workflow"
 ```
 
-## Slash commands sugeridos
+## Suggested slash-command phrasing
 
-Una vez instalados los sub-agents, se pueden invocar como:
-- "usa el sub-agent add-fraud-rule"
-- "ejecuta add-otel-custom-span para el use case de evaluacion"
-- "bootstrap-new-poc para una nueva PoC de CQRS"
+After installing sub-agents, invoke them with prompts such as:
+- "use the add-fraud-rule sub-agent"
+- "run add-otel-custom-span for the evaluation use case"
+- "bootstrap-new-poc for a new CQRS PoC"
 
 ## Engram MCP
 
-Este proyecto tiene Engram MCP configurado. Al iniciar sesion:
+This project uses Engram MCP. At session start:
 
-1. `mem_current_project()` — detectar proyecto
-2. `mem_context(project: "real-time-risk-lab")` — cargar contexto
-3. `mem_search(query: "risk-platform current state")` — estado actual
+1. `mem_current_project()` — detect the project.
+2. `mem_context(project: "real-time-risk-lab")` — load context.
+3. `mem_search(query: "risk-platform current state")` — recover current state.
 
-Al finalizar: `mem_session_summary(...)` es OBLIGATORIO.
+At session end, `mem_session_summary(...)` is mandatory.
 
-Ver: `.ai/context/engram.md` y `.ai/primitives/hooks/session-start-engram-load.md`
+See `.ai/context/engram.md` and `.ai/primitives/hooks/session-start-engram-load.md`.
 
-## Verificar el sistema de primitivas
+## Verify the primitive system
 
 ```bash
 ./.ai/scripts/verify-primitives.sh
 ```
 
-## Primitive-first protocol (MANDATORY)
+## Primitive-first protocol (mandatory)
 
-Antes de lanzar un sub-agente o hacer Edit/Write significativo:
+Before launching a sub-agent or making a significant Edit/Write:
 
-1. Ejecuta: `python3 .ai/scripts/skill-router.py --top 3 "<descripcion de la tarea>"`
-2. Lee el skill top-1. Si su confianza > 0.5 y el intent matches, citalo en el prompt: `SKILL: Load .ai/primitives/skills/<name>.md as your guide.`
-3. Si la tarea es multi-step, invoca `python3 .ai/scripts/workflow-runner.py --dry-run <workflow>` primero.
-4. Loggea la decision en `.ai/logs/skill-routing-YYYY-MM-DD.jsonl`.
-5. Si NO hay skill aplicable, agrega uno usando workflow `add-architecture-decision.md` antes de improvisar.
+1. Run `python3 .ai/scripts/skill-router.py --top 3 "<task description>"`.
+2. Read the top skill. If confidence is > 0.5 and intent matches, cite it in the prompt: `SKILL: Load .ai/primitives/skills/<name>.md as your guide.`
+3. For multi-step tasks, run `python3 .ai/scripts/workflow-runner.py --dry-run <workflow>` first.
+4. Log the routing decision in `.ai/logs/skill-routing-YYYY-MM-DD.jsonl`.
+5. If no skill applies, add one before improvising.
 
-El hook PreToolUse en `.claude/settings.json` automatiza los pasos 1+4. La invocacion manual de workflow-runner es responsabilidad del orchestrator.
+The Claude `PreToolUse` hook automates steps 1 and 4. Manual `workflow-runner` invocation remains the orchestrator's responsibility.
 
 ```bash
-# Ejemplos rapidos:
-python3 .ai/scripts/skill-router.py --top 3 "agregar un consumer Kafka"
+python3 .ai/scripts/skill-router.py --top 3 "add a Kafka consumer"
 python3 .ai/scripts/workflow-runner.py --dry-run add-comm-pattern
 python3 .ai/scripts/usage-stats.py
 ```
 
-## Reglas de trabajo para Claude Code
+## Claude Code working rules
 
-1. Antes de implementar: leer la rule y el skill correspondiente.
-2. Antes de commitear: verificar que los tests pasan.
-3. No tocar `poc/`, `tests/`, `cli/`, `docs/`, `vault/` sin necesidad explicita.
-4. Guardar en Engram decisiones, bugs, y descubrimientos INMEDIATAMENTE (no al final).
-5. `mem_session_summary` al terminar, sin falta.
+1. Before implementation: read the matching rule and skill.
+2. Before commit: verify that relevant tests pass.
+3. Do not edit `poc/`, `tests/`, `cli/`, `docs/`, or `vault/` unless the task requires it.
+4. Save architecture decisions, bug fixes, and discoveries to Engram immediately when available.
+5. Always call `mem_session_summary` at session end when Engram tools are available.

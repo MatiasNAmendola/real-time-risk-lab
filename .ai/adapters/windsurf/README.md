@@ -1,56 +1,56 @@
 # Adapter: Windsurf
 
-Windsurf (Codeium/OpenAI) lee rules desde `.windsurf/rules/*.md` (Wave 8+) y tambien soporta `.windsurfrules` como fallback legacy.
+Windsurf reads rules from `.windsurf/rules/*.md` in Wave 8+ and also supports `.windsurfrules` as a legacy fallback.
 
-## Archivos que usa este adapter
+## Files used by this adapter
 
-| Archivo | Proposito |
+| File | Purpose |
 |---|---|
-| `.windsurf/rules/00-project.md` | Context global, `trigger: always_on` |
-| `.windsurf/rules/10-java-arch.md` | Reglas Java/arch, `trigger: glob` para `**/*.java` |
-| `.windsurf/rules/20-testing.md` | Reglas ATDD, `trigger: glob` para `**/*.feature` |
-| `.windsurfrules` (raiz) | Fallback para Windsurf pre-Wave 8 (sin frontmatter) |
+| `.windsurf/rules/00-project.md` | Global context, `trigger: always_on`. |
+| `.windsurf/rules/10-java-arch.md` | Java architecture rules, `trigger: glob` for `**/*.java`. |
+| `.windsurf/rules/20-testing.md` | ATDD rules, `trigger: glob` for `**/*.feature`. |
+| `.windsurfrules` (root) | Legacy fallback for pre-Wave 8 Windsurf. |
 
-Ambos formatos coexisten. Windsurf Wave 8+ usa `.windsurf/rules/`; versiones anteriores usan `.windsurfrules`.
+Both formats coexist. Windsurf Wave 8+ uses `.windsurf/rules/`; older versions use `.windsurfrules`.
 
-## Frontmatter de activacion (Wave 8+)
+## Activation frontmatter
 
 ```yaml
 ---
-trigger: always_on          # aplica siempre
-# O:
+trigger: always_on
+# or:
 trigger: glob
-glob: "src/**/*.java"       # aplica cuando archivos coincidan
-# O:
-trigger: manual             # solo invocacion explicita
+glob: "src/**/*.java"
+# or:
+trigger: manual
 ---
 ```
 
-## Limite de tamano
+## Size limits
 
-Cada archivo de rule en `.windsurf/rules/` tiene un limite de 12,000 caracteres.
-`.windsurfrules` no tiene frontmatter de activacion — todo es instruccion plana.
+Each `.windsurf/rules/` file has a 12,000 character limit.
+`.windsurfrules` has no activation frontmatter; every instruction is always active.
 
-## Como Windsurf consume las primitivas
+## How Windsurf consumes primitives
 
-1. Cascade (agente de Windsurf) lee `.windsurf/rules/` al abrir el workspace.
-2. Rules con `trigger: always_on` se incluyen en todos los contextos.
-3. Rules con `trigger: glob` se incluyen cuando archivos coincidentes estan en contexto.
-4. Skills se acceden referenciando el archivo: `.ai/primitives/skills/`.
+1. Cascade reads `.windsurf/rules/` when the workspace opens.
+2. `trigger: always_on` rules apply to every context.
+3. `trigger: glob` rules apply when matching files are in context.
+4. Skills are referenced by path under `.ai/primitives/skills/`.
 
-## Limitaciones conocidas
+## Known limitations
 
-- Memorias auto-generadas por Cascade se guardan en `~/.codeium/windsurf/memories/` (local, no versionable).
-- `.windsurfrules` legacy no soporta frontmatter de activacion — todo se aplica siempre.
-- Limite de 12,000 chars por archivo de workspace rule (Wave 8+).
+- Cascade auto-generated memories live under `~/.codeium/windsurf/memories/` and are not versioned.
+- Legacy `.windsurfrules` has no activation frontmatter.
+- Wave 8+ workspace rules have a 12,000 character limit per file.
 
-## Instalar
+## Install
 
 ```bash
 ./.ai/adapters/windsurf/install.sh
 ```
 
-## Documentacion oficial
+## Official documentation
 
 - https://docs.windsurf.com/windsurf/cascade/memories
-- https://docs.windsurf.com/ (Wave 8+ rules directory format)
+- https://docs.windsurf.com/

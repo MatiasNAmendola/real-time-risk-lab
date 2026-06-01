@@ -1,36 +1,36 @@
 ---
 name: add-nestjs-transactional-service
-intent: Extender una PoC NestJS transaccional respetando Clean Architecture
+intent: Extend a transactional NestJS PoC while preserving Clean Architecture
 inputs: [feature_name, controller_route, use_case, ports]
 preconditions:
-  - poc/nestjs-distributed-transactions existe
-  - .ai/primitives/rules/typescript-service-poc.md leída
+  - poc/nestjs-distributed-transactions exists
+  - .ai/primitives/rules/typescript-service-poc.md has been read
 postconditions:
-  - controllers/DTOs/handlers quedan en internal/infrastructure
-  - nuevos use cases dependen sólo de puertos propios
-  - tests ATDD/unit/integration/e2e/smoke actualizados
+  - controllers, DTOs, and handlers remain under internal/infrastructure
+  - new use cases depend only on their own ports
+  - ATDD, unit, integration, e2e, and smoke tests are updated
 related_rules: [typescript-service-poc, clean-arch-boundaries, testing-atdd]
 ---
 
 # Skill: add-nestjs-transactional-service
 
-## Pasos
+## Steps
 
-1. Definir el comportamiento en `tests/atdd/*.feature` antes de implementar.
-2. Crear o extender el use case en `src/internal/application/usecase/<aggregate>/`.
-3. Si necesita salida, definir puerto en `src/internal/domain/repository` o `src/internal/domain/service`.
-4. Implementar adapter NestJS en `src/internal/infrastructure`:
-   - controller en `infrastructure/controller`;
-   - DTO con `class-validator` en `infrastructure/controller/dto`;
-   - handlers CQRS en `infrastructure/cqrs`;
-   - drivers BullMQ/Valkey/TigerBeetle en carpetas de infraestructura.
-5. Wirear providers sólo en `src/cmd/app.module.ts`.
-6. Agregar/actualizar tests:
-   - unit para dominio/aplicación;
-   - integration para adapters in-memory/fallback;
-   - e2e HTTP;
-   - smoke de demo.
-7. Ejecutar:
+1. Define behavior in `tests/atdd/*.feature` before implementation.
+2. Create or extend the use case in `src/internal/application/usecase/<aggregate>/`.
+3. If output is needed, define a port in `src/internal/domain/repository` or `src/internal/domain/service`.
+4. Implement the NestJS adapter under `src/internal/infrastructure`:
+   - controller in `infrastructure/controller`;
+   - DTO with `class-validator` in `infrastructure/controller/dto`;
+   - CQRS handlers in `infrastructure/cqrs`;
+   - BullMQ/Valkey/TigerBeetle drivers in infrastructure folders.
+5. Wire providers only in `src/cmd/app.module.ts`.
+6. Add or update tests:
+   - unit tests for domain/application;
+   - integration tests for in-memory/fallback adapters;
+   - HTTP e2e tests;
+   - demo smoke tests.
+7. Run:
    ```bash
    cd poc/nestjs-distributed-transactions
    ./scripts/check-boundaries.sh

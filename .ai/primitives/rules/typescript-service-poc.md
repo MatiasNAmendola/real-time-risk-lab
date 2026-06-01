@@ -4,27 +4,28 @@ applies_to: ["poc/*-distributed-transactions/src/**/*.ts", "poc/*-distributed-tr
 priority: high
 ---
 
-# Regla: TypeScript service PoC
+# Rule: TypeScript service PoC
 
-## Principio
+## Principle
 
-Las PoCs TypeScript deben demostrar el patrón sin romper las reglas del repo: Bun seguro, Clean Architecture y ATDD observable.
+TypeScript PoCs must demonstrate the pattern without breaking repository rules: safe Bun usage, Clean Architecture, and observable ATDD.
 
-## Layout obligatorio
+## Required layout
 
 ```text
 src/
 ├── main.ts
 ├── cmd/                         # wiring/bootstrap
 └── internal/
-    ├── domain/                  # entidades, value objects, puertos
-    ├── application/             # comandos, DTOs puros, use cases
+    ├── domain/                  # entities, value objects, ports
+    ├── application/             # commands, pure DTOs, use cases
     └── infrastructure/          # HTTP, Nest/Hono, CQRS adapters, BullMQ, Valkey, TigerBeetle
 ```
 
-## Aliases obligatorios
+## Required aliases
 
-Evitar imports relativos largos entre capas (`../../domain`, `../../application`, `../../infrastructure`). Cada PoC TypeScript debe definir aliases en `tsconfig.json`:
+Avoid long cross-layer relative imports such as `../../domain`, `../../application`, or `../../infrastructure`.
+Every TypeScript PoC must define aliases in `tsconfig.json`:
 
 ```json
 "paths": {
@@ -36,43 +37,44 @@ Evitar imports relativos largos entre capas (`../../domain`, `../../application`
 }
 ```
 
-`bun run build` debe reescribir aliases para `dist/` con `tsc-alias` o una herramienta equivalente. Los guardrails deben tratar `@infrastructure/*` como import prohibido desde `domain` y `application`.
+`bun run build` must rewrite aliases for `dist/` with `tsc-alias` or an equivalent tool.
+Guardrails must treat `@infrastructure/*` as forbidden from `domain` and `application`.
 
 ## Boundaries
 
-- `internal/domain` no importa NestJS, Hono, BullMQ, ioredis, Valkey, TigerBeetle client, HTTP ni `internal/infrastructure`.
-- `internal/application` no importa controllers, adapters, `@nestjs/*`, `hono`, `bullmq` ni `ioredis`.
-- Frameworks y drivers viven en `internal/infrastructure`.
-- `src/cmd` sólo compone dependencias.
+- `internal/domain` must not import NestJS, Hono, BullMQ, ioredis, Valkey, TigerBeetle client, HTTP, or `internal/infrastructure`.
+- `internal/application` must not import controllers, adapters, `@nestjs/*`, `hono`, `bullmq`, or `ioredis`.
+- Frameworks and drivers live in `internal/infrastructure`.
+- `src/cmd` only composes dependencies.
 
-## Testing obligatorio
+## Required testing
 
-Cada PoC TypeScript debe exponer scripts separados:
+Each TypeScript PoC must expose separate scripts:
 
 ```bash
-bun run test:unit          # dominio/aplicación sin infra
-bun run test:integration   # adapters in-memory/fallback sin servidor HTTP
-bun run test:e2e           # HTTP real contra proceso local
-bun run test:smoke         # chequeo mínimo para demo
-bun run test:k6           # smoke/load HTTP con k6 si aplica
-bun run test:atdd          # ejecuta .feature con Cucumber JS
+bun run test:unit          # domain/application without infrastructure
+bun run test:integration   # in-memory/fallback adapters without an HTTP server
+bun run test:e2e           # real HTTP against a local process
+bun run test:smoke         # minimal demo check
+bun run test:k6            # HTTP smoke/load with k6 when applicable
+bun run test:atdd          # executable .feature scenarios with Cucumber JS
 ```
 
-## Bun seguro
+## Safe Bun usage
 
-- Usar `bun install --frozen-lockfile`.
-- Mantener `bunfig.toml` con `[install] ignoreScripts = true`.
-- No usar npm, pnpm ni yarn para installs.
+- Use `bun install --frozen-lockfile`.
+- Keep `bunfig.toml` with `[install] ignoreScripts = true`.
+- Do not use npm, pnpm, or yarn for installs.
 
-## Observabilidad
+## Observability
 
-Todo endpoint público debe propagar `X-Correlation-Id` y devolverlo en la respuesta cuando el framework lo permita.
-
+Every public endpoint must propagate `X-Correlation-Id` and return it in the response when the framework allows it.
 
 ## k6
 
-Cuando la PoC expone HTTP, agregar un escenario k6 liviano para el happy path principal. k6 no reemplaza ATDD/e2e: agrega medición de latencia, percentiles y error rate bajo concurrencia controlada.
+When the PoC exposes HTTP, add a lightweight k6 scenario for the main happy path.
+k6 does not replace ATDD/e2e; it adds latency, percentile, and error-rate measurement under controlled concurrency.
 
-- Ubicación sugerida: `tests/k6/<flow>.js`.
-- Script sugerido: `bun run test:k6`.
-- En el runner global declarar `requires: [bun, k6]` para que hosts sin k6 hagan SKIP explícito.
+- Suggested location: `tests/k6/<flow>.js`.
+- Suggested script: `bun run test:k6`.
+- In the global runner, declare `requires: [bun, k6]` so hosts without k6 report an explicit SKIP.

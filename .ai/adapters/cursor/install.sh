@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # .ai/adapters/cursor/install.sh
-# Instala el adapter de Cursor: crea .cursor/rules/*.mdc
-# Idempotente.
+# Installs the Cursor adapter: creates .cursor/rules/*.mdc
+# Idempotent.
 
 set -e
 
@@ -12,7 +12,7 @@ RULES_DIR="$REPO_ROOT/.cursor/rules"
 echo "=== Cursor adapter install ==="
 mkdir -p "$RULES_DIR"
 
-# 00-project.mdc — siempre activo
+# 00-project.mdc — always active
 cat > "$RULES_DIR/00-project.mdc" <<'EOF'
 ---
 description: Real-Time Risk Lab project context and non-negotiable rules
@@ -20,37 +20,37 @@ globs: []
 alwaysApply: true
 ---
 
-# Proyecto: Real-Time Risk Lab — Architecture Exploration
+# Project: Real-Time Risk Lab — Architecture Exploration
 
-Este repo es una exploración técnica de arquitectura de riesgo transaccional.
+This repo is a technical architecture exploration for transactional risk.
 
-## Contexto clave
+## Key context
 
-- Sistema de fraude tiempo real: 150 TPS, p99 < 300ms
-- Stack: Java 21 LTS baseline operativo (Java 25 LTS objetivo documentado), Gradle Kotlin DSL, Vert.x 5.0.12, Postgres 16, Valkey 8, Redpanda, k3d/OrbStack
-- PoC portfolio en poc/: no-vertx-clean-engine, Vert.x variants, service-mesh demo, k8s-local
+- Real-time fraud system: 150 TPS, p99 < 300ms
+- Stack: Java 21 LTS executable baseline (Java 25 LTS documented target), Gradle Kotlin DSL, Vert.x 5.0.12, Postgres 16, Valkey 8, Redpanda, k3d/OrbStack
+- PoC portfolio in poc/: no-vertx-clean-engine, Vert.x variants, service-mesh demo, k8s-local
 - Full context: @.ai/context/architecture.md
 
-## Reglas non-negotiable
+## Non-negotiable rules
 
-1. Java 21 LTS baseline operativo. Ver @.ai/primitives/rules/java-version.md
-2. Layout canonico enterprise Go. Ver @.ai/primitives/rules/architecture-clean.md
-3. ATDD primero. Ver @.ai/primitives/rules/testing-atdd.md
-4. OTEL en todo request. Ver @.ai/primitives/rules/observability-otel.md
-5. Clean boundaries: domain no importa infrastructure. Ver @.ai/primitives/rules/clean-arch-boundaries.md
+1. Java 21 LTS executable baseline. See @.ai/primitives/rules/java-version.md
+2. Canonical layout enterprise Go. See @.ai/primitives/rules/architecture-clean.md
+3. ATDD first. See @.ai/primitives/rules/testing-atdd.md
+4. OTEL on every request. See @.ai/primitives/rules/observability-otel.md
+5. Clean boundaries: domain must not import infrastructure. See @.ai/primitives/rules/clean-arch-boundaries.md
 
-## Skills disponibles
+## Available skills
 
-Antes de implementar cualquier cosa, buscar el skill correspondiente en @.ai/primitives/skills/
+Before implementing anything, look up the matching skill in @.ai/primitives/skills/.
 
-## NO tocar
+## Do not touch
 
-poc/, tests/, cli/, docs/, vault/ — estos directorios son ownership del usuario.
+poc/, tests/, cli/, docs/, vault/ — these directories are user-owned.
 EOF
 
 echo "  created: $RULES_DIR/00-project.mdc"
 
-# 10-architecture.mdc — activo en .java
+# 10-architecture.mdc — active for Java files
 cat > "$RULES_DIR/10-architecture.mdc" <<'EOF'
 ---
 description: Clean Architecture and Java conventions for Real-Time Risk Lab risk engine
@@ -73,7 +73,7 @@ See full rules: @.ai/primitives/rules/architecture-clean.md
 
 ## Java baseline
 
-- Java 21 LTS (`--release 21`) en el build actual; Java 25 es objetivo documentado
+- Java 21 LTS (`--release 21`) in the current build; Java 25 is a documented target
 - Use records for Value Objects
 - Use virtual threads for blocking I/O
 
@@ -89,7 +89,7 @@ EOF
 
 echo "  created: $RULES_DIR/10-architecture.mdc"
 
-# 20-testing.mdc — activo en tests
+# 20-testing.mdc — active for tests
 cat > "$RULES_DIR/20-testing.mdc" <<'EOF'
 ---
 description: ATDD-first testing strategy for Real-Time Risk Lab risk engine

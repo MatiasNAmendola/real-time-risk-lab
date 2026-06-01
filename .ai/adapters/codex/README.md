@@ -1,40 +1,40 @@
 # Adapter: Codex (OpenAI)
 
-OpenAI Codex CLI lee `AGENTS.md` en la raiz del repo. Codex origino la convencion `AGENTS.md` que fue luego adoptada por otros tools.
+OpenAI Codex CLI reads `AGENTS.md` at the repository root. Codex originated the `AGENTS.md` convention that other tools later adopted.
 
-## Archivos que usa este adapter
+## Files used by this adapter
 
-| Archivo | Proposito |
+| File | Purpose |
 |---|---|
-| `AGENTS.md` (root) | Path canonico. Codex lo lee automaticamente. |
-| `.codex/AGENTS.md` | Symlink a `../AGENTS.md` (no duplicacion — mismo contenido) |
-| `.codex/config.toml` | Config MCP por proyecto (solo cargada en proyectos "trusted") |
-| `~/.codex/config.toml` | Config MCP global |
+| `AGENTS.md` (root) | Canonical path. Codex reads it automatically. |
+| `.codex/AGENTS.md` | Symlink to `../AGENTS.md` to avoid duplicated instructions. |
+| `.codex/config.toml` | Project MCP config, loaded only for trusted projects. |
+| `~/.codex/config.toml` | Global MCP config. |
 
-## Cascade lookup order (por directorio)
+## Cascade lookup order
 
-Codex busca instrucciones siguiendo esta precedencia:
+Codex resolves instructions with this precedence:
 
+```text
+AGENTS.override.md  -> highest priority local overrides
+AGENTS.md           -> canonical path
+TEAM_GUIDE.md       -> team fallback
+.agents.md          -> hidden fallback
 ```
-AGENTS.override.md  -> mayor precedencia (overrides locales)
-AGENTS.md           -> path canonico
-TEAM_GUIDE.md       -> fallback de equipo
-.agents.md          -> fallback oculto
-```
 
-El lookup sube el arbol de directorios desde el directorio actual.
-`AGENTS.override.md` es util para overrides locales que no se commitean al repo.
+Lookup walks upward from the current working directory.
+Use `AGENTS.override.md` only for local, non-committed overrides.
 
-## Porque .codex/AGENTS.md es un symlink
+## Why `.codex/AGENTS.md` is a symlink
 
-El path canonico es `AGENTS.md` en root, no `.codex/AGENTS.md`.
-El symlink existe para compatibilidad si Codex busca en `.codex/` en alguna version,
-pero el archivo real que Codex lee es el de la raiz.
+The canonical path is root `AGENTS.md`, not `.codex/AGENTS.md`.
+The symlink exists only as a compatibility fallback if a Codex version checks `.codex/`.
+The real source of truth remains the root file.
 
-## Configuracion MCP (opcional)
+## Optional MCP config
 
 ```toml
-# .codex/config.toml (proyecto trusted)
+# .codex/config.toml (trusted project)
 [mcp_servers.my-server]
 command = "node path/to/server.js"
 
@@ -45,21 +45,21 @@ model = "o3"
 approval_mode = "auto"
 ```
 
-Soporta: stdio (local) y streaming HTTP (remoto).
+Supported transports: local stdio and remote streaming HTTP.
 
-## Limitaciones conocidas
+## Known limitations
 
-- `AGENTS.md` en root puede ser leido por otros tools (Antigravity, opencode).
-- `.codex/config.toml` solo se carga en proyectos marcados como "trusted" (seguridad).
-- No hay equivalente a hooks de Claude Code.
+- Root `AGENTS.md` can also be read by other tools such as Antigravity and opencode.
+- `.codex/config.toml` is loaded only for trusted projects.
+- Codex has no direct equivalent to Claude Code hooks.
 
-## Instalar
+## Install
 
 ```bash
 ./.ai/adapters/codex/install.sh
 ```
 
-## Documentacion oficial
+## Official documentation
 
 - https://developers.openai.com/codex/guides/agents-md
 - https://developers.openai.com/codex/config-reference

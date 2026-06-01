@@ -1,68 +1,65 @@
 # Adapter: Google Antigravity
 
-Google Antigravity es un IDE agentico de Google basado en VSCode fork, lanzado el 18 de noviembre de 2025.
-Implementa tres superficies: Editor (coding sincronico), Manager (orquestacion de agentes autonomos) y browser integration.
+Google Antigravity is Google's agentic IDE based on a VS Code fork. It exposes three surfaces: Editor for synchronous coding, Manager for autonomous-agent orchestration, and browser integration.
 
-> Confianza: MEDIA — producto lanzado noviembre 2025, documentacion oficial parcial.
-> No confundir con Gemini Code Assist (plugin para VS Code/JetBrains) ni con Jules (agente asincrono en cloud VM).
+> Confidence: medium. The product is recent and public documentation is partial.
+> Do not confuse it with Gemini Code Assist or Jules.
 
-## Archivos que usa este adapter
+## Files used by this adapter
 
-| Archivo | Proposito | Prioridad |
+| File | Purpose | Priority |
 |---|---|---|
-| `GEMINI.md` (root) | Instrucciones especificas de Antigravity | Alta (mayor prioridad) |
-| `AGENTS.md` (root) | Cross-tool compat, leido desde v1.20.3 (marzo 2026) | Media (deferido a GEMINI.md en conflictos) |
-| `.agent/rules/*.md` | Reglas adicionales organizadas por concern | Adicional |
-| `.gemini/antigravity/brain/` | Knowledge base generada automaticamente (NO editar) | Auto-generado |
+| `GEMINI.md` (root) | Antigravity-specific instructions. | High |
+| `AGENTS.md` (root) | Cross-tool compatibility. | Medium |
+| `.agent/rules/*.md` | Additional concern-specific rules. | Additional |
+| `.gemini/antigravity/brain/` | Auto-generated knowledge base; do not edit. | Generated |
 
-## Jerarquia de reglas
+## Rule precedence
 
-1. `GEMINI.md` — mayor prioridad para reglas especificas de Antigravity
-2. `AGENTS.md` — compartido con otros tools (Codex, Claude Code); deferido a GEMINI.md
-3. `.agent/rules/*.md` — reglas adicionales por concern
+1. `GEMINI.md` — highest priority for Antigravity-specific rules.
+2. `AGENTS.md` — shared with Codex, Claude Code, and other tools.
+3. `.agent/rules/*.md` — additional concern-specific rules.
 
-## Conflicto conocido con Gemini CLI
+## Known Gemini CLI conflict
 
-Antigravity Global Rules y Gemini CLI ambos escriben a `~/.gemini/GEMINI.md`, causando
-conflictos de configuracion entre las dos herramientas.
+Antigravity Global Rules and Gemini CLI can both write to `~/.gemini/GEMINI.md`, causing config conflicts.
 Issue: https://github.com/google-gemini/gemini-cli/issues/16058
 
-Si usas ambas herramientas, gestionarlos manualmente o elegir una como principal.
+If you use both tools, manage that file manually or choose one primary owner.
 
-## Como instalar via Antigravity UI
+## Install through Antigravity UI
 
 ```bash
-# Via CLI (si disponible)
 mkdir -p .agent/rules
 touch GEMINI.md
-# O via Customizations panel > + Global / + Workspace
+# Or use the Customizations panel > + Global / + Workspace
 ```
 
-## Instalar con este adapter
+## Install with this adapter
 
 ```bash
 ./.ai/adapters/antigravity/install.sh
 ```
 
-Esto crea `GEMINI.md` y `.agent/rules/architecture.md`. No modifica `AGENTS.md` (ya creado).
+This creates `GEMINI.md` and `.agent/rules/architecture.md`. It does not modify the existing root `AGENTS.md`.
 
-## Formato
+## Format
 
-Markdown plano — sin frontmatter especial. Antigravity lee los archivos como instrucciones directas.
+Plain Markdown. Antigravity reads these files as direct instructions.
 
 ## Skills system
 
-Antigravity tiene un skills system separado documentado en Codelabs.
-Ver: https://codelabs.developers.google.com/getting-started-with-antigravity-skills
+Antigravity has a separate skills system documented in Google Codelabs.
+See: https://codelabs.developers.google.com/getting-started-with-antigravity-skills
 
-## Limitaciones conocidas
+## Known limitations
 
-- Documentacion oficial escasa (herramienta lanzada noviembre 2025).
-- `.gemini/antigravity/brain/` se genera automaticamente — no editar manualmente.
-- Jules (agente asincrono) tarda 2-5 min por sesion, corre en cloud VM (no local).
-- Estructura interna del skills system no completamente especificada en docs oficiales.
+- Public documentation is still sparse.
+- `.gemini/antigravity/brain/` is generated automatically; do not edit it manually.
+- Jules is asynchronous and cloud-hosted, not local.
+- The internal skills-system structure is not fully specified in public docs.
 
-## Documentacion oficial
+## Official documentation
 
 - https://developers.googleblog.com/build-with-google-antigravity-our-new-agentic-development-platform/
 - https://codelabs.developers.google.com/getting-started-google-antigravity

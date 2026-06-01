@@ -1,51 +1,50 @@
 # Adapter: Cursor
 
-Cursor lee rules MDC (`.cursor/rules/*.mdc`) con frontmatter especifico.
+Cursor reads MDC rules from `.cursor/rules/*.mdc` with Cursor-specific frontmatter.
 
-## Archivos que usa este adapter
+## Files used by this adapter
 
-| Archivo | Proposito |
+| File | Purpose |
 |---|---|
-| `.cursor/rules/00-project.mdc` | Contexto del proyecto, siempre activo |
-| `.cursor/rules/10-architecture.mdc` | Reglas de arquitectura, activo en .java |
-| `.cursor/rules/20-testing.mdc` | Reglas de testing, activo en .java y .feature |
+| `.cursor/rules/00-project.mdc` | Always-on project context. |
+| `.cursor/rules/10-architecture.mdc` | Java architecture rules, active for Java files. |
+| `.cursor/rules/20-testing.mdc` | Testing rules, active for Java tests and feature files. |
 
-## Como Cursor consume las primitivas
+## How Cursor consumes primitives
 
-1. Cursor lee automaticamente los archivos `.mdc` en `.cursor/rules/`.
-2. Los archivos con `alwaysApply: true` se aplican en todas las conversaciones.
-3. Los archivos con `globs` se aplican solo cuando esos archivos estan en contexto.
-4. Skills se acceden referenciando el archivo: `@.ai/primitives/skills/add-rest-endpoint.md`.
+1. Cursor reads `.cursor/rules/*.mdc` automatically.
+2. Files with `alwaysApply: true` apply to every conversation.
+3. Files with `globs` apply only when matching files are in context.
+4. Skills are referenced by file path, for example `@.ai/primitives/skills/add-rest-endpoint.md`.
 
-## Frontmatter MDC
+## MDC frontmatter
 
 ```yaml
 ---
-description: Descripcion corta de la rule
+description: Short rule description
 globs: ["**/*.java", "**/build.gradle.kts"]
 alwaysApply: false
 ---
 ```
 
-## Limitaciones conocidas
+## Known limitations
 
-- Los archivos MDC no soportan imports nativos. El contenido debe ser autocontenido o referenciar otros archivos con `@`.
-- Los globs en Cursor MDC son relativos a la raiz del repo.
-- `alwaysApply: true` aumenta el uso de tokens — solo para las rules mas criticas.
+- MDC files do not support native imports; keep them self-contained or reference files with `@`.
+- Cursor MDC globs are relative to the repository root.
+- `alwaysApply: true` increases token usage; reserve it for critical rules.
 
-## Instalar
+## Install
 
 ```bash
 ./.ai/adapters/cursor/install.sh
 ```
 
-## Formato MDC (desde Cursor v2.2)
+## MDC format
 
-El formato `.mdc` (Markdown con frontmatter YAML) es el canonico desde v2.2.
-El legacy `.cursorrules` (archivo unico en root) sigue funcionando pero NO debe usarse en nuevos proyectos.
-Este adapter genera SOLO archivos `.mdc` — no genera `.cursorrules`.
+`.mdc` is the canonical modern Cursor rule format. Legacy `.cursorrules` still works but must not be used for new project adapters.
+This adapter generates only `.mdc` files.
 
-## Documentacion oficial
+## Official documentation
 
 - https://docs.cursor.com/context/rules-for-ai
 - https://forum.cursor.com/t/optimal-structure-for-mdc-rules-files/52260
