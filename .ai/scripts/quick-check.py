@@ -9,7 +9,10 @@ reviewer needs before a live walkthrough:
    (warning only; `quick` must never hide a Gradle build);
 2. the most important Clean Architecture boundaries are still true at source
    level;
-3. the distributed Vert.x modules do not directly import each other.
+3. the distributed Vert.x modules do not directly import each other;
+4. TypeScript domain/application layers do not import framework, queue, or
+   infrastructure adapters;
+5. Go internal packages keep their dependency direction explicit.
 
 If the artifact snapshot warns, run `./nx build` before a runtime demo. Full
 bytecode-level validation remains in `./nx test --composite ci-fast`.
@@ -139,10 +142,111 @@ def check_distributed_source_boundaries() -> list[Violation]:
     return violations
 
 
+TS_IMPORT_RE = re.compile(r"^\s*import(?:\s+type)?(?:[^'\"\n]+from\s+)?['\"]([^'\"]+)['\"]", re.MULTILINE)
+GO_IMPORT_BLOCK_RE = re.compile(r"import\s+\((.*?)\)", re.DOTALL)
+GO_IMPORT_SINGLE_RE = re.compile(r'^\s*import\s+"([^"]+)"', re.MULTILINE)
+GO_IMPORT_LINE_RE = re.compile(r'^\s*(?:[._a-zA-Z0-9]+\s+)?"([^"]+)"', re.MULTILINE)
+
+
+def _ts_files(root: Path) -> list[Path]:
+    if not root.exists():
+        return []
+    return sorted(
+        p for p in root.rglob("*.ts")
+        if "node_modules" not in p.parts and "dist" not in p.parts
+    )
+
+
+def _ts_imports(ts_file: Path) -> list[str]:
+    return TS_IMPORT_RE.findall(ts_file.read_text(encoding="utf-8", errors="ignore"))
+
+
+def check_typescript_source_boundaries() -> list[Violation]:
+    """Source-level Clean Architecture checks for NestJS/Hono TypeScript PoCs."""
+    violations: list[Violation] = []
+    forbidden_exact = {
+        "hono",
+        "bullmq",
+        "ioredis",
+        "class-validator",
+        "class-transformer",
+        "express",
+    }
+    forbidden_prefixes = ("@nestjs/",)
+    poc_roots = [
+        REPO_ROOT / "poc/nestjs-distributed-transactions/src/internal",
+        REPO_ROOT / "poc/hono-distributed-transactions/src/internal",
+    ]
+
+    for root in poc_roots:
+        for layer in ("domain", "application"):
+            for f in _ts_files(root / layer):
+                for imp in _ts_imports(f):
+                    if imp in forbidden_exact or imp.startswith(forbidden_prefixes):
+                        violations.append(Violation(f, f"{layer} imports framework/adapter package: {imp}"))
+                    if "infrastructure" in imp.split("/"):
+                        violations.append(Violation(f, f"{layer} imports infrastructure adapter: {imp}"))
+
+    return violations
+
+
+def _go_files(root: Path) -> list[Path]:
+    if not root.exists():
+        return []
+    return sorted(p for p in root.rglob("*.go") if "vendor" not in p.parts)
+
+
+def _go_imports(go_file: Path) -> list[str]:
+    text = go_file.read_text(encoding="utf-8", errors="ignore")
+    imports = GO_IMPORT_SINGLE_RE.findall(text)
+    for block in GO_IMPORT_BLOCK_RE.findall(text):
+        imports.extend(GO_IMPORT_LINE_RE.findall(block))
+    return imports
+
+
+def check_go_source_boundaries() -> list[Violation]:
+    """Pragmatic package-boundary checks for Go CLIs/SDKs."""
+    violations: list[Violation] = []
+    cli_root = REPO_ROOT / "cli/risk-smoke"
+    internal_root = cli_root / "internal"
+    allowed_by_package = {
+        "config": set(),
+        "flows": {"config"},
+        "reporter": {"config", "flows"},
+        "tui": {"config", "flows"},
+    }
+
+    for f in _go_files(internal_root):
+        try:
+            rel = f.relative_to(internal_root)
+        except ValueError:
+            continue
+        current_pkg = rel.parts[0] if rel.parts else ""
+        allowed = allowed_by_package.get(current_pkg, set())
+        for imp in _go_imports(f):
+            marker = "github.com/riskplatform/risk-smoke/internal/"
+            if not imp.startswith(marker):
+                continue
+            imported_pkg = imp.removeprefix(marker).split("/", 1)[0]
+            if imported_pkg == current_pkg:
+                continue
+            if imported_pkg not in allowed:
+                violations.append(
+                    Violation(
+                        f,
+                        f"Go internal package '{current_pkg}' imports '{imported_pkg}' outside allowed dependencies",
+                    )
+                )
+
+    return violations
+
+
 def main() -> int:
     checks = [
         ("clean-arch source boundaries", check_clean_arch_source_boundaries),
         ("distributed source boundaries", check_distributed_source_boundaries),
+        ("typescript source boundaries", check_typescript_source_boundaries),
+        ("go source boundaries", check_go_source_boundaries),
     ]
 
     all_violations: list[Violation] = []
