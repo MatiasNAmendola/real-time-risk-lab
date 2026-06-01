@@ -1,0 +1,11 @@
+name: typescript-atdd-battery
+description: Generate/extend Bun unit, integration, e2e, smoke and ATDD tests for NestJS/Hono PoCs
+---
+Create or update the TypeScript test battery for: {{{ input }}}
+
+Follow:
+- .ai/primitives/rules/typescript-service-poc.md
+- .ai/primitives/rules/testing-atdd.md
+- .ai/primitives/skills/add-typescript-http-atdd-suite.md
+
+Output feature scenarios first, then the Bun test files and package scripts.
