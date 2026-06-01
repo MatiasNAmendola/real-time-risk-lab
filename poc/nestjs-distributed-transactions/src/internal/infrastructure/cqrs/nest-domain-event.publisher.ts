@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { EventBus } from '@nestjs/cqrs';
-import { LedgerTransferPostedEvent } from '../../application/event/account-events';
-import { DomainEventPublisher } from '../../domain/service/domain-event-publisher.port';
-import { LedgerTransferResult } from '../../domain/service/tigerbeetle-ledger.port';
+import { LedgerTransferPostedEvent } from '@application/event/account-events';
+import { DomainEventPublisher } from '@domain/service/domain-event-publisher.port';
+import { LedgerTransferResult } from '@domain/service/tigerbeetle-ledger.port';
 
 @Injectable()
 export class NestDomainEventPublisher implements DomainEventPublisher {

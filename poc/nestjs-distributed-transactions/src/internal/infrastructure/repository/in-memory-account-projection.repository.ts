@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { AccountProjection, AccountProjectionRepository } from '../../domain/repository/account-projection.repository';
+import { AccountProjection, AccountProjectionRepository } from '@domain/repository/account-projection.repository';
 
 @Injectable()
 export class InMemoryAccountProjectionRepository implements AccountProjectionRepository {

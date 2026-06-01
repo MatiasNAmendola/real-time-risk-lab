@@ -1,8 +1,8 @@
 import { Job, Queue, Worker } from 'bullmq';
-import { createDomainMessage, idempotencyKeyFor } from '../../application/mapper/domain-message.factory';
-import { PublishEdaMessageInput } from '../../application/dto/publish-eda-message.input';
-import { DomainMessage } from '../../domain/event/domain-message';
-import type { MessageIdempotencyRepository } from '../../domain/repository/message-idempotency.repository';
+import { createDomainMessage, idempotencyKeyFor } from '@application/mapper/domain-message.factory';
+import { PublishEdaMessageInput } from '@application/dto/publish-eda-message.input';
+import { DomainMessage } from '@domain/event/domain-message';
+import type { MessageIdempotencyRepository } from '@domain/repository/message-idempotency.repository';
 
 export interface EdaPublishResult {
   queue: string;

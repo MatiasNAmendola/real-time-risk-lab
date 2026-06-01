@@ -1,5 +1,5 @@
 import { IsIn, IsNumber, IsOptional, IsPositive, IsString, MinLength } from 'class-validator';
-import { ExecuteSagaInput } from '../../../application/dto/execute-saga.input';
+import { ExecuteSagaInput } from '@application/dto/execute-saga.input';
 
 export class ExecuteSagaRequest implements ExecuteSagaInput {
   @IsString()

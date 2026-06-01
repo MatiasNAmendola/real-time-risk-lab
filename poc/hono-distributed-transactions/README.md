@@ -67,6 +67,20 @@ TigerBeetle no se usa para explicar Event Sourcing simple; queda reservado para 
 | Runtime mental model | Framework opinionated | Minimalista/funcional |
 | Clean Architecture | `internal/domain` y `internal/application` sin framework | Igual, sin Hono/Zod/BullMQ en domain/application |
 
+
+## Aliases TypeScript
+
+Los imports entre capas usan aliases explícitos para evitar paths relativos largos y hacer visible la dirección de dependencia:
+
+| Alias | Capa |
+|---|---|
+| `@domain/*` | entidades, eventos, value objects y puertos |
+| `@application/*` | comandos, queries, DTOs internos, mappers y use cases |
+| `@infrastructure/*` | controllers/routes, repositorios concretos, EDA, observabilidad y adapters |
+| `@cmd/*` | composition root y wiring |
+
+`tsconfig.json` define los aliases y `bun run build` ejecuta `tsc-alias` para reescribirlos en `dist/`, de modo que el build compilado también sea ejecutable. ESLint y los guardrails bloquean que `domain/` o `application/` importen `@infrastructure/*`.
+
 ## Layout
 
 ```text

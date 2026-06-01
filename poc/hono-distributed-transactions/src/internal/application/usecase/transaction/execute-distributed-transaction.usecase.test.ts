@@ -1,11 +1,11 @@
 import { describe, expect, it } from 'bun:test';
-import { ExecuteDistributedTransactionUseCase } from './execute-distributed-transaction.usecase';
-import { TransactionSaga } from '../../../domain/entity/saga.entity';
-import { DomainEvent } from '../../../domain/event/domain-event';
-import { EventStoreRepository } from '../../../domain/repository/event-store.repository';
-import { SagaRepository } from '../../../domain/repository/saga.repository';
-import { DomainEventPublisher } from '../../../domain/service/domain-event-publisher.port';
-import { LedgerTransferRequest, LedgerTransferResult, TigerBeetleLedger } from '../../../domain/service/tigerbeetle-ledger.port';
+import { ExecuteDistributedTransactionUseCase } from '@application/usecase/transaction/execute-distributed-transaction.usecase';
+import { TransactionSaga } from '@domain/entity/saga.entity';
+import { DomainEvent } from '@domain/event/domain-event';
+import { EventStoreRepository } from '@domain/repository/event-store.repository';
+import { SagaRepository } from '@domain/repository/saga.repository';
+import { DomainEventPublisher } from '@domain/service/domain-event-publisher.port';
+import { LedgerTransferRequest, LedgerTransferResult, TigerBeetleLedger } from '@domain/service/tigerbeetle-ledger.port';
 
 describe('ExecuteDistributedTransactionUseCase', () => {
   it('completes every saga step on success', async () => {

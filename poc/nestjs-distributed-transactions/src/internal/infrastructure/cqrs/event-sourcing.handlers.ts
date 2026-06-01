@@ -1,11 +1,11 @@
 import { Inject } from '@nestjs/common';
 import { EventsHandler, IEventHandler } from '@nestjs/cqrs';
 import { randomUUID } from 'crypto';
-import { AccountOpenedEvent, LedgerTransferPostedEvent, MoneyDepositedEvent } from '../../application/event/account-events';
-import { ACCOUNT_PROJECTION_REPOSITORY } from '../../domain/repository/account-projection.repository';
-import type { AccountProjectionRepository } from '../../domain/repository/account-projection.repository';
-import { EVENT_STORE_REPOSITORY } from '../../domain/repository/event-store.repository';
-import type { EventStoreRepository } from '../../domain/repository/event-store.repository';
+import { AccountOpenedEvent, LedgerTransferPostedEvent, MoneyDepositedEvent } from '@application/event/account-events';
+import { ACCOUNT_PROJECTION_REPOSITORY } from '@domain/repository/account-projection.repository';
+import type { AccountProjectionRepository } from '@domain/repository/account-projection.repository';
+import { EVENT_STORE_REPOSITORY } from '@domain/repository/event-store.repository';
+import type { EventStoreRepository } from '@domain/repository/event-store.repository';
 
 @EventsHandler(AccountOpenedEvent)
 export class AccountOpenedHandler implements IEventHandler<AccountOpenedEvent> {

@@ -9,6 +9,7 @@ const forbiddenAdapterImports = [
   'class-transformer',
   'express',
   '**/internal/infrastructure/**',
+  '@infrastructure/*',
   '../infrastructure/**',
   '../../infrastructure/**',
   '../../../infrastructure/**',

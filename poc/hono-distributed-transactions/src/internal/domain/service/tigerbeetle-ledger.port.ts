@@ -1,4 +1,4 @@
-import { Money } from '../value-object/money';
+import { Money } from '@domain/value-object/money';
 
 export const TIGERBEETLE_LEDGER = Symbol('TIGERBEETLE_LEDGER');
 

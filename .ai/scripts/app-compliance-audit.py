@@ -269,7 +269,7 @@ def check_ts_boundaries(result: AppResult, root: Path) -> None:
                 if imp in FORBIDDEN_TS_PACKAGES or imp.startswith(FORBIDDEN_TS_PREFIXES):
                     result.violations.append(f"{rel(f)}: {layer} importa framework/adapter: {imp}")
                     hard += 1
-                if "infrastructure" in imp.split("/"):
+                if "infrastructure" in imp.split("/") or imp.startswith("@infrastructure/"):
                     result.violations.append(f"{rel(f)}: {layer} importa infrastructure: {imp}")
                     hard += 1
     result.clean = "FAIL" if hard else "OK"

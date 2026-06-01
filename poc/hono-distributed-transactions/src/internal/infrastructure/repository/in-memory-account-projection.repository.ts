@@ -1,4 +1,4 @@
-import { AccountProjection, AccountProjectionRepository } from '../../domain/repository/account-projection.repository';
+import { AccountProjection, AccountProjectionRepository } from '@domain/repository/account-projection.repository';
 
 export class InMemoryAccountProjectionRepository implements AccountProjectionRepository {
   private readonly projections = new Map<string, AccountProjection>();

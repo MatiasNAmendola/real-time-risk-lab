@@ -22,6 +22,22 @@ src/
     └── infrastructure/          # HTTP, Nest/Hono, CQRS adapters, BullMQ, Valkey, TigerBeetle
 ```
 
+## Aliases obligatorios
+
+Evitar imports relativos largos entre capas (`../../domain`, `../../application`, `../../infrastructure`). Cada PoC TypeScript debe definir aliases en `tsconfig.json`:
+
+```json
+"paths": {
+  "@cmd/*": ["./src/cmd/*"],
+  "@domain/*": ["./src/internal/domain/*"],
+  "@application/*": ["./src/internal/application/*"],
+  "@infrastructure/*": ["./src/internal/infrastructure/*"],
+  "@internal/*": ["./src/internal/*"]
+}
+```
+
+`bun run build` debe reescribir aliases para `dist/` con `tsc-alias` o una herramienta equivalente. Los guardrails deben tratar `@infrastructure/*` como import prohibido desde `domain` y `application`.
+
 ## Boundaries
 
 - `internal/domain` no importa NestJS, Hono, BullMQ, ioredis, Valkey, TigerBeetle client, HTTP ni `internal/infrastructure`.

@@ -1,4 +1,4 @@
-import { DomainEvent } from '../event/domain-event';
+import { DomainEvent } from '@domain/event/domain-event';
 
 export interface BankAccountState {
   accountId: string;

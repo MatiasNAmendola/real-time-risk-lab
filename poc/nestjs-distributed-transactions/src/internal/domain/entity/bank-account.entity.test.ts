@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'bun:test';
-import { BankAccount } from './bank-account.entity';
+import { BankAccount } from '@domain/entity/bank-account.entity';
 
 describe('BankAccount', () => {
   it('rehidrata el balance desde eventos', () => {

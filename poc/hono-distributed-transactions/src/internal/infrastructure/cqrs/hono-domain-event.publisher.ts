@@ -1,7 +1,7 @@
-import { LedgerTransferPostedEvent } from '../../application/event/account-events';
-import { DomainEventPublisher } from '../../domain/service/domain-event-publisher.port';
-import { LedgerTransferResult } from '../../domain/service/tigerbeetle-ledger.port';
-import { ProjectionEventHandlers } from './projection-event-handlers';
+import { LedgerTransferPostedEvent } from '@application/event/account-events';
+import { DomainEventPublisher } from '@domain/service/domain-event-publisher.port';
+import { LedgerTransferResult } from '@domain/service/tigerbeetle-ledger.port';
+import { ProjectionEventHandlers } from '@infrastructure/cqrs/projection-event-handlers';
 
 export class HonoDomainEventPublisher implements DomainEventPublisher {
   constructor(private readonly handlers: ProjectionEventHandlers) {}

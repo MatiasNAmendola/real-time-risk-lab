@@ -1,8 +1,8 @@
-import { DepositMoneyCommand } from '../../application/command/deposit-money.command';
-import { OpenAccountCommand } from '../../application/command/open-account.command';
-import { PostLedgerTransferCommand } from '../../application/command/post-ledger-transfer.command';
-import { AccountOpenedEvent, LedgerTransferPostedEvent, MoneyDepositedEvent } from '../../application/event/account-events';
-import { ProjectionEventHandlers } from './projection-event-handlers';
+import { DepositMoneyCommand } from '@application/command/deposit-money.command';
+import { OpenAccountCommand } from '@application/command/open-account.command';
+import { PostLedgerTransferCommand } from '@application/command/post-ledger-transfer.command';
+import { AccountOpenedEvent, LedgerTransferPostedEvent, MoneyDepositedEvent } from '@application/event/account-events';
+import { ProjectionEventHandlers } from '@infrastructure/cqrs/projection-event-handlers';
 
 export class SimpleCommandBus {
   constructor(private readonly handlers: ProjectionEventHandlers) {}

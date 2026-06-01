@@ -184,7 +184,7 @@ def check_typescript_source_boundaries() -> list[Violation]:
                 for imp in _ts_imports(f):
                     if imp in forbidden_exact or imp.startswith(forbidden_prefixes):
                         violations.append(Violation(f, f"{layer} imports framework/adapter package: {imp}"))
-                    if "infrastructure" in imp.split("/"):
+                    if "infrastructure" in imp.split("/") or imp.startswith("@infrastructure/"):
                         violations.append(Violation(f, f"{layer} imports infrastructure adapter: {imp}"))
 
     return violations

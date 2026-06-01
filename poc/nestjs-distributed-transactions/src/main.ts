@@ -2,8 +2,8 @@ import 'reflect-metadata';
 import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { AppModule } from './cmd/app.module';
-import { startOpenTelemetry } from './internal/infrastructure/observability/otel';
+import { AppModule } from '@cmd/app.module';
+import { startOpenTelemetry } from '@infrastructure/observability/otel';
 
 async function bootstrap(): Promise<void> {
   startOpenTelemetry();

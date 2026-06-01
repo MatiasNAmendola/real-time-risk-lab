@@ -1,5 +1,5 @@
 import { createHash } from 'crypto';
-import type { LedgerTransferRequest, LedgerTransferResult, TigerBeetleLedger } from '../../domain/service/tigerbeetle-ledger.port';
+import type { LedgerTransferRequest, LedgerTransferResult, TigerBeetleLedger } from '@domain/service/tigerbeetle-ledger.port';
 
 export class TigerBeetleLedgerAdapter implements TigerBeetleLedger {
   private tigerBeetleClientLoaded = false;

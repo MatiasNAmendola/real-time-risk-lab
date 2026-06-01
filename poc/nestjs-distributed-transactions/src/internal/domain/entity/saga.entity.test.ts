@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'bun:test';
-import { TransactionSaga } from './saga.entity';
+import { TransactionSaga } from '@domain/entity/saga.entity';
 
 describe('TransactionSaga', () => {
   it('marca pendientes como SKIPPED durante una compensación', () => {

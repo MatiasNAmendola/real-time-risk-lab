@@ -1,5 +1,5 @@
-import { DomainEvent } from '../../domain/event/domain-event';
-import { EventStoreRepository } from '../../domain/repository/event-store.repository';
+import { DomainEvent } from '@domain/event/domain-event';
+import { EventStoreRepository } from '@domain/repository/event-store.repository';
 
 export class InMemoryEventStoreRepository implements EventStoreRepository {
   private readonly events: DomainEvent[] = [];

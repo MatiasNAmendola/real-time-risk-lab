@@ -1,7 +1,7 @@
 import { randomUUID } from 'crypto';
-import { AccountOpenedEvent, LedgerTransferPostedEvent, MoneyDepositedEvent } from '../../application/event/account-events';
-import { AccountProjectionRepository } from '../../domain/repository/account-projection.repository';
-import { EventStoreRepository } from '../../domain/repository/event-store.repository';
+import { AccountOpenedEvent, LedgerTransferPostedEvent, MoneyDepositedEvent } from '@application/event/account-events';
+import { AccountProjectionRepository } from '@domain/repository/account-projection.repository';
+import { EventStoreRepository } from '@domain/repository/event-store.repository';
 
 export class ProjectionEventHandlers {
   constructor(

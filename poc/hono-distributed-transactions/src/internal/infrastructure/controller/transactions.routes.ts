@@ -1,12 +1,12 @@
 import { randomUUID } from 'crypto';
 import { Hono } from 'hono';
 import { z } from 'zod';
-import { DepositMoneyCommand } from '../../application/command/deposit-money.command';
-import { OpenAccountCommand } from '../../application/command/open-account.command';
-import { PostLedgerTransferCommand } from '../../application/command/post-ledger-transfer.command';
-import { GetAccountBalanceQuery } from '../../application/query/get-account-balance.query';
-import { decimalAmountToMinorUnits } from '../../application/mapper/money.mapper';
-import { AppContainer } from '../../../cmd/container';
+import { DepositMoneyCommand } from '@application/command/deposit-money.command';
+import { OpenAccountCommand } from '@application/command/open-account.command';
+import { PostLedgerTransferCommand } from '@application/command/post-ledger-transfer.command';
+import { GetAccountBalanceQuery } from '@application/query/get-account-balance.query';
+import { decimalAmountToMinorUnits } from '@application/mapper/money.mapper';
+import { AppContainer } from '@cmd/container';
 
 const depositMoneySchema = z.object({
   amount: z.number().positive(),

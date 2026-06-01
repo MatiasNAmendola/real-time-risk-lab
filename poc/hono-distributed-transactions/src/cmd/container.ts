@@ -1,14 +1,14 @@
-import { ExecuteDistributedTransactionUseCase } from '../internal/application/usecase/transaction/execute-distributed-transaction.usecase';
-import { InMemoryAccountProjectionRepository } from '../internal/infrastructure/repository/in-memory-account-projection.repository';
-import { InMemoryEventStoreRepository } from '../internal/infrastructure/repository/in-memory-event-store.repository';
-import { InMemorySagaRepository } from '../internal/infrastructure/repository/in-memory-saga.repository';
-import { ValkeyMessageIdempotencyRepository } from '../internal/infrastructure/repository/valkey-message-idempotency.repository';
-import { TigerBeetleLedgerAdapter } from '../internal/infrastructure/tigerbeetle/tigerbeetle-ledger.adapter';
-import { ProjectionEventHandlers } from '../internal/infrastructure/cqrs/projection-event-handlers';
-import { HonoDomainEventPublisher } from '../internal/infrastructure/cqrs/hono-domain-event.publisher';
-import { SimpleCommandBus } from '../internal/infrastructure/cqrs/simple-command-bus';
-import { SimpleQueryBus } from '../internal/infrastructure/cqrs/simple-query-bus';
-import { BullMqEdaService } from '../internal/infrastructure/eda/bullmq-eda.service';
+import { ExecuteDistributedTransactionUseCase } from '@application/usecase/transaction/execute-distributed-transaction.usecase';
+import { InMemoryAccountProjectionRepository } from '@infrastructure/repository/in-memory-account-projection.repository';
+import { InMemoryEventStoreRepository } from '@infrastructure/repository/in-memory-event-store.repository';
+import { InMemorySagaRepository } from '@infrastructure/repository/in-memory-saga.repository';
+import { ValkeyMessageIdempotencyRepository } from '@infrastructure/repository/valkey-message-idempotency.repository';
+import { TigerBeetleLedgerAdapter } from '@infrastructure/tigerbeetle/tigerbeetle-ledger.adapter';
+import { ProjectionEventHandlers } from '@infrastructure/cqrs/projection-event-handlers';
+import { HonoDomainEventPublisher } from '@infrastructure/cqrs/hono-domain-event.publisher';
+import { SimpleCommandBus } from '@infrastructure/cqrs/simple-command-bus';
+import { SimpleQueryBus } from '@infrastructure/cqrs/simple-query-bus';
+import { BullMqEdaService } from '@infrastructure/eda/bullmq-eda.service';
 
 export function buildContainer() {
   const sagas = new InMemorySagaRepository();

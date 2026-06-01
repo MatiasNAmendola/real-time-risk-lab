@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'bun:test';
-import { InMemoryEventStoreRepository } from '../../src/internal/infrastructure/repository/in-memory-event-store.repository';
+import { InMemoryEventStoreRepository } from '@infrastructure/repository/in-memory-event-store.repository';
 
 describe('InMemoryEventStoreRepository', () => {
   it('mantiene streams por aggregateId y permite auditoría append-only', async () => {

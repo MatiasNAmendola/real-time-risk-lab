@@ -1,5 +1,5 @@
 import Redis from 'ioredis';
-import type { IdempotencyRecord, IdempotencyResult, MessageIdempotencyRepository } from '../../domain/repository/message-idempotency.repository';
+import type { IdempotencyRecord, IdempotencyResult, MessageIdempotencyRepository } from '@domain/repository/message-idempotency.repository';
 
 export class ValkeyMessageIdempotencyRepository implements MessageIdempotencyRepository {
   private redis?: Redis;

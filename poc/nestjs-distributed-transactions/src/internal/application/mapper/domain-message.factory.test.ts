@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'bun:test';
-import { createDomainMessage, idempotencyKeyFor } from './domain-message.factory';
+import { createDomainMessage, idempotencyKeyFor } from '@application/mapper/domain-message.factory';
 
 describe('domain-message.factory', () => {
   it('uses a stable MD5 checksum and domain ID for idempotency', () => {

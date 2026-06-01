@@ -1,4 +1,4 @@
-import { DomainEvent } from '../event/domain-event';
+import { DomainEvent } from '@domain/event/domain-event';
 
 export const EVENT_STORE_REPOSITORY = Symbol('EVENT_STORE_REPOSITORY');
 export interface EventStoreRepository {

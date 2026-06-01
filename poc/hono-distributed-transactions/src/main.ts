@@ -1,7 +1,7 @@
 import { serve } from '@hono/node-server';
 import { Hono } from 'hono';
-import { buildContainer } from './cmd/container';
-import { transactionsRoutes } from './internal/infrastructure/controller/transactions.routes';
+import { buildContainer } from '@cmd/container';
+import { transactionsRoutes } from '@infrastructure/controller/transactions.routes';
 
 const container = buildContainer();
 container.eda.startWorker();

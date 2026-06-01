@@ -55,6 +55,20 @@ src/
 El dominio define entidades, eventos, puertos y contratos. La infraestructura contiene controllers NestJS, repositorios in-memory/Valkey, BullMQ y el adapter TigerBeetle.
 
 
+
+## Aliases TypeScript
+
+Los imports entre capas usan aliases explícitos para evitar paths relativos largos y hacer visible la dirección de dependencia:
+
+| Alias | Capa |
+|---|---|
+| `@domain/*` | entidades, eventos, value objects y puertos |
+| `@application/*` | comandos, queries, DTOs internos, mappers y use cases |
+| `@infrastructure/*` | controllers/routes, repositorios concretos, EDA, observabilidad y adapters |
+| `@cmd/*` | composition root y wiring |
+
+`tsconfig.json` define los aliases y `bun run build` ejecuta `tsc-alias` para reescribirlos en `dist/`, de modo que el build compilado también sea ejecutable. ESLint y los guardrails bloquean que `domain/` o `application/` importen `@infrastructure/*`.
+
 ## Boundaries Clean Architecture
 
 La PoC queda separada así:

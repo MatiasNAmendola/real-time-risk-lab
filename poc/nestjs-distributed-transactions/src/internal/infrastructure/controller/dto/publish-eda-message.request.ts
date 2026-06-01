@@ -1,5 +1,5 @@
 import { IsIn, IsObject, IsOptional, IsString, MinLength } from 'class-validator';
-import { PublishEdaMessageInput } from '../../../application/dto/publish-eda-message.input';
+import { PublishEdaMessageInput } from '@application/dto/publish-eda-message.input';
 
 export class PublishEdaMessageRequest implements PublishEdaMessageInput {
   @IsString()

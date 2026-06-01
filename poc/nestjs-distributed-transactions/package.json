@@ -6,7 +6,7 @@
   "license": "UNLICENSED",
   "type": "commonjs",
   "scripts": {
-    "build": "tsc -p tsconfig.build.json",
+    "build": "tsc -p tsconfig.build.json && tsc-alias -p tsconfig.build.json",
     "start": "bun run src/main.ts",
     "start:dev": "bun --watch src/main.ts",
     "start:prod": "node dist/main.js",
@@ -56,6 +56,7 @@
     "@types/node": "25.9.1",
     "eslint": "10.4.1",
     "prettier": "3.8.3",
+    "tsc-alias": "1.8.17",
     "typescript": "6.0.3",
     "typescript-eslint": "8.60.0"
   }

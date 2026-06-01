@@ -1,6 +1,6 @@
 import { Injectable, OnModuleDestroy } from '@nestjs/common';
 import Redis from 'ioredis';
-import type { IdempotencyRecord, IdempotencyResult, MessageIdempotencyRepository } from '../../domain/repository/message-idempotency.repository';
+import type { IdempotencyRecord, IdempotencyResult, MessageIdempotencyRepository } from '@domain/repository/message-idempotency.repository';
 
 @Injectable()
 export class ValkeyMessageIdempotencyRepository implements MessageIdempotencyRepository, OnModuleDestroy {

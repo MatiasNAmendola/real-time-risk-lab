@@ -12,7 +12,24 @@
     "noEmit": true,
     "types": [
       "bun"
-    ]
+    ],
+    "paths": {
+      "@cmd/*": [
+        "./src/cmd/*"
+      ],
+      "@domain/*": [
+        "./src/internal/domain/*"
+      ],
+      "@application/*": [
+        "./src/internal/application/*"
+      ],
+      "@infrastructure/*": [
+        "./src/internal/infrastructure/*"
+      ],
+      "@internal/*": [
+        "./src/internal/*"
+      ]
+    }
   },
   "include": [
     "src/**/*.ts",

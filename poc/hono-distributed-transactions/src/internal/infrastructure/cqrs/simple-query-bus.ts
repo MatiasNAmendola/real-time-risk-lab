@@ -1,7 +1,7 @@
-import { GetAccountBalanceQuery } from '../../application/query/get-account-balance.query';
-import { BankAccount, BankAccountState } from '../../domain/entity/bank-account.entity';
-import { AccountProjectionRepository } from '../../domain/repository/account-projection.repository';
-import { EventStoreRepository } from '../../domain/repository/event-store.repository';
+import { GetAccountBalanceQuery } from '@application/query/get-account-balance.query';
+import { BankAccount, BankAccountState } from '@domain/entity/bank-account.entity';
+import { AccountProjectionRepository } from '@domain/repository/account-projection.repository';
+import { EventStoreRepository } from '@domain/repository/event-store.repository';
 
 export interface AccountBalanceView extends BankAccountState {
   projectionBalanceCents: string;

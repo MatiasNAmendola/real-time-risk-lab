@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { TransactionSaga } from '../../domain/entity/saga.entity';
-import { SagaRepository } from '../../domain/repository/saga.repository';
+import { TransactionSaga } from '@domain/entity/saga.entity';
+import { SagaRepository } from '@domain/repository/saga.repository';
 
 @Injectable()
 export class InMemorySagaRepository implements SagaRepository {

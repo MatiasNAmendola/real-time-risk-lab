@@ -1,4 +1,4 @@
-import { TransactionSaga } from '../entity/saga.entity';
+import { TransactionSaga } from '@domain/entity/saga.entity';
 
 export const SAGA_REPOSITORY = Symbol('SAGA_REPOSITORY');
 export interface SagaRepository {

@@ -1,6 +1,6 @@
 import { createHash, randomUUID } from 'crypto';
-import { DomainMessage } from '../../domain/event/domain-message';
-import { PublishEdaMessageInput } from '../dto/publish-eda-message.input';
+import { DomainMessage } from '@domain/event/domain-message';
+import { PublishEdaMessageInput } from '@application/dto/publish-eda-message.input';
 
 export function createDomainMessage(input: PublishEdaMessageInput, correlationId: string): DomainMessage {
   const payload = input.payload ?? {};

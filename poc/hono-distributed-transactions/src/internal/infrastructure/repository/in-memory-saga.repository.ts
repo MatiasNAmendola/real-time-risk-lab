@@ -1,5 +1,5 @@
-import { TransactionSaga } from '../../domain/entity/saga.entity';
-import { SagaRepository } from '../../domain/repository/saga.repository';
+import { TransactionSaga } from '@domain/entity/saga.entity';
+import { SagaRepository } from '@domain/repository/saga.repository';
 
 export class InMemorySagaRepository implements SagaRepository {
   private readonly sagas = new Map<string, TransactionSaga>();
