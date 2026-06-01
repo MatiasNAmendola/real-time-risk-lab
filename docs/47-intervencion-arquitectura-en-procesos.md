@@ -20,9 +20,295 @@ flowchart LR
 
 Arquitectura debería intervenir como función transversal desde la prevalidación hasta post-launch. No aparece sólo para “diseñar la solución técnica”, sino para reducir riesgo, descubrir dependencias, validar restricciones, estimar impacto, definir guardrails y asegurar que el producto pueda operar de forma sostenible.
 
-## 2. Business Pre-validation
+## 2. Megagráfico recompuesto
 
-### 2.1 Estructura del proceso
+Este megagráfico recompone las cuatro capturas en un único flujo, respetando el orden general: **Business Pre-validation → Product Implementation → Desarrollo de software → Post Launch**. Se mantienen las bandas transversales, resultados y entregables principales para que pueda leerse como un mapa de punta a punta.
+
+```mermaid
+flowchart LR
+  Start(("Kickoff general"))
+
+  subgraph BP["1. Business Pre-validation"]
+    direction TB
+    BPIntro["Validar producto antes de desarrollo y lanzamiento: demanda real, valor, riesgos, usuarios y alcances"]
+    BPK(("Kickoff"))
+    BPKPlan["Planning: metas, tareas y tiempos"]
+
+    subgraph BPStages["Etapas"]
+      direction LR
+      BPC["Comprehend"] --> BPZ["Conceptualize"] --> BPP["Prototype"]
+    end
+
+    subgraph BPComprehend["Comprehend - actividades"]
+      direction TB
+      BPC1["Benchmark de la competencia"]
+      BPC2["Taller de requerimientos y necesidades"]
+      BPC3["Verificar información con Omni / Research / Comercial / Producto / UX"]
+      BPC4["Business Model Canvas Lean"]
+    end
+
+    subgraph BPConcept["Conceptualize - actividades"]
+      direction TB
+      BPZ1["User personas hipotéticas"]
+      BPZ2["High level process mapping"]
+      BPZ3["Value proposition Canvas"]
+      BPZ4["Risk & assumptions mapping"]
+      BPZ5["Business Revenue Model"]
+      BPZ6["Storymapping Low fidelity"]
+      BPZ7["Insight aplicaciones similares Tech"]
+    end
+
+    subgraph BPPrototype["Prototype - actividades"]
+      direction TB
+      BPP1["User flows"]
+      BPP2["Wire flows"]
+      BPP3["Sketches"]
+      BPP4["Wireframes Low fidelity"]
+      BPP5["Mockups PITCH"]
+      BPP6["Prototipos"]
+    end
+
+    BPResult["Resultado: viabilidad del proyecto; panorama claro de valor, riesgos, usuarios y alcances; presentación a stakeholders"]
+    BPBrief["Validation Brief"]
+    subgraph BPDeliverables["Entregables"]
+      direction TB
+      BPD1["Product Brief: Context, Market Situation, revenue model & Benchmark"]
+      BPD2["Análisis de riesgos desde perspectiva Tech"]
+      BPD3["Tech Brief: Tech stack, considerations"]
+      BPD4["Business model canvas V01"]
+      BPD5["Value proposition canvas V01"]
+      BPD6["User Personas hipotéticas"]
+      BPD7["Risk and Assumptions"]
+      BPD8["Prototypes"]
+      BPD9["Validación de necesidades"]
+      BPD10["Conclusion"]
+    end
+
+    BPIntro --> BPK
+    BPKPlan -.-> BPK
+    BPK --> BPStages
+    BPC -.-> BPComprehend
+    BPZ -.-> BPConcept
+    BPP -.-> BPPrototype
+    BPStages --> BPResult --> BPBrief --> BPDeliverables
+  end
+
+  subgraph PI["2. Product Implementation"]
+    direction TB
+    PILMD["Banda transversal: Legal / Marketing / Data"]
+    PIK(("Kickoff"))
+    PIKPlan["Planning: metas, tareas y tiempos"]
+
+    subgraph PIStages["Etapas"]
+      direction LR
+      PIU["Understanding"] --> PIE["Empathizing"] --> PIM["Market Prevalidation"] --> PIP["Planning"] --> PIPR["Producción"] --> PIUX["UX Testing"]
+    end
+
+    subgraph PIUnderstanding["Understanding"]
+      direction TB
+      PIU1["Benchmark"]
+      PIU2["Análisis de lo existente"]
+      PIU3["Heurísticas"]
+      PIU4["Lectura del brief"]
+      PIU5["Análisis de data"]
+      PIU6["Análisis factibilidad para el prototipo POC"]
+      PIU7["Apoyar a que las reglas de negocio se cumplan"]
+      PIU8["Feedback en diseño de componentes de software"]
+      PIU9["Presupuesto para cada fase"]
+    end
+
+    subgraph PIEmpathizing["Empathizing"]
+      direction TB
+      PIE1["User personas"]
+      PIE2["Customer Journey"]
+      PIE3["Blueprints"]
+      PIE4["Taller de requerimientos y necesidades"]
+      PIE5["Matriz de priorización"]
+      PIE6["Focus group"]
+    end
+
+    subgraph PIMarket["Market Prevalidation"]
+      direction TB
+      PIM1["Entrevistas"]
+      PIM2["Encuestas"]
+      PIM3["Market Situation de acuerdo a las necesidades"]
+    end
+
+    subgraph PIPlanning["Planning"]
+      direction TB
+      PIP1["Inventario de contenido"]
+      PIP2["Arquitectura High Fidelity"]
+      PIP3["Sitemap High Fidelity"]
+      PIP4["Definición de lenguaje gráfico"]
+      PIP5["Mapear dependencias existentes: proveedores y lógica del producto"]
+      PIP6["Definición de alcances"]
+      PIP7["Deadlines"]
+      PIP8["Valoración expertos: reutilización de componentes"]
+      PIP9["Validar equipo de desarrollo adecuado"]
+      PIP10["Storymapping"]
+      PIP11["Roadmap"]
+      PIP12["Value proposition canvas 2.0"]
+    end
+
+    subgraph PIProduction["Producción"]
+      direction TB
+      PIPR1["Flujos de pantallas"]
+      PIPR2["Wireframes High fidelity - Mockups"]
+      PIPR3["Prototipos"]
+      PIPR4["Revisiones con equipo Developers"]
+      PIPR5["Sketches"]
+      PIPR6["Componentes de design system"]
+      PIPR7["User testing de acuerdo a funcionalidad"]
+      PIPR8["User Stories"]
+      PIPR9["Anotaciones técnicas"]
+    end
+
+    subgraph PIUXTesting["UX Testing"]
+      direction TB
+      PIUX1["Card sorting"]
+      PIUX2["Tree testing"]
+      PIUX3["Paper & click prototipo"]
+      PIUX4["Naming"]
+      PIUX5["Usabilidad"]
+      PIUX6["UXT"]
+      PIUX7["Paper & click prototipo"]
+      PIUX8["A-B Testing"]
+      PIUX9["Eye tracking"]
+      PIUX10["Pruebas heurísticas"]
+    end
+
+    PIResult["Resultado: suministros para producir un product backlog priorizado basado en el roadmap"]
+
+    PIKPlan -.-> PIK
+    PILMD -. acompaña .-> PIStages
+    PIK --> PIStages
+    PIU -.-> PIUnderstanding
+    PIE -.-> PIEmpathizing
+    PIM -.-> PIMarket
+    PIP -.-> PIPlanning
+    PIPR -.-> PIProduction
+    PIUX -.-> PIUXTesting
+    PIStages --> PIResult
+  end
+
+  subgraph SD["3. Desarrollo de software"]
+    direction TB
+    SDIntro["Kickoff entre leads de Producto, UX y Tech; signoff técnico de insumos; incluir BI/Data desde el inicio cuando corresponda"]
+    SDK(("Kickoff"))
+
+    subgraph SDInputs["Insumos"]
+      direction TB
+      SDI1["Anotaciones técnicas"]
+      SDI2["Documentación del proceso"]
+      SDI3["Flujos / prototipos"]
+      SDI4["Editables"]
+      SDI5["Product Roadmap"]
+      SDI6["Technical Details for Development"]
+      SDI7["Tech Brief: Tech stack, considerations"]
+      SDI8["Deadlines detallados"]
+      SDI9["Planeación de data inputs según objetivos de negocio"]
+      SDI10["Validación de User Stories"]
+      SDI11["Listado y comportamiento de nuevos componentes en DS"]
+    end
+
+    subgraph SDStages["Etapas"]
+      direction LR
+      SDRP["Revisión Planning"] --> SDS["Sprints (n)"] --> SDUAT["UAT"] --> SDL["Launch"]
+    end
+
+    subgraph SDPlanning["Revisión Planning"]
+      direction TB
+      SDRP1["Asegurar herramientas y entendimientos necesarios"]
+      SDRP2["Establecer stakeholders para revisión de sprints"]
+    end
+
+    subgraph SDSprints["Sprints"]
+      direction TB
+      SDS1["Ejecución bajo Scrum y artefactos"]
+      SDS2["Daily Scrum"]
+      SDS3["Sprint Review"]
+      SDS4["DEMO"]
+      SDS5["Sprint Retrospective"]
+    end
+
+    subgraph SDUatBox["UAT"]
+      direction TB
+      SDU1["User acceptance testing antes de cada release"]
+      SDU2["Prioridades UAT / Producto"]
+      SDU3["Plan de acción Producto / Tech"]
+      SDU4["UAT"]
+    end
+
+    subgraph SDLaunch["Launch"]
+      direction TB
+      SDL1["Deployment de aplicación a marketplaces o release de nuevos features"]
+    end
+
+    SDResult["Resultado: software release en marketplaces"]
+
+    SDIntro --> SDK
+    SDInputs --> SDK
+    SDK --> SDStages
+    SDRP -.-> SDPlanning
+    SDS -.-> SDSprints
+    SDUAT -.-> SDUatBox
+    SDL -.-> SDLaunch
+    SDStages --> SDResult
+  end
+
+  subgraph PL["4. Post Launch"]
+    direction TB
+    PLDesc["QA revisa producción y ejecuta smoke; si hay bugs, PO + Tech definen HotFix prioritario o próximo lanzamiento"]
+    PLQA["QA review en producción"]
+    PLSmoke["Smoke productivo"]
+    PLBug{"¿Bugs?"}
+    PLTriage["Triage QA / PO / Tech"]
+    PLDecision{"¿HotFix con prioridad?"}
+    PLHotfix["HotFix"]
+    PLNext["Próximo lanzamiento"]
+    PLMonitor["Monitoreo y aprendizaje"]
+
+    PLDesc --> PLQA --> PLSmoke --> PLBug
+    PLBug -- "Sí" --> PLTriage --> PLDecision
+    PLDecision -- "Sí" --> PLHotfix --> PLSmoke
+    PLDecision -- "No" --> PLNext
+    PLBug -- "No" --> PLMonitor
+    PLNext --> PLMonitor
+  end
+
+  subgraph ARCH["Intervención transversal de arquitectura"]
+    direction TB
+    A1["Factibilidad, riesgos y assumptions"]
+    A2["Tech Brief, stack y alternativas"]
+    A3["Dependencias, integraciones y datos"]
+    A4["Contratos API / eventos / permisos"]
+    A5["NFR: seguridad, latencia, observabilidad, resiliencia"]
+    A6["Readiness, rollback, smoke y hotfix"]
+  end
+
+  Start --> BPIntro
+  BPDeliverables --> PIK
+  PIResult --> SDInputs
+  SDResult --> PLDesc
+
+  ARCH -. acompaña .-> BPIntro
+  ARCH -. acompaña .-> PIStages
+  ARCH -. acompaña .-> SDStages
+  ARCH -. acompaña .-> PLDesc
+
+  classDef phase fill:#eef3ff,stroke:#3b6bdc,stroke-width:1px,color:#111;
+  classDef result fill:#e4e8ff,stroke:#929be8,stroke-width:1px,color:#111;
+  classDef arch fill:#e8f7ef,stroke:#3aa66a,stroke-width:1px,color:#111;
+  class BP,PI,SD,PL phase;
+  class BPResult,PIResult,SDResult result;
+  class ARCH,A1,A2,A3,A4,A5,A6 arch;
+```
+
+> Lectura recomendada: el megagráfico muestra el flujo completo. Las secciones siguientes descomponen cada bloque con más detalle para que sea más fácil revisar actividades, entregables e intervención de arquitectura sin perder el orden original.
+
+## 3. Business Pre-validation
+
+### 3.1 Estructura del proceso
 
 La fase busca validar si existe demanda real antes del desarrollo y lanzamiento. Al final del sprint de validación, representantes de Producto, Tech y UX analizan resultados y deciden si la idea pasa al sprint de implementación.
 
@@ -43,7 +329,7 @@ flowchart LR
   RDesc["Se determina la viabilidad del proyecto y se presenta a stakeholders"] -.-> R
 ```
 
-### 2.2 Actividades por etapa
+### 3.2 Actividades por etapa
 
 ```mermaid
 flowchart TB
@@ -82,7 +368,7 @@ flowchart TB
   Z7 --> P1
 ```
 
-### 2.3 Entregables de Business Pre-validation
+### 3.3 Entregables de Business Pre-validation
 
 ```mermaid
 flowchart TB
@@ -98,7 +384,7 @@ flowchart TB
   VB --> CN["Conclusion"]
 ```
 
-### 2.4 Intervención de arquitectura
+### 3.4 Intervención de arquitectura
 
 | Etapa | Intervención de arquitectura | Preguntas clave |
 |---|---|---|
@@ -109,9 +395,9 @@ flowchart TB
 | Resultado | Emitir input técnico para go/no-go: riesgos, complejidad, approach recomendado y condiciones para implementar. | ¿Se puede construir de forma segura? ¿Qué debe validarse antes de comprometer roadmap? |
 | Validation Brief | Consolidar Tech Brief, riesgos, assumptions y alternativas. | ¿Qué stack, integraciones y arquitectura inicial se recomiendan? ¿Qué deuda se acepta explícitamente? |
 
-## 3. Product Implementation
+## 4. Product Implementation
 
-### 3.1 Estructura del proceso
+### 4.1 Estructura del proceso
 
 En esta fase se profundiza la idea validada y se prepara el producto para desarrollo. Legal, marketing y data aparecen como una banda transversal durante el proceso.
 
@@ -134,7 +420,7 @@ flowchart LR
   Kd["Planning para establecer metas, tareas y tiempos de la fase"] -.-> K
 ```
 
-### 3.2 Definición de etapas
+### 4.2 Definición de etapas
 
 | Etapa | Descripción fiel al flujo |
 |---|---|
@@ -145,7 +431,7 @@ flowchart LR
 | Producción | Actividades para plasmar el producto en pantallas de alta fidelidad y entregar a desarrollo. |
 | UX Testing | Actividades para asegurar experiencia y usabilidad mediante pruebas a usuarios. |
 
-### 3.3 Actividades por etapa
+### 4.3 Actividades por etapa
 
 ```mermaid
 flowchart TB
@@ -219,7 +505,7 @@ flowchart TB
   Understanding --> Empathizing --> MarketPrevalidation --> Planning --> Produccion --> UXTesting
 ```
 
-### 3.4 Intervención de arquitectura
+### 4.4 Intervención de arquitectura
 
 | Etapa | Intervención de arquitectura | Departamentos involucrados |
 |---|---|---|
@@ -231,9 +517,9 @@ flowchart TB
 | UX Testing | Incorporar hallazgos de usabilidad que impacten arquitectura: performance frontend, analytics, experimentación, accesibilidad, tracking. | UX, Data, Producto, Tech. |
 | Legal / Marketing / Data | Asegurar compliance, uso correcto de datos, consentimientos, tracking, taxonomía de eventos y claims de comunicación. | Legal, Marketing, Data, Producto, Tech. |
 
-## 4. Desarrollo de software
+## 5. Desarrollo de software
 
-### 4.1 Entrada y objetivo
+### 5.1 Entrada y objetivo
 
 La fase inicia con kickoff entre leads de Producto, UX y Tech. El equipo técnico debe hacer signoff de que tiene los suministros necesarios para desarrollar epics/user stories: flujos, wireframes y otros insumos. Antes de comenzar los sprints, se revisa planning para asegurar claridad de requerimientos y correcta ejecución del framework. BI y Data deben incluirse desde el inicio cuando corresponda.
 
@@ -247,7 +533,7 @@ flowchart LR
   L --> R["Resultado: software release en marketplaces o canales definidos"]
 ```
 
-### 4.2 Insumos para desarrollo
+### 5.2 Insumos para desarrollo
 
 ```mermaid
 flowchart TB
@@ -265,7 +551,7 @@ flowchart TB
   I --> DS["Listado y comportamiento de nuevos componentes en el Design System"]
 ```
 
-### 4.3 Etapas internas de desarrollo
+### 5.3 Etapas internas de desarrollo
 
 ```mermaid
 flowchart TB
@@ -296,7 +582,7 @@ flowchart TB
   RevisionPlanning --> Sprints --> UAT --> Launch
 ```
 
-### 4.4 Scrum representado en la captura
+### 5.4 Scrum representado en la captura
 
 ```mermaid
 flowchart LR
@@ -310,7 +596,7 @@ flowchart LR
   INC --> PB
 ```
 
-### 4.5 Intervención de arquitectura
+### 5.5 Intervención de arquitectura
 
 | Etapa | Intervención de arquitectura | Decisión esperada |
 |---|---|---|
@@ -322,9 +608,9 @@ flowchart LR
 | Launch | Validar readiness: observabilidad, rollback, feature flags, runbook, soporte, métricas y comunicación. | Release aprobado o diferido. |
 | BI/Data | Asegurar eventos, data inputs, tracking, calidad de datos y modelos de reporte desde el inicio. | Taxonomía de eventos y contratos de datos. |
 
-## 5. Post Launch
+## 6. Post Launch
 
-### 5.1 Estructura
+### 6.1 Estructura
 
 La captura indica que QA debe revisar producción, hacer smoke para encontrar bugs y ejecutar hotfix si corresponde. En conjunto con PO se decide si el hotfix se prioriza o espera al próximo lanzamiento.
 
@@ -343,7 +629,7 @@ flowchart LR
   Monitor --> Backlog
 ```
 
-### 5.2 Intervención de arquitectura
+### 6.2 Intervención de arquitectura
 
 | Momento | Intervención de arquitectura | Objetivo |
 |---|---|---|
@@ -353,7 +639,7 @@ flowchart LR
 | HotFix | Revisar cambio mínimo, test de regresión, plan de rollback y monitoreo posterior. | Reducir riesgo operativo. |
 | Próximo lanzamiento | Convertir hallazgos en backlog, deuda técnica, guardrail o mejora de proceso. | Aprendizaje continuo. |
 
-## 6. Mapa transversal de intervención de arquitectura
+## 7. Mapa transversal de intervención de arquitectura
 
 ```mermaid
 flowchart TB
@@ -402,7 +688,7 @@ flowchart TB
   D5 --> B6
 ```
 
-## 7. Etapas donde arquitectura debería intervenir
+## 8. Etapas donde arquitectura debería intervenir
 
 | Fase | Etapa | Tipo de intervención | Artefacto recomendado |
 |---|---|---|---|
@@ -426,7 +712,7 @@ flowchart TB
 | Post Launch | HotFix decision | Evaluar prioridad, riesgo y blast radius. | Hotfix decision record. |
 | Post Launch | Próximo release | Retroalimentar backlog y guardrails. | Lessons learned / deuda explícita. |
 
-## 8. Preguntas de arquitectura por departamento
+## 9. Preguntas de arquitectura por departamento
 
 ### Producto
 
@@ -476,7 +762,7 @@ flowchart TB
 - ¿Cuál es el rollback plan?
 - ¿Cuándo un bug amerita HotFix?
 
-## 9. Cómo contarlo en una discusión técnica
+## 10. Cómo contarlo en una discusión técnica
 
 Una forma clara de explicarlo:
 
@@ -486,7 +772,7 @@ Y una versión más corta:
 
 > “La arquitectura acompaña el ciclo completo: prevalidación, implementación de producto, desarrollo, lanzamiento y aprendizaje post-launch.”
 
-## 10. Links relacionados
+## 11. Links relacionados
 
 - [`docs/45-requisitos-y-estilos-arquitectonicos.md`](45-requisitos-y-estilos-arquitectonicos.md)
 - [`docs/46-decisiones-de-stack-plataforma-e-iac.md`](46-decisiones-de-stack-plataforma-e-iac.md)
