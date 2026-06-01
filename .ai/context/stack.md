@@ -42,11 +42,11 @@
 
 | Componente | Version / Image | Puerto default |
 |---|---|---|
-| Postgres | 16-alpine | 5432 |
-| Valkey | 8-alpine | 6379 |
+| Postgres | 18.4-alpine | 5432 |
+| Valkey | 9.1.0-alpine | 6379 |
 | Tansu | 0.6.0 | 9092 (Kafka, single listener) — ADR-0043 |
 | OpenObserve | latest | 5080 |
-| otelcol-contrib | 0.141.0 | 4317 (gRPC), 4318 (HTTP) |
+| otelcol-contrib | 0.153.0 | 4317 (gRPC), 4318 (HTTP) |
 | Moto (AWS mock) | latest | 5000 |
 | MinIO | latest | 9000, 9001 (Console) |
 | ElasticMQ | latest | 9324 |

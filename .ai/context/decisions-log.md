@@ -212,7 +212,7 @@ Redpanda v24.2.4.
 Se necesita un cache en memoria con API Redis-compatible.
 
 ### Decision
-Valkey 8-alpine.
+Valkey 9.1.0-alpine.
 
 ### Consecuencias positivas
 - Fork open source de Redis (BSD 3-Clause).

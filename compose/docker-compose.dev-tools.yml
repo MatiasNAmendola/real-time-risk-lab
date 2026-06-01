@@ -9,7 +9,7 @@
 # broker was swapped to Tansu. Tansu has no bundled console UI; for Kafka topic
 # inspection use the Apache Kafka CLI inside the `tansu-init` image:
 #
-#   docker run --rm --network compose_data-net confluentinc/cp-kafka:7.0.0 \
+#   docker run --rm --network compose_data-net confluentinc/cp-kafka:8.2.1 \
 #       kafka-topics --bootstrap-server tansu:9092 --list
 #
 # Reintroduce a console here only if a Tansu-compatible UI lands upstream.

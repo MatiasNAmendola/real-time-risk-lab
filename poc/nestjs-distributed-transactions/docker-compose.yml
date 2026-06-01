@@ -1,7 +1,7 @@
 services:
   redis:
     container_name: risk_lab_valkey_container
-    image: valkey/valkey:8-alpine
+    image: valkey/valkey:9.1.0-alpine
     ports:
       - "6379:6379"
 
@@ -16,8 +16,13 @@ services:
       - redis
 
   tigerbeetle:
-    image: ghcr.io/tigerbeetle/tigerbeetle:0.16.66
-    command: ["start", "--addresses=0.0.0.0:3000", "--development", "/data/0_0.tigerbeetle"]
+    image: ghcr.io/tigerbeetle/tigerbeetle:0.17.4
+    privileged: true # TigerBeetle requires io_uring in Docker Desktop/OrbStack Linux VM.
+    entrypoint: ["/bin/sh", "-ec"]
+    command:
+      - |
+        test -f /data/0_0.tigerbeetle || /tigerbeetle format --cluster=0 --replica=0 --replica-count=1 /data/0_0.tigerbeetle
+        exec /tigerbeetle start --addresses=0.0.0.0:3000 --development /data/0_0.tigerbeetle
     ports:
       - "3000:3000"
     volumes:

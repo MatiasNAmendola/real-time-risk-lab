@@ -31,7 +31,7 @@ tests de integración y ATDD. Redpanda queda eliminado:
 
 - `compose/docker-compose.yml`: servicio `tansu` (`ghcr.io/tansu-io/tansu:0.6.0`)
   con `STORAGE_ENGINE="s3://tansu/"` apuntando a Floci. Topic seeding por
-  `tansu-init` usando `confluentinc/cp-kafka:7.0.0` (Apache Kafka client).
+  `tansu-init` usando `confluentinc/cp-kafka:8.2.1` (Apache Kafka client).
 - `poc/k8s-local/addons/50-tansu.yaml`: Deployment + Service + Job de seeding.
   Sin Helm: el chart de Redpanda se elimina.
 - `tests/integration/`: `TansuContainer` con `STORAGE_ENGINE="memory://tansu/"`
@@ -41,7 +41,7 @@ tests de integración y ATDD. Redpanda queda eliminado:
 - **librdkafka 2.x clients (kcat 1.7.1) NO funcionan** contra Tansu 0.6.0
   (`ApiVersionRequest` "Read underflow"). Mitigación: los servicios Java usan
   el cliente Apache Kafka JVM — verificado contra compose (producer monolith
-  + consumer `confluentinc/cp-kafka:7.0.0` `kafka-console-consumer`). Si en el
+  + consumer `confluentinc/cp-kafka:8.2.1` `kafka-console-consumer`). Si en el
   futuro entra un client basado en librdkafka, hay que pinear a una versión
   vieja o esperar a un fix upstream de Tansu.
 - **franz-go consumer group + Fetch CONFIRMED upstream (issue
@@ -51,7 +51,7 @@ tests de integración y ATDD. Redpanda queda eliminado:
   `DisableAutoCommit + RangeBalancer`) también cuelgan. El bug está en el
   lado servidor de Tansu — no es resoluble desde el cliente.
   **Deuda local cerrada 2026-05-12**: el smoke CLI dejó de depender de
-  `franz-go` por default y consume con `confluentinc/cp-kafka:7.0.0` vía
+  `franz-go` por default y consume con `confluentinc/cp-kafka:8.2.1` vía
   Docker. `franz-go` queda removido del path de smoke para no volver a colgar
   el chequeo local.
 - **EOS / transactions / rebalance bajo carga**: no testeados. Para PoC local
@@ -119,8 +119,8 @@ storage S3"), si y cuando hay apetito de mover esa parte fuera del scope local.
   footprint y agrega JVM al stack. Sin storage S3 cloud-native.
 
 ### B) Tansu (Rust, Apache-2.0)
-- **Compatibilidad**: Kafka wire — verificada con `cp-kafkacat:7.0.0` y
-  `cp-kafka:7.0.0` (Java AdminClient + producer + consumer). **Falla con
+- **Compatibilidad**: Kafka wire — verificada con `cp-kafkacat:7.0.0` históricamente; compose actual usa `cp-kafka:8.2.1` y
+  `cp-kafka:8.2.1` (Java AdminClient + producer + consumer). **Falla con
   `edenhill/kcat:1.7.1` (librdkafka 2.x)** en `ApiVersionRequest` "Read
   underflow".
 - **Footprint dev**: 7.73 MiB idle (medido), boot 96 ms.

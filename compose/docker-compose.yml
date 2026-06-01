@@ -20,10 +20,10 @@
 services:
 
   # ============================================================================
-  # Infrastructure — Postgres 16
+  # Infrastructure — Postgres 18
   # ============================================================================
   postgres:
-    image: postgres:16-alpine
+    image: postgres:18.4-alpine
     environment:
       POSTGRES_DB:       riskplatform
       POSTGRES_USER:     riskplatform
@@ -44,10 +44,10 @@ services:
     cpus: "0.50"
 
   # ============================================================================
-  # Infrastructure — Valkey 8 (Redis-compatible cache, idempotency store)
+  # Infrastructure — Valkey 9 (Redis-compatible cache, idempotency store)
   # ============================================================================
   valkey:
-    image: valkey/valkey:8-alpine
+    image: valkey/valkey:9.1.0-alpine
     networks:
       - data-net
     healthcheck:
@@ -101,7 +101,7 @@ services:
   # confluentinc/cp-kafka ships the JVM Apache Kafka 7.x client which works.
   # Idempotent: --if-not-exists swallows AlreadyExistsException.
   tansu-init:
-    image: confluentinc/cp-kafka:7.0.0
+    image: confluentinc/cp-kafka:8.2.1
     depends_on:
       tansu:
         condition: service_started
@@ -136,7 +136,7 @@ services:
   # Observability — OpenTelemetry Collector
   # ============================================================================
   otel-collector:
-    image: otel/opentelemetry-collector-contrib:0.141.0
+    image: otel/opentelemetry-collector-contrib:0.153.0
     command: ["--config=/etc/otel-collector-config.yaml"]
     environment:
       # Local demo credentials from openobserve below:
@@ -301,7 +301,7 @@ services:
   # so any app reading from the DB before its own DbBootstrap completes does not
   # fail. Uses CREATE TABLE IF NOT EXISTS — coexists with app-side migrations.
   postgres-init:
-    image: postgres:16-alpine
+    image: postgres:18.4-alpine
     networks:
       - data-net
     depends_on:

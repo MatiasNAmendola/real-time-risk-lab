@@ -139,7 +139,7 @@ docker exec compose-postgres-1 psql -U risk_user -d risk_db -c "\dt"
 docker exec compose-valkey-1 valkey-cli PING
 
 # Tansu (Apache Kafka CLI; rpk, librdkafka 2.x, and franz-go groups are NOT supported)
-docker run --rm --network compose_data-net confluentinc/cp-kafka:7.0.0 \
+docker run --rm --network compose_data-net confluentinc/cp-kafka:8.2.1 \
   kafka-topics --bootstrap-server tansu:9092 --list
 
 # Floci — S3 buckets
@@ -165,7 +165,7 @@ Tansu, no asumas primero bug de cliente:
 1. Verificá que Floci/S3 esté sano y persistente (`FLOCI_STORAGE_MODE=persistent`
    en k8s-local; bucket `tansu` existe). Un wipe del storage y un bug wire
    pueden verse iguales desde el cliente.
-2. Para probes Kafka usá `confluentinc/cp-kafka:7.0.0`; `rpk`, `kcat` moderno
+2. Para probes Kafka usá `confluentinc/cp-kafka:8.2.1`; `rpk`, `kcat` moderno
    (`librdkafka` 2.x) y `franz-go` consumer groups no son path soportado contra
    Tansu 0.6.0.
 3. Si el storage está sano y el hang es en Fetch/consumer group, tratá el caso
