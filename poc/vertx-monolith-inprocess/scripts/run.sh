@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 # Run vertx-monolith-inprocess standalone against already-running infra.
 # Requires: Postgres, Valkey, Tansu, Floci accessible at localhost.
+REPO_ROOT_FOR_JAVA_ENV="$(cd "$(dirname "$0")/../../.." && pwd)"
+source "$REPO_ROOT_FOR_JAVA_ENV/scripts/lib/java-env.sh"
 set -euo pipefail
 REPO_ROOT="$(cd "$(dirname "$0")/../../.." && pwd)"
 JAR="$REPO_ROOT/poc/vertx-monolith-inprocess/build/libs/vertx-monolith-inprocess.jar"

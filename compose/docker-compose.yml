@@ -38,7 +38,7 @@ services:
       timeout: 5s
       retries: 10
     volumes:
-      - pg-data:/var/lib/postgresql/data
+      - pg-data-18:/var/lib/postgresql
     mem_limit: 256m
     mem_reservation: 128m
     cpus: "0.50"
@@ -311,7 +311,7 @@ services:
       PGHOST:     postgres
       PGPORT:     "5432"
       PGUSER:     riskplatform
-      PGPASSWORD: riskplatform
+      PGPASSWORD: ${POC_DB_PASSWORD:-change-me-db-password}
       PGDATABASE: riskplatform
     entrypoint: /bin/sh
     command:
@@ -347,5 +347,5 @@ networks:
     driver: bridge
 
 volumes:
-  pg-data:
+  pg-data-18:
   openobserve-data:

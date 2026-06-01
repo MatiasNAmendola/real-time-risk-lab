@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+REPO_ROOT_FOR_JAVA_ENV="$(cd "$(dirname "$0")/../../.." && pwd)"
+source "$REPO_ROOT_FOR_JAVA_ENV/scripts/lib/java-env.sh"
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -151,12 +153,12 @@ if (( ${#RECREATE_LIST[@]} > 0 )); then
   DEDUPED_RECREATE_LIST=()
   for app in "${RECREATE_LIST[@]}"; do
     already=0
-    for seen in "${DEDUPED_RECREATE_LIST[@]}"; do
+    for seen in "${DEDUPED_RECREATE_LIST[@]:-}"; do
       [[ "$seen" == "$app" ]] && already=1
     done
     (( already == 0 )) && DEDUPED_RECREATE_LIST+=("$app")
   done
-  RECREATE_LIST=("${DEDUPED_RECREATE_LIST[@]}")
+  RECREATE_LIST=("${DEDUPED_RECREATE_LIST[@]:-}")
 fi
 
 mkdir -p "$OUT_DIR"

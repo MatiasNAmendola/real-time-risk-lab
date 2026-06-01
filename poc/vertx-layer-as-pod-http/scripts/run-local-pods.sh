@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+REPO_ROOT_FOR_JAVA_ENV="$(cd "$(dirname "$0")/../../.." && pwd)"
+source "$REPO_ROOT_FOR_JAVA_ENV/scripts/lib/java-env.sh"
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 REPO_ROOT="$(cd "$ROOT/../.." && pwd)"
@@ -12,7 +14,7 @@ echo "Building..." | tee "$OUT_DIR/stdout.log"
 
 mkdir -p "$ROOT/.run"
 JAR="$ROOT/build/libs/vertx-layer-as-pod-http.jar"
-JAVA="${JAVA:-/opt/homebrew/opt/openjdk/bin/java}"
+JAVA="${JAVA:-${JAVA_HOME:-}/bin/java}"
 CONTROLLER_PORT="${CONTROLLER_PORT:-18080}"
 USECASE_PORT="${USECASE_PORT:-18081}"
 REPOSITORY_PORT="${REPOSITORY_PORT:-18082}"

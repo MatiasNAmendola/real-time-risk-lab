@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 # Build all Vert.x distributed app fat-jars via Gradle Shadow, then build Docker images.
 # Usage: ./scripts/build.sh
+REPO_ROOT_FOR_JAVA_ENV="$(cd "$(dirname "$0")/../../.." && pwd)"
+source "$REPO_ROOT_FOR_JAVA_ENV/scripts/lib/java-env.sh"
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"

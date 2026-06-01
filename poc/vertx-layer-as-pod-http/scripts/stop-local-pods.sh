@@ -12,7 +12,18 @@ for pod in controller usecase repository; do
     pid="$(cat "$pidfile")"
     if kill -0 "$pid" 2>/dev/null; then
       kill "$pid"
-      echo "stopped $pod pid=$pid" | tee -a "$OUT_DIR/stdout.log"
+      for _ in {1..30}; do
+        if ! kill -0 "$pid" 2>/dev/null; then
+          break
+        fi
+        sleep 0.2
+      done
+      if kill -0 "$pid" 2>/dev/null; then
+        kill -9 "$pid" 2>/dev/null || true
+        echo "force-stopped $pod pid=$pid" | tee -a "$OUT_DIR/stdout.log"
+      else
+        echo "stopped $pod pid=$pid" | tee -a "$OUT_DIR/stdout.log"
+      fi
     fi
     rm -f "$pidfile"
   fi

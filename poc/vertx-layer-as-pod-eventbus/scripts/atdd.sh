@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 # Run the ATDD Karate suite against the running docker-compose stack.
 # Prerequisites: docker compose up (./scripts/up.sh) must have been called first.
+REPO_ROOT_FOR_JAVA_ENV="$(cd "$(dirname "$0")/../../.." && pwd)"
+source "$REPO_ROOT_FOR_JAVA_ENV/scripts/lib/java-env.sh"
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
