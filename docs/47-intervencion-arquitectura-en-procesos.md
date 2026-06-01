@@ -1,0 +1,495 @@
+# 47 — Intervención de arquitectura en procesos de producto, tecnología y operación
+
+Esta página descompone las capturas del flujo de trabajo en una representación textual y diagramas Mermaid. El objetivo es conservar el orden de las etapas y explicar dónde interviene arquitectura, no sólo dentro del desarrollo de software sino también en la validación de negocio, producto, UX, data, legal, marketing, QA y operación post-lanzamiento.
+
+> Nota de alcance: los diagramas son una traducción fiel en estructura y orden, pero en formato Markdown/Mermaid para poder versionarlos, discutirlos y extenderlos.
+
+## 1. Vista end-to-end del proceso
+
+```mermaid
+flowchart LR
+  A["Business Pre-validation"] --> B["Product Implementation"]
+  B --> C["Desarrollo de software"]
+  C --> D["Post Launch"]
+
+  A --> AResult["Resultado: viabilidad del proyecto, valor, riesgos, usuarios y alcances"]
+  B --> BResult["Resultado: backlog priorizado basado en roadmap"]
+  C --> CResult["Resultado: release en marketplaces o canales definidos"]
+  D --> DResult["Resultado: smoke productivo, bugs/hotfix o próximo release"]
+```
+
+Arquitectura debería intervenir como función transversal desde la prevalidación hasta post-launch. No aparece sólo para “diseñar la solución técnica”, sino para reducir riesgo, descubrir dependencias, validar restricciones, estimar impacto, definir guardrails y asegurar que el producto pueda operar de forma sostenible.
+
+## 2. Business Pre-validation
+
+### 2.1 Estructura del proceso
+
+La fase busca validar si existe demanda real antes del desarrollo y lanzamiento. Al final del sprint de validación, representantes de Producto, Tech y UX analizan resultados y deciden si la idea pasa al sprint de implementación.
+
+```mermaid
+flowchart LR
+  K(("Kickoff")) --> C["Comprehend"]
+  C --> Z["Conceptualize"]
+  Z --> P["Prototype"]
+  P --> R["Resultado"]
+  R --> VB["Validation Brief"]
+
+  Kd["Planning para establecer metas, tareas y tiempos de la fase"] -.-> K
+
+  CDesc["Entendimiento de la idea, proyecto, negocio, necesidad del stakeholder, competencia e implementaciones existentes"] -.-> C
+  ZDesc["Análisis de objetivos de stakeholders, hipótesis, necesidades e intereses de usuarios; perfilado superficial del producto"] -.-> Z
+  PDesc["Diseño de baja fidelidad de algunos flujos o pantallas"] -.-> P
+
+  RDesc["Se determina la viabilidad del proyecto y se presenta a stakeholders"] -.-> R
+```
+
+### 2.2 Actividades por etapa
+
+```mermaid
+flowchart TB
+  subgraph Kickoff
+    K1["Planning para metas, tareas y tiempos"]
+  end
+
+  subgraph Comprehend
+    C1["Benchmark de la competencia"]
+    C2["Taller de requerimientos y necesidades"]
+    C3["Verificar información con equipos Omni / Research / Comercial / Producto / UX"]
+    C4["Business Model Canvas Lean"]
+  end
+
+  subgraph Conceptualize
+    Z1["User personas hipotéticas"]
+    Z2["High level process mapping"]
+    Z3["Value proposition Canvas"]
+    Z4["Risk & assumptions mapping"]
+    Z5["Business Revenue Model"]
+    Z6["Storymapping Low fidelity"]
+    Z7["Insight aplicaciones similares Tech"]
+  end
+
+  subgraph Prototype
+    P1["User flows"]
+    P2["Wire flows"]
+    P3["Sketches"]
+    P4["Wireframes Low fidelity"]
+    P5["Mockups PITCH"]
+    P6["Prototipos"]
+  end
+
+  K1 --> C1
+  C4 --> Z1
+  Z7 --> P1
+```
+
+### 2.3 Entregables de Business Pre-validation
+
+```mermaid
+flowchart TB
+  VB["Validation Brief"] --> PB["Product Brief: Context, Market Situation, revenue model & Benchmark"]
+  VB --> RT["Análisis de riesgos desde la perspectiva de Tech"]
+  VB --> TB["Tech Brief: Tech stack, considerations"]
+  VB --> BMC["Business model canvas V01"]
+  VB --> VPC["Value proposition canvas V01"]
+  VB --> UP["User Personas hipotéticas"]
+  VB --> RA["Risk and Assumptions"]
+  VB --> PR["Prototypes"]
+  VB --> VN["Validación de necesidades"]
+  VB --> CN["Conclusion"]
+```
+
+### 2.4 Intervención de arquitectura
+
+| Etapa | Intervención de arquitectura | Preguntas clave |
+|---|---|---|
+| Kickoff | Alinear alcance técnico temprano, supuestos, restricciones y criterios de decisión. | ¿Qué problema real se quiere resolver? ¿Qué queda fuera? ¿Qué restricción técnica puede invalidar la idea? |
+| Comprehend | Analizar ecosistema existente, dependencias, capacidades reutilizables, integraciones, riesgos de datos y canales. | ¿Ya existe algo que lo resuelva? ¿Qué sistemas toca? ¿Qué restricciones regulatorias, de datos o seguridad aparecen? |
+| Conceptualize | Participar en el risk & assumptions mapping, revenue model y process mapping para detectar inviabilidad técnica o costo oculto. | ¿El modelo de negocio exige tiempo real? ¿Hay dependencias críticas? ¿Qué NFR cambian la solución? |
+| Prototype | Validar que flujos de baja fidelidad sean técnicamente factibles y no omitan estados de error, permisos, trazabilidad o backoffice. | ¿Qué pasa con errores, reversas, conciliación, auditoría, permisos, soporte y operación? |
+| Resultado | Emitir input técnico para go/no-go: riesgos, complejidad, approach recomendado y condiciones para implementar. | ¿Se puede construir de forma segura? ¿Qué debe validarse antes de comprometer roadmap? |
+| Validation Brief | Consolidar Tech Brief, riesgos, assumptions y alternativas. | ¿Qué stack, integraciones y arquitectura inicial se recomiendan? ¿Qué deuda se acepta explícitamente? |
+
+## 3. Product Implementation
+
+### 3.1 Estructura del proceso
+
+En esta fase se profundiza la idea validada y se prepara el producto para desarrollo. Legal, marketing y data aparecen como una banda transversal durante el proceso.
+
+```mermaid
+flowchart LR
+  K(("Kickoff")) --> U["Understanding"]
+  U --> E["Empathizing"]
+  E --> M["Market Prevalidation"]
+  M --> P["Planning"]
+  P --> PR["Producción"]
+  PR --> UX["UX Testing"]
+
+  LMD["Legal / Marketing / Data"] -. acompaña .-> U
+  LMD -. acompaña .-> E
+  LMD -. acompaña .-> M
+  LMD -. acompaña .-> P
+  LMD -. acompaña .-> PR
+  LMD -. acompaña .-> UX
+
+  Kd["Planning para establecer metas, tareas y tiempos de la fase"] -.-> K
+```
+
+### 3.2 Definición de etapas
+
+| Etapa | Descripción fiel al flujo |
+|---|---|
+| Understanding | Comprender alcances del proyecto, objetivos, contexto interno y externo en el mercado. El brief es clave. |
+| Empathizing | Profundizar necesidades puntuales de usuarios para abordarlas en el futuro diseño. |
+| Market Prevalidation | Prevalidación del mercado con los features a implementar. |
+| Planning | Con los alcances definidos, perfilar producto, arquitectura, navegación, estilo y necesidades gráficas. |
+| Producción | Actividades para plasmar el producto en pantallas de alta fidelidad y entregar a desarrollo. |
+| UX Testing | Actividades para asegurar experiencia y usabilidad mediante pruebas a usuarios. |
+
+### 3.3 Actividades por etapa
+
+```mermaid
+flowchart TB
+  subgraph Understanding
+    U1["Benchmark"]
+    U2["Análisis de lo existente"]
+    U3["Heurísticas"]
+    U4["Lectura del brief"]
+    U5["Análisis de data"]
+    U6["Análisis factibilidad para el prototipo POC"]
+    U7["Apoyar a que las reglas de negocio se cumplan"]
+    U8["Feedback en diseño de componentes de software"]
+    U9["Presupuesto para cada fase"]
+  end
+
+  subgraph Empathizing
+    E1["User personas"]
+    E2["Customer Journey"]
+    E3["Blueprints"]
+    E4["Taller de requerimientos y necesidades"]
+    E5["Matriz de priorización"]
+    E6["Focus group"]
+  end
+
+  subgraph MarketPrevalidation["Market Prevalidation"]
+    M1["Entrevistas"]
+    M2["Encuestas"]
+    M3["Market Situation de acuerdo a las necesidades"]
+  end
+
+  subgraph Planning
+    P1["Inventario de contenido"]
+    P2["Arquitectura High Fidelity"]
+    P3["Sitemap High Fidelity"]
+    P4["Definición de lenguaje gráfico"]
+    P5["Mapear dependencias existentes: proveedores y lógica del producto"]
+    P6["Definición de alcances"]
+    P7["Deadlines"]
+    P8["Valoración expertos: reutilización de componentes"]
+    P9["Validar que equipo de desarrollo sea adecuado para completar producto"]
+    P10["Storymapping"]
+    P11["Roadmap"]
+    P12["Value proposition canvas 2.0"]
+  end
+
+  subgraph Produccion["Producción"]
+    R1["Flujos de pantallas"]
+    R2["Wireframes High fidelity - Mockups"]
+    R3["Prototipos"]
+    R4["Revisiones con equipo Developers"]
+    R5["Sketches"]
+    R6["Componentes de design system"]
+    R7["User testing de acuerdo a la funcionalidad"]
+    R8["User Stories"]
+    R9["Anotaciones técnicas"]
+  end
+
+  subgraph UXTesting["UX Testing"]
+    X1["Card sorting"]
+    X2["Tree testing"]
+    X3["Paper & click prototipo"]
+    X4["Naming"]
+    X5["Usabilidad"]
+    X6["UXT"]
+    X7["Paper & click prototipo"]
+    X8["A-B Testing"]
+    X9["Eye tracking"]
+    X10["Pruebas heurísticas"]
+  end
+
+  Understanding --> Empathizing --> MarketPrevalidation --> Planning --> Produccion --> UXTesting
+```
+
+### 3.4 Intervención de arquitectura
+
+| Etapa | Intervención de arquitectura | Departamentos involucrados |
+|---|---|---|
+| Understanding | Revisar brief, sistemas existentes, restricciones, datos disponibles, integraciones y factibilidad POC. | Producto, Tech, UX, Data, Comercial, Operaciones. |
+| Empathizing | Traducir journeys y blueprints a capacidades, eventos, estados, permisos y puntos de dolor técnicos. | Producto, UX, Research, Tech. |
+| Market Prevalidation | Evaluar si los features prometidos requieren capacidades nuevas, integraciones, data pipelines o cambios de plataforma. | Producto, Marketing, Data, Tech. |
+| Planning | Definir arquitectura high-level, dependencias, reusable components, sizing de equipo, riesgos, roadmap técnico y deadlines realistas. | Producto, UX, Tech Leads, Data, Legal, Seguridad. |
+| Producción | Revisar flujos y pantallas con developers para detectar casos borde, estados de error, contratos API, eventos, permisos y trazabilidad. | UX, Developers, Tech Leads, Design System. |
+| UX Testing | Incorporar hallazgos de usabilidad que impacten arquitectura: performance frontend, analytics, experimentación, accesibilidad, tracking. | UX, Data, Producto, Tech. |
+| Legal / Marketing / Data | Asegurar compliance, uso correcto de datos, consentimientos, tracking, taxonomía de eventos y claims de comunicación. | Legal, Marketing, Data, Producto, Tech. |
+
+## 4. Desarrollo de software
+
+### 4.1 Entrada y objetivo
+
+La fase inicia con kickoff entre leads de Producto, UX y Tech. El equipo técnico debe hacer signoff de que tiene los suministros necesarios para desarrollar epics/user stories: flujos, wireframes y otros insumos. Antes de comenzar los sprints, se revisa planning para asegurar claridad de requerimientos y correcta ejecución del framework. BI y Data deben incluirse desde el inicio cuando corresponda.
+
+```mermaid
+flowchart LR
+  I["Insumos desde Product Implementation"] --> K(("Kickoff"))
+  K --> RP["Revisión Planning"]
+  RP --> S["Sprints (n)"]
+  S --> UAT["UAT"]
+  UAT --> L["Launch"]
+  L --> R["Resultado: software release en marketplaces o canales definidos"]
+```
+
+### 4.2 Insumos para desarrollo
+
+```mermaid
+flowchart TB
+  I["Insumos necesarios para product backlog priorizado"]
+  I --> A["Anotaciones técnicas"]
+  I --> D["Documentación del proceso"]
+  I --> F["Flujos / prototipos"]
+  I --> E["Editables"]
+  I --> PR["Product Roadmap"]
+  I --> TD["Technical Details for Development"]
+  I --> TB["Tech Brief: Tech stack, considerations"]
+  I --> DL["Deadlines detallados"]
+  I --> DI["Planeación de data inputs según objetivos de negocio"]
+  I --> VUS["Validación de User Stories"]
+  I --> DS["Listado y comportamiento de nuevos componentes en el Design System"]
+```
+
+### 4.3 Etapas internas de desarrollo
+
+```mermaid
+flowchart TB
+  subgraph RevisionPlanning["Revisión Planning"]
+    RP1["Asegurar herramientas y entendimientos necesarios"]
+    RP2["Establecer stakeholders para revisión de sprints"]
+  end
+
+  subgraph Sprints["Sprints (n)"]
+    S1["Ejecución de sprints de desarrollo bajo Scrum y artefactos"]
+    S2["Sprint Review"]
+    S3["DEMO"]
+    S4["Daily Scrum"]
+    S5["Sprint Retrospective"]
+  end
+
+  subgraph UAT
+    U1["User acceptance testing de stakeholders antes de cada release"]
+    U2["Establecimiento de prioridades UAT / Producto"]
+    U3["Plan de acción Producto / Tech"]
+    U4["UAT"]
+  end
+
+  subgraph Launch
+    L1["Deployment de la aplicación a marketplaces o release de nuevos features"]
+  end
+
+  RevisionPlanning --> Sprints --> UAT --> Launch
+```
+
+### 4.4 Scrum representado en la captura
+
+```mermaid
+flowchart LR
+  PB["Product Backlog"] --> SP["Sprint Planning"]
+  SP --> SB["Sprint Backlog"]
+  SB --> DS["Daily Scrum / Scrum Team"]
+  DS --> SR["Sprint Review"]
+  SR --> INC["Increment"]
+  SR --> RETRO["Sprint Retrospective"]
+  RETRO --> PB
+  INC --> PB
+```
+
+### 4.5 Intervención de arquitectura
+
+| Etapa | Intervención de arquitectura | Decisión esperada |
+|---|---|---|
+| Kickoff | Confirmar que Tech entiende alcance, restricciones, integraciones, NFR, datos, riesgos y dependencias. | Signoff técnico o lista de bloqueantes. |
+| Revisión Planning | Validar historias, criterios de aceptación, contratos API/eventos, dependencias y estrategia de delivery. | Backlog listo para sprint o refinamiento requerido. |
+| Sprints | Acompañar decisiones de diseño emergentes, revisar PRs críticos, mantener guardrails y resolver trade-offs. | ADRs livianos, contratos estables, deuda explícita. |
+| Sprint Review / Demo | Verificar que el incremento cumple funcionalidad, NFR y trazabilidad esperada. | Aceptar, ajustar o bloquear avance. |
+| UAT | Priorizar bugs/ajustes con Producto, Tech y stakeholders; validar impacto de cambios tardíos. | Go/no-go por release, plan de acción. |
+| Launch | Validar readiness: observabilidad, rollback, feature flags, runbook, soporte, métricas y comunicación. | Release aprobado o diferido. |
+| BI/Data | Asegurar eventos, data inputs, tracking, calidad de datos y modelos de reporte desde el inicio. | Taxonomía de eventos y contratos de datos. |
+
+## 5. Post Launch
+
+### 5.1 Estructura
+
+La captura indica que QA debe revisar producción, hacer smoke para encontrar bugs y ejecutar hotfix si corresponde. En conjunto con PO se decide si el hotfix se prioriza o espera al próximo lanzamiento.
+
+```mermaid
+flowchart LR
+  L["Launch"] --> QA["QA revisa ambiente productivo"]
+  QA --> Smoke["Smoke productivo"]
+  Smoke --> Bugs{"¿Hay bugs?"}
+  Bugs -- "No" --> Monitor["Monitoreo y feedback"]
+  Bugs -- "Sí" --> Triage["Triage QA + PO + Tech"]
+  Triage --> Decision{"¿HotFix con prioridad?"}
+  Decision -- "Sí" --> Hotfix["HotFix"]
+  Decision -- "No" --> Next["Esperar próximo lanzamiento"]
+  Hotfix --> Smoke
+  Next --> Backlog["Backlog / próximo release"]
+  Monitor --> Backlog
+```
+
+### 5.2 Intervención de arquitectura
+
+| Momento | Intervención de arquitectura | Objetivo |
+|---|---|---|
+| Smoke productivo | Confirmar señales mínimas: health, logs, métricas, traces, errores, latencia y flujos críticos. | Detectar fallas reales rápido. |
+| Triage | Diferenciar bug funcional, bug de integración, bug de datos, problema de infraestructura o degradación externa. | Evitar hotfix equivocado. |
+| Decisión HotFix vs próximo release | Evaluar severidad, blast radius, workaround, riesgo de rollback y costo de esperar. | Priorizar con PO y QA. |
+| HotFix | Revisar cambio mínimo, test de regresión, plan de rollback y monitoreo posterior. | Reducir riesgo operativo. |
+| Próximo lanzamiento | Convertir hallazgos en backlog, deuda técnica, guardrail o mejora de proceso. | Aprendizaje continuo. |
+
+## 6. Mapa transversal de intervención de arquitectura
+
+```mermaid
+flowchart TB
+  subgraph NegocioProductoUX["Negocio / Producto / UX"]
+    A1["Validación de demanda"]
+    A2["Value proposition"]
+    A3["User journeys"]
+    A4["Prototipos"]
+  end
+
+  subgraph TechArquitectura["Tech / Arquitectura"]
+    B1["Factibilidad técnica"]
+    B2["Riesgos y assumptions"]
+    B3["Tech Brief y stack"]
+    B4["Contratos API / eventos"]
+    B5["NFR y observabilidad"]
+    B6["Readiness y rollback"]
+  end
+
+  subgraph DataLegalMarketing["Data / Legal / Marketing"]
+    C1["Uso de datos"]
+    C2["Consentimiento / compliance"]
+    C3["Tracking y métricas"]
+    C4["Claims y comunicación"]
+  end
+
+  subgraph DeliveryOperacion["Delivery / QA / Operación"]
+    D1["Backlog priorizado"]
+    D2["Sprints"]
+    D3["UAT"]
+    D4["Launch"]
+    D5["Smoke / HotFix"]
+  end
+
+  A1 --> B1
+  A2 --> B2
+  A3 --> B4
+  A4 --> B3
+  C1 --> B5
+  C2 --> B2
+  C3 --> B5
+  D1 --> B4
+  D2 --> B5
+  D3 --> B6
+  D4 --> B6
+  D5 --> B6
+```
+
+## 7. Etapas donde arquitectura debería intervenir
+
+| Fase | Etapa | Tipo de intervención | Artefacto recomendado |
+|---|---|---|---|
+| Business Pre-validation | Kickoff | Encuadre técnico y riesgos iniciales. | Checklist de supuestos técnicos. |
+| Business Pre-validation | Comprehend | Análisis de sistemas existentes, competencia e integraciones. | Mapa de contexto técnico. |
+| Business Pre-validation | Conceptualize | Riesgos, assumptions, capacidades y procesos. | Risk & assumptions técnico. |
+| Business Pre-validation | Prototype | Factibilidad de flujos, estados y errores. | Notas de arquitectura sobre prototipo. |
+| Business Pre-validation | Validation Brief | Input formal para go/no-go. | Tech Brief inicial. |
+| Product Implementation | Understanding | Revisión de brief, data, reglas y factibilidad POC. | Informe de factibilidad. |
+| Product Implementation | Empathizing | Traducir journeys a capacidades y eventos. | Capability map. |
+| Product Implementation | Market Prevalidation | Validar features contra capacidades reales. | Gap analysis técnico. |
+| Product Implementation | Planning | Definir stack, dependencias, roadmap técnico y equipo. | Architecture brief / ADR inicial. |
+| Product Implementation | Producción | Revisar flujos, pantallas, user stories y anotaciones técnicas. | Contratos API/eventos + criterios NFR. |
+| Product Implementation | UX Testing | Evaluar impacto de hallazgos en performance, analytics y experiencia. | Backlog técnico priorizado. |
+| Desarrollo | Kickoff | Signoff de insumos para desarrollo. | Definition of Ready técnica. |
+| Desarrollo | Revisión Planning | Validar historias, dependencias y contratos. | Sprint architecture checklist. |
+| Desarrollo | Sprints | Acompañar decisiones, PRs críticos y deuda. | ADRs livianos / tech notes. |
+| Desarrollo | UAT | Evaluar severidad, go/no-go y plan de acción. | Release risk assessment. |
+| Desarrollo | Launch | Readiness operativo, observabilidad, rollback. | Release checklist / runbook. |
+| Post Launch | Smoke | Validar flujos productivos y señales operativas. | Smoke report. |
+| Post Launch | HotFix decision | Evaluar prioridad, riesgo y blast radius. | Hotfix decision record. |
+| Post Launch | Próximo release | Retroalimentar backlog y guardrails. | Lessons learned / deuda explícita. |
+
+## 8. Preguntas de arquitectura por departamento
+
+### Producto
+
+- ¿Qué hipótesis de negocio invalidan el producto?
+- ¿Qué capacidades son must-have vs nice-to-have?
+- ¿Qué parte debe estar en el MVP y qué puede ir a roadmap?
+- ¿Qué decisiones requieren datos reales antes de construir?
+
+### UX / Research
+
+- ¿Qué estados de error y casos borde faltan en los flujos?
+- ¿Qué tareas del usuario exigen baja latencia?
+- ¿Qué eventos de comportamiento deben medirse?
+- ¿Qué componentes se reutilizan del design system?
+
+### Tech / Desarrollo
+
+- ¿Qué sistemas se integran y quién es owner?
+- ¿Qué contratos API/eventos son necesarios?
+- ¿Qué NFR aplican: latencia, disponibilidad, seguridad, auditabilidad?
+- ¿Qué deuda se acepta para el MVP?
+
+### Data / BI
+
+- ¿Qué datos necesita negocio para medir éxito?
+- ¿Qué eventos deben emitirse desde el primer release?
+- ¿Qué calidad, ownership y retención tienen esos datos?
+- ¿Qué dashboards o métricas son parte del lanzamiento?
+
+### Legal / Compliance
+
+- ¿Qué datos personales o sensibles se procesan?
+- ¿Qué consentimientos o términos impactan la solución?
+- ¿Qué auditoría se requiere?
+- ¿Qué restricciones limitan tracking, campañas o segmentación?
+
+### Marketing / Comercial
+
+- ¿Los claims prometidos son compatibles con la capacidad real del producto?
+- ¿La propuesta de valor exige SLAs o features que todavía no existen?
+- ¿Qué mediciones de campaña o funnel se necesitan?
+
+### QA / Operación
+
+- ¿Cuáles son los smoke tests mínimos post-launch?
+- ¿Qué alertas definen degradación?
+- ¿Cuál es el rollback plan?
+- ¿Cuándo un bug amerita HotFix?
+
+## 9. Cómo contarlo en una discusión técnica
+
+Una forma clara de explicarlo:
+
+> “Arquitectura no entra sólo cuando hay que elegir framework o dibujar componentes. Interviene desde la validación de negocio para detectar inviabilidad, riesgos y dependencias; durante producto para convertir journeys en capacidades y contratos; durante desarrollo para sostener boundaries y NFR; y en post-launch para operar, medir y decidir hotfixes con evidencia.”
+
+Y una versión más corta:
+
+> “La arquitectura acompaña el ciclo completo: prevalidación, implementación de producto, desarrollo, lanzamiento y aprendizaje post-launch.”
+
+## 10. Links relacionados
+
+- [`docs/45-requisitos-y-estilos-arquitectonicos.md`](45-requisitos-y-estilos-arquitectonicos.md)
+- [`docs/46-decisiones-de-stack-plataforma-e-iac.md`](46-decisiones-de-stack-plataforma-e-iac.md)
+- [`docs/44-guion-presentacion-tecnica.md`](44-guion-presentacion-tecnica.md)
+- [`docs/42-documentacion-metodica.md`](42-documentacion-metodica.md)
+- [`vault/05-Methodology/Technical-Leadership-Mindset.md`](../vault/05-Methodology/Technical-Leadership-Mindset.md)
