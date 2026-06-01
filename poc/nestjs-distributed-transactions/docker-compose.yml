@@ -1,0 +1,26 @@
+services:
+  redis:
+    container_name: risk_lab_valkey_container
+    image: valkey/valkey:8-alpine
+    ports:
+      - "6379:6379"
+
+  webdis:
+    container_name: risk_lab_webdis_container
+    image: anapsix/webdis
+    ports:
+      - "7379:7379"
+    environment:
+      - REDIS_HOST=redis
+    depends_on:
+      - redis
+
+  tigerbeetle:
+    image: ghcr.io/tigerbeetle/tigerbeetle:0.16.66
+    command: ["start", "--addresses=0.0.0.0:3000", "--development", "/data/0_0.tigerbeetle"]
+    ports:
+      - "3000:3000"
+    volumes:
+      - tigerbeetle-data:/data
+volumes:
+  tigerbeetle-data:
