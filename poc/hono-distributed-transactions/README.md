@@ -232,3 +232,23 @@ Variables útiles:
 K6_VUS=4 K6_DURATION=20s bun run test:k6
 BASE_URL=http://localhost:3002 BASE_URL_ALREADY_RUNNING=1 bun run test:k6
 ```
+
+
+## Apagado seguro
+
+Para detener esta PoC sin depender de puertos hardcodeados:
+
+```bash
+# dry-run: muestra procesos y compose que se apagarían
+bun run stop:dry-run
+
+# ejecuta el apagado
+bun run stop
+```
+
+El script identifica procesos locales por `cwd` dentro de la app y baja sólo el `docker-compose.yml` de esta PoC. Desde la raíz también se puede usar:
+
+```bash
+./nx stop typescript-transactional-pocs --yes
+./nx stop all --yes
+```

@@ -162,6 +162,8 @@ Honestidad: el repo está en estado *reportado-OK por agentes pero verificación
 
 ```bash
 ./nx status                        # qué contenedores están arriba
+./nx stop all --yes                 # apaga apps locales y compose del repo sin matchear puertos
+./nx stop typescript-transactional-pocs --yes  # apaga NestJS/Hono + sus compose
 ./nx logs --service usecase-app    # logs filtrables
 ./nx logs --errors                 # solo ERROR/WARN/Exception
 ./nx debug diagnose                # heurística automática de root cause

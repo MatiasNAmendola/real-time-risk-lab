@@ -105,6 +105,9 @@ COMMANDS:
   down [infra|vertx-layer-as-pod-eventbus|vertx-monolith-inprocess|vertx-layer-as-pod-http|all|k8s] [--cleanup-k8s]
       Tear down infrastructure (same targets as up)
 
+  stop [all|apps|compose|typescript-transactional-pocs|nestjs|hono|vertx|dashboard|k8s] [--yes]
+      Stop repo-owned app processes and Compose stacks without port-based matching
+
   status
       Show currently running services (docker ps + k8s pods if available)
 
@@ -235,6 +238,8 @@ EXAMPLES:
   ./nx failures --json
   ./nx proc status
   ./nx proc stop --only-kind test-runner --yes
+  ./nx stop all --yes
+  ./nx stop typescript-transactional-pocs --yes
   ./nx logs --service controller-app --errors
   ./nx debug diagnose
   ./nx debug snapshot
@@ -464,6 +469,12 @@ nx_down() {
       _die "Unknown target: $mode. Use: infra, vertx-layer-as-pod-eventbus, vertx-monolith-inprocess, vertx-layer-as-pod-http, all, k8s"
       ;;
   esac
+}
+
+nx_stop() {
+  local script="$REPO_ROOT/scripts/stop-services.sh"
+  _require_script "$script"
+  exec "$script" "$@"
 }
 
 nx_status() {
@@ -1444,6 +1455,7 @@ main() {
     setup)         nx_setup "$@" ;;
     up)            nx_up "$@" ;;
     down)          nx_down "$@" ;;
+    stop)          nx_stop "$@" ;;
     status)        nx_status "$@" ;;
     logs)          nx_logs "$@" ;;
     build)         nx_build "$@" ;;

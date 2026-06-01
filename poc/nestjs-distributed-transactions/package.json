@@ -21,7 +21,9 @@
     "test:k6": "K6_REQUIRED=true ./scripts/k6-smoke.sh",
     "test:k6:optional": "./scripts/k6-smoke.sh",
     "test:atdd:e2e": "bun test tests/e2e/atdd-http.e2e.test.ts",
-    "test:atdd:feature": "cucumber-js \"tests/atdd/**/*.feature\" --require \"tests/atdd/steps/**/*.js\" --format progress"
+    "test:atdd:feature": "cucumber-js \"tests/atdd/**/*.feature\" --require \"tests/atdd/steps/**/*.js\" --format progress",
+    "stop": "./scripts/stop.sh --yes",
+    "stop:dry-run": "./scripts/stop.sh"
   },
   "dependencies": {
     "@nestjs/common": "11.1.24",
