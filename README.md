@@ -155,6 +155,7 @@ Ver [`cli/README.md`](cli/README.md) para el modo seguro, `--include-tracked` y 
 - [`docs/45-requisitos-y-estilos-arquitectonicos.md`](docs/45-requisitos-y-estilos-arquitectonicos.md) — requisitos funcionales/no funcionales y comparación monolito, macroservicio, microservicio y layer-as-pod.
 - [`docs/46-decisiones-de-stack-plataforma-e-iac.md`](docs/46-decisiones-de-stack-plataforma-e-iac.md) — criterios para elegir stack, DX tooling, IaC, multi-AZ/región/cloud y consola interna.
 - [`docs/47-intervencion-arquitectura-en-procesos.md`](docs/47-intervencion-arquitectura-en-procesos.md) — intervención de arquitectura en prevalidación, producto, desarrollo, launch y post-launch.
+  - Visual standalone: [`docs/diagrams/product-architecture-process-map.html`](docs/diagrams/product-architecture-process-map.html).
 - [`docs/48-rfp-prd-adr-y-documentos-de-decision.md`](docs/48-rfp-prd-adr-y-documentos-de-decision.md) — cómo se relacionan RFP, PRD, RFC, ADR, Tech Brief, Runbook y Lessons Learned.
 - [`STATUS.md`](STATUS.md) — matriz empírica actual.
 - [`docs/00-START-HERE.md`](docs/00-START-HERE.md) — onboarding extendido.

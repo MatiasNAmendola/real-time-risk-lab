@@ -1,0 +1,626 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Proceso producto / arquitectura — mapa visual</title>
+  <style>
+    :root {
+      --blue: #5a8dee;
+      --navy: #111e7b;
+      --lavender: #a9b2ee;
+      --red: #e45442;
+      --orange: #f6b75b;
+      --orange-2: #f1835d;
+      --yellow: #f5c845;
+      --lime: #d5ef43;
+      --teal: #20c4c9;
+      --teal-soft: #73d0c0;
+      --green: #b7c96d;
+      --purple: #8b21a8;
+      --gray: #f0f0f0;
+      --dark-gray: #8d8d8d;
+      --text: #777;
+      --black: #111;
+      --white: #fff;
+      --canvas: #ffffff;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      padding: 32px;
+      background: #f7f7f7;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--black);
+    }
+
+    .page {
+      width: 2100px;
+      margin: 0 auto;
+      background: var(--canvas);
+      padding: 56px 48px 80px;
+      box-shadow: 0 18px 48px rgba(0,0,0,.08);
+    }
+
+    .phase {
+      margin-bottom: 84px;
+      position: relative;
+    }
+
+    .title {
+      background: var(--blue);
+      color: white;
+      text-align: center;
+      font-weight: 800;
+      font-size: 28px;
+      padding: 18px 24px;
+      letter-spacing: .2px;
+    }
+
+    .title.navy { background: var(--navy); }
+    .title.gray { background: var(--dark-gray); }
+
+    .description {
+      background: var(--gray);
+      color: var(--text);
+      border-radius: 32px;
+      padding: 26px 34px;
+      font-size: 23px;
+      line-height: 1.35;
+      text-align: center;
+      margin: 28px 0 30px;
+    }
+
+    .pill {
+      background: var(--gray);
+      color: var(--text);
+      border-radius: 28px;
+      padding: 26px 28px;
+      font-size: 22px;
+      line-height: 1.25;
+      text-align: center;
+      min-height: 148px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .kickoff-circle {
+      width: 128px;
+      height: 128px;
+      border-radius: 50%;
+      border: 4px solid var(--lavender);
+      color: var(--lavender);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 22px;
+      background: white;
+      margin: 0 auto 14px;
+    }
+
+    .stage-title {
+      color: white;
+      font-weight: 900;
+      font-size: 26px;
+      text-align: center;
+      padding: 16px 10px;
+      margin-bottom: 28px;
+    }
+
+    .red { background: var(--red); }
+    .orange { background: var(--orange); }
+    .orange2 { background: var(--orange-2); }
+    .tealSoft { background: var(--teal-soft); }
+    .green { background: var(--green); }
+    .yellow { background: var(--yellow); }
+    .teal { background: var(--teal); }
+    .lime { background: var(--lime); }
+    .purple { background: var(--purple); }
+
+    .card {
+      min-height: 52px;
+      padding: 12px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      font-size: 14px;
+      line-height: 1.15;
+      font-weight: 800;
+      color: #050505;
+      margin-bottom: 14px;
+    }
+
+    .card.outline {
+      background: #fff;
+      border: 1px solid #ffb9b0;
+      color: #e46b5d;
+    }
+
+    .result-box {
+      background: var(--lavender);
+      color: white;
+      padding: 60px 38px;
+      font-size: 26px;
+      line-height: 1.28;
+      text-align: center;
+      min-height: 330px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 24px;
+    }
+
+    .result-box strong { font-size: 28px; }
+    .arrow { font-size: 80px; line-height: 1; font-weight: 900; }
+
+    .brief-title {
+      background: var(--lavender);
+      color: white;
+      text-align: center;
+      font-size: 14px;
+      font-weight: 800;
+      padding: 16px;
+      margin: 44px 0 14px;
+    }
+
+    .down-arrow {
+      width: 0;
+      height: 0;
+      border-left: 26px solid transparent;
+      border-right: 26px solid transparent;
+      border-top: 42px solid var(--yellow);
+      margin: 0 auto 10px;
+    }
+
+    /* Business prevalidation */
+    .bp-grid {
+      display: grid;
+      grid-template-columns: 160px 300px 620px 300px 460px;
+      gap: 18px;
+      align-items: start;
+    }
+
+    .bp-main-title {
+      grid-column: 1 / 5;
+    }
+
+    .bp-desc {
+      grid-column: 1 / 5;
+    }
+
+    .bp-result {
+      grid-column: 5;
+      grid-row: 1 / span 4;
+    }
+
+    .stage-wide { display: grid; grid-template-columns: repeat(2, 1fr); gap: 18px; }
+    .stage-stack { display: grid; grid-template-columns: 1fr; gap: 0; }
+    .bp-concept-cards { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0 18px; }
+
+    /* Product implementation */
+    .pi-grid {
+      display: grid;
+      grid-template-columns: 150px repeat(6, 1fr);
+      gap: 14px;
+      align-items: start;
+    }
+
+    .pi-title { grid-column: 1 / -1; }
+    .purple-arrow {
+      grid-column: 2 / -1;
+      height: 58px;
+      background: var(--purple);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      position: relative;
+      margin: 140px 140px 0 40px;
+    }
+    .purple-arrow::after {
+      content: "";
+      position: absolute;
+      right: -170px;
+      top: -16px;
+      width: 0;
+      height: 0;
+      border-top: 45px solid transparent;
+      border-bottom: 45px solid transparent;
+      border-left: 170px solid var(--purple);
+    }
+
+    .pi-kickoff { grid-column: 1; grid-row: 3; }
+    .pi-column { grid-row: 3; }
+    .pi-column .pill { min-height: 232px; }
+    .pi-column .stage-title { margin-bottom: 24px; }
+
+    /* Software */
+    .software-layout {
+      display: grid;
+      grid-template-columns: 380px 1fr 380px;
+      gap: 54px;
+      align-items: start;
+    }
+
+    .software-center .title { margin-bottom: 12px; }
+    .software-center .description {
+      text-align: left;
+      margin: 0 0 12px;
+      font-size: 18px;
+      padding: 14px 20px;
+      border-radius: 22px;
+    }
+
+    .dev-stages {
+      display: grid;
+      grid-template-columns: 130px repeat(4, 1fr);
+      gap: 12px;
+      align-items: start;
+    }
+
+    .dev-stage-title {
+      background: #2e3d97;
+      color: white;
+      font-size: 20px;
+      font-weight: 800;
+      text-align: center;
+      padding: 14px;
+      min-height: 58px;
+    }
+
+    .dev-stage-title.launch { background: #6171b3; }
+    .dev-pill { min-height: 190px; font-size: 18px; }
+    .dev-kickoff { padding-top: 0; }
+
+    .side-result { min-height: 560px; }
+    .input-list { margin-top: 36px; }
+    .input-list .card { min-height: 48px; }
+    .muted-card { background: white; border: 1px solid #d8ddff; color: #b3b9ee; }
+
+    .scrum-band {
+      margin: 110px auto 0;
+      width: 960px;
+      border: 10px solid rgba(82, 165, 183, .18);
+      border-radius: 38px;
+      padding: 54px 40px 42px;
+      display: grid;
+      grid-template-columns: 160px 160px 1fr 160px 140px;
+      gap: 22px;
+      align-items: center;
+      color: #288aa0;
+      position: relative;
+    }
+
+    .scrum-box {
+      background: #2f9db6;
+      color: white;
+      border-radius: 12px;
+      min-height: 76px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      font-weight: 800;
+      padding: 12px;
+    }
+
+    .scrum-team {
+      width: 250px;
+      height: 250px;
+      border-radius: 50%;
+      border: 26px solid #5ab1c4;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      font-weight: 900;
+      color: #397f8e;
+      justify-self: center;
+    }
+
+    .scrum-arrow { font-size: 36px; color: #9ecbd5; font-weight: 900; }
+    .retro { position: absolute; top: -48px; left: 430px; }
+
+    /* Post launch */
+    .post {
+      width: 800px;
+      margin: 0 auto;
+    }
+    .post .description {
+      text-align: left;
+      font-size: 25px;
+      line-height: 1.4;
+      margin-top: 28px;
+    }
+
+    .footer-note {
+      color: #777;
+      font-size: 14px;
+      margin-top: 54px;
+      text-align: center;
+    }
+
+    @media print {
+      body { padding: 0; background: white; }
+      .page { box-shadow: none; margin: 0; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <section class="phase bp-grid" aria-labelledby="bp-title">
+      <div id="bp-title" class="title bp-main-title">Business Pre-validation</div>
+      <div class="description bp-desc">
+        La medida de prevención de riesgos más importante es la validación del producto, lo que garantiza que exista una demanda real en el mercado antes del desarrollo y lanzamiento. Al final de este validation sprint se analizan los resultados obtenidos en las etapas y los representantes de Producto, Tech y UX toman una decisión en conjunto si la idea puede pasar al Sprint de Implementación.
+      </div>
+
+      <aside class="bp-result">
+        <div class="result-box">
+          <strong>Resultado</strong>
+          <div>Se determina la viabilidad del proyecto. Hay un panorama claro de valor, riesgos, usuarios y alcances.</div>
+          <div>Se presentan resultados a stakeholders.</div>
+          <div class="arrow">➜</div>
+        </div>
+        <div class="brief-title">Validation Brief</div>
+        <div class="down-arrow"></div>
+        <div class="stage-stack">
+          <div class="card yellow">Product Brief (Context, Market Situation, revenue model &amp; Benchmark)</div>
+          <div class="card lime">Análisis de "riesgos" desde la perspectiva de Tech.</div>
+          <div class="card lime">Tech Brief (Tech stack, considerations)</div>
+          <div class="card yellow">Business model canvas V01</div>
+          <div class="card yellow">Value proposition canvas V01</div>
+          <div class="card teal">User Personas hipotéticas</div>
+          <div class="card yellow">Risk and Assumptions</div>
+          <div class="card teal">Prototypes</div>
+          <div class="card yellow">Validación de necesidades</div>
+          <div class="card yellow">Conclusion</div>
+        </div>
+      </aside>
+
+      <div>
+        <div class="kickoff-circle">Kickoff</div>
+        <div class="pill">Planning para establecer metas, tareas y tiempos de la fase</div>
+      </div>
+
+      <div>
+        <div class="stage-title red">Comprehend</div>
+        <div class="pill">Entendimiento de la idea/proyecto/negocio, la necesidad para el stakeholder, la competencia, implementaciones con ambiente existente, etc.</div>
+        <div class="input-list">
+          <div class="card yellow">Benchmark de la competencia</div>
+          <div class="card yellow">Taller de requerimientos y necesidades</div>
+          <div class="card yellow">Verificar información con otros equipos Omni/ Research/Comercial/Producto/UX</div>
+          <div class="card yellow">Business Model Canvas Lean</div>
+        </div>
+      </div>
+
+      <div>
+        <div class="stage-title orange">Conceptualize</div>
+        <div class="pill">Se analizarán los objetivos de los stakeholders y, bajo hipótesis, las necesidades e intereses de potenciales usuarios. Se perfila la idea del producto de manera superficial para comprender su concepción.</div>
+        <div class="input-list bp-concept-cards">
+          <div class="card teal">User personas hipotéticas</div>
+          <div class="card yellow">Business Revenue Model</div>
+          <div class="card yellow">High level process mapping</div>
+          <div class="card teal">Storymapping Low fidelity</div>
+          <div class="card yellow">Value proposition Canvas</div>
+          <div class="card lime">Insight Aplicaciones similares Tech</div>
+          <div class="card yellow">Risk &amp; assumptions mapping</div>
+        </div>
+      </div>
+
+      <div>
+        <div class="stage-title tealSoft">Prototype</div>
+        <div class="pill">Diseño de baja fidelidad de algunos flujos o pantallas del producto.</div>
+        <div class="input-list">
+          <div class="card teal">User flows</div>
+          <div class="card teal">Wire flows</div>
+          <div class="card teal">Sketches</div>
+          <div class="card teal">Wireframes Low fidelity</div>
+          <div class="card teal">Mockups PITCH</div>
+          <div class="card teal">Prototipos</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="phase pi-grid" aria-labelledby="pi-title">
+      <div id="pi-title" class="title pi-title">Product Implementation</div>
+      <div class="purple-arrow">Legal / Marketing / Data</div>
+
+      <div class="pi-kickoff">
+        <div class="kickoff-circle">Kickoff</div>
+        <div class="pill">Planning para establecer metas, tareas y tiempos de la fase</div>
+      </div>
+
+      <div class="pi-column">
+        <div class="stage-title red">Understanding</div>
+        <div class="pill">Comprender los alcances del proyecto, objetivos, su contexto interno y externo en el mercado. En esta etapa el brief será clave.</div>
+        <div class="input-list">
+          <div class="card yellow">Benchmark</div>
+          <div class="card yellow">Análisis de lo existente</div>
+          <div class="card outline">Heurísticas</div>
+          <div class="card yellow">Lectura del brief</div>
+          <div class="card yellow">Análisis de data</div>
+          <div class="card lime">Análisis factibilidad para el prototipo POC</div>
+          <div class="card lime">Apoyar a que las reglas de negocio se cumplan</div>
+          <div class="card lime">Feedback en diseño de componentes de software</div>
+          <div class="card yellow">Presupuesto para cada fase**</div>
+        </div>
+      </div>
+
+      <div class="pi-column">
+        <div class="stage-title orange2">Empathizing</div>
+        <div class="pill">Proceso en el que se profundiza las necesidades puntuales de los usuarios para abordarlas en el futuro diseño.</div>
+        <div class="input-list">
+          <div class="card teal">User personas</div>
+          <div class="card teal">Customer Journey</div>
+          <div class="card teal">Blueprints</div>
+          <div class="card yellow">Taller de requerimientos y necesidades</div>
+          <div class="card yellow">Matriz de priorización</div>
+          <div class="card yellow">Focus group</div>
+        </div>
+      </div>
+
+      <div class="pi-column">
+        <div class="stage-title yellow">Market Prevalidation</div>
+        <div class="pill">Se hace una prevalidación del mercado con los features a implementar.</div>
+        <div class="input-list">
+          <div class="card yellow">Entrevistas</div>
+          <div class="card yellow">Encuestas</div>
+          <div class="card yellow">Market Situation de acuerdo a las necesidades</div>
+        </div>
+      </div>
+
+      <div class="pi-column">
+        <div class="stage-title orange">Planning</div>
+        <div class="pill">Bajo los alcances ya definidos se termina de perfilar el producto, su arquitectura, navegación, se define estilo y necesidades gráficas, etc.</div>
+        <div class="input-list">
+          <div class="card teal">Inventario de contenido</div>
+          <div class="card teal">Arquitectura High Fidelity</div>
+          <div class="card teal">Sitemap High Fidelity</div>
+          <div class="card teal">Definición de lenguaje gráfico</div>
+          <div class="card yellow">Mapear dependencias existentes (Proveedores) y lógica del producto</div>
+          <div class="card yellow">Definición de alcances</div>
+          <div class="card lime">Deadlines</div>
+          <div class="card lime">Valoración expertos (Reutilización de componentes)</div>
+          <div class="card lime">Validar que equipo de desarrollo sea el adecuado para completar producto</div>
+          <div class="card teal">Storymapping</div>
+          <div class="card yellow">Roadmap</div>
+          <div class="card yellow">Value proposition canvas 2.0</div>
+        </div>
+      </div>
+
+      <div class="pi-column">
+        <div class="stage-title tealSoft">Producción</div>
+        <div class="pill">Son el conjunto de actividades en el que se empieza a plasmar el producto en pantallas de alta fidelidad para validar expectativas y entregar a desarrollo.</div>
+        <div class="input-list">
+          <div class="card teal">Flujos de pantallas</div>
+          <div class="card teal">Wireframes High fidelity - Mockups</div>
+          <div class="card teal">Prototipos</div>
+          <div class="card lime">Revisiones con equipo Developers.</div>
+          <div class="card teal">Sketches</div>
+          <div class="card teal">Componentes de design system</div>
+          <div class="card teal">User testing de acuerdo a la funcionalidad</div>
+          <div class="card yellow">User Stories</div>
+          <div class="card yellow">Anotaciones técnicas</div>
+        </div>
+      </div>
+
+      <div class="pi-column">
+        <div class="stage-title green">UX Testing</div>
+        <div class="pill">Todas aquellas actividades que permiten asegurar una buena experiencia y usabilidad del producto por medio de pruebas a usuarios.</div>
+        <div class="input-list">
+          <div class="card teal">Card sorting</div>
+          <div class="card teal">Tree testing</div>
+          <div class="card teal">Paper &amp; click prototipo</div>
+          <div class="card teal">Naming</div>
+          <div class="card teal">Usabilidad</div>
+          <div class="card teal">UXT</div>
+          <div class="card teal">Paper &amp; click prototipo</div>
+          <div class="card teal">A-B Testing</div>
+          <div class="card teal">Eye tracking</div>
+          <div class="card teal">Pruebas heurísticas</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="phase software-layout" aria-labelledby="software-title">
+      <aside>
+        <div class="result-box side-result">
+          <strong>Resultado</strong>
+          <div>El output final son los suministros necesarios para que el equipo de tecnología puedan producir un product backlog priorizado basado en el product roadmap.</div>
+        </div>
+        <div class="input-list">
+          <div class="card muted-card">Anotaciones técnicas</div>
+          <div class="card yellow">Documentación del proceso</div>
+          <div class="card muted-card">Flujos/prototipos</div>
+          <div class="card teal">Editables</div>
+          <div class="card yellow">Product Roadmap</div>
+          <div class="card lime">Technical Details for Development</div>
+          <div class="card lime">Tech Brief (Tech stack, considerations)</div>
+          <div class="card lime">Deadlines detallados</div>
+          <div class="card lime">Planeación de data inputs de acuerdo a objetivos del negocio</div>
+          <div class="card yellow">Validación de User Stories</div>
+          <div class="card teal">Listado y comportamientos de nuevos componentes en el DS</div>
+        </div>
+      </aside>
+
+      <div class="software-center">
+        <div id="software-title" class="title navy">Desarrollo de software</div>
+        <div class="description">
+          La fase de desarrollo de software inicia con un kickoff meeting entre los leads de Producto, UX y Tech. Es necesario que el equipo de tech haga signoff de que tiene los suministros necesarios para desarrollar los epics/user stories facilitados por los Product Owners, incluyendo flujos, wireframes y otros. Antes de empezar con los sprints de desarrollo se va a empezar con una revisión de planning. El objetivo es asegurar que todos los insumos se tienen y se posee claridad en los requerimientos para que el framework se ejecute correctamente.<br />
+          Es importante incluir a los equipos de BI y Data desde el inicio de esta etapa, según corresponda.<br />
+          Una vez que la revisión este concluida el equipo empezara con sus sprints de implementación siguiendo la metodología clásica de Scrum.
+        </div>
+        <div class="dev-stages">
+          <div class="dev-kickoff">
+            <div class="kickoff-circle">Kickoff</div>
+          </div>
+          <div>
+            <div class="dev-stage-title">Revisión Planning</div>
+            <div class="pill dev-pill">Revisión inicial es asegurarse que el equipo tenga las herramientas y los entendimientos necesarios para poder iniciar a desarrollar</div>
+            <div class="card lime">Establecer Stakeholders para revisión de sprints</div>
+          </div>
+          <div>
+            <div class="dev-stage-title">Sprints (n)</div>
+            <div class="pill dev-pill">Ejecución de sprints de desarrollo bajo la metodología Scrum y todos sus artefactos</div>
+            <div class="card lime">Sprint Review</div>
+            <div class="card lime">DEMO</div>
+          </div>
+          <div>
+            <div class="dev-stage-title">UAT</div>
+            <div class="pill dev-pill">User acceptance testing de stakeholders e interesados previo a cada release.</div>
+            <div class="card yellow">Establecimiento de prioridades UAT/Producto</div>
+            <div class="card yellow">Plan de acción Producto/Tech</div>
+            <div class="card lime">UAT</div>
+          </div>
+          <div>
+            <div class="dev-stage-title launch">Launch</div>
+            <div class="pill dev-pill">Deployment de la aplicación a los market places o release de nuevos features</div>
+          </div>
+        </div>
+
+        <div class="scrum-band" aria-label="Scrum framework visual">
+          <div class="scrum-box retro">Sprint<br />Retrospective</div>
+          <div>
+            <div class="scrum-box">Product<br />Backlog</div>
+          </div>
+          <div>
+            <div class="scrum-box">Sprint<br />Planning</div>
+          </div>
+          <div class="scrum-team">Daily Scrum<br />1 Scrum Team</div>
+          <div>
+            <div class="scrum-box">Sprint<br />Review</div>
+          </div>
+          <div>
+            <div class="scrum-box">Increment</div>
+          </div>
+        </div>
+      </div>
+
+      <aside>
+        <div class="result-box side-result">
+          <strong>Resultado</strong>
+          <div>El output final es un software release en los marketplaces</div>
+        </div>
+      </aside>
+    </section>
+
+    <section class="phase post" aria-labelledby="post-title">
+      <div id="post-title" class="title gray">Post Launch</div>
+      <div class="description">
+        Deben de haber revisiones por parte de QA en el ambiente de producción, QA hace Smoke para encontrar bugs y realizar los HotFix en caso de ser necesario.<br />
+        En conjunto con los PO se determinará si se procede el HotFix con prioridad o si bien se espera hasta el próximo lanzamiento.
+      </div>
+    </section>
+
+    <div class="footer-note">
+      Archivo visual derivado de las capturas del proceso. Para la explicación textual y diagramas Mermaid, ver docs/47-intervencion-arquitectura-en-procesos.md.
+    </div>
+  </main>
+</body>
+</html>
