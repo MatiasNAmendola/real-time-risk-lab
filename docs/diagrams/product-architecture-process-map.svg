@@ -1,315 +1,387 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="5885" height="1280" viewBox="0 0 5885 1280">
-<rect width="100%" height="100%" fill="#fff"/>
-<defs><marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L0,6 L9,3 z" fill="#999"/></marker></defs>
-<style>text{font-family:Inter,Arial,sans-serif}.t{font-weight:800;fill:#fff;font-size:20px}.s{font-weight:700;fill:#111;font-size:11px}.d{fill:#777;font-size:14px}.small{font-size:9px;font-weight:700}</style>
-<rect x="40" y="40" width="980" height="36" rx="0" fill="#5A8DEE" stroke="none" stroke-width="1"/>
-<text x="530.0" y="65.0" text-anchor="middle" font-size="20" fill="#FFFFFF" font-weight="700">Business Pre-validation</text>
-<rect x="40" y="95" width="980" height="90" rx="18" fill="#F0F0F0" stroke="none" stroke-width="1"/>
-<text x="530.0" y="125.0" text-anchor="middle" font-size="14" fill="#777777" font-weight="700">La medida de prevención de riesgos más importante es la validación del producto, lo que garantiza que exista una demanda real en el mercado antes del desarrollo y lanzamiento. Al final de este validation sprint se analizan los resultados obtenidos en las etapas y Producto, Tech y UX deciden si la idea pasa al Sprint de Implementación.</text>
-<rect x="1050" y="40" width="270" height="36" rx="0" fill="#A9B2EE" stroke="none" stroke-width="1"/>
-<text x="1185.0" y="65.0" text-anchor="middle" font-size="20" fill="#FFFFFF" font-weight="700">Resultado</text>
-<rect x="1050" y="76" width="270" height="350" rx="0" fill="#A9B2EE" stroke="none" stroke-width="1"/>
-<text x="1185.0" y="163.0" text-anchor="middle" font-size="18" fill="#FFFFFF" font-weight="700">Se determina la viabilidad del proyecto. Hay un panorama claro de valor, riesgos, usuarios y alcances.</text>
-<text x="1185.0" y="184.6" text-anchor="middle" font-size="18" fill="#FFFFFF" font-weight="700"></text>
-<text x="1185.0" y="206.2" text-anchor="middle" font-size="18" fill="#FFFFFF" font-weight="700">Se presentan resultados a stakeholders.</text>
-<text x="1195.0" y="364.0" text-anchor="middle" font-size="54" fill="#FFFFFF" font-weight="700">➜</text>
-<ellipse cx="85.0" cy="265.0" rx="45.0" ry="45.0" fill="none" stroke="#A9B2EE" stroke-width="3"/>
-<text x="85.0" y="266.0" text-anchor="middle" font-size="16" fill="#A9B2EE" font-weight="700">Kickoff</text>
-<rect x="32" y="330" width="112" height="120" rx="18" fill="#F0F0F0" stroke="none" stroke-width="1"/>
-<text x="88.0" y="360.0" text-anchor="middle" font-size="14" fill="#777777" font-weight="700">Planning para establecer metas, tareas y tiempos de la fase</text>
-<rect x="170" y="235" width="260" height="36" rx="0" fill="#E45442" stroke="none" stroke-width="1"/>
-<text x="300.0" y="260.0" text-anchor="middle" font-size="20" fill="#FFFFFF" font-weight="700">Comprehend</text>
-<rect x="470" y="235" width="420" height="36" rx="0" fill="#F6B75B" stroke="none" stroke-width="1"/>
-<text x="680.0" y="260.0" text-anchor="middle" font-size="20" fill="#FFFFFF" font-weight="700">Conceptualize</text>
-<rect x="920" y="235" width="250" height="36" rx="0" fill="#73D0C0" stroke="none" stroke-width="1"/>
-<text x="1045.0" y="260.0" text-anchor="middle" font-size="20" fill="#FFFFFF" font-weight="700">Prototype</text>
-<rect x="170" y="315" width="260" height="145" rx="18" fill="#F0F0F0" stroke="none" stroke-width="1"/>
-<text x="300.0" y="345.0" text-anchor="middle" font-size="14" fill="#777777" font-weight="700">Entendimiento de la idea/proyecto/negocio, la necesidad para el stakeholder, la competencia, implementaciones con ambiente existente, etc.</text>
-<rect x="470" y="315" width="420" height="145" rx="18" fill="#F0F0F0" stroke="none" stroke-width="1"/>
-<text x="680.0" y="345.0" text-anchor="middle" font-size="14" fill="#777777" font-weight="700">Se analizarán objetivos de stakeholders y, bajo hipótesis, necesidades e intereses de usuarios. Se perfila la idea del producto de manera superficial.</text>
-<rect x="920" y="315" width="250" height="145" rx="18" fill="#F0F0F0" stroke="none" stroke-width="1"/>
-<text x="1045.0" y="345.0" text-anchor="middle" font-size="14" fill="#777777" font-weight="700">Diseño de baja fidelidad de algunos flujos o pantallas del producto.</text>
-<rect x="170" y="510" width="260" height="36" rx="0" fill="#F5C845" stroke="none" stroke-width="1"/>
-<text x="300.0" y="524.0" text-anchor="middle" font-size="10" fill="#111111" font-weight="700">Benchmark de la competencia</text>
-<rect x="170" y="558" width="260" height="36" rx="0" fill="#F5C845" stroke="none" stroke-width="1"/>
-<text x="300.0" y="572.0" text-anchor="middle" font-size="10" fill="#111111" font-weight="700">Taller de requerimientos y necesidades</text>
-<rect x="170" y="606" width="260" height="36" rx="0" fill="#F5C845" stroke="none" stroke-width="1"/>
-<text x="300.0" y="620.0" text-anchor="middle" font-size="10" fill="#111111" font-weight="700">Verificar información con otros equipos Omni / Research / Comercial / Producto / UX</text>
-<rect x="170" y="654" width="260" height="36" rx="0" fill="#F5C845" stroke="none" stroke-width="1"/>
-<text x="300.0" y="668.0" text-anchor="middle" font-size="10" fill="#111111" font-weight="700">Business Model Canvas Lean</text>
-<rect x="470" y="510" width="250" height="36" rx="0" fill="#20C4C9" stroke="none" stroke-width="1"/>
-<text x="595.0" y="524.0" text-anchor="middle" font-size="10" fill="#111111" font-weight="700">User personas hipotéticas</text>
-<rect x="470" y="558" width="250" height="36" rx="0" fill="#F5C845" stroke="none" stroke-width="1"/>
-<text x="595.0" y="572.0" text-anchor="middle" font-size="10" fill="#111111" font-weight="700">High level process mapping</text>
-<rect x="470" y="606" width="250" height="36" rx="0" fill="#F5C845" stroke="none" stroke-width="1"/>
-<text x="595.0" y="620.0" text-anchor="middle" font-size="10" fill="#111111" font-weight="700">Value proposition Canvas</text>
-<rect x="470" y="654" width="250" height="36" rx="0" fill="#F5C845" stroke="none" stroke-width="1"/>
-<text x="595.0" y="668.0" text-anchor="middle" font-size="10" fill="#111111" font-weight="700">Risk &amp; assumptions mapping</text>
-<rect x="740" y="510" width="250" height="36" rx="0" fill="#F5C845" stroke="none" stroke-width="1"/>
-<text x="865.0" y="524.0" text-anchor="middle" font-size="10" fill="#111111" font-weight="700">Business Revenue Model</text>
-<rect x="740" y="558" width="250" height="36" rx="0" fill="#20C4C9" stroke="none" stroke-width="1"/>
-<text x="865.0" y="572.0" text-anchor="middle" font-size="10" fill="#111111" font-weight="700">Storymapping Low fidelity</text>
-<rect x="740" y="606" width="250" height="36" rx="0" fill="#D5EF43" stroke="none" stroke-width="1"/>
-<text x="865.0" y="620.0" text-anchor="middle" font-size="10" fill="#111111" font-weight="700">Insight Aplicaciones similares Tech</text>
-<rect x="920" y="510" width="250" height="36" rx="0" fill="#20C4C9" stroke="none" stroke-width="1"/>
-<text x="1045.0" y="524.0" text-anchor="middle" font-size="10" fill="#111111" font-weight="700">User flows</text>
-<rect x="920" y="558" width="250" height="36" rx="0" fill="#20C4C9" stroke="none" stroke-width="1"/>
-<text x="1045.0" y="572.0" text-anchor="middle" font-size="10" fill="#111111" font-weight="700">Wire flows</text>
-<rect x="920" y="606" width="250" height="36" rx="0" fill="#20C4C9" stroke="none" stroke-width="1"/>
-<text x="1045.0" y="620.0" text-anchor="middle" font-size="10" fill="#111111" font-weight="700">Sketches</text>
-<rect x="920" y="654" width="250" height="36" rx="0" fill="#20C4C9" stroke="none" stroke-width="1"/>
-<text x="1045.0" y="668.0" text-anchor="middle" font-size="10" fill="#111111" font-weight="700">Wireframes Low fidelity</text>
-<rect x="920" y="702" width="250" height="36" rx="0" fill="#20C4C9" stroke="none" stroke-width="1"/>
-<text x="1045.0" y="716.0" text-anchor="middle" font-size="10" fill="#111111" font-weight="700">Mockups PITCH</text>
-<rect x="920" y="750" width="250" height="36" rx="0" fill="#20C4C9" stroke="none" stroke-width="1"/>
-<text x="1045.0" y="764.0" text-anchor="middle" font-size="10" fill="#111111" font-weight="700">Prototipos</text>
-<rect x="1050" y="470" width="270" height="38" rx="0" fill="#A9B2EE" stroke="none" stroke-width="1"/>
-<text x="1185.0" y="484.0" text-anchor="middle" font-size="10" fill="#FFFFFF" font-weight="700">Validation Brief</text>
-<line x1="1185" y1="508" x2="1185" y2="560" stroke="#F5C845" stroke-width="5" marker-end="url(#arrow)"/>
-<rect x="1050" y="570" width="270" height="36" rx="0" fill="#F5C845" stroke="none" stroke-width="1"/>
-<text x="1185.0" y="583.0" text-anchor="middle" font-size="9" fill="#111111" font-weight="700">Product Brief: Context, Market Situation, revenue model &amp; Benchmark</text>
-<rect x="1050" y="618" width="270" height="36" rx="0" fill="#D5EF43" stroke="none" stroke-width="1"/>
-<text x="1185.0" y="631.0" text-anchor="middle" font-size="9" fill="#111111" font-weight="700">Análisis de riesgos desde la perspectiva de Tech.</text>
-<rect x="1050" y="666" width="270" height="36" rx="0" fill="#D5EF43" stroke="none" stroke-width="1"/>
-<text x="1185.0" y="679.0" text-anchor="middle" font-size="9" fill="#111111" font-weight="700">Tech Brief: Tech stack, considerations</text>
-<rect x="1050" y="714" width="270" height="36" rx="0" fill="#F5C845" stroke="none" stroke-width="1"/>
-<text x="1185.0" y="727.0" text-anchor="middle" font-size="9" fill="#111111" font-weight="700">Business model canvas V01</text>
-<rect x="1050" y="762" width="270" height="36" rx="0" fill="#F5C845" stroke="none" stroke-width="1"/>
-<text x="1185.0" y="775.0" text-anchor="middle" font-size="9" fill="#111111" font-weight="700">Value proposition canvas V01</text>
-<rect x="1050" y="810" width="270" height="36" rx="0" fill="#20C4C9" stroke="none" stroke-width="1"/>
-<text x="1185.0" y="823.0" text-anchor="middle" font-size="9" fill="#111111" font-weight="700">User Personas hipotéticas</text>
-<rect x="1050" y="858" width="270" height="36" rx="0" fill="#F5C845" stroke="none" stroke-width="1"/>
-<text x="1185.0" y="871.0" text-anchor="middle" font-size="9" fill="#111111" font-weight="700">Risk and Assumptions</text>
-<rect x="1050" y="906" width="270" height="36" rx="0" fill="#20C4C9" stroke="none" stroke-width="1"/>
-<text x="1185.0" y="919.0" text-anchor="middle" font-size="9" fill="#111111" font-weight="700">Prototypes</text>
-<rect x="1050" y="954" width="270" height="36" rx="0" fill="#F5C845" stroke="none" stroke-width="1"/>
-<text x="1185.0" y="967.0" text-anchor="middle" font-size="9" fill="#111111" font-weight="700">Validación de necesidades</text>
-<rect x="1050" y="1002" width="270" height="36" rx="0" fill="#F5C845" stroke="none" stroke-width="1"/>
-<text x="1185.0" y="1015.0" text-anchor="middle" font-size="9" fill="#111111" font-weight="700">Conclusion</text>
-<rect x="1375" y="40" width="1880" height="36" rx="0" fill="#5A8DEE" stroke="none" stroke-width="1"/>
-<text x="2315.0" y="65.0" text-anchor="middle" font-size="20" fill="#FFFFFF" font-weight="700">Product Implementation</text>
-<rect x="1445" y="200" width="1600" height="34" rx="0" fill="#8B21A8" stroke="none" stroke-width="1"/>
-<text x="2245.0" y="221.0" text-anchor="middle" font-size="16" fill="#FFFFFF" font-weight="700">Legal / Marketing / Data</text>
-<line x1="2885" y1="217" x2="3175" y2="217" stroke="#8B21A8" stroke-width="26" marker-end="url(#arrow)"/>
-<ellipse cx="1420.0" cy="265.0" rx="45.0" ry="45.0" fill="none" stroke="#A9B2EE" stroke-width="3"/>
-<text x="1420.0" y="266.0" text-anchor="middle" font-size="16" fill="#A9B2EE" font-weight="700">Kickoff</text>
-<rect x="1367" y="330" width="112" height="120" rx="18" fill="#F0F0F0" stroke="none" stroke-width="1"/>
-<text x="1423.0" y="360.0" text-anchor="middle" font-size="14" fill="#777777" font-weight="700">Planning para establecer metas, tareas y tiempos de la fase</text>
-<rect x="1505" y="235" width="260" height="36" rx="0" fill="#E45442" stroke="none" stroke-width="1"/>
-<text x="1635.0" y="260.0" text-anchor="middle" font-size="20" fill="#FFFFFF" font-weight="700">Understanding</text>
-<rect x="1505" y="315" width="260" height="145" rx="18" fill="#F0F0F0" stroke="none" stroke-width="1"/>
-<text x="1635.0" y="344.0" text-anchor="middle" font-size="13" fill="#777777" font-weight="700">Comprender los alcances del proyecto, objetivos, su contexto interno y externo en el mercado. En esta etapa el brief será clave.</text>
-<rect x="1505" y="510" width="260" height="36" rx="0" fill="#F5C845" stroke="none" stroke-width="1"/>
-<text x="1635.0" y="523.0" text-anchor="middle" font-size="9" fill="#111111" font-weight="700">Benchmark</text>
-<rect x="1505" y="558" width="260" height="36" rx="0" fill="#F5C845" stroke="none" stroke-width="1"/>
-<text x="1635.0" y="571.0" text-anchor="middle" font-size="9" fill="#111111" font-weight="700">Análisis de lo existente</text>
-<rect x="1505" y="606" width="260" height="36" rx="0" fill="#F5C845" stroke="none" stroke-width="1"/>
-<text x="1635.0" y="619.0" text-anchor="middle" font-size="9" fill="#111111" font-weight="700">Heurísticas</text>
-<rect x="1505" y="654" width="260" height="36" rx="0" fill="#F5C845" stroke="none" stroke-width="1"/>
-<text x="1635.0" y="667.0" text-anchor="middle" font-size="9" fill="#111111" font-weight="700">Lectura del brief</text>
-<rect x="1505" y="702" width="260" height="36" rx="0" fill="#F5C845" stroke="none" stroke-width="1"/>
-<text x="1635.0" y="715.0" text-anchor="middle" font-size="9" fill="#111111" font-weight="700">Análisis de data</text>
-<rect x="1505" y="750" width="260" height="36" rx="0" fill="#D5EF43" stroke="none" stroke-width="1"/>
-<text x="1635.0" y="763.0" text-anchor="middle" font-size="9" fill="#111111" font-weight="700">Análisis factibilidad para el prototipo POC</text>
-<rect x="1505" y="798" width="260" height="36" rx="0" fill="#D5EF43" stroke="none" stroke-width="1"/>
-<text x="1635.0" y="811.0" text-anchor="middle" font-size="9" fill="#111111" font-weight="700">Apoyar a que las reglas de negocio se cumplan</text>
-<rect x="1505" y="846" width="260" height="36" rx="0" fill="#D5EF43" stroke="none" stroke-width="1"/>
-<text x="1635.0" y="859.0" text-anchor="middle" font-size="9" fill="#111111" font-weight="700">Feedback en diseño de componentes de software</text>
-<rect x="1505" y="894" width="260" height="36" rx="0" fill="#F5C845" stroke="none" stroke-width="1"/>
-<text x="1635.0" y="907.0" text-anchor="middle" font-size="9" fill="#111111" font-weight="700">Presupuesto para cada fase**</text>
-<rect x="1785" y="235" width="260" height="36" rx="0" fill="#F1835D" stroke="none" stroke-width="1"/>
-<text x="1915.0" y="260.0" text-anchor="middle" font-size="20" fill="#FFFFFF" font-weight="700">Empathizing</text>
-<rect x="1785" y="315" width="260" height="145" rx="18" fill="#F0F0F0" stroke="none" stroke-width="1"/>
-<text x="1915.0" y="344.0" text-anchor="middle" font-size="13" fill="#777777" font-weight="700">Proceso en el que se profundiza las necesidades puntuales de los usuarios para abordarlas en el futuro diseño.</text>
-<rect x="1785" y="510" width="260" height="36" rx="0" fill="#20C4C9" stroke="none" stroke-width="1"/>
-<text x="1915.0" y="523.0" text-anchor="middle" font-size="9" fill="#111111" font-weight="700">User personas</text>
-<rect x="1785" y="558" width="260" height="36" rx="0" fill="#20C4C9" stroke="none" stroke-width="1"/>
-<text x="1915.0" y="571.0" text-anchor="middle" font-size="9" fill="#111111" font-weight="700">Customer Journey</text>
-<rect x="1785" y="606" width="260" height="36" rx="0" fill="#20C4C9" stroke="none" stroke-width="1"/>
-<text x="1915.0" y="619.0" text-anchor="middle" font-size="9" fill="#111111" font-weight="700">Blueprints</text>
-<rect x="1785" y="654" width="260" height="36" rx="0" fill="#20C4C9" stroke="none" stroke-width="1"/>
-<text x="1915.0" y="667.0" text-anchor="middle" font-size="9" fill="#111111" font-weight="700">Taller de requerimientos y necesidades</text>
-<rect x="1785" y="702" width="260" height="36" rx="0" fill="#20C4C9" stroke="none" stroke-width="1"/>
-<text x="1915.0" y="715.0" text-anchor="middle" font-size="9" fill="#111111" font-weight="700">Matriz de priorización</text>
-<rect x="1785" y="750" width="260" height="36" rx="0" fill="#20C4C9" stroke="none" stroke-width="1"/>
-<text x="1915.0" y="763.0" text-anchor="middle" font-size="9" fill="#111111" font-weight="700">Focus group</text>
-<rect x="2065" y="235" width="260" height="36" rx="0" fill="#F5C845" stroke="none" stroke-width="1"/>
-<text x="2195.0" y="260.0" text-anchor="middle" font-size="20" fill="#FFFFFF" font-weight="700">Market Prevalidation</text>
-<rect x="2065" y="315" width="260" height="145" rx="18" fill="#F0F0F0" stroke="none" stroke-width="1"/>
-<text x="2195.0" y="344.0" text-anchor="middle" font-size="13" fill="#777777" font-weight="700">Se hace una prevalidación del mercado con los features a implementar.</text>
-<rect x="2065" y="510" width="260" height="36" rx="0" fill="#F5C845" stroke="none" stroke-width="1"/>
-<text x="2195.0" y="523.0" text-anchor="middle" font-size="9" fill="#111111" font-weight="700">Entrevistas</text>
-<rect x="2065" y="558" width="260" height="36" rx="0" fill="#F5C845" stroke="none" stroke-width="1"/>
-<text x="2195.0" y="571.0" text-anchor="middle" font-size="9" fill="#111111" font-weight="700">Encuestas</text>
-<rect x="2065" y="606" width="260" height="36" rx="0" fill="#F5C845" stroke="none" stroke-width="1"/>
-<text x="2195.0" y="619.0" text-anchor="middle" font-size="9" fill="#111111" font-weight="700">Market Situation de acuerdo a las necesidades</text>
-<rect x="2345" y="235" width="260" height="36" rx="0" fill="#F6B75B" stroke="none" stroke-width="1"/>
-<text x="2475.0" y="260.0" text-anchor="middle" font-size="20" fill="#FFFFFF" font-weight="700">Planning</text>
-<rect x="2345" y="315" width="260" height="145" rx="18" fill="#F0F0F0" stroke="none" stroke-width="1"/>
-<text x="2475.0" y="344.0" text-anchor="middle" font-size="13" fill="#777777" font-weight="700">Bajo los alcances definidos se perfila producto, arquitectura, navegación, estilo y necesidades gráficas.</text>
-<rect x="2345" y="510" width="260" height="36" rx="0" fill="#20C4C9" stroke="none" stroke-width="1"/>
-<text x="2475.0" y="523.0" text-anchor="middle" font-size="9" fill="#111111" font-weight="700">Inventario de contenido</text>
-<rect x="2345" y="558" width="260" height="36" rx="0" fill="#20C4C9" stroke="none" stroke-width="1"/>
-<text x="2475.0" y="571.0" text-anchor="middle" font-size="9" fill="#111111" font-weight="700">Arquitectura High Fidelity</text>
-<rect x="2345" y="606" width="260" height="36" rx="0" fill="#20C4C9" stroke="none" stroke-width="1"/>
-<text x="2475.0" y="619.0" text-anchor="middle" font-size="9" fill="#111111" font-weight="700">Sitemap High Fidelity</text>
-<rect x="2345" y="654" width="260" height="36" rx="0" fill="#20C4C9" stroke="none" stroke-width="1"/>
-<text x="2475.0" y="667.0" text-anchor="middle" font-size="9" fill="#111111" font-weight="700">Definición de lenguaje gráfico</text>
-<rect x="2345" y="702" width="260" height="36" rx="0" fill="#20C4C9" stroke="none" stroke-width="1"/>
-<text x="2475.0" y="715.0" text-anchor="middle" font-size="9" fill="#111111" font-weight="700">Mapear dependencias existentes (Proveedores) y lógica del producto</text>
-<rect x="2345" y="750" width="260" height="36" rx="0" fill="#20C4C9" stroke="none" stroke-width="1"/>
-<text x="2475.0" y="763.0" text-anchor="middle" font-size="9" fill="#111111" font-weight="700">Definición de alcances</text>
-<rect x="2345" y="798" width="260" height="36" rx="0" fill="#D5EF43" stroke="none" stroke-width="1"/>
-<text x="2475.0" y="811.0" text-anchor="middle" font-size="9" fill="#111111" font-weight="700">Deadlines</text>
-<rect x="2345" y="846" width="260" height="36" rx="0" fill="#D5EF43" stroke="none" stroke-width="1"/>
-<text x="2475.0" y="859.0" text-anchor="middle" font-size="9" fill="#111111" font-weight="700">Valoración expertos (Reutilización de componentes)</text>
-<rect x="2345" y="894" width="260" height="36" rx="0" fill="#D5EF43" stroke="none" stroke-width="1"/>
-<text x="2475.0" y="907.0" text-anchor="middle" font-size="9" fill="#111111" font-weight="700">Validar que equipo de desarrollo sea adecuado</text>
-<rect x="2345" y="942" width="260" height="36" rx="0" fill="#20C4C9" stroke="none" stroke-width="1"/>
-<text x="2475.0" y="955.0" text-anchor="middle" font-size="9" fill="#111111" font-weight="700">Storymapping</text>
-<rect x="2345" y="990" width="260" height="36" rx="0" fill="#F5C845" stroke="none" stroke-width="1"/>
-<text x="2475.0" y="1003.0" text-anchor="middle" font-size="9" fill="#111111" font-weight="700">Roadmap</text>
-<rect x="2345" y="1038" width="260" height="36" rx="0" fill="#F5C845" stroke="none" stroke-width="1"/>
-<text x="2475.0" y="1051.0" text-anchor="middle" font-size="9" fill="#111111" font-weight="700">Value proposition canvas 2.0</text>
-<rect x="2625" y="235" width="260" height="36" rx="0" fill="#73D0C0" stroke="none" stroke-width="1"/>
-<text x="2755.0" y="260.0" text-anchor="middle" font-size="20" fill="#FFFFFF" font-weight="700">Producción</text>
-<rect x="2625" y="315" width="260" height="145" rx="18" fill="#F0F0F0" stroke="none" stroke-width="1"/>
-<text x="2755.0" y="344.0" text-anchor="middle" font-size="13" fill="#777777" font-weight="700">Actividades donde se plasma el producto en pantallas de alta fidelidad para validar expectativas y entregar a desarrollo.</text>
-<rect x="2625" y="510" width="260" height="36" rx="0" fill="#20C4C9" stroke="none" stroke-width="1"/>
-<text x="2755.0" y="523.0" text-anchor="middle" font-size="9" fill="#111111" font-weight="700">Flujos de pantallas</text>
-<rect x="2625" y="558" width="260" height="36" rx="0" fill="#20C4C9" stroke="none" stroke-width="1"/>
-<text x="2755.0" y="571.0" text-anchor="middle" font-size="9" fill="#111111" font-weight="700">Wireframes High fidelity - Mockups</text>
-<rect x="2625" y="606" width="260" height="36" rx="0" fill="#20C4C9" stroke="none" stroke-width="1"/>
-<text x="2755.0" y="619.0" text-anchor="middle" font-size="9" fill="#111111" font-weight="700">Prototipos</text>
-<rect x="2625" y="654" width="260" height="36" rx="0" fill="#D5EF43" stroke="none" stroke-width="1"/>
-<text x="2755.0" y="667.0" text-anchor="middle" font-size="9" fill="#111111" font-weight="700">Revisiones con equipo Developers</text>
-<rect x="2625" y="702" width="260" height="36" rx="0" fill="#20C4C9" stroke="none" stroke-width="1"/>
-<text x="2755.0" y="715.0" text-anchor="middle" font-size="9" fill="#111111" font-weight="700">Sketches</text>
-<rect x="2625" y="750" width="260" height="36" rx="0" fill="#20C4C9" stroke="none" stroke-width="1"/>
-<text x="2755.0" y="763.0" text-anchor="middle" font-size="9" fill="#111111" font-weight="700">Componentes de design system</text>
-<rect x="2625" y="798" width="260" height="36" rx="0" fill="#20C4C9" stroke="none" stroke-width="1"/>
-<text x="2755.0" y="811.0" text-anchor="middle" font-size="9" fill="#111111" font-weight="700">User testing de acuerdo a la funcionalidad</text>
-<rect x="2625" y="846" width="260" height="36" rx="0" fill="#F5C845" stroke="none" stroke-width="1"/>
-<text x="2755.0" y="859.0" text-anchor="middle" font-size="9" fill="#111111" font-weight="700">User Stories</text>
-<rect x="2625" y="894" width="260" height="36" rx="0" fill="#F5C845" stroke="none" stroke-width="1"/>
-<text x="2755.0" y="907.0" text-anchor="middle" font-size="9" fill="#111111" font-weight="700">Anotaciones técnicas</text>
-<rect x="2905" y="235" width="260" height="36" rx="0" fill="#B7C96D" stroke="none" stroke-width="1"/>
-<text x="3035.0" y="260.0" text-anchor="middle" font-size="20" fill="#FFFFFF" font-weight="700">UX Testing</text>
-<rect x="2905" y="315" width="260" height="145" rx="18" fill="#F0F0F0" stroke="none" stroke-width="1"/>
-<text x="3035.0" y="344.0" text-anchor="middle" font-size="13" fill="#777777" font-weight="700">Actividades que permiten asegurar una buena experiencia y usabilidad por medio de pruebas a usuarios.</text>
-<rect x="2905" y="510" width="260" height="36" rx="0" fill="#20C4C9" stroke="none" stroke-width="1"/>
-<text x="3035.0" y="523.0" text-anchor="middle" font-size="9" fill="#111111" font-weight="700">Card sorting</text>
-<rect x="2905" y="558" width="260" height="36" rx="0" fill="#20C4C9" stroke="none" stroke-width="1"/>
-<text x="3035.0" y="571.0" text-anchor="middle" font-size="9" fill="#111111" font-weight="700">Tree testing</text>
-<rect x="2905" y="606" width="260" height="36" rx="0" fill="#20C4C9" stroke="none" stroke-width="1"/>
-<text x="3035.0" y="619.0" text-anchor="middle" font-size="9" fill="#111111" font-weight="700">Paper &amp; click prototipo</text>
-<rect x="2905" y="654" width="260" height="36" rx="0" fill="#20C4C9" stroke="none" stroke-width="1"/>
-<text x="3035.0" y="667.0" text-anchor="middle" font-size="9" fill="#111111" font-weight="700">Naming</text>
-<rect x="2905" y="702" width="260" height="36" rx="0" fill="#20C4C9" stroke="none" stroke-width="1"/>
-<text x="3035.0" y="715.0" text-anchor="middle" font-size="9" fill="#111111" font-weight="700">Usabilidad</text>
-<rect x="2905" y="750" width="260" height="36" rx="0" fill="#20C4C9" stroke="none" stroke-width="1"/>
-<text x="3035.0" y="763.0" text-anchor="middle" font-size="9" fill="#111111" font-weight="700">UXT</text>
-<rect x="2905" y="798" width="260" height="36" rx="0" fill="#20C4C9" stroke="none" stroke-width="1"/>
-<text x="3035.0" y="811.0" text-anchor="middle" font-size="9" fill="#111111" font-weight="700">Paper &amp; click prototipo</text>
-<rect x="2905" y="846" width="260" height="36" rx="0" fill="#F5C845" stroke="none" stroke-width="1"/>
-<text x="3035.0" y="859.0" text-anchor="middle" font-size="9" fill="#111111" font-weight="700">A-B Testing</text>
-<rect x="2905" y="894" width="260" height="36" rx="0" fill="#F5C845" stroke="none" stroke-width="1"/>
-<text x="3035.0" y="907.0" text-anchor="middle" font-size="9" fill="#111111" font-weight="700">Eye tracking</text>
-<rect x="2905" y="942" width="260" height="36" rx="0" fill="#20C4C9" stroke="none" stroke-width="1"/>
-<text x="3035.0" y="955.0" text-anchor="middle" font-size="9" fill="#111111" font-weight="700">Pruebas heurísticas</text>
-<rect x="3310" y="40" width="300" height="390" rx="0" fill="#A9B2EE" stroke="none" stroke-width="1"/>
-<text x="3460.0" y="202.0" text-anchor="middle" font-size="17" fill="#FFFFFF" font-weight="700">Resultado</text>
-<text x="3460.0" y="222.4" text-anchor="middle" font-size="17" fill="#FFFFFF" font-weight="700"></text>
-<text x="3460.0" y="242.8" text-anchor="middle" font-size="17" fill="#FFFFFF" font-weight="700">El output final son los suministros necesarios para que tecnología produzca un product backlog priorizado basado en el roadmap.</text>
-<rect x="3310" y="470" width="300" height="36" rx="0" fill="#FFFFFF" stroke="none" stroke-width="1"/>
-<text x="3460.0" y="483.0" text-anchor="middle" font-size="9" fill="#111111" font-weight="700">Anotaciones técnicas</text>
-<rect x="3310" y="518" width="300" height="36" rx="0" fill="#F5C845" stroke="none" stroke-width="1"/>
-<text x="3460.0" y="531.0" text-anchor="middle" font-size="9" fill="#111111" font-weight="700">Documentación del proceso</text>
-<rect x="3310" y="566" width="300" height="36" rx="0" fill="#FFFFFF" stroke="none" stroke-width="1"/>
-<text x="3460.0" y="579.0" text-anchor="middle" font-size="9" fill="#111111" font-weight="700">Flujos/prototipos</text>
-<rect x="3310" y="614" width="300" height="36" rx="0" fill="#20C4C9" stroke="none" stroke-width="1"/>
-<text x="3460.0" y="627.0" text-anchor="middle" font-size="9" fill="#111111" font-weight="700">Editables</text>
-<rect x="3310" y="662" width="300" height="36" rx="0" fill="#F5C845" stroke="none" stroke-width="1"/>
-<text x="3460.0" y="675.0" text-anchor="middle" font-size="9" fill="#111111" font-weight="700">Product Roadmap</text>
-<rect x="3310" y="710" width="300" height="36" rx="0" fill="#D5EF43" stroke="none" stroke-width="1"/>
-<text x="3460.0" y="723.0" text-anchor="middle" font-size="9" fill="#111111" font-weight="700">Technical Details for Development</text>
-<rect x="3310" y="758" width="300" height="36" rx="0" fill="#D5EF43" stroke="none" stroke-width="1"/>
-<text x="3460.0" y="771.0" text-anchor="middle" font-size="9" fill="#111111" font-weight="700">Tech Brief (Tech stack, considerations)</text>
-<rect x="3310" y="806" width="300" height="36" rx="0" fill="#D5EF43" stroke="none" stroke-width="1"/>
-<text x="3460.0" y="819.0" text-anchor="middle" font-size="9" fill="#111111" font-weight="700">Deadlines detallados</text>
-<rect x="3310" y="854" width="300" height="36" rx="0" fill="#D5EF43" stroke="none" stroke-width="1"/>
-<text x="3460.0" y="867.0" text-anchor="middle" font-size="9" fill="#111111" font-weight="700">Planeación de data inputs según objetivos del negocio</text>
-<rect x="3310" y="902" width="300" height="36" rx="0" fill="#F5C845" stroke="none" stroke-width="1"/>
-<text x="3460.0" y="915.0" text-anchor="middle" font-size="9" fill="#111111" font-weight="700">Validación de User Stories</text>
-<rect x="3310" y="950" width="300" height="36" rx="0" fill="#20C4C9" stroke="none" stroke-width="1"/>
-<text x="3460.0" y="963.0" text-anchor="middle" font-size="9" fill="#111111" font-weight="700">Listado y comportamiento de nuevos componentes en DS</text>
-<rect x="3650" y="40" width="980" height="36" rx="0" fill="#111E7B" stroke="none" stroke-width="1"/>
-<text x="4140.0" y="65.0" text-anchor="middle" font-size="20" fill="#FFFFFF" font-weight="700">Desarrollo de software</text>
-<rect x="3650" y="95" width="980" height="120" rx="18" fill="#F0F0F0" stroke="none" stroke-width="1"/>
-<text x="4140.0" y="124.0" text-anchor="middle" font-size="13" fill="#777777" font-weight="700">La fase inicia con kickoff entre leads de Producto, UX y Tech. Tech hace signoff de insumos para desarrollar epics/user stories, incluyendo flujos, wireframes y otros. Antes de sprints se revisa planning para asegurar claridad. Incluir BI y Data desde el inicio según corresponda.</text>
-<ellipse cx="3695.0" cy="270.0" rx="45.0" ry="45.0" fill="none" stroke="#A9B2EE" stroke-width="3"/>
-<text x="3695.0" y="271.0" text-anchor="middle" font-size="16" fill="#A9B2EE" font-weight="700">Kickoff</text>
-<rect x="3790" y="230" width="190" height="36" rx="0" fill="#111E7B" stroke="none" stroke-width="1"/>
-<text x="3885.0" y="255.0" text-anchor="middle" font-size="20" fill="#FFFFFF" font-weight="700">Revisión Planning</text>
-<rect x="3790" y="290" width="190" height="150" rx="18" fill="#F0F0F0" stroke="none" stroke-width="1"/>
-<text x="3885.0" y="319.0" text-anchor="middle" font-size="13" fill="#777777" font-weight="700">Revisión inicial: asegurar herramientas y entendimientos necesarios para iniciar desarrollo</text>
-<rect x="3790" y="460" width="190" height="36" rx="0" fill="#D5EF43" stroke="none" stroke-width="1"/>
-<text x="3885.0" y="472.0" text-anchor="middle" font-size="8" fill="#111111" font-weight="700">Establecer Stakeholders para revisión de sprints</text>
-<rect x="3995" y="230" width="190" height="36" rx="0" fill="#111E7B" stroke="none" stroke-width="1"/>
-<text x="4090.0" y="255.0" text-anchor="middle" font-size="20" fill="#FFFFFF" font-weight="700">Sprints (n)</text>
-<rect x="3995" y="290" width="190" height="150" rx="18" fill="#F0F0F0" stroke="none" stroke-width="1"/>
-<text x="4090.0" y="319.0" text-anchor="middle" font-size="13" fill="#777777" font-weight="700">Ejecución de sprints bajo metodología Scrum y artefactos</text>
-<rect x="3995" y="460" width="190" height="36" rx="0" fill="#D5EF43" stroke="none" stroke-width="1"/>
-<text x="4090.0" y="472.0" text-anchor="middle" font-size="8" fill="#111111" font-weight="700">Sprint Review</text>
-<rect x="3995" y="508" width="190" height="36" rx="0" fill="#F5C845" stroke="none" stroke-width="1"/>
-<text x="4090.0" y="520.0" text-anchor="middle" font-size="8" fill="#111111" font-weight="700">DEMO</text>
-<rect x="4200" y="230" width="190" height="36" rx="0" fill="#111E7B" stroke="none" stroke-width="1"/>
-<text x="4295.0" y="255.0" text-anchor="middle" font-size="20" fill="#FFFFFF" font-weight="700">UAT</text>
-<rect x="4200" y="290" width="190" height="150" rx="18" fill="#F0F0F0" stroke="none" stroke-width="1"/>
-<text x="4295.0" y="319.0" text-anchor="middle" font-size="13" fill="#777777" font-weight="700">User acceptance testing de stakeholders previo a cada release.</text>
-<rect x="4200" y="460" width="190" height="36" rx="0" fill="#D5EF43" stroke="none" stroke-width="1"/>
-<text x="4295.0" y="472.0" text-anchor="middle" font-size="8" fill="#111111" font-weight="700">Establecimiento de prioridades UAT/Producto</text>
-<rect x="4200" y="508" width="190" height="36" rx="0" fill="#F5C845" stroke="none" stroke-width="1"/>
-<text x="4295.0" y="520.0" text-anchor="middle" font-size="8" fill="#111111" font-weight="700">Plan de acción Producto/Tech</text>
-<rect x="4200" y="556" width="190" height="36" rx="0" fill="#D5EF43" stroke="none" stroke-width="1"/>
-<text x="4295.0" y="568.0" text-anchor="middle" font-size="8" fill="#111111" font-weight="700">UAT</text>
-<rect x="4405" y="230" width="190" height="36" rx="0" fill="#6171B3" stroke="none" stroke-width="1"/>
-<text x="4500.0" y="255.0" text-anchor="middle" font-size="20" fill="#FFFFFF" font-weight="700">Launch</text>
-<rect x="4405" y="290" width="190" height="150" rx="18" fill="#F0F0F0" stroke="none" stroke-width="1"/>
-<text x="4500.0" y="319.0" text-anchor="middle" font-size="13" fill="#777777" font-weight="700">Deployment de la aplicación a marketplaces o release de nuevos features</text>
-<rect x="3760" y="720" width="110" height="80" rx="18" fill="#2F9DB6" stroke="none" stroke-width="1"/>
-<text x="3815.0" y="735.0" text-anchor="middle" font-size="11" fill="#FFFFFF" font-weight="700">Product</text>
-<text x="3815.0" y="748.2" text-anchor="middle" font-size="11" fill="#FFFFFF" font-weight="700">Backlog</text>
-<line x1="3875" y1="760" x2="3950" y2="760" stroke="#9ECBD5" stroke-width="4" marker-end="url(#arrow)"/>
-<rect x="3950" y="730" width="100" height="60" rx="18" fill="#2F9DB6" stroke="none" stroke-width="1"/>
-<text x="4000.0" y="744.0" text-anchor="middle" font-size="10" fill="#FFFFFF" font-weight="700">Sprint</text>
-<text x="4000.0" y="756.0" text-anchor="middle" font-size="10" fill="#FFFFFF" font-weight="700">Planning</text>
-<line x1="4055" y1="760" x2="4130" y2="760" stroke="#9ECBD5" stroke-width="4" marker-end="url(#arrow)"/>
-<rect x="4130" y="720" width="100" height="80" rx="18" fill="#2F9DB6" stroke="none" stroke-width="1"/>
-<text x="4180.0" y="734.0" text-anchor="middle" font-size="10" fill="#FFFFFF" font-weight="700">Sprint</text>
-<text x="4180.0" y="746.0" text-anchor="middle" font-size="10" fill="#FFFFFF" font-weight="700">Backlog</text>
-<line x1="4235" y1="760" x2="4300" y2="760" stroke="#9ECBD5" stroke-width="4" marker-end="url(#arrow)"/>
-<ellipse cx="4410.0" cy="795.0" rx="110.0" ry="110.0" fill="none" stroke="#5AB1C4" stroke-width="20"/>
-<text x="4410.0" y="770.0" text-anchor="middle" font-size="15" fill="#397F8E" font-weight="700">Daily Scrum</text>
-<text x="4410.0" y="788.0" text-anchor="middle" font-size="15" fill="#397F8E" font-weight="700">Scrum Team</text>
-<line x1="4525" y1="760" x2="4600" y2="760" stroke="#9ECBD5" stroke-width="4" marker-end="url(#arrow)"/>
-<rect x="4600" y="730" width="100" height="60" rx="18" fill="#2F9DB6" stroke="none" stroke-width="1"/>
-<text x="4650.0" y="744.0" text-anchor="middle" font-size="10" fill="#FFFFFF" font-weight="700">Sprint</text>
-<text x="4650.0" y="756.0" text-anchor="middle" font-size="10" fill="#FFFFFF" font-weight="700">Review</text>
-<line x1="4705" y1="760" x2="4775" y2="760" stroke="#9ECBD5" stroke-width="4" marker-end="url(#arrow)"/>
-<rect x="4775" y="725" width="90" height="70" rx="18" fill="#2F9DB6" stroke="none" stroke-width="1"/>
-<text x="4820.0" y="739.0" text-anchor="middle" font-size="10" fill="#FFFFFF" font-weight="700">Increment</text>
-<rect x="4270" y="600" width="120" height="60" rx="18" fill="#2F9DB6" stroke="none" stroke-width="1"/>
-<text x="4330.0" y="614.0" text-anchor="middle" font-size="10" fill="#FFFFFF" font-weight="700">Sprint</text>
-<text x="4330.0" y="626.0" text-anchor="middle" font-size="10" fill="#FFFFFF" font-weight="700">Retrospective</text>
-<rect x="4710" y="40" width="300" height="390" rx="0" fill="#A9B2EE" stroke="none" stroke-width="1"/>
-<text x="4860.0" y="202.0" text-anchor="middle" font-size="17" fill="#FFFFFF" font-weight="700">Resultado</text>
-<text x="4860.0" y="222.4" text-anchor="middle" font-size="17" fill="#FFFFFF" font-weight="700"></text>
-<text x="4860.0" y="242.8" text-anchor="middle" font-size="17" fill="#FFFFFF" font-weight="700">El output final es un software release en los marketplaces</text>
-<rect x="5065" y="40" width="760" height="36" rx="0" fill="#8D8D8D" stroke="none" stroke-width="1"/>
-<text x="5445.0" y="65.0" text-anchor="middle" font-size="20" fill="#FFFFFF" font-weight="700">Post Launch</text>
-<rect x="5065" y="95" width="760" height="150" rx="18" fill="#F0F0F0" stroke="none" stroke-width="1"/>
-<text x="5445.0" y="129.0" text-anchor="middle" font-size="18" fill="#777777" font-weight="700">Deben haber revisiones por parte de QA en producción. QA hace Smoke para encontrar bugs y realizar HotFix si es necesario. En conjunto con PO se determina si procede HotFix con prioridad o si se espera hasta el próximo lanzamiento.</text>
-<rect x="40" y="1180" width="5785" height="54" rx="18" fill="#E8F7EF" stroke="#3AA66A" stroke-width="1"/>
-<text x="2932.5" y="1210.0" text-anchor="middle" font-size="18" fill="#216B43" font-weight="700">Intervención transversal de arquitectura: factibilidad, riesgos, Tech Brief, dependencias, datos, contratos, NFR, readiness, rollback, smoke y hotfix.</text>
+<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 5873 1274" role="img" aria-label="Mapa visual de proceso producto arquitectura">
+<defs>
+<marker id="arrowhead" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L0,6 L9,3 z" fill="context-stroke"/></marker>
+<filter id="shadow" x="-10%" y="-10%" width="120%" height="120%"><feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#000" flood-opacity="0.08"/></filter>
+</defs>
+<rect width="100%" height="100%" fill="#ffffff"/>
+<style><![CDATA[text{font-family:Inter,Arial,sans-serif;dominant-baseline:middle}.label{font-weight:700}.small{font-weight:700}.phase-title{font-weight:800}.muted{fill:#777}]]></style>
+<rect x="48.0" y="40.0" width="980.0" height="36.0" rx="0" fill="#5A8DEE" stroke="none" stroke-width="1"/>
+<rect x="48.0" y="95.0" width="980.0" height="90.0" rx="20" fill="#F0F0F0" stroke="none" stroke-width="1" filter="url(#shadow)"/>
+<rect x="1058.0" y="40.0" width="270.0" height="36.0" rx="0" fill="#A9B2EE" stroke="none" stroke-width="1"/>
+<rect x="1058.0" y="76.0" width="270.0" height="350.0" rx="0" fill="#A9B2EE" stroke="none" stroke-width="1"/>
+<ellipse cx="93.0" cy="265.0" rx="45.0" ry="45.0" fill="none" stroke="#A9B2EE" stroke-width="3"/>
+<rect x="40.0" y="330.0" width="112.0" height="120.0" rx="20" fill="#F0F0F0" stroke="none" stroke-width="1"/>
+<rect x="178.0" y="235.0" width="260.0" height="36.0" rx="0" fill="#E45442" stroke="none" stroke-width="1"/>
+<rect x="478.0" y="235.0" width="420.0" height="36.0" rx="0" fill="#F6B75B" stroke="none" stroke-width="1"/>
+<rect x="928.0" y="235.0" width="250.0" height="36.0" rx="0" fill="#73D0C0" stroke="none" stroke-width="1"/>
+<rect x="178.0" y="315.0" width="260.0" height="145.0" rx="20" fill="#F0F0F0" stroke="none" stroke-width="1"/>
+<rect x="478.0" y="315.0" width="420.0" height="145.0" rx="20" fill="#F0F0F0" stroke="none" stroke-width="1"/>
+<rect x="928.0" y="315.0" width="250.0" height="145.0" rx="20" fill="#F0F0F0" stroke="none" stroke-width="1"/>
+<rect x="178.0" y="510.0" width="260.0" height="36.0" rx="0" fill="#F5C845" stroke="none" stroke-width="1"/>
+<rect x="178.0" y="558.0" width="260.0" height="36.0" rx="0" fill="#F5C845" stroke="none" stroke-width="1"/>
+<rect x="178.0" y="606.0" width="260.0" height="36.0" rx="0" fill="#F5C845" stroke="none" stroke-width="1"/>
+<rect x="178.0" y="654.0" width="260.0" height="36.0" rx="0" fill="#F5C845" stroke="none" stroke-width="1"/>
+<rect x="478.0" y="510.0" width="250.0" height="36.0" rx="0" fill="#20C4C9" stroke="none" stroke-width="1"/>
+<rect x="478.0" y="558.0" width="250.0" height="36.0" rx="0" fill="#F5C845" stroke="none" stroke-width="1"/>
+<rect x="478.0" y="606.0" width="250.0" height="36.0" rx="0" fill="#F5C845" stroke="none" stroke-width="1"/>
+<rect x="478.0" y="654.0" width="250.0" height="36.0" rx="0" fill="#F5C845" stroke="none" stroke-width="1"/>
+<rect x="748.0" y="510.0" width="250.0" height="36.0" rx="0" fill="#F5C845" stroke="none" stroke-width="1"/>
+<rect x="748.0" y="558.0" width="250.0" height="36.0" rx="0" fill="#20C4C9" stroke="none" stroke-width="1"/>
+<rect x="748.0" y="606.0" width="250.0" height="36.0" rx="0" fill="#D5EF43" stroke="none" stroke-width="1"/>
+<rect x="928.0" y="510.0" width="250.0" height="36.0" rx="0" fill="#20C4C9" stroke="none" stroke-width="1"/>
+<rect x="928.0" y="558.0" width="250.0" height="36.0" rx="0" fill="#20C4C9" stroke="none" stroke-width="1"/>
+<rect x="928.0" y="606.0" width="250.0" height="36.0" rx="0" fill="#20C4C9" stroke="none" stroke-width="1"/>
+<rect x="928.0" y="654.0" width="250.0" height="36.0" rx="0" fill="#20C4C9" stroke="none" stroke-width="1"/>
+<rect x="928.0" y="702.0" width="250.0" height="36.0" rx="0" fill="#20C4C9" stroke="none" stroke-width="1"/>
+<rect x="928.0" y="750.0" width="250.0" height="36.0" rx="0" fill="#20C4C9" stroke="none" stroke-width="1"/>
+<rect x="1058.0" y="470.0" width="270.0" height="38.0" rx="0" fill="#A9B2EE" stroke="none" stroke-width="1"/>
+<rect x="1058.0" y="570.0" width="270.0" height="36.0" rx="0" fill="#F5C845" stroke="none" stroke-width="1"/>
+<rect x="1058.0" y="618.0" width="270.0" height="36.0" rx="0" fill="#D5EF43" stroke="none" stroke-width="1"/>
+<rect x="1058.0" y="666.0" width="270.0" height="36.0" rx="0" fill="#D5EF43" stroke="none" stroke-width="1"/>
+<rect x="1058.0" y="714.0" width="270.0" height="36.0" rx="0" fill="#F5C845" stroke="none" stroke-width="1"/>
+<rect x="1058.0" y="762.0" width="270.0" height="36.0" rx="0" fill="#F5C845" stroke="none" stroke-width="1"/>
+<rect x="1058.0" y="810.0" width="270.0" height="36.0" rx="0" fill="#20C4C9" stroke="none" stroke-width="1"/>
+<rect x="1058.0" y="858.0" width="270.0" height="36.0" rx="0" fill="#F5C845" stroke="none" stroke-width="1"/>
+<rect x="1058.0" y="906.0" width="270.0" height="36.0" rx="0" fill="#20C4C9" stroke="none" stroke-width="1"/>
+<rect x="1058.0" y="954.0" width="270.0" height="36.0" rx="0" fill="#F5C845" stroke="none" stroke-width="1"/>
+<rect x="1058.0" y="1002.0" width="270.0" height="36.0" rx="0" fill="#F5C845" stroke="none" stroke-width="1"/>
+<rect x="1383.0" y="40.0" width="1880.0" height="36.0" rx="0" fill="#5A8DEE" stroke="none" stroke-width="1"/>
+<rect x="1453.0" y="200.0" width="1600.0" height="34.0" rx="0" fill="#8B21A8" stroke="none" stroke-width="1"/>
+<ellipse cx="1428.0" cy="265.0" rx="45.0" ry="45.0" fill="none" stroke="#A9B2EE" stroke-width="3"/>
+<rect x="1375.0" y="330.0" width="112.0" height="120.0" rx="20" fill="#F0F0F0" stroke="none" stroke-width="1"/>
+<rect x="1513.0" y="235.0" width="260.0" height="36.0" rx="0" fill="#E45442" stroke="none" stroke-width="1"/>
+<rect x="1513.0" y="315.0" width="260.0" height="145.0" rx="20" fill="#F0F0F0" stroke="none" stroke-width="1"/>
+<rect x="1513.0" y="510.0" width="260.0" height="36.0" rx="0" fill="#F5C845" stroke="none" stroke-width="1"/>
+<rect x="1513.0" y="558.0" width="260.0" height="36.0" rx="0" fill="#F5C845" stroke="none" stroke-width="1"/>
+<rect x="1513.0" y="606.0" width="260.0" height="36.0" rx="0" fill="#F5C845" stroke="none" stroke-width="1"/>
+<rect x="1513.0" y="654.0" width="260.0" height="36.0" rx="0" fill="#F5C845" stroke="none" stroke-width="1"/>
+<rect x="1513.0" y="702.0" width="260.0" height="36.0" rx="0" fill="#F5C845" stroke="none" stroke-width="1"/>
+<rect x="1513.0" y="750.0" width="260.0" height="36.0" rx="0" fill="#D5EF43" stroke="none" stroke-width="1"/>
+<rect x="1513.0" y="798.0" width="260.0" height="36.0" rx="0" fill="#D5EF43" stroke="none" stroke-width="1"/>
+<rect x="1513.0" y="846.0" width="260.0" height="36.0" rx="0" fill="#D5EF43" stroke="none" stroke-width="1"/>
+<rect x="1513.0" y="894.0" width="260.0" height="36.0" rx="0" fill="#F5C845" stroke="none" stroke-width="1"/>
+<rect x="1793.0" y="235.0" width="260.0" height="36.0" rx="0" fill="#F1835D" stroke="none" stroke-width="1"/>
+<rect x="1793.0" y="315.0" width="260.0" height="145.0" rx="20" fill="#F0F0F0" stroke="none" stroke-width="1"/>
+<rect x="1793.0" y="510.0" width="260.0" height="36.0" rx="0" fill="#20C4C9" stroke="none" stroke-width="1"/>
+<rect x="1793.0" y="558.0" width="260.0" height="36.0" rx="0" fill="#20C4C9" stroke="none" stroke-width="1"/>
+<rect x="1793.0" y="606.0" width="260.0" height="36.0" rx="0" fill="#20C4C9" stroke="none" stroke-width="1"/>
+<rect x="1793.0" y="654.0" width="260.0" height="36.0" rx="0" fill="#20C4C9" stroke="none" stroke-width="1"/>
+<rect x="1793.0" y="702.0" width="260.0" height="36.0" rx="0" fill="#20C4C9" stroke="none" stroke-width="1"/>
+<rect x="1793.0" y="750.0" width="260.0" height="36.0" rx="0" fill="#20C4C9" stroke="none" stroke-width="1"/>
+<rect x="2073.0" y="235.0" width="260.0" height="36.0" rx="0" fill="#F5C845" stroke="none" stroke-width="1"/>
+<rect x="2073.0" y="315.0" width="260.0" height="145.0" rx="20" fill="#F0F0F0" stroke="none" stroke-width="1"/>
+<rect x="2073.0" y="510.0" width="260.0" height="36.0" rx="0" fill="#F5C845" stroke="none" stroke-width="1"/>
+<rect x="2073.0" y="558.0" width="260.0" height="36.0" rx="0" fill="#F5C845" stroke="none" stroke-width="1"/>
+<rect x="2073.0" y="606.0" width="260.0" height="36.0" rx="0" fill="#F5C845" stroke="none" stroke-width="1"/>
+<rect x="2353.0" y="235.0" width="260.0" height="36.0" rx="0" fill="#F6B75B" stroke="none" stroke-width="1"/>
+<rect x="2353.0" y="315.0" width="260.0" height="145.0" rx="20" fill="#F0F0F0" stroke="none" stroke-width="1"/>
+<rect x="2353.0" y="510.0" width="260.0" height="36.0" rx="0" fill="#20C4C9" stroke="none" stroke-width="1"/>
+<rect x="2353.0" y="558.0" width="260.0" height="36.0" rx="0" fill="#20C4C9" stroke="none" stroke-width="1"/>
+<rect x="2353.0" y="606.0" width="260.0" height="36.0" rx="0" fill="#20C4C9" stroke="none" stroke-width="1"/>
+<rect x="2353.0" y="654.0" width="260.0" height="36.0" rx="0" fill="#20C4C9" stroke="none" stroke-width="1"/>
+<rect x="2353.0" y="702.0" width="260.0" height="36.0" rx="0" fill="#20C4C9" stroke="none" stroke-width="1"/>
+<rect x="2353.0" y="750.0" width="260.0" height="36.0" rx="0" fill="#20C4C9" stroke="none" stroke-width="1"/>
+<rect x="2353.0" y="798.0" width="260.0" height="36.0" rx="0" fill="#D5EF43" stroke="none" stroke-width="1"/>
+<rect x="2353.0" y="846.0" width="260.0" height="36.0" rx="0" fill="#D5EF43" stroke="none" stroke-width="1"/>
+<rect x="2353.0" y="894.0" width="260.0" height="36.0" rx="0" fill="#D5EF43" stroke="none" stroke-width="1"/>
+<rect x="2353.0" y="942.0" width="260.0" height="36.0" rx="0" fill="#20C4C9" stroke="none" stroke-width="1"/>
+<rect x="2353.0" y="990.0" width="260.0" height="36.0" rx="0" fill="#F5C845" stroke="none" stroke-width="1"/>
+<rect x="2353.0" y="1038.0" width="260.0" height="36.0" rx="0" fill="#F5C845" stroke="none" stroke-width="1"/>
+<rect x="2633.0" y="235.0" width="260.0" height="36.0" rx="0" fill="#73D0C0" stroke="none" stroke-width="1"/>
+<rect x="2633.0" y="315.0" width="260.0" height="145.0" rx="20" fill="#F0F0F0" stroke="none" stroke-width="1"/>
+<rect x="2633.0" y="510.0" width="260.0" height="36.0" rx="0" fill="#20C4C9" stroke="none" stroke-width="1"/>
+<rect x="2633.0" y="558.0" width="260.0" height="36.0" rx="0" fill="#20C4C9" stroke="none" stroke-width="1"/>
+<rect x="2633.0" y="606.0" width="260.0" height="36.0" rx="0" fill="#20C4C9" stroke="none" stroke-width="1"/>
+<rect x="2633.0" y="654.0" width="260.0" height="36.0" rx="0" fill="#D5EF43" stroke="none" stroke-width="1"/>
+<rect x="2633.0" y="702.0" width="260.0" height="36.0" rx="0" fill="#20C4C9" stroke="none" stroke-width="1"/>
+<rect x="2633.0" y="750.0" width="260.0" height="36.0" rx="0" fill="#20C4C9" stroke="none" stroke-width="1"/>
+<rect x="2633.0" y="798.0" width="260.0" height="36.0" rx="0" fill="#20C4C9" stroke="none" stroke-width="1"/>
+<rect x="2633.0" y="846.0" width="260.0" height="36.0" rx="0" fill="#F5C845" stroke="none" stroke-width="1"/>
+<rect x="2633.0" y="894.0" width="260.0" height="36.0" rx="0" fill="#F5C845" stroke="none" stroke-width="1"/>
+<rect x="2913.0" y="235.0" width="260.0" height="36.0" rx="0" fill="#B7C96D" stroke="none" stroke-width="1"/>
+<rect x="2913.0" y="315.0" width="260.0" height="145.0" rx="20" fill="#F0F0F0" stroke="none" stroke-width="1"/>
+<rect x="2913.0" y="510.0" width="260.0" height="36.0" rx="0" fill="#20C4C9" stroke="none" stroke-width="1"/>
+<rect x="2913.0" y="558.0" width="260.0" height="36.0" rx="0" fill="#20C4C9" stroke="none" stroke-width="1"/>
+<rect x="2913.0" y="606.0" width="260.0" height="36.0" rx="0" fill="#20C4C9" stroke="none" stroke-width="1"/>
+<rect x="2913.0" y="654.0" width="260.0" height="36.0" rx="0" fill="#20C4C9" stroke="none" stroke-width="1"/>
+<rect x="2913.0" y="702.0" width="260.0" height="36.0" rx="0" fill="#20C4C9" stroke="none" stroke-width="1"/>
+<rect x="2913.0" y="750.0" width="260.0" height="36.0" rx="0" fill="#20C4C9" stroke="none" stroke-width="1"/>
+<rect x="2913.0" y="798.0" width="260.0" height="36.0" rx="0" fill="#20C4C9" stroke="none" stroke-width="1"/>
+<rect x="2913.0" y="846.0" width="260.0" height="36.0" rx="0" fill="#F5C845" stroke="none" stroke-width="1"/>
+<rect x="2913.0" y="894.0" width="260.0" height="36.0" rx="0" fill="#F5C845" stroke="none" stroke-width="1"/>
+<rect x="2913.0" y="942.0" width="260.0" height="36.0" rx="0" fill="#20C4C9" stroke="none" stroke-width="1"/>
+<rect x="3318.0" y="40.0" width="300.0" height="390.0" rx="0" fill="#A9B2EE" stroke="none" stroke-width="1"/>
+<rect x="3318.0" y="470.0" width="300.0" height="36.0" rx="0" fill="#FFFFFF" stroke="none" stroke-width="1"/>
+<rect x="3318.0" y="518.0" width="300.0" height="36.0" rx="0" fill="#F5C845" stroke="none" stroke-width="1"/>
+<rect x="3318.0" y="566.0" width="300.0" height="36.0" rx="0" fill="#FFFFFF" stroke="none" stroke-width="1"/>
+<rect x="3318.0" y="614.0" width="300.0" height="36.0" rx="0" fill="#20C4C9" stroke="none" stroke-width="1"/>
+<rect x="3318.0" y="662.0" width="300.0" height="36.0" rx="0" fill="#F5C845" stroke="none" stroke-width="1"/>
+<rect x="3318.0" y="710.0" width="300.0" height="36.0" rx="0" fill="#D5EF43" stroke="none" stroke-width="1"/>
+<rect x="3318.0" y="758.0" width="300.0" height="36.0" rx="0" fill="#D5EF43" stroke="none" stroke-width="1"/>
+<rect x="3318.0" y="806.0" width="300.0" height="36.0" rx="0" fill="#D5EF43" stroke="none" stroke-width="1"/>
+<rect x="3318.0" y="854.0" width="300.0" height="36.0" rx="0" fill="#D5EF43" stroke="none" stroke-width="1"/>
+<rect x="3318.0" y="902.0" width="300.0" height="36.0" rx="0" fill="#F5C845" stroke="none" stroke-width="1"/>
+<rect x="3318.0" y="950.0" width="300.0" height="36.0" rx="0" fill="#20C4C9" stroke="none" stroke-width="1"/>
+<rect x="3658.0" y="40.0" width="980.0" height="36.0" rx="0" fill="#111E7B" stroke="none" stroke-width="1"/>
+<rect x="3658.0" y="95.0" width="980.0" height="120.0" rx="20" fill="#F0F0F0" stroke="none" stroke-width="1" filter="url(#shadow)"/>
+<ellipse cx="3703.0" cy="270.0" rx="45.0" ry="45.0" fill="none" stroke="#A9B2EE" stroke-width="3"/>
+<rect x="3798.0" y="230.0" width="190.0" height="36.0" rx="0" fill="#111E7B" stroke="none" stroke-width="1"/>
+<rect x="3798.0" y="290.0" width="190.0" height="150.0" rx="20" fill="#F0F0F0" stroke="none" stroke-width="1"/>
+<rect x="3798.0" y="460.0" width="190.0" height="36.0" rx="0" fill="#D5EF43" stroke="none" stroke-width="1"/>
+<rect x="4003.0" y="230.0" width="190.0" height="36.0" rx="0" fill="#111E7B" stroke="none" stroke-width="1"/>
+<rect x="4003.0" y="290.0" width="190.0" height="150.0" rx="20" fill="#F0F0F0" stroke="none" stroke-width="1"/>
+<rect x="4003.0" y="460.0" width="190.0" height="36.0" rx="0" fill="#D5EF43" stroke="none" stroke-width="1"/>
+<rect x="4003.0" y="508.0" width="190.0" height="36.0" rx="0" fill="#F5C845" stroke="none" stroke-width="1"/>
+<rect x="4208.0" y="230.0" width="190.0" height="36.0" rx="0" fill="#111E7B" stroke="none" stroke-width="1"/>
+<rect x="4208.0" y="290.0" width="190.0" height="150.0" rx="20" fill="#F0F0F0" stroke="none" stroke-width="1"/>
+<rect x="4208.0" y="460.0" width="190.0" height="36.0" rx="0" fill="#D5EF43" stroke="none" stroke-width="1"/>
+<rect x="4208.0" y="508.0" width="190.0" height="36.0" rx="0" fill="#F5C845" stroke="none" stroke-width="1"/>
+<rect x="4208.0" y="556.0" width="190.0" height="36.0" rx="0" fill="#D5EF43" stroke="none" stroke-width="1"/>
+<rect x="4413.0" y="230.0" width="190.0" height="36.0" rx="0" fill="#6171B3" stroke="none" stroke-width="1"/>
+<rect x="4413.0" y="290.0" width="190.0" height="150.0" rx="20" fill="#F0F0F0" stroke="none" stroke-width="1"/>
+<rect x="3768.0" y="720.0" width="110.0" height="80.0" rx="20" fill="#2F9DB6" stroke="none" stroke-width="1"/>
+<rect x="3958.0" y="730.0" width="100.0" height="60.0" rx="20" fill="#2F9DB6" stroke="none" stroke-width="1"/>
+<rect x="4138.0" y="720.0" width="100.0" height="80.0" rx="20" fill="#2F9DB6" stroke="none" stroke-width="1"/>
+<ellipse cx="4418.0" cy="795.0" rx="110.0" ry="110.0" fill="none" stroke="#5AB1C4" stroke-width="20"/>
+<rect x="4608.0" y="730.0" width="100.0" height="60.0" rx="20" fill="#2F9DB6" stroke="none" stroke-width="1"/>
+<rect x="4783.0" y="725.0" width="90.0" height="70.0" rx="20" fill="#2F9DB6" stroke="none" stroke-width="1"/>
+<rect x="4278.0" y="600.0" width="120.0" height="60.0" rx="20" fill="#2F9DB6" stroke="none" stroke-width="1"/>
+<rect x="4718.0" y="40.0" width="300.0" height="390.0" rx="0" fill="#A9B2EE" stroke="none" stroke-width="1"/>
+<rect x="5073.0" y="40.0" width="760.0" height="36.0" rx="0" fill="#8D8D8D" stroke="none" stroke-width="1"/>
+<rect x="5073.0" y="95.0" width="760.0" height="150.0" rx="20" fill="#F0F0F0" stroke="none" stroke-width="1" filter="url(#shadow)"/>
+<rect x="48.0" y="1180.0" width="5785.0" height="54.0" rx="20" fill="#E8F7EF" stroke="#3AA66A" stroke-width="1" filter="url(#shadow)"/>
+<line x1="1193.0" y1="508.0" x2="1193.0" y2="560.0" stroke="#F5C845" stroke-width="5" stroke-linecap="round" marker-end="url(#arrowhead)"/>
+<line x1="2893.0" y1="217.0" x2="3183.0" y2="217.0" stroke="#8B21A8" stroke-width="26" stroke-linecap="round" marker-end="url(#arrowhead)"/>
+<line x1="3883.0" y1="760.0" x2="3958.0" y2="760.0" stroke="#9ECBD5" stroke-width="4" stroke-linecap="round" marker-end="url(#arrowhead)"/>
+<line x1="4063.0" y1="760.0" x2="4138.0" y2="760.0" stroke="#9ECBD5" stroke-width="4" stroke-linecap="round" marker-end="url(#arrowhead)"/>
+<line x1="4243.0" y1="760.0" x2="4308.0" y2="760.0" stroke="#9ECBD5" stroke-width="4" stroke-linecap="round" marker-end="url(#arrowhead)"/>
+<line x1="4533.0" y1="760.0" x2="4608.0" y2="760.0" stroke="#9ECBD5" stroke-width="4" stroke-linecap="round" marker-end="url(#arrowhead)"/>
+<line x1="4713.0" y1="760.0" x2="4783.0" y2="760.0" stroke="#9ECBD5" stroke-width="4" stroke-linecap="round" marker-end="url(#arrowhead)"/>
+<text class="phase-title" x="538.0" y="58.0" text-anchor="middle" font-size="20.0" fill="#FFFFFF">Business Pre-validation</text>
+<text class="label" x="538.0" y="123.5" text-anchor="middle" font-size="14.0" fill="#777777">La medida de prevención de riesgos más importante es la validación del producto, lo que garantiza que exista una demanda</text>
+<text class="label" x="538.0" y="140.0" text-anchor="middle" font-size="14.0" fill="#777777">real en el mercado antes del desarrollo y lanzamiento. Al final de este validation sprint se analizan los resultados</text>
+<text class="label" x="538.0" y="156.5" text-anchor="middle" font-size="14.0" fill="#777777">obtenidos en las etapas y Producto, Tech y UX deciden si la idea pasa al Sprint de Implementación.</text>
+<text class="phase-title" x="1193.0" y="58.0" text-anchor="middle" font-size="20.0" fill="#FFFFFF">Resultado</text>
+<text class="phase-title" x="1193.0" y="155.7" text-anchor="middle" font-size="18.0" fill="#FFFFFF">Se determina la</text>
+<text class="phase-title" x="1193.0" y="176.9" text-anchor="middle" font-size="18.0" fill="#FFFFFF">viabilidad del</text>
+<text class="phase-title" x="1193.0" y="198.1" text-anchor="middle" font-size="18.0" fill="#FFFFFF">proyecto. Hay un</text>
+<text class="phase-title" x="1193.0" y="219.4" text-anchor="middle" font-size="18.0" fill="#FFFFFF">panorama claro de</text>
+<text class="phase-title" x="1193.0" y="240.6" text-anchor="middle" font-size="18.0" fill="#FFFFFF">valor, riesgos,</text>
+<text class="phase-title" x="1193.0" y="261.9" text-anchor="middle" font-size="18.0" fill="#FFFFFF">usuarios y alcances.</text>
+<text class="phase-title" x="1193.0" y="283.1" text-anchor="middle" font-size="18.0" fill="#FFFFFF"></text>
+<text class="phase-title" x="1193.0" y="304.3" text-anchor="middle" font-size="18.0" fill="#FFFFFF">Se presentan resulta…</text>
+<text class="phase-title" x="1203.0" y="350.0" text-anchor="middle" font-size="54.0" fill="#FFFFFF">➜</text>
+<text class="label" x="93.0" y="262.5" text-anchor="middle" font-size="16.0" fill="#A9B2EE">Kickoff</text>
+<text class="label" x="96.0" y="357.0" text-anchor="middle" font-size="14.0" fill="#777777">Planning</text>
+<text class="label" x="96.0" y="373.5" text-anchor="middle" font-size="14.0" fill="#777777">para</text>
+<text class="label" x="96.0" y="390.0" text-anchor="middle" font-size="14.0" fill="#777777">establecer</text>
+<text class="label" x="96.0" y="406.5" text-anchor="middle" font-size="14.0" fill="#777777">metas,</text>
+<text class="label" x="96.0" y="423.0" text-anchor="middle" font-size="14.0" fill="#777777">tareas …</text>
+<text class="phase-title" x="308.0" y="253.0" text-anchor="middle" font-size="20.0" fill="#FFFFFF">Comprehend</text>
+<text class="phase-title" x="688.0" y="253.0" text-anchor="middle" font-size="20.0" fill="#FFFFFF">Conceptualize</text>
+<text class="phase-title" x="1053.0" y="253.0" text-anchor="middle" font-size="20.0" fill="#FFFFFF">Prototype</text>
+<text class="label" x="308.0" y="346.2" text-anchor="middle" font-size="14.0" fill="#777777">Entendimiento de la</text>
+<text class="label" x="308.0" y="362.7" text-anchor="middle" font-size="14.0" fill="#777777">idea/proyecto/negocio, la</text>
+<text class="label" x="308.0" y="379.2" text-anchor="middle" font-size="14.0" fill="#777777">necesidad para el</text>
+<text class="label" x="308.0" y="395.8" text-anchor="middle" font-size="14.0" fill="#777777">stakeholder, la competencia,</text>
+<text class="label" x="308.0" y="412.3" text-anchor="middle" font-size="14.0" fill="#777777">implementaciones con ambiente</text>
+<text class="label" x="308.0" y="428.8" text-anchor="middle" font-size="14.0" fill="#777777">existente, etc.</text>
+<text class="label" x="688.0" y="362.7" text-anchor="middle" font-size="14.0" fill="#777777">Se analizarán objetivos de stakeholders y, bajo</text>
+<text class="label" x="688.0" y="379.2" text-anchor="middle" font-size="14.0" fill="#777777">hipótesis, necesidades e intereses de usuarios. Se</text>
+<text class="label" x="688.0" y="395.8" text-anchor="middle" font-size="14.0" fill="#777777">perfila la idea del producto de manera</text>
+<text class="label" x="688.0" y="412.3" text-anchor="middle" font-size="14.0" fill="#777777">superficial.</text>
+<text class="label" x="1053.0" y="371.0" text-anchor="middle" font-size="14.0" fill="#777777">Diseño de baja fidelidad de</text>
+<text class="label" x="1053.0" y="387.5" text-anchor="middle" font-size="14.0" fill="#777777">algunos flujos o pantallas</text>
+<text class="label" x="1053.0" y="404.0" text-anchor="middle" font-size="14.0" fill="#777777">del producto.</text>
+<text class="small" x="308.0" y="528.0" text-anchor="middle" font-size="10.0" fill="#111111">Benchmark de la competencia</text>
+<text class="small" x="308.0" y="576.0" text-anchor="middle" font-size="10.0" fill="#111111">Taller de requerimientos y necesidades</text>
+<text class="small" x="308.0" y="618.1" text-anchor="middle" font-size="10.0" fill="#111111">Verificar información con otros equipos Omni</text>
+<text class="small" x="308.0" y="629.9" text-anchor="middle" font-size="10.0" fill="#111111">/ Research / Comercial / Producto / UX</text>
+<text class="small" x="308.0" y="672.0" text-anchor="middle" font-size="10.0" fill="#111111">Business Model Canvas Lean</text>
+<text class="small" x="603.0" y="528.0" text-anchor="middle" font-size="10.0" fill="#111111">User personas hipotéticas</text>
+<text class="small" x="603.0" y="576.0" text-anchor="middle" font-size="10.0" fill="#111111">High level process mapping</text>
+<text class="small" x="603.0" y="624.0" text-anchor="middle" font-size="10.0" fill="#111111">Value proposition Canvas</text>
+<text class="small" x="603.0" y="672.0" text-anchor="middle" font-size="10.0" fill="#111111">Risk &amp; assumptions mapping</text>
+<text class="small" x="873.0" y="528.0" text-anchor="middle" font-size="10.0" fill="#111111">Business Revenue Model</text>
+<text class="small" x="873.0" y="576.0" text-anchor="middle" font-size="10.0" fill="#111111">Storymapping Low fidelity</text>
+<text class="small" x="873.0" y="624.0" text-anchor="middle" font-size="10.0" fill="#111111">Insight Aplicaciones similares Tech</text>
+<text class="small" x="1053.0" y="528.0" text-anchor="middle" font-size="10.0" fill="#111111">User flows</text>
+<text class="small" x="1053.0" y="576.0" text-anchor="middle" font-size="10.0" fill="#111111">Wire flows</text>
+<text class="small" x="1053.0" y="624.0" text-anchor="middle" font-size="10.0" fill="#111111">Sketches</text>
+<text class="small" x="1053.0" y="672.0" text-anchor="middle" font-size="10.0" fill="#111111">Wireframes Low fidelity</text>
+<text class="small" x="1053.0" y="720.0" text-anchor="middle" font-size="10.0" fill="#111111">Mockups PITCH</text>
+<text class="small" x="1053.0" y="768.0" text-anchor="middle" font-size="10.0" fill="#111111">Prototipos</text>
+<text class="small" x="1193.0" y="489.0" text-anchor="middle" font-size="10.0" fill="#FFFFFF">Validation Brief</text>
+<text class="small" x="1193.0" y="582.7" text-anchor="middle" font-size="9.0" fill="#111111">Product Brief: Context, Market Situation, revenue</text>
+<text class="small" x="1193.0" y="593.3" text-anchor="middle" font-size="9.0" fill="#111111">model &amp; Benchmark</text>
+<text class="small" x="1193.0" y="636.0" text-anchor="middle" font-size="9.0" fill="#111111">Análisis de riesgos desde la perspectiva de Tech.</text>
+<text class="small" x="1193.0" y="684.0" text-anchor="middle" font-size="9.0" fill="#111111">Tech Brief: Tech stack, considerations</text>
+<text class="small" x="1193.0" y="732.0" text-anchor="middle" font-size="9.0" fill="#111111">Business model canvas V01</text>
+<text class="small" x="1193.0" y="780.0" text-anchor="middle" font-size="9.0" fill="#111111">Value proposition canvas V01</text>
+<text class="small" x="1193.0" y="828.0" text-anchor="middle" font-size="9.0" fill="#111111">User Personas hipotéticas</text>
+<text class="small" x="1193.0" y="876.0" text-anchor="middle" font-size="9.0" fill="#111111">Risk and Assumptions</text>
+<text class="small" x="1193.0" y="924.0" text-anchor="middle" font-size="9.0" fill="#111111">Prototypes</text>
+<text class="small" x="1193.0" y="972.0" text-anchor="middle" font-size="9.0" fill="#111111">Validación de necesidades</text>
+<text class="small" x="1193.0" y="1020.0" text-anchor="middle" font-size="9.0" fill="#111111">Conclusion</text>
+<text class="phase-title" x="2323.0" y="58.0" text-anchor="middle" font-size="20.0" fill="#FFFFFF">Product Implementation</text>
+<text class="label" x="2253.0" y="217.0" text-anchor="middle" font-size="16.0" fill="#FFFFFF">Legal / Marketing / Data</text>
+<text class="label" x="1428.0" y="262.5" text-anchor="middle" font-size="16.0" fill="#A9B2EE">Kickoff</text>
+<text class="label" x="1431.0" y="357.0" text-anchor="middle" font-size="14.0" fill="#777777">Planning</text>
+<text class="label" x="1431.0" y="373.5" text-anchor="middle" font-size="14.0" fill="#777777">para</text>
+<text class="label" x="1431.0" y="390.0" text-anchor="middle" font-size="14.0" fill="#777777">establecer</text>
+<text class="label" x="1431.0" y="406.5" text-anchor="middle" font-size="14.0" fill="#777777">metas,</text>
+<text class="label" x="1431.0" y="423.0" text-anchor="middle" font-size="14.0" fill="#777777">tareas …</text>
+<text class="phase-title" x="1643.0" y="253.0" text-anchor="middle" font-size="20.0" fill="#FFFFFF">Understanding</text>
+<text class="label" x="1643.0" y="356.8" text-anchor="middle" font-size="13.0" fill="#777777">Comprender los alcances del</text>
+<text class="label" x="1643.0" y="372.2" text-anchor="middle" font-size="13.0" fill="#777777">proyecto, objetivos, su</text>
+<text class="label" x="1643.0" y="387.5" text-anchor="middle" font-size="13.0" fill="#777777">contexto interno y externo en</text>
+<text class="label" x="1643.0" y="402.8" text-anchor="middle" font-size="13.0" fill="#777777">el mercado. En esta etapa el</text>
+<text class="label" x="1643.0" y="418.2" text-anchor="middle" font-size="13.0" fill="#777777">brief será clave.</text>
+<text class="small" x="1643.0" y="528.0" text-anchor="middle" font-size="9.0" fill="#111111">Benchmark</text>
+<text class="small" x="1643.0" y="576.0" text-anchor="middle" font-size="9.0" fill="#111111">Análisis de lo existente</text>
+<text class="small" x="1643.0" y="624.0" text-anchor="middle" font-size="9.0" fill="#111111">Heurísticas</text>
+<text class="small" x="1643.0" y="672.0" text-anchor="middle" font-size="9.0" fill="#111111">Lectura del brief</text>
+<text class="small" x="1643.0" y="720.0" text-anchor="middle" font-size="9.0" fill="#111111">Análisis de data</text>
+<text class="small" x="1643.0" y="768.0" text-anchor="middle" font-size="9.0" fill="#111111">Análisis factibilidad para el prototipo POC</text>
+<text class="small" x="1643.0" y="816.0" text-anchor="middle" font-size="9.0" fill="#111111">Apoyar a que las reglas de negocio se cumplan</text>
+<text class="small" x="1643.0" y="864.0" text-anchor="middle" font-size="9.0" fill="#111111">Feedback en diseño de componentes de software</text>
+<text class="small" x="1643.0" y="912.0" text-anchor="middle" font-size="9.0" fill="#111111">Presupuesto para cada fase**</text>
+<text class="phase-title" x="1923.0" y="253.0" text-anchor="middle" font-size="20.0" fill="#FFFFFF">Empathizing</text>
+<text class="label" x="1923.0" y="364.5" text-anchor="middle" font-size="13.0" fill="#777777">Proceso en el que se profundiza</text>
+<text class="label" x="1923.0" y="379.8" text-anchor="middle" font-size="13.0" fill="#777777">las necesidades puntuales de</text>
+<text class="label" x="1923.0" y="395.2" text-anchor="middle" font-size="13.0" fill="#777777">los usuarios para abordarlas en</text>
+<text class="label" x="1923.0" y="410.5" text-anchor="middle" font-size="13.0" fill="#777777">el futuro diseño.</text>
+<text class="small" x="1923.0" y="528.0" text-anchor="middle" font-size="9.0" fill="#111111">User personas</text>
+<text class="small" x="1923.0" y="576.0" text-anchor="middle" font-size="9.0" fill="#111111">Customer Journey</text>
+<text class="small" x="1923.0" y="624.0" text-anchor="middle" font-size="9.0" fill="#111111">Blueprints</text>
+<text class="small" x="1923.0" y="672.0" text-anchor="middle" font-size="9.0" fill="#111111">Taller de requerimientos y necesidades</text>
+<text class="small" x="1923.0" y="720.0" text-anchor="middle" font-size="9.0" fill="#111111">Matriz de priorización</text>
+<text class="small" x="1923.0" y="768.0" text-anchor="middle" font-size="9.0" fill="#111111">Focus group</text>
+<text class="phase-title" x="2203.0" y="253.0" text-anchor="middle" font-size="20.0" fill="#FFFFFF">Market Prevalidation</text>
+<text class="label" x="2203.0" y="372.2" text-anchor="middle" font-size="13.0" fill="#777777">Se hace una prevalidación del</text>
+<text class="label" x="2203.0" y="387.5" text-anchor="middle" font-size="13.0" fill="#777777">mercado con los features a</text>
+<text class="label" x="2203.0" y="402.8" text-anchor="middle" font-size="13.0" fill="#777777">implementar.</text>
+<text class="small" x="2203.0" y="528.0" text-anchor="middle" font-size="9.0" fill="#111111">Entrevistas</text>
+<text class="small" x="2203.0" y="576.0" text-anchor="middle" font-size="9.0" fill="#111111">Encuestas</text>
+<text class="small" x="2203.0" y="624.0" text-anchor="middle" font-size="9.0" fill="#111111">Market Situation de acuerdo a las necesidades</text>
+<text class="phase-title" x="2483.0" y="253.0" text-anchor="middle" font-size="20.0" fill="#FFFFFF">Planning</text>
+<text class="label" x="2483.0" y="364.5" text-anchor="middle" font-size="13.0" fill="#777777">Bajo los alcances definidos se</text>
+<text class="label" x="2483.0" y="379.8" text-anchor="middle" font-size="13.0" fill="#777777">perfila producto, arquitectura,</text>
+<text class="label" x="2483.0" y="395.2" text-anchor="middle" font-size="13.0" fill="#777777">navegación, estilo y</text>
+<text class="label" x="2483.0" y="410.5" text-anchor="middle" font-size="13.0" fill="#777777">necesidades gráficas.</text>
+<text class="small" x="2483.0" y="528.0" text-anchor="middle" font-size="9.0" fill="#111111">Inventario de contenido</text>
+<text class="small" x="2483.0" y="576.0" text-anchor="middle" font-size="9.0" fill="#111111">Arquitectura High Fidelity</text>
+<text class="small" x="2483.0" y="624.0" text-anchor="middle" font-size="9.0" fill="#111111">Sitemap High Fidelity</text>
+<text class="small" x="2483.0" y="672.0" text-anchor="middle" font-size="9.0" fill="#111111">Definición de lenguaje gráfico</text>
+<text class="small" x="2483.0" y="714.7" text-anchor="middle" font-size="9.0" fill="#111111">Mapear dependencias existentes (Proveedores) y</text>
+<text class="small" x="2483.0" y="725.3" text-anchor="middle" font-size="9.0" fill="#111111">lógica del producto</text>
+<text class="small" x="2483.0" y="768.0" text-anchor="middle" font-size="9.0" fill="#111111">Definición de alcances</text>
+<text class="small" x="2483.0" y="816.0" text-anchor="middle" font-size="9.0" fill="#111111">Deadlines</text>
+<text class="small" x="2483.0" y="864.0" text-anchor="middle" font-size="9.0" fill="#111111">Valoración expertos (Reutilización de componentes)</text>
+<text class="small" x="2483.0" y="912.0" text-anchor="middle" font-size="9.0" fill="#111111">Validar que equipo de desarrollo sea adecuado</text>
+<text class="small" x="2483.0" y="960.0" text-anchor="middle" font-size="9.0" fill="#111111">Storymapping</text>
+<text class="small" x="2483.0" y="1008.0" text-anchor="middle" font-size="9.0" fill="#111111">Roadmap</text>
+<text class="small" x="2483.0" y="1056.0" text-anchor="middle" font-size="9.0" fill="#111111">Value proposition canvas 2.0</text>
+<text class="phase-title" x="2763.0" y="253.0" text-anchor="middle" font-size="20.0" fill="#FFFFFF">Producción</text>
+<text class="label" x="2763.0" y="356.8" text-anchor="middle" font-size="13.0" fill="#777777">Actividades donde se plasma el</text>
+<text class="label" x="2763.0" y="372.2" text-anchor="middle" font-size="13.0" fill="#777777">producto en pantallas de alta</text>
+<text class="label" x="2763.0" y="387.5" text-anchor="middle" font-size="13.0" fill="#777777">fidelidad para validar</text>
+<text class="label" x="2763.0" y="402.8" text-anchor="middle" font-size="13.0" fill="#777777">expectativas y entregar a</text>
+<text class="label" x="2763.0" y="418.2" text-anchor="middle" font-size="13.0" fill="#777777">desarrollo.</text>
+<text class="small" x="2763.0" y="528.0" text-anchor="middle" font-size="9.0" fill="#111111">Flujos de pantallas</text>
+<text class="small" x="2763.0" y="576.0" text-anchor="middle" font-size="9.0" fill="#111111">Wireframes High fidelity - Mockups</text>
+<text class="small" x="2763.0" y="624.0" text-anchor="middle" font-size="9.0" fill="#111111">Prototipos</text>
+<text class="small" x="2763.0" y="672.0" text-anchor="middle" font-size="9.0" fill="#111111">Revisiones con equipo Developers</text>
+<text class="small" x="2763.0" y="720.0" text-anchor="middle" font-size="9.0" fill="#111111">Sketches</text>
+<text class="small" x="2763.0" y="768.0" text-anchor="middle" font-size="9.0" fill="#111111">Componentes de design system</text>
+<text class="small" x="2763.0" y="816.0" text-anchor="middle" font-size="9.0" fill="#111111">User testing de acuerdo a la funcionalidad</text>
+<text class="small" x="2763.0" y="864.0" text-anchor="middle" font-size="9.0" fill="#111111">User Stories</text>
+<text class="small" x="2763.0" y="912.0" text-anchor="middle" font-size="9.0" fill="#111111">Anotaciones técnicas</text>
+<text class="phase-title" x="3043.0" y="253.0" text-anchor="middle" font-size="20.0" fill="#FFFFFF">UX Testing</text>
+<text class="label" x="3043.0" y="364.5" text-anchor="middle" font-size="13.0" fill="#777777">Actividades que permiten</text>
+<text class="label" x="3043.0" y="379.8" text-anchor="middle" font-size="13.0" fill="#777777">asegurar una buena experiencia</text>
+<text class="label" x="3043.0" y="395.2" text-anchor="middle" font-size="13.0" fill="#777777">y usabilidad por medio de</text>
+<text class="label" x="3043.0" y="410.5" text-anchor="middle" font-size="13.0" fill="#777777">pruebas a usuarios.</text>
+<text class="small" x="3043.0" y="528.0" text-anchor="middle" font-size="9.0" fill="#111111">Card sorting</text>
+<text class="small" x="3043.0" y="576.0" text-anchor="middle" font-size="9.0" fill="#111111">Tree testing</text>
+<text class="small" x="3043.0" y="624.0" text-anchor="middle" font-size="9.0" fill="#111111">Paper &amp; click prototipo</text>
+<text class="small" x="3043.0" y="672.0" text-anchor="middle" font-size="9.0" fill="#111111">Naming</text>
+<text class="small" x="3043.0" y="720.0" text-anchor="middle" font-size="9.0" fill="#111111">Usabilidad</text>
+<text class="small" x="3043.0" y="768.0" text-anchor="middle" font-size="9.0" fill="#111111">UXT</text>
+<text class="small" x="3043.0" y="816.0" text-anchor="middle" font-size="9.0" fill="#111111">Paper &amp; click prototipo</text>
+<text class="small" x="3043.0" y="864.0" text-anchor="middle" font-size="9.0" fill="#111111">A-B Testing</text>
+<text class="small" x="3043.0" y="912.0" text-anchor="middle" font-size="9.0" fill="#111111">Eye tracking</text>
+<text class="small" x="3043.0" y="960.0" text-anchor="middle" font-size="9.0" fill="#111111">Pruebas heurísticas</text>
+<text class="label" x="3468.0" y="204.9" text-anchor="middle" font-size="17.0" fill="#FFFFFF">Resultado</text>
+<text class="label" x="3468.0" y="224.9" text-anchor="middle" font-size="17.0" fill="#FFFFFF"></text>
+<text class="label" x="3468.0" y="245.0" text-anchor="middle" font-size="17.0" fill="#FFFFFF">El output final son los</text>
+<text class="label" x="3468.0" y="265.1" text-anchor="middle" font-size="17.0" fill="#FFFFFF">suministros necesarios</text>
+<text class="label" x="3468.0" y="285.1" text-anchor="middle" font-size="17.0" fill="#FFFFFF">para que tecnología…</text>
+<text class="small" x="3468.0" y="488.0" text-anchor="middle" font-size="9.0" fill="#111111">Anotaciones técnicas</text>
+<text class="small" x="3468.0" y="536.0" text-anchor="middle" font-size="9.0" fill="#111111">Documentación del proceso</text>
+<text class="small" x="3468.0" y="584.0" text-anchor="middle" font-size="9.0" fill="#111111">Flujos/prototipos</text>
+<text class="small" x="3468.0" y="632.0" text-anchor="middle" font-size="9.0" fill="#111111">Editables</text>
+<text class="small" x="3468.0" y="680.0" text-anchor="middle" font-size="9.0" fill="#111111">Product Roadmap</text>
+<text class="small" x="3468.0" y="728.0" text-anchor="middle" font-size="9.0" fill="#111111">Technical Details for Development</text>
+<text class="small" x="3468.0" y="776.0" text-anchor="middle" font-size="9.0" fill="#111111">Tech Brief (Tech stack, considerations)</text>
+<text class="small" x="3468.0" y="824.0" text-anchor="middle" font-size="9.0" fill="#111111">Deadlines detallados</text>
+<text class="small" x="3468.0" y="872.0" text-anchor="middle" font-size="9.0" fill="#111111">Planeación de data inputs según objetivos del negocio</text>
+<text class="small" x="3468.0" y="920.0" text-anchor="middle" font-size="9.0" fill="#111111">Validación de User Stories</text>
+<text class="small" x="3468.0" y="968.0" text-anchor="middle" font-size="9.0" fill="#111111">Listado y comportamiento de nuevos componentes en DS</text>
+<text class="phase-title" x="4148.0" y="58.0" text-anchor="middle" font-size="20.0" fill="#FFFFFF">Desarrollo de software</text>
+<text class="label" x="4148.0" y="139.7" text-anchor="middle" font-size="13.0" fill="#777777">La fase inicia con kickoff entre leads de Producto, UX y Tech. Tech hace signoff de insumos para desarrollar epics/user stories,</text>
+<text class="label" x="4148.0" y="155.0" text-anchor="middle" font-size="13.0" fill="#777777">incluyendo flujos, wireframes y otros. Antes de sprints se revisa planning para asegurar claridad. Incluir BI y Data desde el inicio</text>
+<text class="label" x="4148.0" y="170.3" text-anchor="middle" font-size="13.0" fill="#777777">según corresponda.</text>
+<text class="label" x="3703.0" y="267.5" text-anchor="middle" font-size="16.0" fill="#A9B2EE">Kickoff</text>
+<text class="phase-title" x="3893.0" y="248.0" text-anchor="middle" font-size="20.0" fill="#FFFFFF">Revisión Planning</text>
+<text class="label" x="3893.0" y="334.3" text-anchor="middle" font-size="13.0" fill="#777777">Revisión inicial:</text>
+<text class="label" x="3893.0" y="349.7" text-anchor="middle" font-size="13.0" fill="#777777">asegurar herramientas</text>
+<text class="label" x="3893.0" y="365.0" text-anchor="middle" font-size="13.0" fill="#777777">y entendimientos</text>
+<text class="label" x="3893.0" y="380.3" text-anchor="middle" font-size="13.0" fill="#777777">necesarios para</text>
+<text class="label" x="3893.0" y="395.7" text-anchor="middle" font-size="13.0" fill="#777777">iniciar desarrollo</text>
+<text class="small" x="3893.0" y="473.3" text-anchor="middle" font-size="8.0" fill="#111111">Establecer Stakeholders para revisión de</text>
+<text class="small" x="3893.0" y="482.7" text-anchor="middle" font-size="8.0" fill="#111111">sprints</text>
+<text class="phase-title" x="4098.0" y="248.0" text-anchor="middle" font-size="20.0" fill="#FFFFFF">Sprints (n)</text>
+<text class="label" x="4098.0" y="349.7" text-anchor="middle" font-size="13.0" fill="#777777">Ejecución de sprints</text>
+<text class="label" x="4098.0" y="365.0" text-anchor="middle" font-size="13.0" fill="#777777">bajo metodología</text>
+<text class="label" x="4098.0" y="380.3" text-anchor="middle" font-size="13.0" fill="#777777">Scrum y artefactos</text>
+<text class="small" x="4098.0" y="478.0" text-anchor="middle" font-size="8.0" fill="#111111">Sprint Review</text>
+<text class="small" x="4098.0" y="526.0" text-anchor="middle" font-size="8.0" fill="#111111">DEMO</text>
+<text class="phase-title" x="4303.0" y="248.0" text-anchor="middle" font-size="20.0" fill="#FFFFFF">UAT</text>
+<text class="label" x="4303.0" y="342.0" text-anchor="middle" font-size="13.0" fill="#777777">User acceptance</text>
+<text class="label" x="4303.0" y="357.3" text-anchor="middle" font-size="13.0" fill="#777777">testing de</text>
+<text class="label" x="4303.0" y="372.7" text-anchor="middle" font-size="13.0" fill="#777777">stakeholders previo a</text>
+<text class="label" x="4303.0" y="388.0" text-anchor="middle" font-size="13.0" fill="#777777">cada release.</text>
+<text class="small" x="4303.0" y="473.3" text-anchor="middle" font-size="8.0" fill="#111111">Establecimiento de prioridades</text>
+<text class="small" x="4303.0" y="482.7" text-anchor="middle" font-size="8.0" fill="#111111">UAT/Producto</text>
+<text class="small" x="4303.0" y="526.0" text-anchor="middle" font-size="8.0" fill="#111111">Plan de acción Producto/Tech</text>
+<text class="small" x="4303.0" y="574.0" text-anchor="middle" font-size="8.0" fill="#111111">UAT</text>
+<text class="phase-title" x="4508.0" y="248.0" text-anchor="middle" font-size="20.0" fill="#FFFFFF">Launch</text>
+<text class="label" x="4508.0" y="334.3" text-anchor="middle" font-size="13.0" fill="#777777">Deployment de la</text>
+<text class="label" x="4508.0" y="349.7" text-anchor="middle" font-size="13.0" fill="#777777">aplicación a</text>
+<text class="label" x="4508.0" y="365.0" text-anchor="middle" font-size="13.0" fill="#777777">marketplaces o</text>
+<text class="label" x="4508.0" y="380.3" text-anchor="middle" font-size="13.0" fill="#777777">release de nuevos</text>
+<text class="label" x="4508.0" y="395.7" text-anchor="middle" font-size="13.0" fill="#777777">features</text>
+<text class="small" x="3823.0" y="753.5" text-anchor="middle" font-size="11.0" fill="#FFFFFF">Product</text>
+<text class="small" x="3823.0" y="766.5" text-anchor="middle" font-size="11.0" fill="#FFFFFF">Backlog</text>
+<text class="small" x="4008.0" y="754.1" text-anchor="middle" font-size="10.0" fill="#FFFFFF">Sprint</text>
+<text class="small" x="4008.0" y="765.9" text-anchor="middle" font-size="10.0" fill="#FFFFFF">Planning</text>
+<text class="small" x="4188.0" y="754.1" text-anchor="middle" font-size="10.0" fill="#FFFFFF">Sprint</text>
+<text class="small" x="4188.0" y="765.9" text-anchor="middle" font-size="10.0" fill="#FFFFFF">Backlog</text>
+<text class="label" x="4418.0" y="776.1" text-anchor="middle" font-size="15.0" fill="#397F8E">Daily Scrum</text>
+<text class="label" x="4418.0" y="793.9" text-anchor="middle" font-size="15.0" fill="#397F8E">Scrum Team</text>
+<text class="small" x="4658.0" y="754.1" text-anchor="middle" font-size="10.0" fill="#FFFFFF">Sprint</text>
+<text class="small" x="4658.0" y="765.9" text-anchor="middle" font-size="10.0" fill="#FFFFFF">Review</text>
+<text class="small" x="4828.0" y="760.0" text-anchor="middle" font-size="10.0" fill="#FFFFFF">Increment</text>
+<text class="small" x="4338.0" y="624.1" text-anchor="middle" font-size="10.0" fill="#FFFFFF">Sprint</text>
+<text class="small" x="4338.0" y="635.9" text-anchor="middle" font-size="10.0" fill="#FFFFFF">Retrospective</text>
+<text class="label" x="4868.0" y="204.9" text-anchor="middle" font-size="17.0" fill="#FFFFFF">Resultado</text>
+<text class="label" x="4868.0" y="225.0" text-anchor="middle" font-size="17.0" fill="#FFFFFF"></text>
+<text class="label" x="4868.0" y="245.1" text-anchor="middle" font-size="17.0" fill="#FFFFFF">El output final es u…</text>
+<text class="phase-title" x="5453.0" y="58.0" text-anchor="middle" font-size="20.0" fill="#FFFFFF">Post Launch</text>
+<text class="phase-title" x="5453.0" y="138.1" text-anchor="middle" font-size="18.0" fill="#777777">Deben haber revisiones por parte de QA en producción. QA hace Smoke para</text>
+<text class="phase-title" x="5453.0" y="159.4" text-anchor="middle" font-size="18.0" fill="#777777">encontrar bugs y realizar HotFix si es necesario. En conjunto con PO se</text>
+<text class="phase-title" x="5453.0" y="180.6" text-anchor="middle" font-size="18.0" fill="#777777">determina si procede HotFix con prioridad o si se espera hasta el próximo</text>
+<text class="phase-title" x="5453.0" y="201.9" text-anchor="middle" font-size="18.0" fill="#777777">lanzamiento.</text>
+<text class="phase-title" x="2940.5" y="1206.0" text-anchor="middle" font-size="18.0" fill="#216B43">Intervención transversal de arquitectura: factibilidad, riesgos, Tech Brief, dependencias, datos, contratos, NFR, readiness, rollback, smoke y hotfix.</text>
 </svg>
