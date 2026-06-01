@@ -18,6 +18,8 @@ Un sistema de decisión de fraude en tiempo real explorado a través de tres arq
 
 ## Arquitecturas exploradas
 
+El relato recomendado para discusiones técnicas se divide en tres bloques: Java/Vert.x/Clean Architecture, NestJS/Hono para patrones transaccionales y el repo como sistema de ingeniería. Ver [[Technical-Presentation-Guide]].
+
 1. **Bare-javac** (`poc/no-vertx-clean-engine/`) — Clean Architecture sin frameworks. Dominio, ports y use cases implementados con `javac` puro. Sin Spring, sin Vert.x. Valida que la arquitectura hexagonal es una disciplina de código, no un feature de framework.
 2. **Single-JVM monolith** (`poc/vertx-monolith-inprocess/`) — Vert.x con infraestructura completa: Postgres, Valkey, Tansu, Floci (AWS S3/SQS/Secrets en un solo emulador). Baseline de latencia realista para producción.
 3. **Layer-as-pod distribuido** (`poc/vertx-layer-as-pod-eventbus/`) — 4 JVMs con event bus de Hazelcast. Controller, usecase, repository y consumer como procesos independientes. Valida los límites de aislamiento bajo presión de deployment.

@@ -23,8 +23,9 @@ Una exploración técnica de un use case de detección de fraude productivo, que
 
 1. **`vault/03-PoCs/Poc-Parity-Matrix.md`** — matriz de apps Java: misma lógica, distintas topologías/stacks y trade-offs.
 2. **`vault/04-Concepts/In-Process-vs-Distributed.md`** — rendimiento y separación: cuándo conviene distribuir y cuánto cuesta.
-3. **[`docs/39-share-ready-baseline.md`](39-share-ready-baseline.md)** — anchor público, auditabilidad histórica y checks pre-tag.
-4. **`vault/04-Concepts/Java-vs-Go-Performance.md`** — posicionamiento Java moderno vs Go en performance/concurrencia.
+3. **[`docs/44-guion-presentacion-tecnica.md`](44-guion-presentacion-tecnica.md)** — relato recomendado para discusiones técnicas: Java/Vert.x, NestJS/Hono y repo como sistema de ingeniería.
+4. **[`docs/39-share-ready-baseline.md`](39-share-ready-baseline.md)** — anchor público, auditabilidad histórica y checks pre-tag.
+5. **`vault/04-Concepts/Java-vs-Go-Performance.md`** — posicionamiento Java moderno vs Go en performance/concurrencia.
 5. **`vault/02-Decisions/`** — ADRs con análisis de alternativas Opción A/B/C/D.
 
 ### Si tu objetivo es entender el enfoque de testing
@@ -37,8 +38,9 @@ Una exploración técnica de un use case de detección de fraude productivo, que
 
 1. **`vault/05-Methodology/Design-Conversation-Framework.md`** — cómo descomponer problemas de systems design.
 2. **`vault/05-Methodology/Architecture-Question-Bank.md`** — preguntas de arquitectura con análisis modelo y modos de falla comunes.
-3. **`docs/41-cqrs-event-sourcing-transacciones.md`** — explicación didáctica de CQRS/Event Sourcing, proyecciones, snapshots, sagas y EDA en pagos/riesgo.
-4. **`vault/05-Methodology/Architectural-Anchors.md`** — principios de diseño que pesan.
+3. **`vault/05-Methodology/Technical-Presentation-Guide.md`** — versión vault del guion para ordenar una discusión técnica.
+4. **`docs/41-cqrs-event-sourcing-transacciones.md`** — explicación didáctica de CQRS/Event Sourcing, proyecciones, snapshots, sagas y EDA en pagos/riesgo.
+5. **`vault/05-Methodology/Architectural-Anchors.md`** — principios de diseño que pesan.
 
 ### Si te interesa el meta (agentes IA + tooling)
 
@@ -102,6 +104,7 @@ Para agentes y humanos: si vas a tocar X, leé Y antes.
 | CQRS/Event Sourcing/EDA | `docs/41-cqrs-event-sourcing-transacciones.md` + [[CQRS-Event-Sourcing]] + [[nestjs-distributed-transactions]] + [[hono-distributed-transactions]] | comandos, queries, event store, proyecciones, sagas, BullMQ y Valkey |
 | documentación | `docs/42-documentacion-metodica.md` + `.ai/primitives/rules/documentation-system.md` | cuándo actualizar docs, vault, contexto IA, primitivas y adapters |
 | auditoría transversal de apps | `docs/43-auditoria-transversal-apps.md` + `.ai/scripts/app-compliance-audit.py` | matriz de cumplimiento por PoC, violaciones, deuda aceptada y guardrails automáticos |
+| guion de discusión técnica | `docs/44-guion-presentacion-tecnica.md` + `vault/05-Methodology/Technical-Presentation-Guide.md` | relato en tres bloques: Java/Vert.x, NestJS/Hono y repo como sistema de ingeniería |
 
 ---
 

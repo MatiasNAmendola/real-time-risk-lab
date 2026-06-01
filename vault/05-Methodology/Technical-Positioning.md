@@ -1,6 +1,6 @@
 ---
 title: Technical Positioning — frase de apertura para discusión técnica
-tags: [methodology/positioning, interview-prep, framing]
+tags: [methodology/positioning, technical-discussion, framing]
 created: 2026-05-12
 source_archive: docs/36-technical-positioning.md (migrado 2026-05-12)
 ---
@@ -13,7 +13,7 @@ source_archive: docs/36-technical-positioning.md (migrado 2026-05-12)
 
 ## Uso
 
-Usarla al compartir el repo o abrir una conversación técnica.
+Usarla al compartir el repo o abrir una conversación técnica. Luego ordenar el relato en tres bloques: Java/Vert.x/Clean Architecture para riesgo en tiempo real, NestJS/Hono para patrones transaccionales y el repo como sistema de ingeniería con primitivas, documentación, guardrails, tests y lifecycle seguro.
 
 ## Related
 

@@ -8,6 +8,16 @@ Antes de correr comandos, abrir con la frase de [`vault/05-Methodology/Technical
 
 > Te comparto una exploración técnica curada para discutir arquitectura de decisiones de riesgo en tiempo real. No intenta ser producción cerrada, sino una demo conversacional para hablar de trade-offs: Clean Architecture, boundaries, performance, trazabilidad, evaluación sincrónica, eventos asíncronos, permisos entre componentes, benchmarks y simulación local de despliegue distribuido.
 
+## 0.1. Relato de alto nivel
+
+Separar la presentación en tres bloques:
+
+1. **Java / Vert.x / Clean Architecture**: riesgo en tiempo real, p99 < 300 ms, arquitectura sync + async, ATDD, observabilidad, resiliencia y boundaries.
+2. **NestJS / Hono**: contraste entre DI/decorators y wiring manual, CQRS/Event Sourcing simple, Saga avanzada, idempotencia, BullMQ/Valkey y TigerBeetle como frontera de ledger.
+3. **Repo como sistema de ingeniería**: primitivas para agentes, documentación metódica, guardrails, tests unitarios/integración/e2e/ATDD/smoke/k6 y scripts seguros de lifecycle.
+
+Guion extendido: [`docs/44-guion-presentacion-tecnica.md`](docs/44-guion-presentacion-tecnica.md).
+
 ## 1. Verificación previa
 
 ```bash

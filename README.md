@@ -35,7 +35,8 @@ Plataforma de práctica para discutir decisiones de riesgo/fraude en tiempo real
 - **Trazabilidad**: correlationId, idempotencyKey, eventos versionados y decision trace.
 - **Resiliencia**: timeouts, circuit breakers, fallbacks e idempotencia.
 - **Infra local**: Postgres, Valkey, Redpanda, Floci (unified AWS emulator — S3/SQS/SNS/Secrets/KMS), OTEL/OpenObserve.
-- **Testing y verificación**: ATDD, ArchUnit, smoke tests, JMH y auditorías propias.
+- **Testing y verificación**: ATDD, ArchUnit, smoke tests, JMH, k6 y auditorías propias.
+- **Repo como sistema de ingeniería**: primitivas para agentes, documentación metódica, guardrails y scripts seguros de lifecycle.
 - **SDKs y contratos**: clientes Java/TypeScript/Go y contratos de eventos.
 
 ## Quickstart recomendado para demo
@@ -150,6 +151,7 @@ Ver [`cli/README.md`](cli/README.md) para el modo seguro, `--include-tracked` y 
 ## Documentación principal
 
 - [`DEMO_SCRIPT.md`](DEMO_SCRIPT.md) — recorrido seguro para mostrar el repo.
+- [`docs/44-guion-presentacion-tecnica.md`](docs/44-guion-presentacion-tecnica.md) — guion de relato para discusiones técnicas.
 - [`STATUS.md`](STATUS.md) — matriz empírica actual.
 - [`docs/00-START-HERE.md`](docs/00-START-HERE.md) — onboarding extendido.
 - [`vault/05-Methodology/Architecture-Question-Bank.md`](vault/05-Methodology/Architecture-Question-Bank.md) — banco de preguntas/respuestas de arquitectura.
