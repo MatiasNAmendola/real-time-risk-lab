@@ -778,4 +778,5 @@ Y una versión más corta:
 - [`docs/46-decisiones-de-stack-plataforma-e-iac.md`](46-decisiones-de-stack-plataforma-e-iac.md)
 - [`docs/44-guion-presentacion-tecnica.md`](44-guion-presentacion-tecnica.md)
 - [`docs/42-documentacion-metodica.md`](42-documentacion-metodica.md)
+- [`docs/48-rfp-prd-adr-y-documentos-de-decision.md`](48-rfp-prd-adr-y-documentos-de-decision.md)
 - [`vault/05-Methodology/Technical-Leadership-Mindset.md`](../vault/05-Methodology/Technical-Leadership-Mindset.md)

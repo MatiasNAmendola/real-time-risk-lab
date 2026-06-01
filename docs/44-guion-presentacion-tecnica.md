@@ -183,5 +183,6 @@ python3 .ai/scripts/app-compliance-audit.py
 - [`docs/45-requisitos-y-estilos-arquitectonicos.md`](45-requisitos-y-estilos-arquitectonicos.md)
 - [`docs/46-decisiones-de-stack-plataforma-e-iac.md`](46-decisiones-de-stack-plataforma-e-iac.md)
 - [`docs/47-intervencion-arquitectura-en-procesos.md`](47-intervencion-arquitectura-en-procesos.md)
+- [`docs/48-rfp-prd-adr-y-documentos-de-decision.md`](48-rfp-prd-adr-y-documentos-de-decision.md)
 - [`vault/05-Methodology/Technical-Positioning.md`](../vault/05-Methodology/Technical-Positioning.md)
 - [`vault/05-Methodology/Technical-Discussion-Simulation.md`](../vault/05-Methodology/Technical-Discussion-Simulation.md)
