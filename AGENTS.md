@@ -92,6 +92,8 @@ Regla completa: [docs/40-bun-package-manager-security.md](docs/40-bun-package-ma
 No documentes sólo en `docs/` cuando el cambio sea una PoC, decisión o concepto reutilizable. Sincronizá `docs/`, `vault/`, `.ai/context`, `.ai/primitives` y adapters IDE/CLI según corresponda.
 Regla completa: [.ai/primitives/rules/documentation-system.md](.ai/primitives/rules/documentation-system.md)
 
+Agent-facing primitives must be concise English; human documentation in `docs/` and `vault/` stays Spanish.
+
 ---
 
 ## 5. Como extender el sistema

@@ -35,3 +35,10 @@ python3 .ai/scripts/verify-primitives.sh
 ## Regla práctica
 
 No documentar sólo en `docs/` cuando el tema sea una PoC, patrón o decisión. `docs/` explica; `vault/` indexa y preserva conocimiento; `.ai/` vuelve ejecutable la metodología para agentes.
+
+
+## Política de idioma
+
+- `docs/` y `vault/` se mantienen en español porque son documentación humana.
+- `.ai/primitives/` y adapters IDE/CLI se mantienen en inglés conciso porque son instrucciones para agentes y consumen contexto en cada herramienta.
+- Los términos técnicos estándar se preservan en inglés: CQRS, Event Sourcing, Saga pattern, outbox pattern, circuit breaker, idempotency, snapshot, read model, ledger, smoke test.

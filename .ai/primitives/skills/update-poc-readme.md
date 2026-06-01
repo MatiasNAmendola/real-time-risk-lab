@@ -1,98 +1,73 @@
 ---
 name: update-poc-readme
-intent: Actualizar el README de una PoC para reflejar el estado actual, stack, y como correrla
+intent: Update a PoC README and synchronize PoC inventory/docs
 inputs: [poc_path, new_features, current_status]
 preconditions:
-  - poc/<name>/README.md existe
+  - poc/<name>/README.md exists
 postconditions:
-  - README actualizado con: proposito, como correr, stack con versiones, estado, demos disponibles
-  - poc-inventory.md en .ai/context/ actualizado
-  - vault/03-PoCs/<poc-name>.md actualizado o creado
-  - MOCs relevantes actualizados si la PoC introduce un patrón
-related_rules: [naming-conventions]
+  - README describes purpose, stack, run commands, status and demos
+  - .ai/context/poc-inventory.md is current
+  - vault/03-PoCs/<poc-name>.md exists or is current
+  - Relevant MOCs are updated when the PoC introduces a pattern
+related_rules: [naming-conventions, documentation-system]
 ---
 
 # Skill: update-poc-readme
 
-## Estructura del README
+## README template
 
 ```markdown
-# <Nombre PoC> — Real-Time Risk Lab
+# <PoC name> — Real-Time Risk Lab
 
-<Descripcion de 2 lineas: que demuestra esta PoC y por que existe>
+Two-line purpose: what this PoC demonstrates and why it exists.
 
----
+## What it demonstrates
 
-## Que demuestra
-
-- <patron 1>
-- <patron 2>
-- <patron 3>
-
----
+- <pattern 1>
+- <pattern 2>
+- <pattern 3>
 
 ## Stack
 
-| Componente | Version |
+| Component | Version |
 |---|---|
-| Java | 21 LTS baseline (`--release 21`); Java 25 objetivo documentado |
+| Java | 21 LTS executable baseline (`--release 21`); Java 25 documented target |
 | Vert.x | 5.0.12 |
-| ... | ... |
 
----
+## Structure
 
-## Estructura
+Short package/tree layout.
 
-<tree simplificado del layout de paquetes>
+## Run
 
----
-
-## Como correr
-
-### Prerequisitos
-- Docker Desktop / OrbStack corriendo
-- JDK 21+ en PATH (`java -version`); Java 25 es opcional
-- Gradle 3.9+ (`./gradlew --version`)
-
-### Levantar dependencias
 ```bash
-docker-compose up -d
-```
-
-### Compilar y correr
-```bash
-./gradlew shadowJar
 ./scripts/run.sh
 ```
 
-### Verificar
+## Verify
+
 ```bash
-curl http://localhost:8080/healthz
 ./scripts/test.sh
+curl http://localhost:<port>/healthz
 ```
 
----
-
-## Estado
+## Status
 
 - [x] Clean Architecture layout
 - [x] REST endpoint
-- [ ] SSE streaming (en progreso)
-- [ ] ATDD completo
+- [ ] ATDD complete
 
----
+## Live demos
 
-## Demos en vivo
-
-1. <Mostrar X>: `curl ...`
-2. <Mostrar Y>: `./scripts/demo.sh`
+1. Show X: `curl ...`
+2. Show Y: `./scripts/demo.sh`
 ```
 
-## Pasos
+## Steps
 
-1. Leer el README actual.
-2. Actualizar secciones desactualizadas.
-3. Actualizar `.ai/context/poc-inventory.md` con estado nuevo.
-4. Crear/actualizar `vault/03-PoCs/<name>.md` y linkear conceptos/ADRs relacionados.
-5. Actualizar MOCs en `vault/00-MOCs/` si agrega un patrón relevante.
-6. Commit: `docs(poc/<name>): update README with current state`.
+1. Read the current README.
+2. Remove stale sections and add current run/test commands.
+3. Update `.ai/context/poc-inventory.md`.
+4. Create/update `vault/03-PoCs/<name>.md` and link related concepts/ADRs.
+5. Update `vault/00-MOCs/*` if the PoC adds a relevant pattern.
+6. Commit as `docs(poc/<name>): update README with current state`.
