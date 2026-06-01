@@ -11,6 +11,7 @@
 - **PoCs (tabla canónica)**: `AGENTS.md §3` o `docs/03-poc-roadmap.md`
 - **Performance + paridad**: `vault/03-PoCs/Poc-Parity-Matrix.md`
 - **Observabilidad**: `vault/02-Decisions/0045-observability-stack-local.md`
+- **CQRS/Event Sourcing/EDA**: `docs/41-cqrs-event-sourcing-transacciones.md`
 
 ## Diagrama de alto nivel
 
@@ -21,6 +22,7 @@ graph TB
             jre["no-vertx-clean-engine<br/>bare-javac, Clean Arch<br/>sin frameworks"]
             jvd["vertx-layer-as-pod-eventbus<br/>4 modulos Gradle<br/>layer-as-pod"]
             vrp["vertx-layer-as-pod-http<br/>Vert.x 5 completo<br/>REST+SSE+WS+Webhook+Kafka"]
+            ntx["nestjs-distributed-transactions<br/>CQRS/Event Sourcing simple<br/>Saga/TigerBeetle avanzada"]
             k8s["k8s-local<br/>k3d/OrbStack<br/>ArgoCD + addons"]
         end
 

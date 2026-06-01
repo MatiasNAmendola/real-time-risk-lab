@@ -31,6 +31,7 @@ Plataforma de práctica para discutir decisiones de riesgo/fraude en tiempo real
 - **Clean Architecture / Hexagonal**: dominio desacoplado de runtime/framework/infra.
 - **Estilos de ejecución comparables**: engine sin framework, monolito Vert.x, layer-as-pod HTTP/EventBus, service-to-service y k8s local.
 - **Camino crítico vs async**: decisión online separada de auditoría/eventos/consumers.
+- **CQRS/Event Sourcing didáctico**: cuenta bancaria simple (`open`, `deposit`, `balance`, `events`) en PoCs NestJS/Hono. **Demo avanzada** separada: Saga, compensaciones, TigerBeetle boundary y EDA BullMQ/Valkey.
 - **Trazabilidad**: correlationId, idempotencyKey, eventos versionados y decision trace.
 - **Resiliencia**: timeouts, circuit breakers, fallbacks e idempotencia.
 - **Infra local**: Postgres, Valkey, Redpanda, Floci (unified AWS emulator — S3/SQS/SNS/Secrets/KMS), OTEL/OpenObserve.
@@ -125,6 +126,10 @@ CON VERT.X
 | `poc/vertx-layer-as-pod-http` | Con Vert.x: pods/capas comunicados por HTTP explícito + tokens | `./nx up vertx-layer-as-pod-http` |
 | `poc/vertx-service-mesh-bounded-contexts` | Con Vert.x: bounded contexts reales vía EventBus RPC/async | `poc/vertx-service-mesh-bounded-contexts/scripts/up.sh` |
 | `poc/k8s-local` | Manifiestos y addons para discusión EKS/K8s local | `poc/k8s-local/scripts/up.sh` |
+| `poc/nestjs-distributed-transactions` | NestJS: CQRS/Event Sourcing simple de cuentas + demo avanzada Saga/TigerBeetle/EDA | `cd poc/nestjs-distributed-transactions && ./scripts/test.sh` |
+| `poc/hono-distributed-transactions` | Hono: mismo ejemplo simple de cuentas, con wiring explícito, más demo avanzada separada | `cd poc/hono-distributed-transactions && ./scripts/test.sh` |
+
+Las PoCs TypeScript exponen batería separada: `bun run test:unit`, `test:integration`, `test:e2e`, `test:smoke` y `test:atdd`. Desde el runner global: `./nx test --composite typescript-transactional-pocs`.
 
 ## Stack Java
 
@@ -148,6 +153,7 @@ Ver [`cli/README.md`](cli/README.md) para el modo seguro, `--include-tracked` y 
 - [`STATUS.md`](STATUS.md) — matriz empírica actual.
 - [`docs/00-START-HERE.md`](docs/00-START-HERE.md) — onboarding extendido.
 - [`vault/05-Methodology/Architecture-Question-Bank.md`](vault/05-Methodology/Architecture-Question-Bank.md) — banco de preguntas/respuestas de arquitectura.
+- [`docs/41-cqrs-event-sourcing-transacciones.md`](docs/41-cqrs-event-sourcing-transacciones.md) — CQRS, Event Sourcing, proyecciones, snapshots, sagas y EDA aplicadas a pagos/riesgo.
 - [`vault/05-Methodology/Technical-Positioning.md`](vault/05-Methodology/Technical-Positioning.md) — frase de posicionamiento para discusión técnica.
 - [`vault/04-Concepts/In-Process-vs-Distributed.md`](vault/04-Concepts/In-Process-vs-Distributed.md) — performance y trade-offs.
 - [`vault/02-Decisions/`](vault/02-Decisions/) — ADRs.

@@ -42,3 +42,37 @@ Design note: el p99 del fake ML domina el budget. Es exactamente el síntoma del
 ## PoC 5 — Spring Boot real
 
 Pending. Low ROI vs wiring cost for this exploration scope. Design rationale if defended in review: *"el dominio está aislado, sumar Spring es agregar adaptadores y un main; el motor no cambia"*.
+## PoC 6 — NestJS Distributed Transactions
+
+Implementado en `poc/nestjs-distributed-transactions`. Complementa el motor de riesgo con procesos distribuidos fuera del camino crítico:
+
+- Saga orchestration: reserva de inventario → ledger → notificación.
+- Compensación/rollback ante fallas simuladas después de inventario, ledger o notificación.
+- Puerto `TigerBeetleLedger` con adapter `tigerbeetle-node` y fallback local para demo.
+- CQRS con comandos separados de escritura y queries sobre proyecciones.
+- Event Sourcing con event store append-only y proyección de balances.
+- EDA con BullMQ sobre Valkey, inspección vía Webdis e idempotencia de mensajes de dominio con checksum MD5 estable.
+
+Design note:
+
+> El ledger financiero y los workflows compensables son consistentes y auditables, pero no deben bloquear la respuesta de riesgo de <300ms.
+
+Próximos pasos:
+
+- Si querés profundizar TigerBeetle real: reemplazar el fallback por llamadas completas a cuentas/transfers del cluster.
+- Agregar ATDD HTTP estilo Karate/Cucumber para la nueva PoC si se quiere demo end-to-end externa.
+- Agregar smoke check al CLI Go si esta PoC debe entrar en la demo principal.
+## PoC 7 — Hono Distributed Transactions
+
+Implementado en `poc/hono-distributed-transactions`. Replica las demos de la PoC NestJS para contrastar frameworks:
+
+- Mismo ejemplo simple de cuenta bancaria con CQRS/Event Sourcing.
+- Command/query bus propio en lugar de `@nestjs/cqrs`.
+- Event store y proyecciones in-memory.
+- Demo avanzada separada con Saga, boundary TigerBeetle, EDA con BullMQ sobre Valkey, Webdis e idempotencia MD5.
+- Validación con Zod en infraestructura en lugar de DTO decorators.
+
+Design note:
+
+> Hono muestra el costo mínimo de framework: menos magia y menos DI, pero más wiring explícito. NestJS muestra una estructura más opinionated y productiva para equipos grandes.
+

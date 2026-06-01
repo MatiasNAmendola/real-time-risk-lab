@@ -37,7 +37,8 @@ Una exploración técnica de un use case de detección de fraude productivo, que
 
 1. **`vault/05-Methodology/Design-Conversation-Framework.md`** — cómo descomponer problemas de systems design.
 2. **`docs/09-architecture-question-bank.md`** — 25+ preguntas de arquitectura con análisis modelo y modos de falla comunes.
-3. **`vault/05-Methodology/Architectural-Anchors.md`** — principios de diseño que pesan.
+3. **`docs/41-cqrs-event-sourcing-transacciones.md`** — explicación didáctica de CQRS/Event Sourcing, proyecciones, snapshots, sagas y EDA en pagos/riesgo.
+4. **`vault/05-Methodology/Architectural-Anchors.md` — principios de diseño que pesan.
 
 ### Si te interesa el meta (agentes IA + tooling)
 
@@ -65,6 +66,7 @@ Una exploración técnica de un use case de detección de fraude productivo, que
 # 4. Tests rápidos (sin infra) + opcionalmente suite completa
 ./nx test --composite quick
 ./nx test --composite ci-full --with-infra-compose   # completo
+./nx test --composite typescript-transactional-pocs     # NestJS/Hono: unit + integration + e2e + smoke
 
 # 5. Dashboard con todos los paneles
 ./nx dashboard up
@@ -95,6 +97,7 @@ Para agentes y humanos: si vas a tocar X, leé Y antes.
 | meta-cobertura / coverage | [[Meta-Coverage]] + [[Primitive-Coverage-Ratio]] | 4 ejes + ratio formula |
 | confidencialidad / secrets | [[Confidentiality-Hashing]] + [[Secrets-PII-Protection]] | threat model |
 | JS/TypeScript deps | `docs/40-bun-package-manager-security.md` + `bunfig.toml` | Bun obligatorio + `ignoreScripts=true` |
+| CQRS/Event Sourcing/EDA | `docs/41-cqrs-event-sourcing-transacciones.md` + `poc/nestjs-distributed-transactions/README.md` | comandos, queries, event store, proyecciones, sagas, BullMQ y Valkey |
 
 ---
 

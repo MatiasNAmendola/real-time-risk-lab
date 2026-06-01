@@ -196,3 +196,34 @@ Preguntas importantes:
 Frase útil:
 
 > El modelo no puede ser single point of failure en el flujo de pago.
+## 10. Transacciones distribuidas, sagas, ledger y EDA
+
+Las PoCs NestJS/Hono tienen dos niveles. Primero, un ejemplo simple de cuenta bancaria para explicar CQRS/Event Sourcing: abrir cuenta, depositar, consultar balance rehidratado y ver el event stream. Segundo, una demo avanzada para workflows alrededor del pago: reservar inventario, mover fondos, notificar sistemas externos y conciliar. Ahí se usa el patrón Saga: divide el proceso en transacciones locales y, si un paso falla, ejecuta compensating transactions sobre los pasos anteriores ya confirmados.
+
+Patrón mental:
+
+```mermaid
+flowchart LR
+    A[Risk decision APPROVE] --> B[Saga orchestrator]
+    B --> C[Reserve inventory]
+    C --> D[TigerBeetle ledger transfer]
+    D --> E[Publish domain message]
+    E --> F[BullMQ sobre Valkey]
+    F --> G[Downstream projection/audit]
+    D -. failure .-> H[Reverse ledger transfer]
+    C -. failure .-> I[Release inventory]
+```
+
+Puntos clave:
+
+- La compensación no es `rollback` ACID global; es una acción de negocio reversible e idempotente.
+- CQRS/Event Sourcing se explica con la cuenta bancaria simple (`/accounts/:id/*`).
+- TigerBeetle queda en la demo avanzada como boundary del ledger: fuerte consistencia para movimientos contables, no para explicar Event Sourcing base ni para todo el workflow distribuido.
+- Event Sourcing permite reconstruir estado y auditar cambios, pero requiere versionado, snapshots y políticas de retención.
+- EDA desacopla consumidores mediante mensajes de dominio; el `domainId` viaja en el mensaje y la idempotencia usa `domainType:domainId:md5(payload-estable)`.
+- Valkey funciona como backend Redis-compatible para BullMQ e idempotencia; Webdis permite inspección HTTP simple para demo.
+
+Frase útil:
+
+> No intento una transacción distribuida global; modelo una saga observable, idempotente y compensable, dejo la atomicidad contable al ledger y publico mensajes de dominio deduplicables.
+

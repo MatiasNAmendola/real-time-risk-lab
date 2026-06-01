@@ -24,6 +24,8 @@ real-time-risk-lab/
 │   ├── vertx-layer-as-pod-eventbus/        # Con Vert.x: layer-as-pod + clustered EventBus
 │   ├── vertx-layer-as-pod-http/            # Con Vert.x: layer-as-pod + HTTP/tokens
 │   ├── vertx-service-mesh-bounded-contexts/# Con Vert.x: bounded contexts service-to-service
+│   ├── nestjs-distributed-transactions/     # NestJS: CQRS/Event Sourcing simple + Saga/TigerBeetle/EDA avanzada
+│   ├── hono-distributed-transactions/       # Hono: CQRS/Event Sourcing simple + demo avanzada
 │   └── k8s-local/               # k3d/OrbStack + ArgoCD + addons completos
 ├── tests/
 │   └── risk-engine-atdd/        # Cucumber-JVM 7 ATDD
@@ -49,6 +51,8 @@ Arquitectura completa: [.ai/context/architecture.md](.ai/context/architecture.md
 | `vertx-layer-as-pod-http` | Con Vert.x: layer-as-pod vía HTTP + tokens | `./nx up vertx-layer-as-pod-http` |
 | `vertx-service-mesh-bounded-contexts` | Con Vert.x: bounded contexts reales via EventBus RPC/async | `./scripts/up.sh && ./scripts/demo.sh` |
 | `k8s-local` | ArgoCD, canary, SLO, AWS mocks | `./scripts/up.sh` |
+| `nestjs-distributed-transactions` | NestJS: cuenta bancaria simple con CQRS/Event Sourcing + demo avanzada Saga/TigerBeetle/EDA | `./scripts/test.sh` |
+| `hono-distributed-transactions` | Hono: mismo ejemplo simple con rutas explícitas y wiring manual + demo avanzada separada | `./scripts/test.sh` |
 
 Inventario completo: [.ai/context/poc-inventory.md](.ai/context/poc-inventory.md)
 
@@ -98,13 +102,14 @@ Antes de implementar cualquier feature, busca el skill correspondiente:
   add-outbox-event.md        add-helm-template.md       add-prometheus-rule.md
   add-feature-test-karate.md add-feature-test-cucumber.md add-jacoco-coverage-target.md
   add-mock-aws-service.md    add-architecture-decision.md add-domain-entity.md
+  add-typescript-http-atdd-suite.md add-nestjs-transactional-service.md add-hono-transactional-service.md
   bootstrap-new-poc.md       refactor-to-enterprise-layout.md benchmark-poc.md
   debug-failing-test.md      update-poc-readme.md       wire-engram-memory.md
   update-architecture-doc.md
 ```
 
 Para tareas multi-paso, usa un workflow:
-[.ai/primitives/workflows/](.ai/primitives/workflows/) — 8 workflows disponibles
+[.ai/primitives/workflows/](.ai/primitives/workflows/) — workflows disponibles, incluyendo `typescript-poc-test-battery` para PoCs NestJS/Hono.
 
 ---
 

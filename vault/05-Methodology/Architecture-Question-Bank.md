@@ -58,3 +58,21 @@ source: docs/09-architecture-question-bank.md
 ## Backlinks
 
 [[Risk-Platform-Overview]] · [[Architectural-Anchors]] · [[Design-Anti-Patterns]]
+
+## Bloque 8 — Patrón Saga, transacciones distribuidas, Event Sourcing y EDA
+
+Referencia: [`docs/41-cqrs-event-sourcing-transacciones.md`](../../docs/41-cqrs-event-sourcing-transacciones.md) y `poc/nestjs-distributed-transactions`.
+
+26. ¿Cuándo usarías una saga en lugar de una transacción distribuida 2PC?
+   - Respuesta modelo: usaría saga cuando los pasos cruzan bounded contexts o servicios que no comparten una base transaccional. Cada paso debe tener acción compensatoria, idempotencia y trazabilidad; no promete aislamiento ACID global.
+27. ¿Qué responsabilidad dejarías en TigerBeetle y qué responsabilidad dejarías en el orquestador?
+   - Respuesta modelo: TigerBeetle debe preservar la consistencia del ledger y movimientos contables; el orquestador decide el workflow de negocio, timeouts, reintentos, compensaciones y comunicación downstream.
+28. ¿Cómo combinarías CQRS y Event Sourcing en una plataforma de riesgo?
+   - Respuesta modelo: escribiría eventos append-only para hechos auditables y construiría proyecciones optimizadas para lectura, por ejemplo balances o historial de decisión. Para el endpoint de riesgo usaría proyecciones precomputadas/cacheadas, no replay en request.
+29. ¿Qué riesgos operativos tiene Event Sourcing?
+   - Respuesta modelo: crecimiento del log, evolución de schemas, replays costosos, necesidad de snapshots, ordenamiento por aggregate y manejo de datos sensibles. Se mitiga con versionado, migraciones de eventos, snapshots y políticas de retención.
+30. ¿Cómo diseñarías rollback en una saga de pago?
+   - Respuesta modelo: evitaría pensar en rollback técnico global. Definiría compensaciones de negocio: reverse ledger transfer, liberar reserva, cancelar notificación o emitir evento correctivo, todo con idempotency key y correlation ID.
+31. ¿Cómo demostrarías idempotencia en EDA?
+   - Respuesta modelo: haría viajar el `domainId` en el mensaje, calcularía un checksum estable del payload y usaría una clave como `domainType:domainId:md5`. El consumidor registra esa clave en Valkey con TTL y rechaza duplicados con el mismo checksum o detecta conflictos si cambia el payload.
+

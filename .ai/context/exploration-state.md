@@ -20,6 +20,7 @@
 | ATDD Karate (in PoC) | In progress | Some scenarios, needs completion |
 | ATDD Cucumber (tests/) | In progress | Structure ready, scenarios in development |
 | .ai/ primitives system | Completed | 30 skills, 12 rules, 8 workflows, 5 hooks |
+| PoC nestjs-distributed-transactions | Implementado | CQRS/Event Sourcing simple de cuentas; Saga/TigerBeetle/EDA avanzada |
 
 ---
 
@@ -41,6 +42,7 @@
 - [x] poc/vertx-layer-as-pod-eventbus: 4 Gradle modules, docker-compose, Hazelcast
 - [x] poc/k8s-local: ArgoCD, Argo Rollouts canary, kube-prom, ESO, Tansu, OpenObserve, AWS mocks
 - [x] .ai/ system with IDE-agnostic primitives
+- [x] poc/nestjs-distributed-transactions: NestJS 11, compensaciones de saga, puerto TigerBeetle, CQRS/Event Sourcing, idempotencia EDA con BullMQ/Valkey
 
 ---
 
@@ -113,3 +115,13 @@ Las entradas con fecha (retros, milestones, descubrimientos) ahora viven en Engr
 
 - `mem_search(query: "exploration-state", project: "real-time-risk-lab")`
 - O por fecha: `mem_search(query: "exploration-state-2026-05")`
+
+## Próximos pasos — NestJS Distributed Transactions
+
+- Si se agregan nuevos módulos NestJS, mantener controllers/DTOs/handlers en `src/internal/infrastructure`.
+- Si se agregan nuevos use cases, deben depender sólo de puertos propios del dominio/aplicación.
+- Guardrail específico agregado: `poc/nestjs-distributed-transactions/scripts/check-boundaries.sh`.
+
+- Si querés profundizar TigerBeetle real: reemplazar el fallback por llamadas completas a cuentas/transfers del cluster.
+- Agregar ATDD HTTP estilo Karate/Cucumber para la nueva PoC si se quiere demo end-to-end externa.
+- Agregar smoke check al CLI Go si esta PoC debe entrar en la demo principal.

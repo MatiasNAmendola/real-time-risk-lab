@@ -244,3 +244,30 @@ Sin Spring Boot en las PoCs. Vert.x 5 para reactive, bare-javac para demos de ar
 ### Consecuencias negativas / riesgos
 - Sin auto-configuration: wiring manual en `config/`.
 - Compensacion: un reviewer puede ver exactamente como funciona el wiring.
+
+---
+
+## ADR-012: NestJS para patrones transaccionales fuera del camino crítico
+
+**Status**: accepted
+**Date**: 2026-06-01
+**Deciders**: Matias Amendola
+
+### Contexto
+El laboratorio ya cubre decisión de riesgo de baja latencia en Java/Vert.x, pero faltaba una PoC explícita para sagas, compensaciones, CQRS, Event Sourcing y ledger transaccional. Estos patrones son relevantes para procesos distribuidos alrededor del pago, pero no deben aumentar el p99 del endpoint de decisión.
+
+### Decision
+Agregar `poc/nestjs-distributed-transactions` con NestJS 11, Bun como package manager seguro, saga orchestration, puerto `TigerBeetleLedger`, CQRS con `@nestjs/cqrs` y event store/proyecciones in-memory para demo local.
+
+### Consecuencias positivas
+- Demuestra patrones de consistencia eventual y rollback sin contaminar las PoCs Java del camino crítico.
+- TigerBeetle queda aislado como puerto de dominio, con adapter intercambiable y fallback local para demos reproducibles.
+- Refuerza el argumento de arquitectura híbrida: decisión síncrona rápida, procesos financieros y auditoría como workflows separados.
+
+### Consecuencias negativas / riesgos
+- Introduce stack TypeScript adicional, por lo que se mantiene como PoC separada y gobernada por Bun `ignoreScripts=true`.
+- El adapter TigerBeetle incluido prioriza boundary y demo; la integración productiva requiere cluster real, manejo de IDs uint128, cuentas y reconciliation completa.
+
+### Alternativas consideradas
+- Extender las PoCs Vert.x existentes: descartado para no mezclar el path de p99 < 300ms con workflows largos.
+- Implementar sólo documentación: descartado porque el objetivo es demostrar ejecución, compensación y proyecciones con código.

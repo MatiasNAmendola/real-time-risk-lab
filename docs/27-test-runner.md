@@ -119,6 +119,7 @@ Grupos que actualmente declaran `requires`:
 | Grupo | requires |
 |---|---|
 | `unit-sdk-typescript`, `sdk-typescript`, `sdk-typescript-integration` | `[bun]` (+ `docker` para integration). El comando se envuelve en `scripts/lib/with-bun.sh` y usa `bun install --frozen-lockfile` + `bun run ...`. |
+| `*-nestjs-distributed-transactions`, `*-hono-distributed-transactions`, `typescript-transactional-pocs` | `[bun]`; los grupos `k6-*distributed-transactions` además requieren `[k6]`. Batería TypeScript: unit, integration, e2e HTTP, ATDD `.feature` con Cucumber JS, smoke y k6 smoke/load sin Docker por defecto. |
 | `unit-sdk-go`, `sdk-go`, `sdk-go-integration` | `[go]` (+ `docker` para integration) |
 | `integration-*`, `sdk-*-integration`, `contract`, `k6`, `bench-distributed`, aliases legacy compose/docker | `[docker]` (+ `k6` para `k6`) |
 
@@ -167,12 +168,33 @@ Matriz recomendada:
 | Contexto | Comando |
 |----------|---------|
 | Demo live | `./nx test --composite quick` |
+| PoCs TypeScript transaccionales | `./nx test --composite typescript-transactional-pocs` — incluye k6 si `k6` está instalado; si no, esos grupos se marcan SKIP. |
 | Pre-push | `./nx test --composite ci-fast` |
 | CI fast | `./nx test --composite ci-fast --json` |
 | Full local no-k8s | `./nx proc status --include-gradle-daemons --truncate 120 && ./nx test all --with-infra-compose --parallel 1 --max-cpu 50 --max-ram 6000` |
 | Variants/e2e ampliado | `./nx up all && ./nx test --composite all-variants --parallel 1 --max-cpu 50 --max-ram 6000` |
 | CI full | `./nx test --composite ci-full --with-infra-compose --json --auto-parallel` |
 | Infra/k8s/nightly | `./nx test --composite k8s --with-infra-k8s --json` |
+
+### k6 en PoCs TypeScript
+
+Las PoCs NestJS/Hono ejecutan literalmente sus `.feature` con Cucumber JS mediante `test:atdd:feature`; además incorporan un escenario k6 específico (`tests/k6/accounts-smoke.js`) para el flujo simple de CQRS/Event Sourcing:
+
+```text
+open account -> deposit -> query balance -> query events
+```
+
+k6 no reemplaza ATDD: ATDD/e2e valida semántica y mensajes esperados; k6 agrega una señal de latencia, errores HTTP y percentiles bajo concurrencia pequeña. Lo usamos porque el repo ya estandarizó k6 para HTTP load testing: evita loops caseros, expone thresholds y produce métricas comparables con OpenObserve.
+
+Comandos:
+
+```bash
+cd poc/nestjs-distributed-transactions && bun run test:k6
+cd poc/hono-distributed-transactions && bun run test:k6
+./nx test --composite typescript-transactional-pocs
+```
+
+Si `k6` no está instalado, el runner global marca los grupos `k6-*distributed-transactions` como SKIP gracias a `requires: [bun, k6]`.
 
 ## Referencia de CLI
 

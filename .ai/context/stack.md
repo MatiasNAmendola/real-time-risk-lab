@@ -52,6 +52,22 @@
 | ElasticMQ | latest | 9324 |
 | OpenBao | latest | 8200 |
 
+
+## TypeScript / NestJS PoC
+
+| Componente | Version | Notas |
+|---|---|---|
+| NestJS | 11.1.24 | `@nestjs/common`, `@nestjs/core`, `@nestjs/platform-express` |
+| Hono | 4.12.23 | Adapter HTTP minimalista en `poc/hono-distributed-transactions` |
+| @hono/node-server | 2.0.4 | Server local para Hono |
+| @nestjs/cqrs | 11.0.3 | CQRS/EventBus para PoC transaccional |
+| TypeScript | 6.0.3 | `ignoreDeprecations=6.0`, build con `tsc` |
+| Bun | 1.3.14 verificado localmente | Package manager/runtime; lifecycle scripts bloqueados |
+| TigerBeetle Node | 0.17.4 | Adapter opcional de ledger en `poc/nestjs-distributed-transactions` |
+| BullMQ | 5.77.7 | Cola EDA sobre Valkey para mensajes de dominio |
+| ioredis | 5.11.0 | Cliente Redis-compatible para Valkey |
+| OpenTelemetry JS | 0.218.0 / API 1.9.1 | Export OTLP HTTP para traces/metrics |
+
 ## Kubernetes / Helm
 
 | Componente | Version | Chart |

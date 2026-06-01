@@ -83,6 +83,114 @@ groups:
     exclusive: false
     requires: [go]
 
+  unit-nestjs-distributed-transactions:
+    cmd: "scripts/lib/with-bun.sh sh -c 'cd poc/nestjs-distributed-transactions && ([ -d node_modules ] || bun install --frozen-lockfile --silent) && bun run test:unit'"
+    needs_infra: false
+    cost_cpu: low
+    cost_ram_mb: 400
+    duration_estimate_sec: 20
+    exclusive: false
+    requires: [bun]
+
+  integration-nestjs-distributed-transactions:
+    cmd: "scripts/lib/with-bun.sh sh -c 'cd poc/nestjs-distributed-transactions && ([ -d node_modules ] || bun install --frozen-lockfile --silent) && bun run test:integration'"
+    needs_infra: false
+    cost_cpu: low
+    cost_ram_mb: 400
+    duration_estimate_sec: 20
+    exclusive: false
+    requires: [bun]
+
+  e2e-nestjs-distributed-transactions:
+    cmd: "scripts/lib/with-bun.sh sh -c 'cd poc/nestjs-distributed-transactions && ([ -d node_modules ] || bun install --frozen-lockfile --silent) && bun run test:e2e'"
+    needs_infra: false
+    cost_cpu: medium
+    cost_ram_mb: 700
+    duration_estimate_sec: 45
+    exclusive: true
+    requires: [bun]
+
+  smoke-nestjs-distributed-transactions:
+    cmd: "scripts/lib/with-bun.sh sh -c 'cd poc/nestjs-distributed-transactions && ([ -d node_modules ] || bun install --frozen-lockfile --silent) && bun run test:smoke'"
+    needs_infra: false
+    cost_cpu: low
+    cost_ram_mb: 500
+    duration_estimate_sec: 25
+    exclusive: true
+    requires: [bun]
+
+  unit-hono-distributed-transactions:
+    cmd: "scripts/lib/with-bun.sh sh -c 'cd poc/hono-distributed-transactions && ([ -d node_modules ] || bun install --frozen-lockfile --silent) && bun run test:unit'"
+    needs_infra: false
+    cost_cpu: low
+    cost_ram_mb: 300
+    duration_estimate_sec: 15
+    exclusive: false
+    requires: [bun]
+
+  integration-hono-distributed-transactions:
+    cmd: "scripts/lib/with-bun.sh sh -c 'cd poc/hono-distributed-transactions && ([ -d node_modules ] || bun install --frozen-lockfile --silent) && bun run test:integration'"
+    needs_infra: false
+    cost_cpu: low
+    cost_ram_mb: 300
+    duration_estimate_sec: 15
+    exclusive: false
+    requires: [bun]
+
+  e2e-hono-distributed-transactions:
+    cmd: "scripts/lib/with-bun.sh sh -c 'cd poc/hono-distributed-transactions && ([ -d node_modules ] || bun install --frozen-lockfile --silent) && bun run test:e2e'"
+    needs_infra: false
+    cost_cpu: low
+    cost_ram_mb: 400
+    duration_estimate_sec: 30
+    exclusive: true
+    requires: [bun]
+
+  atdd-feature-nestjs-distributed-transactions:
+    cmd: "scripts/lib/with-bun.sh sh -c 'cd poc/nestjs-distributed-transactions && ([ -d node_modules ] || bun install --frozen-lockfile --silent) && bun run test:atdd:feature'"
+    needs_infra: false
+    cost_cpu: medium
+    cost_ram_mb: 700
+    duration_estimate_sec: 45
+    exclusive: true
+    requires: [bun]
+
+  atdd-feature-hono-distributed-transactions:
+    cmd: "scripts/lib/with-bun.sh sh -c 'cd poc/hono-distributed-transactions && ([ -d node_modules ] || bun install --frozen-lockfile --silent) && bun run test:atdd:feature'"
+    needs_infra: false
+    cost_cpu: low
+    cost_ram_mb: 400
+    duration_estimate_sec: 30
+    exclusive: true
+    requires: [bun]
+
+  smoke-hono-distributed-transactions:
+    cmd: "scripts/lib/with-bun.sh sh -c 'cd poc/hono-distributed-transactions && ([ -d node_modules ] || bun install --frozen-lockfile --silent) && bun run test:smoke'"
+    needs_infra: false
+    cost_cpu: low
+    cost_ram_mb: 350
+    duration_estimate_sec: 20
+    exclusive: true
+    requires: [bun]
+
+  k6-nestjs-distributed-transactions:
+    cmd: "scripts/lib/with-bun.sh sh -c 'cd poc/nestjs-distributed-transactions && ([ -d node_modules ] || bun install --frozen-lockfile --silent) && bun run test:k6'"
+    needs_infra: false
+    cost_cpu: medium
+    cost_ram_mb: 600
+    duration_estimate_sec: 30
+    exclusive: true
+    requires: [bun, k6]
+
+  k6-hono-distributed-transactions:
+    cmd: "scripts/lib/with-bun.sh sh -c 'cd poc/hono-distributed-transactions && ([ -d node_modules ] || bun install --frozen-lockfile --silent) && bun run test:k6'"
+    needs_infra: false
+    cost_cpu: medium
+    cost_ram_mb: 500
+    duration_estimate_sec: 30
+    exclusive: true
+    requires: [bun, k6]
+
   atdd-cucumber:
     cmd: "./gradlew :tests:risk-engine-atdd:test"
     needs_infra: false
@@ -426,6 +534,36 @@ composites:
     - sdk-java-integration
     - sdk-typescript-integration
     - sdk-go-integration
+
+  nestjs-distributed-transactions-suite:
+    - unit-nestjs-distributed-transactions
+    - integration-nestjs-distributed-transactions
+    - e2e-nestjs-distributed-transactions
+    - atdd-feature-nestjs-distributed-transactions
+    - smoke-nestjs-distributed-transactions
+    - k6-nestjs-distributed-transactions
+
+  hono-distributed-transactions-suite:
+    - unit-hono-distributed-transactions
+    - integration-hono-distributed-transactions
+    - e2e-hono-distributed-transactions
+    - atdd-feature-hono-distributed-transactions
+    - smoke-hono-distributed-transactions
+    - k6-hono-distributed-transactions
+
+  typescript-transactional-pocs:
+    - unit-nestjs-distributed-transactions
+    - integration-nestjs-distributed-transactions
+    - e2e-nestjs-distributed-transactions
+    - atdd-feature-nestjs-distributed-transactions
+    - smoke-nestjs-distributed-transactions
+    - k6-nestjs-distributed-transactions
+    - unit-hono-distributed-transactions
+    - integration-hono-distributed-transactions
+    - e2e-hono-distributed-transactions
+    - atdd-feature-hono-distributed-transactions
+    - smoke-hono-distributed-transactions
+    - k6-hono-distributed-transactions
 
   no-vertx-clean-engine-suite:
     - unit-java-fast
