@@ -153,6 +153,7 @@ Ver [`cli/README.md`](cli/README.md) para el modo seguro, `--include-tracked` y 
 - [`DEMO_SCRIPT.md`](DEMO_SCRIPT.md) — recorrido seguro para mostrar el repo.
 - [`docs/44-guion-presentacion-tecnica.md`](docs/44-guion-presentacion-tecnica.md) — guion de relato para discusiones técnicas.
 - [`docs/45-requisitos-y-estilos-arquitectonicos.md`](docs/45-requisitos-y-estilos-arquitectonicos.md) — requisitos funcionales/no funcionales y comparación monolito, macroservicio, microservicio y layer-as-pod.
+- [`docs/46-decisiones-de-stack-plataforma-e-iac.md`](docs/46-decisiones-de-stack-plataforma-e-iac.md) — criterios para elegir stack, DX tooling, IaC, multi-AZ/región/cloud y consola interna.
 - [`STATUS.md`](STATUS.md) — matriz empírica actual.
 - [`docs/00-START-HERE.md`](docs/00-START-HERE.md) — onboarding extendido.
 - [`vault/05-Methodology/Architecture-Question-Bank.md`](vault/05-Methodology/Architecture-Question-Bank.md) — banco de preguntas/respuestas de arquitectura.
