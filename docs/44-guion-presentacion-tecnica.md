@@ -180,5 +180,6 @@ python3 .ai/scripts/app-compliance-audit.py
 - [`docs/41-cqrs-event-sourcing-transacciones.md`](41-cqrs-event-sourcing-transacciones.md)
 - [`docs/42-documentacion-metodica.md`](42-documentacion-metodica.md)
 - [`docs/43-auditoria-transversal-apps.md`](43-auditoria-transversal-apps.md)
+- [`docs/45-requisitos-y-estilos-arquitectonicos.md`](45-requisitos-y-estilos-arquitectonicos.md)
 - [`vault/05-Methodology/Technical-Positioning.md`](../vault/05-Methodology/Technical-Positioning.md)
 - [`vault/05-Methodology/Technical-Discussion-Simulation.md`](../vault/05-Methodology/Technical-Discussion-Simulation.md)
