@@ -56,8 +56,8 @@ Example failure:
 ```
 Architecture Violation [Priority: MEDIUM] - Rule 'application.* must not import
 infrastructure.repository.* concrete adapters' was violated (1 times):
-  Method <io.riskplatform.engine.application.usecase.risk.SomeService.doThing()>
-  calls constructor <io.riskplatform.engine.infrastructure.repository.ml.FakeRiskModelScorer.<init>()>
+  Method <io.riskplatform.riskdecision.cleanengine.application.usecase.risk.SomeService.doThing()>
+  calls constructor <io.riskplatform.riskdecision.cleanengine.infrastructure.repository.ml.FakeRiskModelScorer.<init>()>
   in (SomeService.java:42)
 ```
 

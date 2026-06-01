@@ -1,6 +1,6 @@
-package io.riskplatform.monolith.unit;
+package io.riskplatform.riskdecision.monolith.unit;
 
-import io.riskplatform.monolith.observability.OtelHelper;
+import io.riskplatform.riskdecision.monolith.observability.OtelHelper;
 import org.junit.jupiter.api.Test;
 
 /**

@@ -1,6 +1,6 @@
 package io.riskplatform.atdd.steps;
 
-import io.riskplatform.engine.domain.entity.DecisionEvent;
+import io.riskplatform.riskdecision.cleanengine.domain.entity.DecisionEvent;
 import io.cucumber.java.en.*;
 
 import java.time.Duration;

@@ -17,9 +17,10 @@ src/
 ├── main.ts
 ├── cmd/                         # wiring/bootstrap
 └── internal/
-    ├── domain/                  # entities, value objects, ports
-    ├── application/             # commands, pure DTOs, use cases
-    └── infrastructure/          # HTTP, Nest/Hono, CQRS adapters, BullMQ, Valkey, TigerBeetle
+    └── transactional-risk/       # business capability first (Screaming Architecture)
+        ├── domain/              # entities, value objects, ports
+        ├── application/         # commands, pure DTOs, use cases
+        └── infrastructure/      # HTTP, Nest/Hono, CQRS adapters, BullMQ, Valkey, TigerBeetle
 ```
 
 ## Required aliases
@@ -30,9 +31,10 @@ Every TypeScript PoC must define aliases in `tsconfig.json`:
 ```json
 "paths": {
   "@cmd/*": ["./src/cmd/*"],
-  "@domain/*": ["./src/internal/domain/*"],
-  "@application/*": ["./src/internal/application/*"],
-  "@infrastructure/*": ["./src/internal/infrastructure/*"],
+  "@domain/*": ["./src/internal/transactional-risk/domain/*"],
+  "@application/*": ["./src/internal/transactional-risk/application/*"],
+  "@infrastructure/*": ["./src/internal/transactional-risk/infrastructure/*"],
+  "@transactional-risk/*": ["./src/internal/transactional-risk/*"],
   "@internal/*": ["./src/internal/*"]
 }
 ```
@@ -42,9 +44,9 @@ Guardrails must treat `@infrastructure/*` as forbidden from `domain` and `applic
 
 ## Boundaries
 
-- `internal/domain` must not import NestJS, Hono, BullMQ, ioredis, Valkey, TigerBeetle client, HTTP, or `internal/infrastructure`.
-- `internal/application` must not import controllers, adapters, `@nestjs/*`, `hono`, `bullmq`, or `ioredis`.
-- Frameworks and drivers live in `internal/infrastructure`.
+- `internal/transactional-risk/domain` must not import NestJS, Hono, BullMQ, ioredis, Valkey, TigerBeetle client, HTTP, or `internal/transactional-risk/infrastructure`.
+- `internal/transactional-risk/application` must not import controllers, adapters, `@nestjs/*`, `hono`, `bullmq`, or `ioredis`.
+- Frameworks and drivers live in `internal/transactional-risk/infrastructure`.
 - `src/cmd` only composes dependencies.
 
 ## Required testing

@@ -1,6 +1,6 @@
-package io.riskplatform.monolith.unit;
+package io.riskplatform.riskdecision.monolith.unit;
 
-import io.riskplatform.distributed.shared.RiskDecision;
+import io.riskplatform.riskdecision.layerpodeventbus.shared.RiskDecision;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;

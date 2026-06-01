@@ -1,11 +1,4 @@
----
-title: App Compliance Audit
-tags: [methodology, audit, clean-architecture, guardrails]
-created: 2026-06-01
-updated: 2026-06-01
----
-
-# App Compliance Audit
+# Auditoría transversal de apps y PoCs
 
 ## Criterio de lectura
 
@@ -29,7 +22,7 @@ La auditoría distingue entre **Clean Architecture estricta** y **arquitecturas 
 | `poc/vertx-service-mesh-bounded-contexts` | Java service mesh app | Bounded contexts separados por servicio | OK | OK | OK | OK | OK | **WARN** |
 | `poc/k8s-local` | Kubernetes platform PoC | Infraestructura/GitOps, no aplicación de dominio | OK | N/A | OK | N/A | N/A | **WARN** |
 | `poc/kafka-s3-tansu` | Kafka/S3 broker PoC | Infraestructura broker, no aplicación de dominio | OK | OK | OK | N/A | OK | **WARN** |
-| `poc/nestjs-distributed-transactions` | TypeScript NestJS app | Clean Architecture con internal/domain|application|infrastructure | OK | OK | OK | OK | OK | **OK** |
+| `poc/nestjs-distributed-transactions` | TypeScript NestJS app | Clean Architecture bajo internal/transactional-risk/{domain,application,infrastructure} | OK | OK | OK | OK | OK | **OK** |
 | `poc/hono-distributed-transactions` | TypeScript Hono app | Clean Architecture con wiring manual | OK | OK | OK | OK | OK | **OK** |
 | `cli/risk-smoke` | Go CLI | CLI internal packages con dependencias dirigidas | OK | OK | OK | N/A | N/A | **WARN** |
 

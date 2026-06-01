@@ -5,7 +5,7 @@ import java.util.UUID;
 
 /**
  * Copied from poc/no-vertx-clean-engine with re-packaged types.
- * Original: io.riskplatform.engine.domain.entity.DecisionEvent
+ * Original: io.riskplatform.riskdecision.cleanengine.domain.entity.DecisionEvent
  *
  * Decision and reason fields are kept as Strings to avoid coupling
  * to domain enums until Phase 2 aligns types.

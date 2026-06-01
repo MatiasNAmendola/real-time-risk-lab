@@ -69,13 +69,15 @@ Los imports entre capas usan aliases explícitos para evitar paths relativos lar
 
 `tsconfig.json` define los aliases y `bun run build` ejecuta `tsc-alias` para reescribirlos en `dist/`, de modo que el build compilado también sea ejecutable. ESLint y los guardrails bloquean que `domain/` o `application/` importen `@infrastructure/*`.
 
-## Boundaries Clean Architecture
+## Boundaries Clean Architecture + Screaming Architecture
+
+El código fuente ubica primero la capacidad `transactional-risk` y debajo conserva las capas de Clean Architecture.
 
 La PoC queda separada así:
 
-- `domain/`: entidades, eventos de dominio, value objects y puertos. No importa NestJS, BullMQ, Valkey ni HTTP.
-- `application/`: comandos, inputs puros, eventos de aplicación, mappers y use cases. No tiene decorators de NestJS ni `class-validator`.
-- `infrastructure/`: controllers, DTOs HTTP con validación, handlers CQRS de Nest, BullMQ, Valkey, repositorios y adapter TigerBeetle.
+- `src/internal/transactional-risk/domain`: entidades, eventos de dominio, value objects y puertos. No importa NestJS, BullMQ, Valkey ni HTTP.
+- `src/internal/transactional-risk/application`: comandos, inputs puros, eventos de aplicación, mappers y use cases. No tiene decorators de NestJS ni `class-validator`.
+- `src/internal/transactional-risk/infrastructure`: controllers, DTOs HTTP con validación, handlers CQRS de Nest, BullMQ, Valkey, repositorios y adapter TigerBeetle.
 - `src/cmd/app.module.ts` / `src/main.ts`: wiring de NestJS siguiendo la estructura `apps/<app>/cmd + internal/` del proyecto de referencia.
 
 Guardrail local:
@@ -84,7 +86,7 @@ Guardrail local:
 ./scripts/check-boundaries.sh
 ```
 
-Este script falla si `src/internal/domain` o `src/internal/application` importan NestJS, DTO decorators, BullMQ, Valkey/ioredis, HTTP, ORM/query libs o adapters de infraestructura.
+Este script falla si `src/internal/transactional-risk/domain` o `src/internal/transactional-risk/application` importan NestJS, DTO decorators, BullMQ, Valkey/ioredis, HTTP, ORM/query libs o adapters de infraestructura.
 
 ## Requisitos
 
@@ -238,7 +240,7 @@ El adapter mantiene la misma API del puerto `TigerBeetleLedger`; para review té
 
 ## Next Steps
 
-- Si se agregan nuevos módulos NestJS, mantener controllers/DTOs/handlers en `src/internal/infrastructure`.
+- Si se agregan nuevos módulos NestJS, mantener controllers/DTOs/handlers en `src/internal/transactional-risk/infrastructure`.
 - Si se agregan nuevos use cases, deben depender sólo de puertos propios del dominio/aplicación.
 - El guardrail específico de esta PoC vive en `./scripts/check-boundaries.sh` y ya corre dentro de `./scripts/test.sh`.
 - Si querés profundizar TigerBeetle real: reemplazar el fallback por llamadas completas a cuentas/transfers del cluster.

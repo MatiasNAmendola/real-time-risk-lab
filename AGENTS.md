@@ -94,6 +94,12 @@ Node/JS/TypeScript uses **Bun** as package manager/runtime. Do not use npm/pnpm/
 `bunfig.toml` must keep `[install] ignoreScripts = true` to block lifecycle scripts.
 Rule: `docs/40-bun-package-manager-security.md`
 
+### R7: Screaming Architecture for services
+
+Service source trees must reveal the business capability before framework/runtime/layer details. Java packages use capability-first prefixes such as `io.riskplatform.riskdecision.*`; TypeScript transactional PoCs keep Clean Architecture layers under `src/internal/transactional-risk/{domain,application,infrastructure}`.
+Rule: `.ai/primitives/rules/screaming-architecture.md`
+
+
 ---
 
 ## 5. Extending the system

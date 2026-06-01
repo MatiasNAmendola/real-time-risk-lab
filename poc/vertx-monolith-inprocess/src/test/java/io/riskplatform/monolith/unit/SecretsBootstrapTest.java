@@ -1,6 +1,6 @@
-package io.riskplatform.monolith.unit;
+package io.riskplatform.riskdecision.monolith.unit;
 
-import io.riskplatform.monolith.repository.SecretsBootstrap;
+import io.riskplatform.riskdecision.monolith.repository.SecretsBootstrap;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;

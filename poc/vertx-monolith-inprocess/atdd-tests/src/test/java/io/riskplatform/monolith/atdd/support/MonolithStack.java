@@ -1,4 +1,4 @@
-package io.riskplatform.monolith.atdd.support;
+package io.riskplatform.riskdecision.monolith.atdd.support;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

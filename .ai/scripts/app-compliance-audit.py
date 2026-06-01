@@ -122,7 +122,7 @@ APPS: tuple[AppProfile, ...] = (
     AppProfile(
         "poc/nestjs-distributed-transactions",
         "TypeScript NestJS app",
-        "Clean Architecture con internal/domain|application|infrastructure",
+        "Clean Architecture bajo internal/transactional-risk/{domain,application,infrastructure}",
         expected_build=("package.json", "tsconfig.json"),
         expected_tests=("src", "tests/integration", "tests/e2e", "tests/atdd", "tests/smoke", "tests/k6"),
     ),
@@ -239,10 +239,10 @@ def check_eventbus_module_boundaries(result: AppResult, root: Path) -> None:
     if root.name != "vertx-layer-as-pod-eventbus":
         return
     modules = {
-        "controller-app": "io.riskplatform.distributed.controller.",
-        "usecase-app": "io.riskplatform.distributed.usecase.",
-        "repository-app": "io.riskplatform.distributed.repository.",
-        "consumer-app": "io.riskplatform.distributed.consumer.",
+        "controller-app": "io.riskplatform.riskdecision.layerpodeventbus.controller.",
+        "usecase-app": "io.riskplatform.riskdecision.layerpodeventbus.usecase.",
+        "repository-app": "io.riskplatform.riskdecision.layerpodeventbus.repository.",
+        "consumer-app": "io.riskplatform.riskdecision.layerpodeventbus.consumer.",
     }
     for module, own_pkg in modules.items():
         forbidden = [pkg for other, pkg in modules.items() if other != module]
@@ -263,8 +263,10 @@ def check_ts_boundaries(result: AppResult, root: Path) -> None:
     if not internal.exists():
         return
     hard = 0
-    for layer in ("domain", "application"):
-        for f in files_under(internal / layer, ".ts"):
+    layer_dirs = [d for d in internal.rglob("*") if d.is_dir() and d.name in {"domain", "application"}]
+    for layer_dir in layer_dirs:
+        layer = layer_dir.name
+        for f in files_under(layer_dir, ".ts"):
             for imp in ts_imports(f):
                 if imp in FORBIDDEN_TS_PACKAGES or imp.startswith(FORBIDDEN_TS_PREFIXES):
                     result.violations.append(f"{rel(f)}: {layer} importa framework/adapter: {imp}")

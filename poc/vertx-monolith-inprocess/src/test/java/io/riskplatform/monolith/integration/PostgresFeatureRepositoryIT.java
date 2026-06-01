@@ -1,8 +1,8 @@
-package io.riskplatform.monolith.integration;
+package io.riskplatform.riskdecision.monolith.integration;
 
-import io.riskplatform.distributed.shared.FeatureSnapshot;
-import io.riskplatform.monolith.repository.DbBootstrap;
-import io.riskplatform.monolith.repository.PostgresFeatureRepository;
+import io.riskplatform.riskdecision.layerpodeventbus.shared.FeatureSnapshot;
+import io.riskplatform.riskdecision.monolith.repository.DbBootstrap;
+import io.riskplatform.riskdecision.monolith.repository.PostgresFeatureRepository;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.testcontainers.containers.PostgreSQLContainer;

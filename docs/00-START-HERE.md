@@ -90,6 +90,7 @@ Para agentes y humanos: si vas a tocar X, leé Y antes.
 | endpoint REST nuevo | `.ai/primitives/skills/add-rest-endpoint.md` | layout enterprise |
 | consumer Kafka | `.ai/primitives/skills/add-kafka-consumer.md` + [[0043-kafka-broker-alternatives-eval]] | gap CreateTopics en Tansu |
 | boundary domain/infra | `.ai/primitives/rules/clean-arch-boundaries.md` | R5 non-negotiable |
+| Screaming Architecture | `.ai/primitives/rules/screaming-architecture.md` + [[Screaming-Architecture]] | la estructura debe mostrar primero la capacidad de negocio |
 | OTEL span/metric | [[0045-observability-stack-local]] + `.ai/primitives/rules/observability-otel.md` | R4 |
 | versión Java | [[0001-java-25-lts]] + `.ai/primitives/rules/java-version.md` | R1 (21 baseline, 25 target) |
 | AWS mock | [[0042-floci-unified-aws-emulator]] + [[0005-aws-mocks-stack]] | Floci, no LocalStack |

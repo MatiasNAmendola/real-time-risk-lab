@@ -43,6 +43,7 @@
 - [x] .ai/ system with IDE-agnostic primitives
 - [x] poc/nestjs-distributed-transactions: NestJS 11, compensaciones de saga, puerto TigerBeetle, CQRS/Event Sourcing, idempotencia EDA con BullMQ/Valkey
 - [x] poc/hono-distributed-transactions: contraste Hono/Zod/wiring manual para el mismo set de patrones
+- [x] Screaming Architecture aplicada en servicios: paquetes Java capability-first `riskdecision.*` y TypeScript bajo `src/internal/transactional-risk/{domain,application,infrastructure}`.
 
 ---
 
@@ -117,7 +118,7 @@ Las entradas con fecha (retros, milestones, descubrimientos) ahora viven en Engr
 
 ## Próximos pasos — TypeScript Distributed Transactions
 
-- Si se agregan nuevos módulos NestJS, mantener controllers/DTOs/handlers en `src/internal/infrastructure`.
+- Si se agregan nuevos módulos NestJS, mantener controllers/DTOs/handlers en `src/internal/transactional-risk/infrastructure`.
 - Si se agregan nuevos use cases, deben depender sólo de puertos propios del dominio/aplicación.
 - Guardrails específicos agregados: `poc/nestjs-distributed-transactions/scripts/check-boundaries.sh`, `poc/hono-distributed-transactions/scripts/check-boundaries.sh`, ESLint `no-restricted-imports` y `.ai/scripts/quick-check.py`.
 

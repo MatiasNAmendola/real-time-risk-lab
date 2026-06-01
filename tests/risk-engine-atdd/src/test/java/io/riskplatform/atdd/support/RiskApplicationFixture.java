@@ -1,21 +1,21 @@
 package io.riskplatform.atdd.support;
 
-import io.riskplatform.engine.domain.context.ExecutionContext;
-import io.riskplatform.engine.application.common.StructuredLogger;
-import io.riskplatform.engine.application.usecase.risk.EvaluateTransactionRiskService;
-import io.riskplatform.engine.config.RiskApplicationFactory;
-import io.riskplatform.engine.domain.entity.CorrelationId;
-import io.riskplatform.engine.domain.rule.HighAmountRule;
-import io.riskplatform.engine.domain.rule.NewDeviceYoungCustomerRule;
-import io.riskplatform.engine.domain.service.*;
-import io.riskplatform.engine.domain.usecase.EvaluateRiskUseCase;
-import io.riskplatform.engine.infrastructure.repository.event.*;
-import io.riskplatform.engine.infrastructure.repository.feature.InMemoryFeatureProvider; // referenced by canonical factory only
-import io.riskplatform.engine.infrastructure.repository.idempotency.InMemoryDecisionIdempotencyStore;
-import io.riskplatform.engine.infrastructure.repository.log.ConsoleStructuredLogger;
-import io.riskplatform.engine.infrastructure.repository.ml.FakeRiskModelScorer;
-import io.riskplatform.engine.infrastructure.repository.persistence.*;
-import io.riskplatform.engine.infrastructure.resilience.CircuitBreaker;
+import io.riskplatform.riskdecision.cleanengine.domain.context.ExecutionContext;
+import io.riskplatform.riskdecision.cleanengine.application.common.StructuredLogger;
+import io.riskplatform.riskdecision.cleanengine.application.usecase.risk.EvaluateTransactionRiskService;
+import io.riskplatform.riskdecision.cleanengine.config.RiskApplicationFactory;
+import io.riskplatform.riskdecision.cleanengine.domain.entity.CorrelationId;
+import io.riskplatform.riskdecision.cleanengine.domain.rule.HighAmountRule;
+import io.riskplatform.riskdecision.cleanengine.domain.rule.NewDeviceYoungCustomerRule;
+import io.riskplatform.riskdecision.cleanengine.domain.service.*;
+import io.riskplatform.riskdecision.cleanengine.domain.usecase.EvaluateRiskUseCase;
+import io.riskplatform.riskdecision.cleanengine.infrastructure.repository.event.*;
+import io.riskplatform.riskdecision.cleanengine.infrastructure.repository.feature.InMemoryFeatureProvider; // referenced by canonical factory only
+import io.riskplatform.riskdecision.cleanengine.infrastructure.repository.idempotency.InMemoryDecisionIdempotencyStore;
+import io.riskplatform.riskdecision.cleanengine.infrastructure.repository.log.ConsoleStructuredLogger;
+import io.riskplatform.riskdecision.cleanengine.infrastructure.repository.ml.FakeRiskModelScorer;
+import io.riskplatform.riskdecision.cleanengine.infrastructure.repository.persistence.*;
+import io.riskplatform.riskdecision.cleanengine.infrastructure.resilience.CircuitBreaker;
 
 import java.time.Duration;
 import java.util.List;

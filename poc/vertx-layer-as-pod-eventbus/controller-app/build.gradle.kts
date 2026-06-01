@@ -21,6 +21,6 @@ tasks.named<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar>("shadowJ
     archiveBaseName.set("controller-app")
     archiveClassifier.set("")
     manifest {
-        attributes("Main-Class" to "io.riskplatform.distributed.controller.ControllerMain")
+        attributes("Main-Class" to "io.riskplatform.riskdecision.layerpodeventbus.controller.ControllerMain")
     }
 }

@@ -6,7 +6,7 @@ preconditions:
   - poc/nestjs-distributed-transactions exists
   - .ai/primitives/rules/typescript-service-poc.md has been read
 postconditions:
-  - controllers, DTOs, and handlers remain under internal/infrastructure
+  - controllers, DTOs, and handlers remain under internal/transactional-risk/infrastructure
   - new use cases depend only on their own ports
   - ATDD, unit, integration, e2e, and smoke tests are updated
 related_rules: [typescript-service-poc, clean-arch-boundaries, testing-atdd]
@@ -17,9 +17,9 @@ related_rules: [typescript-service-poc, clean-arch-boundaries, testing-atdd]
 ## Steps
 
 1. Define behavior in `tests/atdd/*.feature` before implementation.
-2. Create or extend the use case in `src/internal/application/usecase/<aggregate>/`.
-3. If output is needed, define a port in `src/internal/domain/repository` or `src/internal/domain/service`.
-4. Implement the NestJS adapter under `src/internal/infrastructure`:
+2. Create or extend the use case in `src/internal/transactional-risk/application/usecase/<aggregate>/`.
+3. If output is needed, define a port in `src/internal/transactional-risk/domain/repository` or `src/internal/transactional-risk/domain/service`.
+4. Implement the NestJS adapter under `src/internal/transactional-risk/infrastructure`:
    - controller in `infrastructure/controller`;
    - DTO with `class-validator` in `infrastructure/controller/dto`;
    - CQRS handlers in `infrastructure/cqrs`;

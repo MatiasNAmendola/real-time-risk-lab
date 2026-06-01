@@ -30,6 +30,7 @@ Decisiones clave:
 Conceptos clave:
 - [[Clean-Architecture]]
 - [[Hexagonal-Architecture]]
+- [[Screaming-Architecture]]
 - [[Layer-as-Pod]]
 - [[Virtual-Threads-Loom]]
 - [[Latency-Budget]]

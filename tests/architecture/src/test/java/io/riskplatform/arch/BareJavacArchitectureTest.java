@@ -32,7 +32,7 @@ import static org.junit.jupiter.api.Assumptions.assumeTrue;
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class BareJavacArchitectureTest {
 
-    private static final String BASE_PKG = "io.riskplatform.engine";
+    private static final String BASE_PKG = "io.riskplatform.riskdecision.cleanengine";
 
     private static JavaClasses classes;
 

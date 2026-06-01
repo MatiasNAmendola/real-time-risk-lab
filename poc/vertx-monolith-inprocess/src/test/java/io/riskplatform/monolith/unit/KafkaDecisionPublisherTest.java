@@ -1,8 +1,8 @@
-package io.riskplatform.monolith.unit;
+package io.riskplatform.riskdecision.monolith.unit;
 
-import io.riskplatform.distributed.shared.RiskDecision;
-import io.riskplatform.distributed.shared.RiskRequest;
-import io.riskplatform.monolith.repository.KafkaDecisionPublisher;
+import io.riskplatform.riskdecision.layerpodeventbus.shared.RiskDecision;
+import io.riskplatform.riskdecision.layerpodeventbus.shared.RiskRequest;
+import io.riskplatform.riskdecision.monolith.repository.KafkaDecisionPublisher;
 import org.junit.jupiter.api.Test;
 
 /**

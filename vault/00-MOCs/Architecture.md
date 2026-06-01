@@ -11,6 +11,7 @@ updated: 2026-05-07
 
 - [[Clean-Architecture]] — anillos concéntricos, regla de dependencias hacia adentro
 - [[Hexagonal-Architecture]] — variante ports & adapters
+- [[Screaming-Architecture]] — source tree que comunica primero la capacidad de negocio
 - [[App-Compliance-Audit]] — auditoría transversal: matriz de cumplimiento, deuda aceptada y guardrails por PoC
 - [[Layer-as-Pod]] — nuestro patrón de PoC: cada capa arquitectural = su propio pod k8s
 

@@ -1,6 +1,6 @@
 package io.riskplatform.atdd.support;
 
-import io.riskplatform.engine.domain.repository.ClockPort;
+import io.riskplatform.riskdecision.cleanengine.domain.repository.ClockPort;
 
 import java.time.Instant;
 import java.util.concurrent.atomic.AtomicReference;

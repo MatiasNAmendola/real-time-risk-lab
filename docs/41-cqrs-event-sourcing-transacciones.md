@@ -252,8 +252,8 @@ class BalanceProjection {
 
 En el repo:
 
-- `poc/nestjs-distributed-transactions/src/internal/infrastructure/cqrs/event-sourcing.handlers.ts`
-- `poc/nestjs-distributed-transactions/src/internal/infrastructure/repository/in-memory-account-projection.repository.ts`
+- `poc/nestjs-distributed-transactions/src/internal/transactional-risk/infrastructure/cqrs/event-sourcing.handlers.ts`
+- `poc/nestjs-distributed-transactions/src/internal/transactional-risk/infrastructure/repository/in-memory-account-projection.repository.ts`
 
 ---
 
@@ -445,7 +445,7 @@ Event Sourcing
 | Outbox/eventos fuera del path crítico | `poc/no-vertx-clean-engine`, PoCs Vert.x |
 | CQRS/Event Sourcing simple | `POST /accounts/:id/open`, `POST /accounts/:id/deposit`, `GET /accounts/:id`, `GET /accounts/:id/events` en ambas PoCs |
 | Saga/compensación avanzada | `/transactions/sagas` en `poc/nestjs-distributed-transactions` y `poc/hono-distributed-transactions` |
-| TigerBeetle boundary avanzado | `src/internal/infrastructure/tigerbeetle` en ambas PoCs |
+| TigerBeetle boundary avanzado | `src/internal/transactional-risk/infrastructure/tigerbeetle` en ambas PoCs |
 | EDA/idempotencia con BullMQ + Valkey | `poc/nestjs-distributed-transactions` y `poc/hono-distributed-transactions` |
 | Preguntas de discusión técnica | `vault/05-Methodology/Architecture-Question-Bank.md` |
 

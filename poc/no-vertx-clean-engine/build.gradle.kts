@@ -4,7 +4,7 @@ plugins {
 }
 
 application {
-    mainClass.set("io.riskplatform.engine.cmd.RiskApplication")
+    mainClass.set("io.riskplatform.riskdecision.cleanengine.cmd.RiskApplication")
 }
 
 tasks.named<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar>("shadowJar") {
@@ -12,7 +12,7 @@ tasks.named<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar>("shadowJ
     archiveClassifier.set("")
     archiveVersion.set("")
     manifest {
-        attributes("Main-Class" to "io.riskplatform.engine.cmd.HttpRunner")
+        attributes("Main-Class" to "io.riskplatform.riskdecision.cleanengine.cmd.HttpRunner")
     }
     mergeServiceFiles()
 }

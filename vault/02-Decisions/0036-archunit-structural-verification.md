@@ -58,7 +58,7 @@ Two test classes cover la two PoCs independently, allowing architectural evoluti
 
 ### Negativo
 - `tests/architecture/` module must be compiled y run después de la PoC JARs son built — dependency en CI pipeline.
-- ArchUnit rules using string-based package names (`"io.riskplatform.engine.domain.."`) son brittle if packages son refactored — rules must be updated con la refactoring.
+- ArchUnit rules using string-based package names (`"io.riskplatform.riskdecision.cleanengine.domain.."`) son brittle if packages son refactored — rules must be updated con la refactoring.
 - False negative risk: ArchUnit loads bytecode desde la target directory — if la PoC es no recompiled después de un violation es introduced, la old bytecode es analyzed y la test may pass.
 
 ### Mitigaciones
@@ -68,7 +68,7 @@ Two test classes cover la two PoCs independently, allowing architectural evoluti
 ## Validación
 
 - `cd tests/architecture && ./gradlew test` passes con ambos `BareJavacArchitectureTest` y `VertxDistributedArchitectureTest` green.
-- Manually adding `import io.riskplatform.engine.infrastructure.controller.HttpController` a un domain class causes `BareJavacArchitectureTest` un fail con un specific violation message.
+- Manually adding `import io.riskplatform.riskdecision.cleanengine.infrastructure.controller.HttpController` a un domain class causes `BareJavacArchitectureTest` un fail con un specific violation message.
 - `out/test-runner/latest/job-arch.log` contains XML reports (verified: files exist).
 
 ## Relacionado

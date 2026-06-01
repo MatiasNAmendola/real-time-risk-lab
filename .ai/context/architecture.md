@@ -6,6 +6,7 @@
 
 - **Layout enterprise (R2)**: `vault/04-Concepts/Clean-Architecture.md` + `vault/04-Concepts/Hexagonal-Architecture.md`
 - **Boundaries (R5)**: `.ai/primitives/rules/clean-arch-boundaries.md`
+- **Screaming Architecture (R7)**: `.ai/primitives/rules/screaming-architecture.md` + `vault/04-Concepts/Screaming-Architecture.md`
 - **Decisiones cerradas**: `vault/02-Decisions/` (ADRs, ver `_index.md`)
 - **MOC raíz**: `vault/00-MOCs/Risk-Platform-Overview.md`
 - **PoCs (tabla canónica)**: `AGENTS.md §3` o `docs/03-poc-roadmap.md`
@@ -19,10 +20,10 @@
 graph TB
     subgraph repo["real-time-risk-lab/"]
         subgraph poc["poc/ — Proofs of Concept"]
-            jre["no-vertx-clean-engine<br/>bare-javac, Clean Arch<br/>sin frameworks"]
-            jvd["vertx-layer-as-pod-eventbus<br/>4 modulos Gradle<br/>layer-as-pod"]
-            vrp["vertx-layer-as-pod-http<br/>Vert.x 5 completo<br/>REST+SSE+WS+Webhook+Kafka"]
-            ntx["nestjs-distributed-transactions<br/>CQRS/Event Sourcing simple<br/>Saga/TigerBeetle avanzada"]
+            jre["no-vertx-clean-engine<br/>riskdecision.cleanengine<br/>bare-javac, Clean Arch"]
+            jvd["vertx-layer-as-pod-eventbus<br/>riskdecision.layerpodeventbus<br/>4 módulos Gradle"]
+            vrp["vertx-layer-as-pod-http<br/>riskdecision.layerpodhttp<br/>HTTP + tokens"]
+            ntx["nestjs/hono transactional-risk<br/>CQRS/Event Sourcing simple<br/>Saga/TigerBeetle avanzada"]
             k8s["k8s-local<br/>k3d/OrbStack<br/>ArgoCD + addons"]
         end
 

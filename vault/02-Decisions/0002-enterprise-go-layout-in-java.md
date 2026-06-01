@@ -15,7 +15,7 @@ Aceptado el 2026-05-07.
 
 ## Contexto
 
-Tras estudiar el layout canónico enterprise de Go (ver [[Enterprise-Go-Layout-Reference]]), la estructura `internal/{domain,application,infrastructure}` mapea limpiamente a los anillos de Clean Architecture. El PoC inicial bare-javac usaba un layout plano — todas las clases en `io.riskplatform.engine` — que no demostraba la intención arquitectural con claridad. Un layout plano hace invisible la regla de dependencias (domain no puede depender de infrastructure): no hay estructura de packages que la codifique.
+Tras estudiar el layout canónico enterprise de Go (ver [[Enterprise-Go-Layout-Reference]]), la estructura `internal/{domain,application,infrastructure}` mapea limpiamente a los anillos de Clean Architecture. El PoC inicial bare-javac usaba un layout plano — todas las clases en `io.riskplatform.riskdecision.cleanengine` — que no demostraba la intención arquitectural con claridad. Un layout plano hace invisible la regla de dependencias (domain no puede depender de infrastructure): no hay estructura de packages que la codifique.
 
 La pregunta es qué convención de layout de packages adoptar para el PoC Java. Las opciones van desde el layout convencional layer-based de Spring Boot hasta patterns tácticos DDD estrictos. El layout debe ser: (1) legible para ingenieros Go familiarizados con el layout enterprise Go, (2) consistente con los principios de Clean Architecture, y (3) usable como target de verificación con ArchUnit (los packages deben codificar los límites de capas).
 

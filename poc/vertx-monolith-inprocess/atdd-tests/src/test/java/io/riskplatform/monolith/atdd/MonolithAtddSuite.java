@@ -1,7 +1,7 @@
-package io.riskplatform.monolith.atdd;
+package io.riskplatform.riskdecision.monolith.atdd;
 
 import com.intuit.karate.junit5.Karate;
-import io.riskplatform.monolith.atdd.support.MonolithStack;
+import io.riskplatform.riskdecision.monolith.atdd.support.MonolithStack;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 

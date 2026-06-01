@@ -2,7 +2,7 @@ package io.riskplatform.poc.pkg.observability;
 
 /**
  * Copied from poc/no-vertx-clean-engine, re-packaged.
- * Original: io.riskplatform.engine.domain.entity.CorrelationId
+ * Original: io.riskplatform.riskdecision.cleanengine.domain.entity.CorrelationId
  */
 public record CorrelationId(String value) {
     public CorrelationId {

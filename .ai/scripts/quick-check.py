@@ -92,19 +92,19 @@ def _imports(java_file: Path) -> list[str]:
 
 
 def check_clean_arch_source_boundaries() -> list[Violation]:
-    base = REPO_ROOT / "poc/no-vertx-clean-engine/src/main/java/io/riskplatform/engine"
+    base = REPO_ROOT / "poc/no-vertx-clean-engine/src/main/java/io/riskplatform/riskdecision/cleanengine"
     violations: list[Violation] = []
 
     for f in _java_files(base / "domain"):
         for imp in _imports(f):
-            if imp.startswith("io.riskplatform.engine.application."):
+            if imp.startswith("io.riskplatform.riskdecision.cleanengine.application."):
                 violations.append(Violation(f, f"domain imports application: {imp}"))
-            if imp.startswith("io.riskplatform.engine.infrastructure."):
+            if imp.startswith("io.riskplatform.riskdecision.cleanengine.infrastructure."):
                 violations.append(Violation(f, f"domain imports infrastructure: {imp}"))
 
     for f in _java_files(base / "application"):
         for imp in _imports(f):
-            if imp.startswith("io.riskplatform.engine.infrastructure."):
+            if imp.startswith("io.riskplatform.riskdecision.cleanengine.infrastructure."):
                 violations.append(Violation(f, f"application imports infrastructure: {imp}"))
 
     service = base / "application/usecase/risk/EvaluateTransactionRiskService.java"
@@ -121,10 +121,10 @@ def check_clean_arch_source_boundaries() -> list[Violation]:
 def check_distributed_source_boundaries() -> list[Violation]:
     root = REPO_ROOT / "poc/vertx-layer-as-pod-eventbus"
     modules = {
-        "controller-app": "io.riskplatform.distributed.controller.",
-        "usecase-app": "io.riskplatform.distributed.usecase.",
-        "repository-app": "io.riskplatform.distributed.repository.",
-        "consumer-app": "io.riskplatform.distributed.consumer.",
+        "controller-app": "io.riskplatform.riskdecision.layerpodeventbus.controller.",
+        "usecase-app": "io.riskplatform.riskdecision.layerpodeventbus.usecase.",
+        "repository-app": "io.riskplatform.riskdecision.layerpodeventbus.repository.",
+        "consumer-app": "io.riskplatform.riskdecision.layerpodeventbus.consumer.",
     }
     violations: list[Violation] = []
     for module, own_pkg in modules.items():
@@ -179,8 +179,10 @@ def check_typescript_source_boundaries() -> list[Violation]:
     ]
 
     for root in poc_roots:
-        for layer in ("domain", "application"):
-            for f in _ts_files(root / layer):
+        layer_dirs = [d for d in root.rglob("*") if d.is_dir() and d.name in {"domain", "application"}]
+        for layer_dir in layer_dirs:
+            layer = layer_dir.name
+            for f in _ts_files(layer_dir):
                 for imp in _ts_imports(f):
                     if imp in forbidden_exact or imp.startswith(forbidden_prefixes):
                         violations.append(Violation(f, f"{layer} imports framework/adapter package: {imp}"))

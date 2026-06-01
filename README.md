@@ -28,7 +28,7 @@ Plataforma de práctica para discutir decisiones de riesgo/fraude en tiempo real
 
 ## Qué demuestra
 
-- **Clean Architecture / Hexagonal**: dominio desacoplado de runtime/framework/infra.
+- **Clean Architecture / Hexagonal + Screaming Architecture**: dominio desacoplado de runtime/framework/infra, con source trees que muestran primero la capacidad de negocio.
 - **Estilos de ejecución comparables**: engine sin framework, monolito Vert.x, layer-as-pod HTTP/EventBus, service-to-service y k8s local.
 - **Camino crítico vs async**: decisión online separada de auditoría/eventos/consumers.
 - **CQRS/Event Sourcing didáctico**: cuenta bancaria simple (`open`, `deposit`, `balance`, `events`) en PoCs NestJS/Hono. **Demo avanzada** separada: Saga, compensaciones, TigerBeetle boundary y EDA BullMQ/Valkey.

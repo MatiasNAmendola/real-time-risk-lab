@@ -1,8 +1,8 @@
 package io.riskplatform.atdd.support;
 
-import io.riskplatform.engine.domain.entity.FeatureSnapshot;
-import io.riskplatform.engine.domain.entity.TransactionRiskRequest;
-import io.riskplatform.engine.domain.repository.FeatureProvider;
+import io.riskplatform.riskdecision.cleanengine.domain.entity.FeatureSnapshot;
+import io.riskplatform.riskdecision.cleanengine.domain.entity.TransactionRiskRequest;
+import io.riskplatform.riskdecision.cleanengine.domain.repository.FeatureProvider;
 
 import java.util.concurrent.ConcurrentHashMap;
 

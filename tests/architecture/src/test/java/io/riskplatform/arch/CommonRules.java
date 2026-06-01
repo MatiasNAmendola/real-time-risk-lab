@@ -75,7 +75,7 @@ public final class CommonRules {
     public static final ArchRule VERTX_MAIN_IN_ROOT_PACKAGE =
         classes()
             .that().haveSimpleNameEndingWith("Main")
-            .should().resideInAPackage("io.riskplatform.distributed.*")
-            .as("*Main classes must be in the module root package (io.riskplatform.distributed.*)")
+            .should().resideInAPackage("io.riskplatform.riskdecision.layerpodeventbus.*")
+            .as("*Main classes must be in the module root package (io.riskplatform.riskdecision.layerpodeventbus.*)")
             .because("entry points belong at the root of each module's namespace");
 }

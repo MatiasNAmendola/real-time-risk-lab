@@ -1,10 +1,10 @@
 package io.riskplatform.bench.inprocess;
 
-import io.riskplatform.engine.domain.context.ExecutionContext;
-import io.riskplatform.engine.config.RiskApplicationFactory;
-import io.riskplatform.engine.domain.entity.*;
-import io.riskplatform.engine.domain.usecase.EvaluateRiskUseCase;
-import io.riskplatform.engine.infrastructure.repository.log.ConsoleStructuredLogger;
+import io.riskplatform.riskdecision.cleanengine.domain.context.ExecutionContext;
+import io.riskplatform.riskdecision.cleanengine.config.RiskApplicationFactory;
+import io.riskplatform.riskdecision.cleanengine.domain.entity.*;
+import io.riskplatform.riskdecision.cleanengine.domain.usecase.EvaluateRiskUseCase;
+import io.riskplatform.riskdecision.cleanengine.infrastructure.repository.log.ConsoleStructuredLogger;
 import org.openjdk.jmh.annotations.*;
 import org.openjdk.jmh.infra.Blackhole;
 import org.openjdk.jmh.results.format.ResultFormatType;

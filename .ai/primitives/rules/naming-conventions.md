@@ -15,7 +15,7 @@ priority: medium
 | Metodos | camelCase | `evaluateTransaction()`, `findById()` |
 | Variables | camelCase | `correlationId`, `amountARS` |
 | Constantes | SCREAMING_SNAKE_CASE | `MAX_RETRY_COUNT`, `DEFAULT_TIMEOUT_MS` |
-| Packages | lowercase.separado.puntos | `io.riskplatform.engine.domain.entity` |
+| Packages | lowercase.separado.puntos | `io.riskplatform.riskdecision.cleanengine.domain.entity` |
 | Enums | PascalCase, valores SCREAMING_SNAKE | `RiskDecision.APPROVE`, `RiskDecision.DECLINE` |
 
 ## Archivos y directorios

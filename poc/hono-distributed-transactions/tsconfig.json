@@ -18,16 +18,19 @@
         "./src/cmd/*"
       ],
       "@domain/*": [
-        "./src/internal/domain/*"
+        "./src/internal/transactional-risk/domain/*"
       ],
       "@application/*": [
-        "./src/internal/application/*"
+        "./src/internal/transactional-risk/application/*"
       ],
       "@infrastructure/*": [
-        "./src/internal/infrastructure/*"
+        "./src/internal/transactional-risk/infrastructure/*"
       ],
       "@internal/*": [
         "./src/internal/*"
+      ],
+      "@transactional-risk/*": [
+        "./src/internal/transactional-risk/*"
       ]
     }
   },

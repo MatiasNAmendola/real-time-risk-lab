@@ -111,7 +111,7 @@ class TestNABranches(unittest.TestCase):
 
     def test_config_package_has_no_branch(self):
         # config package in fixture has no BRANCH counter -> missed=0,covered=0
-        pkg = self.data["packages"]["io.riskplatform.engine.config"]
+        pkg = self.data["packages"]["io.riskplatform.riskdecision.cleanengine.config"]
         branch_pct = cs._pct(pkg["BRANCH"]["missed"], pkg["BRANCH"]["covered"])
         self.assertIsNone(branch_pct)
 

@@ -33,11 +33,11 @@ import static org.junit.jupiter.api.Assumptions.assumeTrue;
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class VertxDistributedArchitectureTest {
 
-    private static final String SHARED_PKG     = "io.riskplatform.distributed.shared";
-    private static final String CONTROLLER_PKG = "io.riskplatform.distributed.controller";
-    private static final String USECASE_PKG    = "io.riskplatform.distributed.usecase";
-    private static final String REPOSITORY_PKG = "io.riskplatform.distributed.repository";
-    private static final String CONSUMER_PKG   = "io.riskplatform.distributed.consumer";
+    private static final String SHARED_PKG     = "io.riskplatform.riskdecision.layerpodeventbus.shared";
+    private static final String CONTROLLER_PKG = "io.riskplatform.riskdecision.layerpodeventbus.controller";
+    private static final String USECASE_PKG    = "io.riskplatform.riskdecision.layerpodeventbus.usecase";
+    private static final String REPOSITORY_PKG = "io.riskplatform.riskdecision.layerpodeventbus.repository";
+    private static final String CONSUMER_PKG   = "io.riskplatform.riskdecision.layerpodeventbus.consumer";
 
     // System property keys injected by Gradle test task (see build.gradle.kts)
     private static final String PROP_SHARED     = "vertx.shared.classes";
@@ -213,8 +213,8 @@ class VertxDistributedArchitectureTest {
         // in the first-level package of their module, not buried in sub-packages.
         classes()
             .that().haveSimpleNameEndingWith("Main")
-            .and().resideInAPackage("io.riskplatform.distributed..")
-            .should().resideInAPackage("io.riskplatform.distributed.*")  // exactly depth 3, no deeper
+            .and().resideInAPackage("io.riskplatform.riskdecision.layerpodeventbus..")
+            .should().resideInAPackage("io.riskplatform.riskdecision.layerpodeventbus.*")  // exactly depth 3, no deeper
             .as("*Main classes must be at the module root package depth")
             .because("""
                 Entry points should be discoverable at the root of each module's namespace.

@@ -5,7 +5,7 @@ import java.util.List;
 /**
  * Outbound port for the transactional outbox pattern.
  * Copied from poc/no-vertx-clean-engine, re-packaged and decoupled from ExecutionContext.
- * Original: io.riskplatform.engine.domain.repository.OutboxRepository
+ * Original: io.riskplatform.riskdecision.cleanengine.domain.repository.OutboxRepository
  */
 public interface OutboxRepository {
     void append(String correlationId, DecisionEvent event);

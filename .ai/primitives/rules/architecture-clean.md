@@ -8,6 +8,8 @@ priority: high
 
 ## Layout canonico (estilo enterprise Go)
 
+La capacidad de negocio debe aparecer antes de las capas técnicas (Screaming Architecture). Ejemplo Java actual: `io.riskplatform.riskdecision.cleanengine/{domain,application,infrastructure}`.
+
 Todo modulo Java del repo DEBE seguir este layout de paquetes:
 
 ```

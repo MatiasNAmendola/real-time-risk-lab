@@ -65,7 +65,7 @@ TigerBeetle no se usa para explicar Event Sourcing simple; queda reservado para 
 | CQRS | `@nestjs/cqrs` | Command/query bus simple propio |
 | Wiring | `src/cmd/app.module.ts` con DI container Nest | `src/cmd/container.ts` manual |
 | Runtime mental model | Framework opinionated | Minimalista/funcional |
-| Clean Architecture | `internal/domain` y `internal/application` sin framework | Igual, sin Hono/Zod/BullMQ en domain/application |
+| Clean Architecture | `internal/transactional-risk/domain` y `internal/transactional-risk/application` sin framework | Igual, sin Hono/Zod/BullMQ en domain/application |
 
 
 ## Aliases TypeScript
@@ -89,16 +89,19 @@ src/
 ├── cmd/
 │   └── container.ts              # wiring manual estilo apps/<app>/cmd
 └── internal/
-    ├── domain/                   # entidades, eventos, puertos
-    ├── application/              # comandos, queries, inputs, mappers, use cases
-    └── infrastructure/           # Hono routes, CQRS simple, BullMQ, Valkey, repos, adapters
+    └── transactional-risk/       # capacidad de negocio primero (Screaming Architecture)
+        ├── domain/               # entidades, eventos, puertos
+        ├── application/          # comandos, queries, inputs, mappers, use cases
+        └── infrastructure/       # Hono routes, CQRS simple, BullMQ, Valkey, repos, adapters
 ```
 
-## Boundaries Clean Architecture
+## Boundaries Clean Architecture + Screaming Architecture
 
-- `internal/domain`: entidades, eventos de dominio, value objects y puertos. No importa Hono, Zod, BullMQ, Valkey ni HTTP.
-- `internal/application`: comandos, queries, inputs puros, eventos de aplicación, mappers y use cases. No tiene Hono, Zod ni adapters.
-- `internal/infrastructure`: rutas Hono, schemas Zod, command/query bus simple, BullMQ, Valkey, repositorios y adapter TigerBeetle.
+El código fuente ubica primero la capacidad `transactional-risk` y debajo conserva las capas de Clean Architecture.
+
+- `internal/transactional-risk/domain`: entidades, eventos de dominio, value objects y puertos. No importa Hono, Zod, BullMQ, Valkey ni HTTP.
+- `internal/transactional-risk/application`: comandos, queries, inputs puros, eventos de aplicación, mappers y use cases. No tiene Hono, Zod ni adapters.
+- `internal/transactional-risk/infrastructure`: rutas Hono, schemas Zod, command/query bus simple, BullMQ, Valkey, repositorios y adapter TigerBeetle.
 - `src/cmd/container.ts`: wiring manual.
 
 Guardrail:

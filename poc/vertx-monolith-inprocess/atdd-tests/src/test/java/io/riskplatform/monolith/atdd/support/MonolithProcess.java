@@ -1,4 +1,4 @@
-package io.riskplatform.monolith.atdd.support;
+package io.riskplatform.riskdecision.monolith.atdd.support;
 
 import java.io.File;
 import java.io.IOException;
