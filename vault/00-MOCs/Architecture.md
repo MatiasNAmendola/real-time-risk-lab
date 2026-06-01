@@ -19,6 +19,13 @@ updated: 2026-05-07
 - [[Bulkhead]] — aislar dominios de falla
 - [[Idempotency]] — semántica exactly-once
 
+
+## Patrones transaccionales y Event Sourcing
+
+- [[CQRS-Event-Sourcing]] — comandos, queries, event store, proyecciones y snapshots.
+- [[Saga-Pattern]] — transacciones locales + compensating transactions, sin rollback ACID global.
+- [[TigerBeetle-Ledger]] — boundary de ledger financiero para transferencias idempotentes.
+
 ## Patrones asincrónicos
 
 - [[Outbox-Pattern]] — outbox transaccional para publicación confiable de eventos
@@ -96,6 +103,9 @@ Ver [[_index]] para la tabla completa de ADRs ordenada por número.
 - [[no-vertx-clean-engine]] — Clean Architecture, bare-javac, virtual threads
 - [[vertx-layer-as-pod-eventbus]] — Layer-as-Pod con Vert.x 5 + Hazelcast
 - [[k8s-local]] — infraestructura de canary + rollout
+
+- [[nestjs-distributed-transactions]] — CQRS/Event Sourcing simple + Saga/TigerBeetle/EDA avanzada en NestJS.
+- [[hono-distributed-transactions]] — misma demo transaccional con Hono y wiring manual.
 
 ## Backlinks
 

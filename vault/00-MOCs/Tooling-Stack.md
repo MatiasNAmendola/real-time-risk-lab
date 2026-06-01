@@ -71,3 +71,14 @@ Ver [[0006-atdd-karate-cucumber]], [[0009-bubbletea-tui-smoke]].
 ## Backlinks
 
 [[Risk-Platform-Overview]] linkea acá como entry point de tooling.
+
+
+## TypeScript PoCs transaccionales
+
+| Herramienta | Uso |
+|---|---|
+| Bun | Package manager/runtime obligatorio para JS/TS con `ignoreScripts=true`. |
+| NestJS | PoC transaccional opinionated con DI/decorators y `@nestjs/cqrs`. |
+| Hono | PoC transaccional minimalista con rutas explícitas y wiring manual. |
+| Cucumber JS | Ejecución literal de `.feature` en las PoCs TypeScript. |
+| k6 | Smoke/load HTTP liviano para endpoints de cuenta. |

@@ -7,6 +7,7 @@ Technical exploration of a real-time fraud detection use case: 150 TPS, p99 < 30
 Stack: Java 21 LTS executable baseline, Gradle Kotlin DSL, Vert.x 5.0.12, Postgres 16, Valkey 8, Redpanda, k3d/OrbStack.
 
 Full context: .ai/context/architecture.md
+Documentation method: .ai/primitives/rules/documentation-system.md
 PoC inventory: .ai/context/poc-inventory.md
 Stack versions: .ai/context/stack.md
 
@@ -35,6 +36,6 @@ Before implementing anything, check if there is a skill for it:
 - .ai/primitives/workflows/debug-trace-issue.md
 ... and more in .ai/primitives/workflows/
 
-## Do not touch
+## Editing project areas
 
-poc/, tests/, cli/, docs/, vault/ — user ownership only.
+You may edit `poc/`, `tests/`, `cli/`, `docs/` and `vault/` only when the task requires it. Before doing so, read the applicable rule/skill in `.ai/primitives/` and keep docs/vault/context/adapters synchronized.

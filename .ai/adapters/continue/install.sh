@@ -25,7 +25,7 @@ cat > "$DEST" <<'EOF'
     "ATDD first: write .feature file before any production code.",
     "Every request must produce trace + log + metric via OpenTelemetry. correlationId in MDC and header.",
     "Check .ai/primitives/skills/ and .ai/primitives/rules/ before implementing.",
-    "Do not touch: poc/, tests/, cli/, docs/, vault/ — user ownership."
+    "Editing project areas: edit poc/, tests/, cli/, docs/ and vault/ only when required; read applicable .ai/primitives first."
   ],
   "contextProviders": [
     { "name": "code" },

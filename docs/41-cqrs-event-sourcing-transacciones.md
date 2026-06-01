@@ -335,7 +335,7 @@ TigerBeetle encaja como **ledger**: el componente responsable de movimientos con
 | Construir vistas de lectura | Projections |
 | Responder queries rápidas | Read models |
 
-Frase para entrevista:
+Frase para discusión técnica:
 
 > No usaría TigerBeetle como orquestador de negocio; lo usaría como ledger consistente detrás de un puerto, y dejaría compensaciones, timeouts y retries en la saga.
 
@@ -447,7 +447,7 @@ Event Sourcing
 | Saga/compensación avanzada | `/transactions/sagas` en `poc/nestjs-distributed-transactions` y `poc/hono-distributed-transactions` |
 | TigerBeetle boundary avanzado | `src/internal/infrastructure/tigerbeetle` en ambas PoCs |
 | EDA/idempotencia con BullMQ + Valkey | `poc/nestjs-distributed-transactions` y `poc/hono-distributed-transactions` |
-| Preguntas de entrevista | `vault/05-Methodology/Architecture-Question-Bank.md` |
+| Preguntas de discusión técnica | `vault/05-Methodology/Architecture-Question-Bank.md` |
 
 ---
 

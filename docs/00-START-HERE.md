@@ -21,11 +21,11 @@ Una exploración técnica de un use case de detección de fraude productivo, que
 
 ### Si tu objetivo es entender la arquitectura
 
-1. **`docs/12-rendimiento-y-separacion.md`** — comparación de las 3 arquitecturas con números reales. La pieza central.
-2. **`docs/38-java-apps-architecture-performance-matrix.md`** — matriz de apps Java: misma lógica, distintas topologías/stacks y beneficios de Vert.x.
+1. **`vault/03-PoCs/Poc-Parity-Matrix.md`** — matriz de apps Java: misma lógica, distintas topologías/stacks y trade-offs.
+2. **`vault/04-Concepts/In-Process-vs-Distributed.md`** — rendimiento y separación: cuándo conviene distribuir y cuánto cuesta.
 3. **[`docs/39-share-ready-baseline.md`](39-share-ready-baseline.md)** — anchor público, auditabilidad histórica y checks pre-tag.
-4. **`docs/37-java-go-performance-positioning.md`** — investigación con fuentes primarias: Java moderno vs Go en performance/concurrencia.
-5. **`vault/02-Decisions/`** — 37 ADRs con análisis de alternativas Opción A/B/C/D.
+4. **`vault/04-Concepts/Java-vs-Go-Performance.md`** — posicionamiento Java moderno vs Go en performance/concurrencia.
+5. **`vault/02-Decisions/`** — ADRs con análisis de alternativas Opción A/B/C/D.
 
 ### Si tu objetivo es entender el enfoque de testing
 
@@ -36,18 +36,19 @@ Una exploración técnica de un use case de detección de fraude productivo, que
 ### Si tu objetivo es metodología de diseño
 
 1. **`vault/05-Methodology/Design-Conversation-Framework.md`** — cómo descomponer problemas de systems design.
-2. **`docs/09-architecture-question-bank.md`** — 25+ preguntas de arquitectura con análisis modelo y modos de falla comunes.
+2. **`vault/05-Methodology/Architecture-Question-Bank.md`** — preguntas de arquitectura con análisis modelo y modos de falla comunes.
 3. **`docs/41-cqrs-event-sourcing-transacciones.md`** — explicación didáctica de CQRS/Event Sourcing, proyecciones, snapshots, sagas y EDA en pagos/riesgo.
-4. **`vault/05-Methodology/Architectural-Anchors.md` — principios de diseño que pesan.
+4. **`vault/05-Methodology/Architectural-Anchors.md`** — principios de diseño que pesan.
 
 ### Si te interesa el meta (agentes IA + tooling)
 
 1. **`.ai/context/agent-os-principles.md`** — 8 principios de orquestación de agentes IA.
-2. **`docs/22-client-sdks.md`** — diseño multi-lenguaje + SemVer.
+2. **`vault/04-Concepts/Client-SDK-Strategy.md`** — diseño multi-lenguaje + SemVer.
 3. **`docs/27-test-runner.md`** — test runner con DAG + throttling de recursos.
 4. **`docs/40-bun-package-manager-security.md`** — Bun obligatorio + hardening contra lifecycle scripts.
 5. **`.ai/scripts/quick-check.py`** — guardrail sub-segundo de demo: boundaries fuente + freshness warnings sin invocar Gradle.
-4. **`.ai/scripts/consistency-auditor.py`** + **`.ai/audit-rules/terminology.yaml`** — meta-cobertura de docs (la spec vive en el script).
+6. **`docs/42-documentacion-metodica.md`** — cómo sincronizar `docs/`, `vault/`, `.ai/context`, primitivas y adapters IDE/CLI.
+7. **`.ai/scripts/consistency-auditor.py`** + **`.ai/audit-rules/terminology.yaml`** — meta-cobertura de docs (la spec vive en el script).
 
 ---
 
@@ -92,12 +93,13 @@ Para agentes y humanos: si vas a tocar X, leé Y antes.
 | k8s addon | `poc/k8s-local/addons/` + [[K8s-Deployment-Tests]] | source of truth |
 | ATDD scenario | [[ATDD]] + `.ai/primitives/skills/add-feature-test-cucumber.md` | R3 |
 | performance claim | [[Java-vs-Go-Performance]] + [[Poc-Parity-Matrix]] | fuentes primarias |
-| nueva PoC | `.ai/primitives/skills/bootstrap-new-poc.md` + [[Risk-Platform-Overview]] | layout + tabla canónica |
+| nueva PoC | `.ai/primitives/skills/bootstrap-new-poc.md` + `.ai/primitives/rules/documentation-system.md` + [[Risk-Platform-Overview]] | layout + tabla canónica + documentación multi-superficie |
 | ADR nuevo | `vault/02-Decisions/_template.md` + `.ai/primitives/skills/add-architecture-decision.md` | numeración + formato |
 | meta-cobertura / coverage | [[Meta-Coverage]] + [[Primitive-Coverage-Ratio]] | 4 ejes + ratio formula |
 | confidencialidad / secrets | [[Confidentiality-Hashing]] + [[Secrets-PII-Protection]] | threat model |
 | JS/TypeScript deps | `docs/40-bun-package-manager-security.md` + `bunfig.toml` | Bun obligatorio + `ignoreScripts=true` |
-| CQRS/Event Sourcing/EDA | `docs/41-cqrs-event-sourcing-transacciones.md` + `poc/nestjs-distributed-transactions/README.md` | comandos, queries, event store, proyecciones, sagas, BullMQ y Valkey |
+| CQRS/Event Sourcing/EDA | `docs/41-cqrs-event-sourcing-transacciones.md` + [[CQRS-Event-Sourcing]] + [[nestjs-distributed-transactions]] + [[hono-distributed-transactions]] | comandos, queries, event store, proyecciones, sagas, BullMQ y Valkey |
+| documentación | `docs/42-documentacion-metodica.md` + `.ai/primitives/rules/documentation-system.md` | cuándo actualizar docs, vault, contexto IA, primitivas y adapters |
 
 ---
 
@@ -173,8 +175,8 @@ Honestidad: el repo está en estado *reportado-OK por agentes pero verificación
 ```
 real-time-risk-lab/
 ├── README.md                  # pitch + tour por tiempo disponible
-├── docs/                      # 36 docs numerados (00-31+)
-├── vault/                     # vault Obsidian — 37 ADRs + conceptos + build logs
+├── docs/                      # guías operativas y explicaciones largas
+├── vault/                     # vault Obsidian — ADRs + conceptos + PoCs + metodología
 ├── poc/
 │   ├── no-vertx-clean-engine/      # no-vertx-clean-engine
 │   ├── vertx-monolith-inprocess/         # single JVM Vert.x
@@ -231,7 +233,7 @@ Si querés compartir esto con un reviewer externo:
 
 1. Primero, corré `./nx test --composite ci-full --with-infra-compose` y verificá que todo pasa. Hoy hay reportes de agente pero no verificación humana.
 3. Si el reviewer tiene menos de 30 minutos, dirigilo al tour de 5 minutos del README raíz.
-4. Para reviewers técnicos serios: `vault/02-Decisions/_index.md` + `docs/12-rendimiento-y-separacion.md` son los entry points fuertes.
+4. Para reviewers técnicos serios: `vault/02-Decisions/_index.md` + `vault/03-PoCs/Poc-Parity-Matrix.md` son los entry points fuertes.
 
 ---
 

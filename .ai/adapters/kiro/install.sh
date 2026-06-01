@@ -33,9 +33,9 @@ Real-time fraud detection: 150 TPS, p99 < 300ms.
 Full context: .ai/context/architecture.md
 PoC inventory: .ai/context/poc-inventory.md
 
-## Do not touch
+## Editing project areas
 
-poc/, tests/, cli/, docs/, vault/ — user ownership only.
+You may edit `poc/`, `tests/`, `cli/`, `docs/` and `vault/` only when the task requires it. Before doing so, read the applicable rule/skill in `.ai/primitives/`.
 EOF
 
 echo "  created: $REPO_ROOT/.kiro/steering/product.md"

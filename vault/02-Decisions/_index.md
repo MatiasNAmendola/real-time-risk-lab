@@ -6,7 +6,7 @@ updated: 2026-05-07
 
 # Índice de ADRs — Real-Time Risk Lab Architecture Exploration
 
-Total de ADRs: 39
+Total de ADRs: 48
 
 ## Cómo leer
 
@@ -59,6 +59,11 @@ Cada ADR sigue el formato de Nygard con una sección "Alternativas consideradas"
 | [[0039-vertx-eventbus-host-advertisement]] | Configurar `EventBusOptions.setHost()` en cada Main del PoC distribuido | accepted | distributed/networking | 2026-05-07 |
 | [[0042-floci-unified-aws-emulator]] | Floci como emulador AWS unificado (supersede 0005/0028/0029/0033) | accepted | infrastructure/aws/testing | 2026-05-11 |
 | [[0043-kafka-broker-alternatives-eval]] | Tansu reemplaza a Redpanda como broker principal (compose + k8s + tests) | accepted | infrastructure/kafka/footprint | 2026-05-11 |
+| [[0044-lambda-vs-eks-positioning]] | Lambda vs EKS para posicionamiento de la plataforma | accepted | architecture/cloud | 2026-05-11 |
+| [[0045-observability-stack-local]] | Stack local de observabilidad | accepted | observability/local | 2026-05-11 |
+| [[0046-declarative-rules-engine]] | Rules engine declarativo | accepted | domain/rules | 2026-05-11 |
+| [[0047-go-version-policy]] | Política de versión Go | accepted | runtime/go | 2026-05-11 |
+| [[0048-typescript-transactional-pocs]] | TypeScript transactional PoCs para CQRS/Event Sourcing/Saga | accepted | architecture/typescript/poc | 2026-06-01 |
 
 ---
 
@@ -72,6 +77,7 @@ Cada ADR sigue el formato de Nygard con una sección "Alternativas consideradas"
 - [[0031-no-di-framework]] — wiring manual de dependencias
 - [[0034-doc-driven-vault-structure]] — estructura de documentación
 - [[0035-java-go-polyglot]] — selección de lenguaje por dominio
+- [[0048-typescript-transactional-pocs]] — PoCs NestJS/Hono para CQRS, Event Sourcing, Saga y ledger
 
 ### Sistemas distribuidos
 - [[0003-vertx-for-distributed-poc]] — Vert.x + Hazelcast

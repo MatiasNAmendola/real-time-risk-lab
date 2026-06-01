@@ -47,6 +47,7 @@ AI_DIR = REPO_ROOT / ".ai"
 PRIMITIVES_DIR = AI_DIR / "primitives"
 AUDIT_RULES_DIR = AI_DIR / "audit-rules"
 TERMINOLOGY_YAML = AUDIT_RULES_DIR / "terminology.yaml"
+IGNORED_DOC_PARTS = {"node_modules", "dist", "build", "out", ".gradle", "coverage"}
 
 DECISIONS_DIR = VAULT_DIR / "02-Decisions"
 CONCEPTS_DIR = VAULT_DIR / "04-Concepts"
@@ -202,7 +203,7 @@ def _all_md_files(roots: list[Path]) -> list[Path]:
         if root.is_file() and root.suffix == '.md':
             files.append(root)
         elif root.is_dir():
-            files.extend(root.rglob('*.md'))
+            files.extend(p for p in root.rglob('*.md') if not (set(p.parts) & IGNORED_DOC_PARTS))
     return files
 
 
@@ -333,7 +334,7 @@ ORPHAN_SUGGESTION = {
     'pocs': 'vault/00-MOCs/Architecture.md or README.md',
     'gradle_modules': 'README.md or docs/03-poc-roadmap.md',
     'adrs': 'vault/00-MOCs/Architecture.md',
-    'sdks': 'docs/22-client-sdks.md or vault/00-MOCs/Tooling-Stack.md',
+    'sdks': 'vault/04-Concepts/Client-SDK-Strategy.md or vault/00-MOCs/Tooling-Stack.md',
     'concepts': 'vault/00-MOCs/Architecture.md or relevant MOC',
     'scripts': 'README.md or docs/00-START-HERE.md',
     'primitives_skills': '.ai/context/stack.md',
@@ -353,6 +354,8 @@ def _build_mention_corpus() -> str:
             parts.append(_read_safe(root))
         elif root.is_dir():
             for f in root.rglob('*.md'):
+                if set(f.parts) & IGNORED_DOC_PARTS:
+                    continue
                 parts.append(_read_safe(f))
     return '\n'.join(parts)
 
@@ -918,6 +921,8 @@ def audit_prohibited_terms() -> dict[str, Any]:
     matches: list[dict[str, str]] = []
 
     for md_file in REPO_ROOT.rglob("*.md"):
+        if set(md_file.parts) & IGNORED_DOC_PARTS:
+            continue
         rel = str(md_file.relative_to(REPO_ROOT))
         if any(ex in rel for ex in PROHIBITED_TERMS_EXCLUDED):
             continue

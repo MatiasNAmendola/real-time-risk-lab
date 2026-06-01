@@ -86,6 +86,12 @@ Regla completa: [.ai/primitives/rules/clean-arch-boundaries.md](.ai/primitives/r
 Si hay Python, usar **uv** (`pyproject.toml`, `uv.lock`, `requirements.txt` exportado por uv). Si hay Node/JS/TypeScript, usar **Bun** como package manager/runtime de repo; no usar npm/pnpm/yarn para installs. Bun debe mantener `[install] ignoreScripts = true` en `bunfig.toml`, lo que bloquea lifecycle scripts (`prepare`, `preinstall`, `install`, `postinstall`, etc.) de paquetes/workspaces para reducir riesgo de malware.
 Regla completa: [docs/40-bun-package-manager-security.md](docs/40-bun-package-manager-security.md)
 
+
+### R7: Documentación metódica multi-superficie
+
+No documentes sólo en `docs/` cuando el cambio sea una PoC, decisión o concepto reutilizable. Sincronizá `docs/`, `vault/`, `.ai/context`, `.ai/primitives` y adapters IDE/CLI según corresponda.
+Regla completa: [.ai/primitives/rules/documentation-system.md](.ai/primitives/rules/documentation-system.md)
+
 ---
 
 ## 5. Como extender el sistema
@@ -106,6 +112,7 @@ Antes de implementar cualquier feature, busca el skill correspondiente:
   bootstrap-new-poc.md       refactor-to-enterprise-layout.md benchmark-poc.md
   debug-failing-test.md      update-poc-readme.md       wire-engram-memory.md
   update-architecture-doc.md
+  documentation-system.md (rule; para cambios de docs/vault/context/adapters)
 ```
 
 Para tareas multi-paso, usa un workflow:

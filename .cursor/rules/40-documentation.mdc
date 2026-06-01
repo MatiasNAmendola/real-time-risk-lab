@@ -1,0 +1,15 @@
+---
+description: Documentation must stay synchronized across docs, vault, AI context and adapters
+globs: ["docs/**/*.md", "vault/**/*.md", ".ai/**/*.md", "AGENTS.md", "README.md"]
+alwaysApply: false
+---
+
+# Documentation system
+
+Ver: @.ai/primitives/rules/documentation-system.md
+
+- No documentar sólo en `docs/` si el cambio es PoC, ADR o concepto reutilizable.
+- PoC nueva: README + `vault/03-PoCs` + `.ai/context/poc-inventory.md` + MOC relevante.
+- Decisión nueva: `vault/02-Decisions` + `_index.md` + `.ai/context/decisions-log.md` si aplica.
+- Concepto nuevo: `vault/04-Concepts` + MOC relevante.
+- Si afecta agentes, actualizar adapters IDE/CLI además de Codex.

@@ -7,6 +7,8 @@ preconditions:
 postconditions:
   - README actualizado con: proposito, como correr, stack con versiones, estado, demos disponibles
   - poc-inventory.md en .ai/context/ actualizado
+  - vault/03-PoCs/<poc-name>.md actualizado o creado
+  - MOCs relevantes actualizados si la PoC introduce un patrón
 related_rules: [naming-conventions]
 ---
 
@@ -91,4 +93,6 @@ curl http://localhost:8080/healthz
 1. Leer el README actual.
 2. Actualizar secciones desactualizadas.
 3. Actualizar `.ai/context/poc-inventory.md` con estado nuevo.
-4. Commit: `docs(poc/<name>): update README with current state`.
+4. Crear/actualizar `vault/03-PoCs/<name>.md` y linkear conceptos/ADRs relacionados.
+5. Actualizar MOCs en `vault/00-MOCs/` si agrega un patrón relevante.
+6. Commit: `docs(poc/<name>): update README with current state`.

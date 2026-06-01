@@ -39,9 +39,9 @@ Full context: .ai/context/architecture.md
 
 Before implementing anything, check .ai/primitives/skills/ and .ai/primitives/rules/.
 
-## Do not touch
+## Editing project areas
 
-poc/, tests/, cli/, docs/, vault/ — user ownership only.
+You may edit `poc/`, `tests/`, `cli/`, `docs/` and `vault/` only when the task requires it. Before doing so, read the applicable rule/skill in `.ai/primitives/`.
 EOF
     echo "  created: $GEMINI_FILE"
 fi

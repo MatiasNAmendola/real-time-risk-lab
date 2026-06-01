@@ -31,3 +31,10 @@ created: 2026-05-07
 ## Backlinks
 
 [[Risk-Platform-Overview]] linkea acá como entry point de testing.
+
+
+## TypeScript transactional PoCs
+
+- [[nestjs-distributed-transactions]] y [[hono-distributed-transactions]] agregan una batería Bun: unit, integration, e2e HTTP, ATDD `.feature` con Cucumber JS, smoke y k6.
+- k6 complementa ATDD: ATDD valida semántica; k6 valida latencia/errores HTTP bajo concurrencia mínima con thresholds.
+- Runner global: `./nx test --composite typescript-transactional-pocs`.
