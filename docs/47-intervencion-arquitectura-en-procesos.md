@@ -5,6 +5,8 @@ Esta página descompone las capturas del flujo de trabajo en una representación
 > Nota de alcance: los diagramas son una traducción fiel en estructura y orden, pero en formato Markdown/Mermaid para poder versionarlos, discutirlos y extenderlos.
 
 > Archivo visual aparte: [`docs/diagrams/product-architecture-process-map.html`](diagrams/product-architecture-process-map.html). Ese HTML recompone el proceso en una estructura visual más cercana a las capturas originales.
+>
+> Canvas editable: [`docs/diagrams/product-architecture-process-map.excalidraw`](diagrams/product-architecture-process-map.excalidraw). Export estático: [`docs/diagrams/product-architecture-process-map.svg`](diagrams/product-architecture-process-map.svg).
 
 ## 1. Vista end-to-end del proceso
 
