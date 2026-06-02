@@ -592,13 +592,23 @@ flowchart TB
 flowchart LR
   PB["Product Backlog"] --> SP["Sprint Planning"]
   SP --> SB["Sprint Backlog"]
-  SB --> DS["Daily Scrum / Scrum Team"]
-  DS --> SR["Sprint Review"]
-  SR --> INC["Increment"]
+
+  subgraph Sprint["Sprint"]
+    direction TB
+    Team["1 Scrum Team"]
+    DS["Daily Scrum"]
+    Team --- DS
+  end
+
+  SB --> Sprint
+  Sprint --> INC["Increment"]
+  INC --> SR["Sprint Review"]
   SR --> RETRO["Sprint Retrospective"]
-  RETRO --> PB
-  INC --> PB
+  SR -. "feedback sobre producto" .-> PB
+  RETRO -. "mejora de proceso" .-> SP
 ```
+
+Lectura: `Daily Scrum` no es “la etapa completa”, sino un evento recurrente dentro del Sprint. El `Scrum Team` es el equipo que ejecuta el Sprint; por eso se lo muestra dentro del contenedor del Sprint y no como un paso separado entre backlog y review.
 
 ### 5.5 Intervención de arquitectura
 
